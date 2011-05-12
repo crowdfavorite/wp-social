@@ -1,0 +1,166 @@
+#social_proxy_keys {
+	margin-top: 10px;
+}
+
+#social_meta_broadcast .service-label,
+#social_proxy_keys label {
+	float: left;
+	width: 135px;
+	padding-top: 2px;
+}
+
+#social_proxy_keys label {
+	padding-top: 6px;
+}
+
+#social_proxy_keys input {
+	width: 350px;
+}
+
+#social_meta_broadcast .social-toggle-label {
+	margin-right: 10px;
+}
+
+#social_meta_broadcast .social-broadcast-options {
+	position: relative;
+	top: 2px;
+}
+
+#tweet_counter,
+#facebook_counter {
+	float: right;
+	font-weight: normal;
+	font-size: 12px;
+	color: #aaa;
+}
+
+.form-table #tweet_counter,
+.form-table #facebook_counter {
+	float: none;
+}
+
+#tweet_preview,
+#facebook_preview {
+	width: 100%;
+}
+
+.form-table #tweet_preview,
+.form-table #facebook_preview {
+	width: 99%;
+}
+
+#social_error {
+	background-color: #ffebe8;
+	border: 1px solid #c00;
+	margin: 5px 0 15px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	-khtml-border-radius: 3px;;
+	padding: .6em;
+	font-size: 12px;
+	color: #333;
+}
+
+.social-broadcastable {
+	display: block;
+	float: left;
+	width: 15%;
+	margin: 5px 10px 5px 3px;
+	line-height: 16px;
+}
+
+.social-broadcastable input {
+	float: left;
+	margin: 2px 5px 0 0;
+	width: auto;
+}
+
+.social-broadcastable label {
+	padding: 1px 2px;
+}
+
+.social-settings-connect {
+	float: left;
+	margin-right: 30px;
+}
+
+.social-settings-connect .social-twitter-icon,
+.social-settings-connect .social-facebook-icon {
+	display: block;
+	height: 35px;
+	margin-bottom: 10px;
+}
+
+.social-twitter-icon i,
+.social-facebook-icon i {
+    background: url('social.png') 0 -66px;
+    display: block;
+    float: left;
+    margin-right: 5px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+}
+
+.social-facebook-icon i {
+    background-position: -16px -66px;
+}
+
+.social-twitter-icon.big,
+.social-facebook-icon.big {
+    line-height: 30px;
+}
+
+.social-twitter-icon.big i,
+.social-facebook-icon.big i {
+    background-position: 0 -82px;
+    margin-right: 10px;
+    width: 30px;
+    height: 30px;
+}
+
+.social-facebook-icon.big i {
+    background-position: -30px -82px;
+}
+
+#twitter_signin span,
+#facebook_signin span {
+	display: none;
+}
+
+#twitter_signin,
+#facebook_signin {
+	display: block;
+	width: 150px;
+	height: 22px;
+}
+
+#twitter_signin {
+	background: url('social.png') 0 0;
+}
+
+#twitter_signin:hover {
+	background-position: 0 -22px;
+}
+
+#twitter_signin:active {
+	background-position: 0 -44px;
+}
+
+#facebook_signin {
+	background: url('social.png') -150px 0;
+}
+
+#facebook_signin:hover {
+	background-position: -150px -22px;
+}
+
+#facebook_signin:active {
+	background-position: -150px -44px;
+}
+
+.social-disconnect {
+	position: relative;
+	top: 2px;
+}
