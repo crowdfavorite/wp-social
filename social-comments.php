@@ -38,6 +38,8 @@ add_filter('redirect_post_location', array('Social', 'redirect_post_location'));
 add_filter('comments_template', array('Social', 'comments_template'));
 add_filter('get_avatar_comment_types', array('Social', 'get_avatar_comment_types'));
 add_filter('get_avatar', array('Social', 'get_avatar'), 10, 5);
+add_filter('get_comment_author_url', array('Social', 'get_comment_author_url'));
+add_filter('get_comment_author', array('Social', 'get_comment_author'));
 add_filter('register', array('Social', 'register'));
 add_filter('loginout', array('Social', 'loginout'));
 
@@ -167,7 +169,7 @@ final class Social {
 	 *
 	 * @static
 	 * @param  array  $params
-	 * @return void
+	 * @return string
 	 */
 	public static function settings_url(array $params = null) {
 		$path = 'options-general.php?page='.basename(__FILE__);
@@ -187,7 +189,7 @@ final class Social {
 	 * @static
 	 * @param  string  $key    option key
 	 * @param  string  $value  option value
-	 * return array
+	 * return array|void
 	 */
 	private static function option($key = null, $value = null) {
 		if ($key === null) {
@@ -198,6 +200,7 @@ final class Social {
 		}
 
 		Social::$options[$key] = $value;
+		return;
 	}
 
 	/**
@@ -786,7 +789,6 @@ final class Social {
 	 * Overrides the default WordPress comments_template function.
 	 *
 	 * @static
-	 * @param  string  $file  default comments.php path
 	 * @return string
 	 */
 	public static function comments_template() {
@@ -839,6 +841,36 @@ final class Social {
 		}
 
 		return $avatar;
+	}
+
+	/**
+	 * Builds the URL to the author's Facebook/Twitter.
+	 *
+	 * @static
+	 * @param  string  $url
+	 * @return string
+	 */
+	public static function get_comment_author_url($url) {
+		global $comment;
+		if (isset(Social::$accounts[$comment->comment_type])) {
+			return Social_Service::instance($comment->comment_type, reset(Social::$accounts[$comment->comment_type]))->url();
+		}
+		return $url;
+	}
+
+	/**
+	 * Gets the comment author's username from Facebook/Twitter.
+	 *
+	 * @static
+	 * @param  string  $author
+	 * @return string
+	 */
+	public static function get_comment_author($author) {
+		global $comment;
+		if (isset(Social::$accounts[$comment->comment_type])) {
+			return Social_Service::instance($comment->comment_type, reset(Social::$accounts[$comment->comment_type]))->display_name();
+		}
+		return $author;
 	}
 
 	/**
@@ -897,8 +929,8 @@ final class Social {
 			foreach (Social::$accounts as $service => $_accounts) {
 				foreach ($_accounts as $account) {
 					if ($account_id == $account->user->id) {
-						$service = Social_Service::instance($service, $account);
-						$service->status_update('Check out this comment I posted!');
+						$_service = Social_Service::instance($service, $account);
+						$_service->status_update('Check out this comment I posted!');
 						update_comment_meta($comment_ID, Social::$prefix.'account_id', $account_id);
 						$wpdb->query("UPDATE $wpdb->comments SET comment_type='$service' WHERE comment_ID='$comment_ID'");
 						break;
@@ -951,6 +983,13 @@ final class Social {
 		return $link;
 	}
 
+	/**
+	 * Creates the disconnect URL for a user.
+	 *
+	 * @static
+	 * @param  array  $args
+	 * @return string
+	 */
 	public static function commenter_disconnect_url($args) {
 		$url = site_url().'?';
 		$params = array();
@@ -1173,6 +1212,24 @@ final class Social_Service {
 		return $this->interface->max_broadcast_length();
 	}
 
+	/**
+	 * Returns the user's URL.
+	 *
+	 * @return string
+	 */
+	public function url() {
+		return $this->interface->url();
+	}
+
+	/**
+	 * Returns the user's display name.
+	 *
+	 * @return string
+	 */
+	public function display_name() {
+		return $this->interface->display_name();
+	}
+
 } // End Social_Service
 
 /**
@@ -1196,7 +1253,6 @@ abstract class Social_Service_Helper {
 	 * Checks to make sure the service defined their $service variable.
 	 *
 	 * @throws Exception
-	 * @return void
 	 */
 	public function __construct() {
 		if ($this->service === null) {
@@ -1236,7 +1292,7 @@ abstract class Social_Service_Helper {
 				'api' => $api,
 				'method' => $method,
 				'public_key' => $this->account->keys->public,
-				'hash' => sha1($this->account->keys->public.$this->account->keys->public),
+				'hash' => sha1($this->account->keys->public.$this->account->keys->secret),
 				'params' => json_encode($params)
 			)
 		));
@@ -1254,7 +1310,6 @@ abstract class Social_Service_Helper {
 	/**
 	 * Creates an account using the account information.
 	 *
-	 * @param  array  $account  social network account
 	 * @return int
 	 */
 	public function create_user() {
@@ -1262,14 +1317,25 @@ abstract class Social_Service_Helper {
 		$username = $this->service.'_'.$this->account->user->id;
 		$user = get_userdatabylogin($username);
 		if ($user === false) {
-			$id = wp_create_user($username, wp_generate_password(20, false));
+			$id = wp_create_user($username, wp_generate_password(20, false), $this->create_email());
 			update_user_meta($id, Social::$prefix.'commenter', '1');
+			update_user_option($id, 'show_admin_bar_front', 'false');
 		}
 		else {
 			$id = $user->ID;
 		}
 
 		return $id;
+	}
+
+	/**
+	 * Builds the email for user creation.
+	 *
+	 * @param  string $alias
+	 * @return string
+	 */
+	public function create_email($alias = null) {
+		return $this->service.'.'.$alias.'@example.com';
 	}
 
 	/**
@@ -1304,7 +1370,7 @@ abstract class Social_Service_Helper {
 	 * @return string
 	 */
 	public static function authorize_url($service, $admin = false) {
-		$url = ($admin ? admin_url() : site_url()).'?t='.time();
+		$url = ($admin ? admin_url() : site_url());
 		return Social::$api_url.$service.'/authorize?redirect_to='.urlencode($url);
 	}
 
@@ -1351,7 +1417,6 @@ interface Social_IService {
 	 * Creates a WordPress User
 	 *
 	 * @abstract
-	 * @param  array  $account  social network account
 	 * @return int
 	 */
 	function create_user();
@@ -1371,6 +1436,31 @@ interface Social_IService {
 	 * @return void
 	 */
 	function max_broadcast_length();
+
+	/**
+	 * Creates the email alias for the new account.
+	 *
+	 * @abstract
+	 * @param  string  $alias
+	 * @return string
+	 */
+	function create_email($alias = null);
+
+	/**
+	 * Returns the URL to the user's account.
+	 *
+	 * @abstract
+	 * @return string
+	 */
+	function url();
+
+	/**
+	 * Returns the user's display name.
+	 *
+	 * @abstract
+	 * @return string
+	 */
+	function display_name();
 
 } // End Social_Service_Interface
 
@@ -1402,7 +1492,7 @@ final class Social_Service_Twitter extends Social_Service_Helper implements Soci
 	 * @return string
 	 */
 	public function get_avatar() {
-		return $this->account['profile_image_url'];
+		return $this->account->user->profile_image_url;
 	}
 
 	/**
@@ -1412,6 +1502,34 @@ final class Social_Service_Twitter extends Social_Service_Helper implements Soci
 	 */
 	public function max_broadcast_length() {
 		return 140;
+	}
+
+	/**
+	 * Creates the email alias for the new account.
+	 *
+	 * @param  string  $alias
+	 * @return string
+	 */
+	function create_email($alias = null) {
+		return parent::create_email($this->account->user->screen_name);
+	}
+
+	/**
+	 * Returns the URL to the user's account.
+	 *
+	 * @return string
+	 */
+	function url() {
+		return 'http://twitter.com/'.$this->account->user->screen_name;
+	}
+
+	/**
+	 * Returns the user's display name.
+	 *
+	 * @return string
+	 */
+	function display_name() {
+		return $this->account->user->screen_name;
 	}
 
 } // End Social_Service_Twitter
@@ -1444,7 +1562,7 @@ final class Social_Service_Facebook extends Social_Service_Helper implements Soc
 	 * @return string
 	 */
 	function get_avatar() {
-		return 'http://graph.facebook.com/'.$this->account['username'].'/picture';
+		return 'http://graph.facebook.com/'.$this->account->user->username.'/picture';
 	}
 
 	/**
@@ -1454,6 +1572,34 @@ final class Social_Service_Facebook extends Social_Service_Helper implements Soc
 	 */
 	public function max_broadcast_length() {
 		return 400;
+	}
+
+	/**
+	 * Creates the email alias for the new account.
+	 *
+	 * @param  string  $alias
+	 * @return string
+	 */
+	function create_email($alias = null) {
+		return parent::create_email($this->account->user->username);
+	}
+
+	/**
+	 * Returns the URL to the user's account.
+	 *
+	 * @return string
+	 */
+	function url() {
+		return $this->account->user->link;
+	}
+
+	/**
+	 * Returns the user's display name.
+	 *
+	 * @return string
+	 */
+	function display_name() {
+		return $this->account->user->name;
 	}
 
 } // End Social_Service_Facebook

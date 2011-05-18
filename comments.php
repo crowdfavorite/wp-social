@@ -56,7 +56,7 @@
 							<div style="float:left;margin-top:5px;">
 								<span class="social-<?php echo $service; ?>-icon">
 									<i></i>
-									<?php echo ($service == 'twitter' ? $account->user->screen_name : $account->user->username); ?>.
+									<?php echo ($service == 'twitter' ? $account->user->screen_name : $account->user->name); ?>.
 									(<a href="<?php echo Social::commenter_disconnect_url(array('social_disconnect' => 'true', 'id' => $account->user->id, 'service' => $service)); ?>"><?php echo __('Disconnect', Social::$i10n); ?></a>)
 								</span>
 							</div>
