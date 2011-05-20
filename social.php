@@ -943,6 +943,12 @@ final class Social {
 		return $url;
 	}
 
+	/**
+	 * Runs the aggregation of comments for all of the services.
+	 *
+	 * @static
+	 * @return void
+	 */
 	public static function aggregate_comments() {
 		global $wpdb;
 		// Load the ignored posts
