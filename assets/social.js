@@ -2,7 +2,7 @@
 	$(function(){
 		var child = null;
 		var polling = null;
-		$('#twitter_signin, #facebook_signin').click(function(e){
+		$('.social-login').click(function(e){
 			e.preventDefault();
 
 			child = window.open($(this).attr('href'), "ServiceAssociate", 'width=700,height=400');
@@ -47,7 +47,7 @@
 				var $target = $(this).parent().find('.form-wrap');
 				var $textarea = $target.find('textarea');
 
-				if ($(this).val() == 'yes') {
+				if ($(this).val() == '1') {
 					var content = tinyMCE.get('content').getContent();
 					$textarea.html(content.replace(/<[^>]*>?/g, ''));
 					$target.slideDown();

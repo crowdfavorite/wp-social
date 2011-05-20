@@ -1,18 +1,17 @@
 <?php
 /*
-Plugin Name: Social Comments
+Plugin Name: Social Core
 Plugin URI:
-Description: Social integration for comments.
+Description: Social Core (Includes Facebook and Twitter)
 Version: 1.0
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com
 */
-
 // TODO Ask MC about double slashing on the Proxy outbound data
 // TODO Check User ID on the wp_insert_comment() for current_user_id()
 // TODO Add AJAX call to replace the comment form instead of refreshing the page upon authentication. (Comment form only)
 
-if (!defined('PLUGINDIR')) {
+/*if (!defined('PLUGINDIR')) {
 	define('PLUGINDIR', 'wp-content/plugins');
 }
 
@@ -21,106 +20,46 @@ if (is_file(trailingslashit(ABSPATH.PLUGINDIR).basename(__FILE__))) {
 }
 else if (is_file(trailingslashit(ABSPATH.PLUGINDIR).basename(dirname(__FILE__)).'/'.basename(__FILE__))) {
 	define('SOCIAL_FILE', trailingslashit(ABSPATH.PLUGINDIR).basename(dirname(__FILE__)).'/'.basename(__FILE__));
+}*/
+$social_file = __FILE__;
+if (isset($mu_plugin)) {
+    $social_file = $mu_plugin;
 }
-
-// TODO Test this functionality
-/*$monkeyman_Rewrite_Analyzer_file = __FILE__;
-if ( isset( $mu_plugin ) ) {
-    $monkeyman_Rewrite_Analyzer_file = $mu_plugin;
+if (isset($network_plugin)) {
+    $social_file = $network_plugin;
 }
-
-if ( isset( $network_plugin ) ) {
-    $monkeyman_Rewrite_Analyzer_file = $network_plugin;
+if (isset($plugin)) {
+    $social_file = $plugin;
 }
-
-if ( isset( $plugin ) ) {
-    $monkeyman_Rewrite_Analyzer_file = $plugin;
-} */
+define('SOCIAL_FILE', $social_file);
+define('SOCIAL_PATH', dirname($social_file).'/');
 
 // Activation Hook
 register_activation_hook(SOCIAL_FILE, array('Social', 'install'));
 register_deactivation_hook(SOCIAL_FILE, array('Social', 'deactivate'));
 
 // Actions
-add_action('init', array('Social', 'init'), 1);
-add_action('init', array('Social', 'request_handler'), 2);
-add_action('do_meta_boxes', array('Social', 'do_meta_boxes'));
-add_action('save_post', array('Social', 'set_broadcast_meta_data'));
-add_action('comment_post', array('Social', 'comment_post'));
-add_action('social_aggregate_comments', array('Social', 'aggregate_comments'));
+$social = new Social;
+add_action('init', array($social, 'init'), 1);
+add_action('init', array($social, 'request_handler'), 2);
+add_action('do_meta_boxes', array($social, 'do_meta_boxes'));
+add_action('save_post', array($social, 'set_broadcast_meta_data'));
+add_action('comment_post', array($social, 'comment_post'));
+add_action('social_aggregate_comments', array($social, 'aggregate_comments'));
 
 // Admin Actions
-add_action('admin_menu', array('Social', 'admin_menu'));
+add_action('admin_menu', array($social, 'admin_menu'));
 
 // Filters
-add_filter('redirect_post_location', array('Social', 'redirect_post_location'));
-add_filter('comments_template', array('Social', 'comments_template'));
+add_filter('redirect_post_location', array($social, 'redirect_post_location'), 10, 2);
+add_filter('comments_template', array($social, 'comments_template'));
 // TODO multiple services
-add_filter('get_avatar_comment_types', array('Social', 'get_avatar_comment_types'));
-add_filter('get_avatar', array('Social', 'get_avatar'), 10, 5);
-add_filter('get_comment_author_url', array('Social', 'get_comment_author_url'));
-add_filter('get_comment_author', array('Social', 'get_comment_author'));
-add_filter('register', array('Social', 'register'));
-add_filter('loginout', array('Social', 'loginout'));
-
-/**
- * Custom comment walker.
- *
- * @package Social
- */
-class Social_Walker_Comment extends Walker_Comment {
-
-	/**
-	 * @see Walker::start_lvl()
-	 * @since 2.7.0
-	 *
-	 * @param string $output Passed by reference. Used to append additional content.
-	 * @param int $depth Depth of comment.
-	 * @param array $args Uses 'style' argument for type of HTML list.
-	 */
-	function start_lvl(&$output, $depth, $args) {
-		$GLOBALS['comment_depth'] = $depth + 1;
-
-		switch ($args['style']) {
-			case 'div':
-				break;
-			case 'ol':
-				echo "<ol class='social-children'>\n";
-				break;
-			default:
-			case 'ul':
-				echo "<ul class='social-children'>\n";
-				break;
-		}
-	}
-
-	/**
-	 * @see Walker::end_lvl()
-	 * @since 2.7.0
-	 *
-	 * @param string $output Passed by reference. Used to append additional content.
-	 * @param int $depth Depth of comment.
-	 * @param array $args Will only append content if style argument value is 'ol' or 'ul'.
-	 */
-	function end_lvl(&$output, $depth, $args) {
-		$GLOBALS['comment_depth'] = $depth + 1;
-
-		switch ($args['style'] ) {
-			case 'div':
-				break;
-			case 'ol':
-				echo "</ol>\n";
-				break;
-			default:
-			case 'ul':
-				echo "</ul>\n";
-				break;
-		}
-
-		echo "</li>\n";
-	}
-
-} // End Social_Walker_Comment
+add_filter('get_avatar_comment_types', array($social, 'get_avatar_comment_types'));
+add_filter('get_avatar', array($social, 'get_avatar'), 10, 5);
+add_filter('get_comment_author_url', array($social, 'get_comment_author_url'));
+add_filter('get_comment_author', array($social, 'get_comment_author'));
+add_filter('register', array($social, 'register'));
+add_filter('loginout', array($social, 'loginout'));
 
 /**
  * Social Comments Core
@@ -150,23 +89,35 @@ final class Social {
 	public static $i10n = 'social';
 
 	/**
-	 * @var  array  the user's accounts
+	 * @var  array  services registered to Social
 	 */
-	public static $accounts = array();
+	public static $services = array();
+
+	/**
+	 * @var  array  commenter user accounts
+	 */
+	public static $commenters = array();
 
 	/**
 	 * @var  array  default options
 	 */
 	protected static $options = array(
 		'debug' => 'false',
-		'install_date' => '',
-		'installed_version' => ''
+		'install_date' => false,
+		'installed_version' => false
 	);
 
 	/**
-	 * @var  bool  update plugin flag
+	 * @var  bool  update plugin settings
 	 */
 	protected static $update = true;
+
+	/**
+	 * @var bool  upgrade the plugin
+	 */
+	protected static $upgrade = false;
+
+
 
 	/**
 	 * Used to log debug data.
@@ -204,49 +155,63 @@ final class Social {
 	}
 
 	/**
-	 * Sets and returns the option(s).
+	 * Returns the service object.
+	 *
+	 * @static
+	 * @param  string  $service  name of the service
+	 * @param  int     $user_id  custom user to load
+	 * @return Social_Facebook|Social_Twitter|bool
+	 */
+	public static function service($service, $user_id = null) {
+		if ($user_id !== null) {
+			if (!isset(Social::$services[$service])) {
+				return false;
+			}
+
+			if (!isset(Social::$commenters[$user_id])) {
+				$class = get_class(Social::$services[$service]);
+				Social::$commenters[$user_id] = new $class($user_id);
+			}
+
+			return Social::$commenters[$user_id];
+		}
+
+		if (isset(Social::$services[$service])) {
+			return Social::$services[$service];
+		}
+
+		return false;
+	}
+
+	/**
+	 * Sets and returns the option.
 	 *
 	 * @static
 	 * @param  string  $key    option key
 	 * @param  string  $value  option value
-	 * @return array|string
+	 * @return array|void
 	 */
-	private static function option($key = null, $value = null) {
-		if ($key === null) {
-			return Social::$options;
-		}
-		else if ($key !== null and $value === null) {
+	public function option($key, $value = null) {
+		if ($value === null) {
 			return Social::$options[$key];
 		}
 
 		Social::$options[$key] = $value;
-		return $value;
 	}
 
 	/**
-	 * Registers the plugin to WordPress.
+	 * Sets the group of options
 	 *
 	 * @static
-	 * @return void
+	 * @param  array  $options
+	 * @return array|void
 	 */
-	public static function install() {
-		// require PHP 5
-		if (version_compare(PHP_VERSION, '5.2.4', '<=')) {
-			// TODO Move this to settings page and replace settings page with content instead of wp_die()
-			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
-			wp_die(__("Sorry, Social Comments requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i10n));
+	public function options($options = null) {
+		if ($options === null) {
+			return Social::$options;
 		}
 
-		// Set the options
-		// TODO Check for defaults instead of relying on this install method.
-		foreach (Social::option() as $option => $default) {
-			add_option(Social::$prefix.$option, $default);
-		}
-		add_option(Social::$prefix.'update_hash', '');
-
-		// Register our CRON
-		// TODO check for event before scheduling
-		wp_schedule_event(time() + 1200, 'hourly', Social::$prefix.'aggregate_comments');
+		Social::$options = $options;
 	}
 
 	/**
@@ -254,7 +219,7 @@ final class Social {
 	 *
 	 * @static
 	 */
-	public static function deactivate() {
+	public function deactivate() {
 		wp_clear_scheduled_hook(Social::$prefix.'aggregate_comments');
 	}
 
@@ -264,75 +229,97 @@ final class Social {
 	 * @static
 	 * @return void
 	 */
-	public static function init() {
-		// Load the settings
-		foreach (Social::option() as $key => $default) {
-			$value = get_option(Social::$prefix.$key, $default);
-			Social::option($key, $value);
-		}
-
-		//self::aggregate_comments();
-
-		// Load the accounts
-		// TODO Move this to a lazy-load logic
-		Social::accounts(get_user_meta(get_current_user_id(), Social::$prefix.'accounts', true));
-		if (is_admin()) {
-			// TODO Move this block to admin_init
-			$_accounts = array();
-			foreach (Social::accounts() as $service => $accounts) {
-				foreach ($accounts as $id => $account) {
+	public function init() {
+		$services = get_user_meta(get_current_user_id(), Social::$prefix.'accounts', true);
+		if (!empty($services)) {
+			foreach ($services as $service => $accounts) {
+				if (!empty($accounts)) {
 					Social::$update = false;
-					$_accounts[$service][$id] = Social_Service::instance($service, $account);
+					break;
 				}
 			}
+		}
 
-			Social::accounts($_accounts);
-
-			// Update actions.
+		if (is_admin()) {
 			if (Social::$update) {
-				add_action('admin_notices', array('Social', 'display_upgrade'));
+				add_action('admin_notices', array($this, 'display_upgrade'));
 			}
 
-			// Add the CSS
-			wp_register_style('social_css', plugins_url('/assets/admin.css', SOCIAL_FILE));
-			wp_register_script('social_js', plugins_url('/assets/social.js', SOCIAL_FILE), array(), false, true);
+			wp_enqueue_style('social_css', plugins_url('/assets/admin.css', SOCIAL_FILE), array(), Social::$version, 'screen, tv, projection');
+			wp_enqueue_script('social_js', plugins_url('/assets/social.js', SOCIAL_FILE), array('jquery'), Social::$version, true);
 		}
 		else {
-			// Add the CSS
-			wp_register_style('social_css', plugins_url('/assets/comments.css', SOCIAL_FILE));
-
-			// Add the JS
+			wp_enqueue_style('social_css', plugins_url('/assets/comments.css', SOCIAL_FILE), array(), Social::$version, 'screen, tv, projection');
 			wp_enqueue_script('jquery');
 			wp_enqueue_script('jquery-ui-tabs');
-			wp_register_script('social_js', plugins_url('/assets/social.js', SOCIAL_FILE), array(), false, true);
+			wp_enqueue_script('social_js', plugins_url('/assets/social.js', SOCIAL_FILE), array('jquery', 'jquery-ui-tabs'), Social::$version, true);
 		}
 
-		// Defaults
-		// TODO Implement page_now = post.php/options.php (might be something else)
-		wp_enqueue_script('social_js', plugins_url('/assets/social.js', SOCIAL_FILE), array('jquery'), Social::$version);
-		wp_enqueue_style('social_css');
+		if (version_compare(PHP_VERSION, '5.2.4', '<=')) {
+			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
+			wp_die(__("Sorry, Social Comments requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i10n));
+		}
+
+		// Load Twitter/Facebook
+		require SOCIAL_PATH.'lib/social/interface/service.php';
+		require SOCIAL_PATH.'lib/social/helper.php';
+		require SOCIAL_PATH.'lib/social/service.php';
+		require SOCIAL_PATH.'social-facebook.php';
+		require SOCIAL_PATH.'social-twitter.php';
+
+		// Load the settings
+		$options = apply_filters(Social::$prefix.'options', $this->options());
+		foreach ($options as $key => $default) {
+			$value = get_option(Social::$prefix.$key, $default);
+			if (empty($value)) {
+				switch ($key) {
+					case 'install_date':
+						$value = time();
+					break;
+					case 'install_version':
+						$value = Social::$version;
+					break;
+				}
+
+				update_option(Social::$prefix.$key, $value);
+			}
+
+			if ($key == 'install_version' and (int) $value < (int) Social::$version) {
+				// Need to run an upgrade
+				Social::$upgrade = true;
+			}
+
+			$this->option($key, $value);
+		}
+
+		// Schedule the CRON?
+		if (wp_next_scheduled(Social::$prefix.'aggregate_comments') === false) {
+			wp_schedule_event(time() + 1200, 'hourly', Social::$prefix.'aggregate_comments');
+		}
+
+		// Register the Social services
+		Social::$services = apply_filters(Social::$prefix.'register_service', Social::$services);
+
+		// Load the user's accounts
+		if (!empty($services)) {
+			foreach ($services as $service => $accounts) {
+				if (!isset(Social::$services[$service])) {
+					continue;
+				}
+				Social::service($service)->accounts($accounts);
+			}
+		}
 	}
 
 	/**
-	 * Return the service's accounts.
+	 * Displays the upgrade message.
 	 *
 	 * @static
-	 * @param  string  $service  twitter|facebook
-	 * @return array
+	 * @return void
 	 */
-	public static function accounts($service = null) {
-		// TODO implement lazy load check here
-		if ($service === null) {
-			return Social::$accounts;
-		}
-		else if (is_array($service)) {
-			Social::$accounts = $service;
-		}
-		else if (!isset(Social::$accounts[$service])) {
-			return array();
-		}
-
-		return Social::$accounts[$service];
+	public function display_upgrade() {
+		$message = sprintf(__('To broadcast to Twitter or Facebook, please update your <a href="%s">Social Comment settings</a>', Social::$i10n), Social::settings_url());
+		echo '<div class="error"><p>'.$message.'</p></div>';
 	}
 
 	/**
@@ -341,7 +328,7 @@ final class Social {
 	 * @static
 	 * @return void
 	 */
-	public static function request_handler() {
+	public function request_handler() {
 		if (!empty($_POST[Social::$prefix.'action'])) {
 			if (!wp_verify_nonce($_POST['_wpnonce'])) {
 				wp_die('Oops, please try again.');
@@ -349,7 +336,7 @@ final class Social {
 
 			switch ($_POST[Social::$prefix.'action']) {
                 case 'broadcast_options':
-                    Social::broadcast_options($_POST['post_ID'], $_POST['location']);
+                    $this->broadcast_options($_POST['post_ID'], $_POST['location']);
                     break;
 			}
 		}
@@ -365,18 +352,16 @@ final class Social {
 				'user' => $data->user
 			);
 
-			$service = Social_Service::instance($data->service, $account);
-
-			// Add the service
-			$service->add($data->user, $data->keys->public, $data->keys->secret);
+			// Add the account to the service.
+			$service = Social::service($data->service)->account($account);
 
 			// Do we need to create a user?
 			if (!$service->loaded()) {
-				$service->create_user();
+				$service->create_user($account);
 			}
 
 			// Save the services
-			$service->save();
+			$service->save($account);
 ?>
 <html>
 <head>
@@ -394,7 +379,7 @@ final class Social {
 			exit;
 		}
 		else if (isset($_GET['social_disconnect'])) {
-			$service = Social_Service::instance($_GET['service']);
+			$service = Social::service($_GET['service']);
 			$service->disconnect($_GET['id']);
 
 			if (is_admin()) {
@@ -414,13 +399,13 @@ final class Social {
      * @static
      * @return void
      */
-    public static function do_meta_boxes() {
+    public function do_meta_boxes() {
 		global $post;
 
 		// Already broadcasted?
 		$broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted', true);
-		if (!self::$update and $broadcasted != '1') {
-			add_meta_box(Social::$prefix.'meta_broadcast', __('Social Comments', Social::$i10n), array('Social', 'add_meta_box'), 'post');
+		if (!Social::$update and $broadcasted != '1') {
+			add_meta_box(Social::$prefix.'meta_broadcast', __('Social Comments', Social::$i10n), array($this, 'add_meta_box'), 'post');
 		}
     }
 
@@ -430,40 +415,40 @@ final class Social {
 	 * @static
 	 * @return void
 	 */
-	public static function add_meta_box() {
+	public function add_meta_box() {
 		global $post;
 
-		if (!self::$update) {
+		if (!Social::$update) {
 			$broadcast_accounts = get_post_meta($post->ID, Social::$prefix.'broadcast_accounts', true);
 
 			// Have Twitter account(s)?
-			foreach (Social::accounts() as $service => $accounts) {
-				if (count($accounts)) {
-					$_service = reset($accounts);
-					$content = get_post_meta($post->ID, Social::$prefix.$service.'_content', true);
-					$notify = get_post_meta($post->ID, Social::$prefix.'notify_'.$service, true);
-					$counter = $_service->max_broadcast_length();
+			$services = Social::$services;
+			foreach (Social::$services as $key => $service) {
+				if (count($service->accounts())) {
+					$content = get_post_meta($post->ID, Social::$prefix.$key.'_content', true);
+					$notify = get_post_meta($post->ID, Social::$prefix.'notify_'.$key, true);
+					$counter = $service->max_broadcast_length();
 					if (!empty($content)) {
 						$counter = $counter - strlen($content);
 					}
 ?>
-<input type="hidden" name="<?php echo Social::$prefix.'notify[]'; ?>" value="<?php echo $service; ?>" />
+<input type="hidden" name="<?php echo Social::$prefix.'notify[]'; ?>" value="<?php echo $key; ?>" />
 <div style="padding:10px 0">
-	<span class="service-label"><?php echo __('Send post to '.$_service->title().'?', Social::$i10n); ?></span>
-	<input type="radio" name="<?php echo Social::$prefix.'notify_'.$service; ?>" id="<?php echo Social::$prefix.'notify_'.$service.'_yes'; ?>" class="social-toggle" value="1" <?php echo checked('1', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$service.'_yes'; ?>" class="social-toggle-label"><?php echo __('Yes', Social::$i10n); ?></label>
-	<input type="radio" name="<?php echo Social::$prefix.'notify_'.$service; ?>" id="<?php echo Social::$prefix.'notify_'.$service.'_no'; ?>" class="social-toggle" value="0" <?php echo checked('0', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$service.'_no'; ?>" class="social-toggle-label"><?php echo __('No', Social::$i10n); ?></label>
-	<div id="<?php echo $service.'_options'; ?>" class="form-wrap"<?php echo ($notify != '1' ? ' style="display:none"' : ''); ?>>
+	<span class="service-label"><?php echo __('Send post to '.$service->title().'?', Social::$i10n); ?></span>
+	<input type="radio" name="<?php echo Social::$prefix.'notify_'.$key; ?>" id="<?php echo Social::$prefix.'notify_'.$key.'_yes'; ?>" class="social-toggle" value="1" <?php echo checked('1', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$key.'_yes'; ?>" class="social-toggle-label"><?php echo __('Yes', Social::$i10n); ?></label>
+	<input type="radio" name="<?php echo Social::$prefix.'notify_'.$key; ?>" id="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle" value="0" <?php echo checked('0', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle-label"><?php echo __('No', Social::$i10n); ?></label>
+	<div id="<?php echo $key.'_options'; ?>" class="form-wrap"<?php echo ($notify != '1' ? ' style="display:none"' : ''); ?>>
 		<div class="form-field">
-			<span id="<?php echo $service.'_counter'; ?>"><?php echo $counter; ?></span>
-			<label for="<?php echo $service.'_preview'; ?>"><?php echo __('Content', Social::$i10n); ?></label>
-			<textarea rows="3" cols="20" id="<?php echo $service.'_preview'; ?>" name="<?php echo Social::$prefix; ?>twitter_content"><?php echo $content; ?></textarea>
+			<label for="<?php echo $key.'_preview'; ?>"><?php echo __('Content', Social::$i10n); ?></label>
+			<span class="social-preview-counter" id="<?php echo $key.'_counter'; ?>"><?php echo $counter; ?></span>
+			<textarea rows="3" cols="20" id="<?php echo $key.'_preview'; ?>" name="<?php echo Social::$prefix.$key.'_content'; ?>" class="social-preview-content"><?php echo $content; ?></textarea>
 		</div>
 		<div class="form-field">
 			<label><?php echo __('Broadcast to These Accounts:', Social::$i10n); ?></label>
-			<?php foreach ($accounts as $account): ?>
+			<?php foreach ($service->accounts() as $account): ?>
 			<div class="social-broadcastable">
-				<input type="checkbox" name="<?php echo Social::$prefix.'broadcast_'.$service.'_accounts[]'; ?>" id="<?php echo Social::$prefix.$service.'_'.$account->user->id; ?>" value="<?php echo $account->user->id; ?>"<?php echo ((empty($broadcast_accounts) or array_search($account->user->id, $broadcast_accounts[$service]) !== false) ? ' checked="checked"' : ''); ?> />
-				<span class="<?php echo 'social-'.$service.'-icon'; ?>"><i></i><label for="<?php echo Social::$prefix.$service.'_'.$account->user->id; ?>"><?php echo $account->name(); ?></label></span>
+				<input type="checkbox" name="<?php echo Social::$prefix.'broadcast_'.$key.'_accounts[]'; ?>" id="<?php echo Social::$prefix.$key.'_'.$account->user->id; ?>" value="<?php echo $account->user->id; ?>"<?php echo ((empty($broadcast_accounts) or array_search($account->user->id, $broadcast_accounts[$key]) !== false) ? ' checked="checked"' : ''); ?> />
+				<span class="<?php echo 'social-'.$key.'-icon'; ?>"><i></i><label for="<?php echo Social::$prefix.$key.'_'.$account->user->id; ?>"><?php echo $service->profile_name($account); ?></label></span>
 			</div>
 			<?php endforeach; ?>
 		</div>
@@ -483,23 +468,12 @@ final class Social {
      * @param  int     $post_id   post ID
      * @return string|void
      */
-    public static function redirect_post_location($location, $post_id) {
+    public function redirect_post_location($location, $post_id) {
         if (isset($_POST['publish'])) {
-            Social::broadcast_options($post_id, $location);
+            $this->broadcast_options($post_id, $location);
         }
         return $location;
     }
-
-	/**
-	 * Displays the upgrade message.
-	 *
-	 * @static
-	 * @return void
-	 */
-	public static function display_upgrade() {
-		$message = sprintf(__('To broadcast to Twitter or Facebook, please update your <a href="%s">Social Comment settings</a>', Social::$i10n), Social::settings_url());
-		echo '<div class="error"><p>'.$message.'</p></div>';
-	}
 
 	/**
 	 * Adds a link to the "Settings" menu in WP-Admin.
@@ -523,28 +497,27 @@ final class Social {
 	 * @static
 	 * @return void
 	 */
-	public static function admin_options_form() {
+	public function admin_options_form() {
 ?>
 <div class="wrap" id="social_options_page">
 	<h2><?php echo __('Social Comment Options', Social::$i10n); ?></h2>
 
 	<h3><?php echo __('Connect to Social Networks', Social::$i10n); ?></h3>
 	<p><?php echo __('Before you can broadcast to your social networks, you will need to connect your account(s).', Social::$i10n); ?></p>
-	<?php foreach (Social::accounts() as $service => $accounts): ?>
+	<?php foreach (Social::$services as $key => $service): ?>
 	<div class="social-settings-connect">
-		<?php foreach ($accounts as $account): ?>
+		<?php foreach ($service->accounts() as $account): ?>
 		<?php
-			$url = '<a href="http://twitter.com/'.$account->name().'">'.$account->name().'</a>';
-			$disconnect = '<a href="'.Social::settings_url(array(Social::$prefix.'disconnect' => 'true', 'id' => $account->user->id, 'service' => $service)).'">'
-						. '<img src="'.plugins_url('/assets/delete.png', SOCIAL_FILE).'" alt="'.__('Disconnect', Social::$i10n).'" />'
-						. '</a>';
-
+			$profile_url = $service->profile_url($account);
+			$profile_name = $service->profile_name($account);
+			$url = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
+			$disconnect = $service->disconnect_url($account, true);
 			$output = sprintf(__('Connected to %s. %s', Social::$i10n), $url, $disconnect);
 		?>
-		<span class="social-<?php echo $service; ?>-icon big"><i></i><?php echo $output; ?></span>
+		<span class="social-<?php echo $key; ?>-icon big"><i></i><?php echo $output; ?></span>
 		<?php endforeach; ?>
 
-		<a href="<?php echo Social_Service_Helper::authorize_url($service, true); ?>" id="<?php echo $service; ?>_signin"><span><?php echo __('Sign In With '.$account->title(), Social::$i10n); ?></span></a>
+		<a href="<?php echo Social_Helper::authorize_url($key, true); ?>" id="<?php echo $key; ?>_signin" class="social-login"><span><?php echo __('Sign In With '.$service->title, Social::$i10n); ?></span></a>
 	</div>
 	<?php endforeach; ?>
 </div>
@@ -559,47 +532,35 @@ final class Social {
      * @param  string  $location  location to send the form to
 	 * @return void
 	 */
-	public static function broadcast_options($post_id, $location) {
-        $post = get_post($post_id);
-		$notify_twitter = get_post_meta($post->ID, Social::$prefix.'notify_twitter', true) == '1' ? true : false;
-		$notify_facebook = get_post_meta($post->ID, Social::$prefix.'notify_facebook', true) == '1' ? true : false;
+	public function broadcast_options($post_id, $location) {
+		$notify = array();
+		foreach (Social::$services as $key => $service) {
+			$meta = get_post_meta($post_id, Social::$prefix.'notify_'.$key, true);
+			if ($meta == '1') {
+				$notify[] = $key;
+			}
+		}
 
 		$errors = array();
-		if ($notify_twitter or $notify_facebook) {
+		if (!empty($notify)) {
 			if (isset($_POST[Social::$prefix.'action'])) {
-				$services = array(
-					'twitter',
-					'facebook'
-				);
-				foreach ($services as $service) {
-					if (${'notify_'.$service} and empty($_POST[Social::$prefix.$service.'_content'])) {
-						$errors[$service] = 'Please enter some content for '.ucwords($service).'.';
+				foreach (Social::$services as $key => $service) {
+					if (isset($notify[$key]) and empty($_POST[Social::$prefix.$key.'_content'])) {
+						$errors[$key] = 'Please enter some content for '.$service->title().'.';
 					}
 				}
 
 				if (!count($errors)) {
-					foreach ($services as $service) {
-						update_post_meta($post->ID, Social::$prefix.$service.'_content', $_POST[Social::$prefix.$service.'_content']);
+					foreach (Social::$services as $key => $service) {
+						update_post_meta($post_id, Social::$prefix.$key.'_content', $_POST[Social::$prefix.$key.'_content']);
 					}
 
-                    Social::broadcast($post_id);
-                    wp_redirect($location);
+					Social::broadcast($post_id);
+					wp_redirect($location);
 					return;
 				}
 			}
 
-            $twitter_content = get_post_meta($post->ID, Social::$prefix.'twitter_content', true);
-            $facebook_content = get_post_meta($post->ID, Social::$prefix.'facebook_content', true);
-
-            $opening = '';
-            if ($notify_twitter and $notify_facebook) {
-                $opening = 'Twitter and Facebook';
-            } else if ($notify_twitter) {
-                $opening = 'Twitter';
-            } else if ($notify_facebook) {
-                $opening = 'Facebook';
-            }
-			$opening = __($opening, Social::$i10n);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" <?php language_attributes(); ?>>
@@ -613,60 +574,45 @@ final class Social {
 </head>
 <body>
 <h1 id="logo"><?php echo __('Social Broadcasting Options', Social::$i10n); ?></h1>
-<?php
-	if (count($errors)) {
-?>
+<?php if (count($errors)): ?>
 <div id="social_error">
-	<?php
-		foreach ($errors as $error) {
-			echo $error.'<br />';
-		}
-	?>
+	<?php foreach ($errors as $error): ?>
+	<?php echo $error; ?><br />
+	<?php endforeach; ?>
 </div>
-<?php
-	}
-?>
-<p><?php printf(__('You have chosen to broadcast your blog post to %s. Use the form below to edit your broadcasted messages.', Social::$i10n), $opening); ?></p>
+<?php endif; ?>
+<p><?php __('You have chosen to broadcast this blog post to your social accounts. Use the form below to edit your broadcasted messages.', Social::$i10n); ?></p>
 <form id="setup" method="post" action="<?php echo admin_url(); ?>">
 <?php wp_nonce_field(); ?>
-<input type="hidden" name="post_ID" value="<?php echo $post->ID; ?>" />
+<input type="hidden" name="post_ID" value="<?php echo $post_id; ?>" />
 <input type="hidden" name="location" value="<?php echo $location; ?>" />
 <input type="hidden" name="<?php echo Social::$prefix; ?>action" value="broadcast_options" />
 <table class="form-table">
-    <?php
-        if ($notify_twitter)
-        {
-            $counter = 140;
-            if (!empty($twitter_content)) {
-                $counter = $counter - strlen($twitter_content);
-            }
-    ?>
-    <tr>
-        <th scope="row">
-            <label for="tweet_preview"><?php __('Twitter', Social::$i10n); ?></label><br />
-            <span id="tweet_counter"><?php echo $counter; ?></span>
-        </th>
-        <td><textarea id="tweet_preview" name="<?php echo Social::$prefix; ?>twitter_content" cols="40" rows="5"><?php echo ((isset($_POST[Social::$prefix.'twitter_content']) and !empty($_POST[Social::$prefix.'twitter_content'])) ? $_POST[Social::$prefix.'twitter_content'] : $twitter_content); ?></textarea></td>
-    </tr>
-    <?php
-        }
-        if ($notify_facebook)
-        {
-            $counter = 420;
-            if (!empty($facebook_content)) {
-                $counter = $counter - strlen($facebook_content);
-            }
-    ?>
-    <tr>
-        <th scope="row">
-            <label for="facebook_preview"><?php __('Facebook', Social::$i10n); ?></label><br />
-            <span id="facebook_counter"><?php echo $counter; ?></span>
-        </th>
-        <td><textarea id="facebook_preview" name="<?php echo Social::$prefix; ?>facebook_content" cols="40" rows="5"><?php echo ((isset($_POST[Social::$prefix.'facebook_content']) and !empty($_POST[Social::$prefix.'facebook_content'])) ? $_POST[Social::$prefix.'facebook_content'] : $facebook_content); ?></textarea></td>
-    </tr>
-    <?php
-        }
-    ?>
+<?php foreach ($notify as $service): ?>
+<?php
+	$content = get_post_meta($post_id, Social::$prefix.$service.'_content', true);
+
+	$service = Social::service($service);
+	$counter = $service->max_broadcast_length();
+	if (!empty($content)) {
+		$length = strlen($content);
+		if ($length > $counter) {
+			$content = substr($content, 0, $counter);
+			$counter = 0;
+		}
+		else {
+			$counter = $counter - strlen($content);
+		}
+	}
+?>
+<tr>
+	<th scope="row">
+		<label for="<?php echo $service->service.'_preview'; ?>"><?php echo __($service->title(), Social::$i10n); ?></label><br />
+		<span id="<?php echo $service->service.'_counter'; ?>" class="social-preview-counter"><?php echo $counter; ?></span>
+	</th>
+	<td><textarea id="<?php echo $service->service.'_preview'; ?>" name="<?php echo Social::$prefix.$service->service.'_content'; ?>" class="social-preview-content" cols="40" rows="5"><?php echo ((isset($_POST[Social::$prefix.$service->service.'_content']) and !empty($_POST[Social::$prefix.$service->service.'_content'])) ? $_POST[Social::$prefix.$service->service.'_content'] : $content); ?></textarea></td>
+</tr>
+<?php endforeach; ?>
 </table>
 <p class="step"><input type="submit" value="<?php echo __('Publish', Social::$i10n); ?>" class="button" /></p>
 </form>
@@ -688,15 +634,15 @@ final class Social {
 	 * @param  int  $post_id
 	 * @return void
 	 */
-	public static function set_broadcast_meta_data($post_id) {
+	public function set_broadcast_meta_data($post_id) {
 		$broadcast = false;
 		$broadcast_accounts = array();
-		foreach (Social::accounts() as $service => $accounts) {
-			$post_key = Social::$prefix.'notify_'.$service;
+		foreach (Social::$services as $key => $service) {
+			$post_key = Social::$prefix.'notify_'.$key;
 			if (isset($_POST[$post_key])) {
 				update_post_meta($post_id, $post_key, $_POST[$post_key]);
 
-				$content_key = Social::$prefix.$service.'_content';
+				$content_key = Social::$prefix.$key.'_content';
 				if ($_POST[$post_key] == '1') {
 					$broadcast = true;
 					if (isset($_POST[$content_key]) and !empty($_POST[$content_key])) {
@@ -705,7 +651,7 @@ final class Social {
 					else {
 						$content = get_post_meta($post_id, $content_key, true);
 						if (empty($content)) {
-							$content = substr($_POST['post_content'], 0, Social_Service::instance($service)->max_broadcast_length());
+							$content = substr($_POST['post_content'], 0, $service->max_broadcast_length());
 						}
 						update_post_meta($post_id, $content_key, $content);
 					}
@@ -715,7 +661,7 @@ final class Social {
 				}
 
 				// Ignored accounts
-				$broadcast_accounts[$service] = $_POST[Social::$prefix.'broadcast_'.$service.'_accounts'];
+				$broadcast_accounts[$key] = $_POST[Social::$prefix.'broadcast_'.$key.'_accounts'];
 			}
 		}
 		update_post_meta($post_id, Social::$prefix.'broadcast_accounts', $broadcast_accounts);
@@ -741,30 +687,29 @@ final class Social {
 	public static function broadcast($post_id) {
         $broadcasted = get_post_meta($post_id, Social::$prefix.'broadcasted', true);
         if ($broadcasted == '0' or empty($broadcasted)) {
-            $twitter = get_post_meta($post_id, Social::$prefix.'notify_twitter', true);
-            $facebook = get_post_meta($post_id, Social::$prefix.'notify_facebook', true);
+	        $broadcast_accounts = get_post_meta($post_id, Social::$prefix.'broadcast_accounts', true);
+	        if (!empty($broadcast_accounts)) {
+		        $ids = array();
+				foreach (Social::$services as $key => $service) {
+					$notify = get_post_meta($post_id, Social::$prefix.'notify_'.$key, true);
 
-            // Notify the service(s)?
-            if ($twitter == '1' or $facebook == '1') {
-	            $ids = array();
-				$broadcast_accounts = get_post_meta($post_id, Social::$prefix.'broadcast_accounts', true);
-	            foreach (Social::accounts() as $service => $accounts) {
-		            $content = get_post_meta($post_id, Social::$prefix.$service.'_content', true);
-		            if (!empty($content)) {
-
-						foreach ($accounts as $account) {
-							if (in_array($account->account()->user->id, $broadcast_accounts[$service])) {
-								$ids[$service][] = Social_Service::instance($service, $account->account())->status_update($content)->id;
+					if ($notify == '1') {
+						$content = get_post_meta($post_id, Social::$prefix.$key.'_content', true);
+						if (!empty($content)) {
+							foreach ($service->accounts() as $account) {
+								if (in_array($account->user->id, $broadcast_accounts[$key])) {
+									$ids[$key][] = $service->status_update($account, $content)->id;
+								}
 							}
 						}
+					}
 
-			            delete_post_meta($post_id, Social::$prefix.'notify_'.$service);
-		            }
-	            }
-	            update_post_meta($post_id, Social::$prefix.'broadcasted_ids', $ids);
-                update_post_meta($post_id, Social::$prefix.'broadcasted', '1');
-	            update_post_meta($post_id, Social::$prefix.'cron', '1');
-            }
+					delete_post_meta($post_id, Social::$prefix.'notify_'.$key);
+				}
+
+		        update_post_meta($post_id, Social::$prefix.'broadcasted_ids', $ids);
+	        }
+	        update_post_meta($post_id, Social::$prefix.'broadcasted', '1');
         }
 	}
 
@@ -791,6 +736,7 @@ final class Social {
 			return;
 		}
 
+		require SOCIAL_PATH.'lib/social/walker/comment.php';
 		$file = trailingslashit(dirname(SOCIAL_FILE)).'comments.php';
 		return $file;
 	}
@@ -818,19 +764,12 @@ final class Social {
 	 * @return string
 	 */
 	public static function get_avatar($avatar, $comment, $size, $default, $alt) {
-		if ($comment->comment_type == 'twitter' or $comment->comment_type == 'facebook') {
-			$accounts = get_user_meta($comment->user_id, Social::$prefix.'accounts', true);
+		$service = Social::service($comment->comment_type, $comment->user_id);
+		if ($service !== false) {
 			$account_id = get_comment_meta($comment->comment_ID, Social::$prefix.'account_id', true);
+			$image = $service->profile_avatar($service->account($account_id));
 
-			$image = null;
-			if (isset($accounts[$comment->comment_type][$account_id])) {
-				$service = Social_Service::instance($comment->comment_type, $accounts[$comment->comment_type][$account_id]);
-				$image = $service->get_avatar();
-			}
-
-			if ($image !== null) {
-				return "<img alt='{$alt}' src='{$image}' class='avatar avatar-{$size} photo {$comment->comment_type}' height='{$size}' width='{$size}' />";
-			}
+			return "<img alt='{$alt}' src='{$image}' class='avatar avatar-{$size} photo {$comment->comment_type}' height='{$size}' width='{$size}' />";
 		}
 
 		return $avatar;
@@ -845,8 +784,12 @@ final class Social {
 	 */
 	public static function get_comment_author_url($url) {
 		global $comment;
-		if (Social::accounts($comment->comment_type) !== false) {
-			return Social_Service::instance($comment->comment_type, reset(Social::accounts($comment->comment_type)))->url();
+		if ($comment->user_id) {
+			$service = Social::service($comment->comment_type, $comment->user_id);
+			if ($service !== false) {
+				$account_id = get_comment_meta($comment->comment_ID, Social::$prefix.'account_id', true);
+				return $service->profile_url($service->account($account_id));
+			}
 		}
 		return $url;
 	}
@@ -860,8 +803,12 @@ final class Social {
 	 */
 	public static function get_comment_author($author) {
 		global $comment;
-		if (Social::accounts($comment->comment_type) !== false) {
-			return Social_Service::instance($comment->comment_type, reset(Social::accounts($comment->comment_type)))->display_name();
+		if ($comment->user_id) {
+			$service = Social::service($comment->comment_type, $comment->user_id);
+			if ($service !== false) {
+				$account_id = get_comment_meta($comment->comment_ID, Social::$prefix.'account_id', true);
+				return $service->profile_name($service->account($account_id));
+			}
 		}
 		return $author;
 	}
@@ -916,15 +863,16 @@ final class Social {
 	public static function comment_post($comment_ID) {
 		global $wpdb;
 		$type = false;
-		if (Social::accounts() !== null) {
+		$services = Social::$services;
+		if (!empty($services)) {
 			$account_id = $_POST[Social::$prefix.'post_account'];
 
-			foreach (Social::accounts() as $service => $_accounts) {
-				foreach ($_accounts as $account) {
+			foreach ($services as $key => $service) {
+				foreach ($service->accounts() as $account) {
 					if ($account_id == $account->user->id) {
-						$account->status_update('Check out this comment I posted!');
+						$service->status_update($account, 'Check out this comment I posted!');
 						update_comment_meta($comment_ID, Social::$prefix.'account_id', $account_id);
-						$wpdb->query("UPDATE $wpdb->comments SET comment_type='$service' WHERE comment_ID='$comment_ID'");
+						$wpdb->query("UPDATE $wpdb->comments SET comment_type='$key' WHERE comment_ID='$comment_ID'");
 						break;
 					}
 				}
@@ -965,9 +913,11 @@ final class Social {
 		if (is_user_logged_in()) {
 			$commenter = get_user_meta(get_current_user_id(), Social::$prefix.'commenter', true);
 			if ($commenter === '1') {
-				foreach (Social::accounts() as $service => $accounts) {
-					$account = reset($accounts);
-					return '<a href="'.Social::commenter_disconnect_url(array('social_disconnect' => 'true', 'id' => $account->user->id, 'service' => $service)).'">Disconnect</a>';
+				foreach (Social::$services as $key => $service) {
+					$account = reset($service->accounts());
+					if ($account) {
+						return $service->disconnect_url($account);
+					}
 				}
 			}
 		}
@@ -994,628 +944,93 @@ final class Social {
 	}
 
 	public static function aggregate_comments() {
-		$posts = query_posts(array(
-			'meta_key' => Social::$prefix.'broadcasted,'.Social::$prefix.'cron',
-			'meta_value' => '1,1'
-		));
-		foreach ($posts as $post) {
+		global $wpdb;
+		// Load the ignored posts
+		$ignored = get_option(Social::$prefix.'ignored_posts_for_aggregation', true);
+		$queued = get_option(Social::$prefix.'queued_for_aggregation', true);
 
+		// Load all the posts
+		$sql = "
+			SELECT p.ID, p.post_date, p.guid, (
+			           SELECT b.meta_value
+			             FROM $wpdb->postmeta AS b
+			            WHERE b.meta_key = '".Social::$prefix."broadcasted_ids'
+			              AND b.post_id = p.ID
+			       ) AS broadcasted_ids
+			  FROM $wpdb->posts AS p
+			 WHERE p.post_status = 'publish'
+			   AND p.comment_status = 'open'
+			   AND p.post_type = 'post'
+			   AND p.post_parent = '0'
+	    ";
+		if (is_array($ignored)) {
+			$sql .= "AND p.ID NOT IN (".implode(',', $ignored).")";
 		}
+		$posts = $wpdb->get_results($sql, OBJECT);
 
+		// Compile the search parameters
+		$urls = array();
+		$broadcasted_ids = array();
+		foreach ($posts as $post) {
+			$timestamp = time() - strtotime($post->post_date);
 
-		/*if (time() - strtotime($post->post_date) > 172800 and !count($comments)) {
-			wp_clear_scheduled_hook('social_aggregate_comments', array($post_id));
-		}*/
+			$hours = 0;
+			if ($timestamp >=  172800) {
+				$hours = 48;
+			}
+			else if ($timestamp >= 86400) {
+				$hours = 24;
+			}
+			else if ($timestamp >= 43200) {
+				$hours = 12;
+			}
+			else if ($timestamp >= 28800) {
+				$hours = 8;
+			}
+			else if ($timestamp >= 14400) {
+				$hours = 4;
+			}
+			else if ($timestamp >= 7200) {
+				$hours = 2;
+			}
+
+			if (!isset($queued[$post->ID]) or $queued[$post->ID] > $hours) {
+				$queued[$post->ID] = $hours;
+
+				$urls = array(
+					'url' => urlencode(home_url('?p='.$post->ID)),
+					'permalink' => urlencode(get_permalink($post->ID)),
+				);
+
+				$broadcasted = maybe_unserialize($post->broadcasted_ids);
+				if (is_array($broadcasted)) {
+					foreach ($broadcasted as $service => $ids) {
+						if (!isset($broadcasted_ids[$service])) {
+							$broadcasted_ids[$service] = $ids;
+						}
+						else {
+							$broadcasted_ids[$service] = array_merge($broadcasted_ids[$service], $ids);
+						}
+					}
+				}
+
+				// Run search!
+				foreach (Social::$services as $key => $service) {
+					$results = $service->search_for_replies($urls, (isset($broadcasted_ids[$key]) ? $broadcasted_ids[$key] : null));
+
+					// Results?
+					if ($results !== false) {
+						$service->save_replies($post->ID, $results);
+					}
+				}
+
+				// Remove the post from the CRON.
+				if ($hours === 48) {
+					unset($queued[$post->ID]);
+					$ignored[] = $post->ID;
+				}
+			}
+		}
 	}
 
 } // End Social
-
-/**
- * The Social_Service Class
- *
- * @package Social
- */
-final class Social_Service {
-
-	/**
-	 * @var  array  Social_Service instances
-	 */
-	protected static $instances = array();
-
-	/**
-	 * Initializes and returns an instance of the service.
-	 *
-	 * @static
-	 * @param  string  $service  twitter|facebook
-	 * @param  object  $account  account
-	 * @return Social_Service
-	 */
-	public static function instance($service, $account = null) {
-		if ($account !== null) {
-			if (!isset(Social_Service::$instances[$service.'_'.$account->user->id])) {
-				Social_Service::$instances[$service.'_'.$account->user->id] = new Social_Service($service, $account);
-			}
-
-			return Social_Service::$instances[$service.'_'.$account->user->id];
-		}
-		else {
-			if (!isset(Social_Service::$instances[$service])) {
-				Social_Service::$instances[$service] = new Social_Service($service);
-			}
-
-			return Social_Service::$instances[$service];
-		}
-	}
-
-	/**
-	 * @var  string  service
-	 */
-	private $service = '';
-
-	/**
-	 * @var  WP_User  current user
-	 */
-	private $user = false;
-
-	/**
-	 * @var  array  associated accounts
-	 */
-	private $account = array();
-
-	/**
-	 * @var  mixed  the service interface
-	 */
-	private $interface = null;
-
-	/**
-	 * Initializes the service, and loads a user by ID.
-	 *
-	 * [!!] Always instantiate a service by calling Social_Service::instance('service');
-	 *
-	 * @param  string  $service  twitter|facebook
-	 * @param  object  $account  the user's account
-	 */
-	public function __construct($service, $account = null) {
-		$this->service = $service;
-
-		$interface = 'Social_Service_'.ucfirst($service);
-		$this->interface = new $interface;
-
-		$this->user = wp_get_current_user();
-		if ($account !== null) {
-			$this->account($account);
-		}
-	}
-
-	/**
-	 * Returns the property of an object.
-	 *
-	 * @param  string  $name  property name
-	 * @return mixed
-	 */
-	function __get($name) {
-		if (!isset($this->account->{$name})) {
-			throw new Exception('The '.$name.' property does not exist in '.get_class($this).'.');
-		}
-
-		return $this->account->{$name};
-	}
-
-	/**
-	 * Returns the title of the service.
-	 *
-	 * @return string
-	 */
-	function title() {
-		return $this->interface->title();
-	}
-
-	/**
-	 * Checks to see if the WP_User object is loaded.
-	 *
-	 * @return bool
-	 */
-	public function loaded() {
-		return ($this->user !== false and $this->user->ID) ? true : false;
-	}
-
-	/**
-	 * Sets or returns the service's accounts.
-	 *
-	 * @param  object  $account  the service's account
-	 * @return object
-	 */
-	public function account($account = null) {
-		if ($account === null) {
-			return $this->account;
-		}
-
-		$this->account = $account;
-		$this->interface->account($account);
-		return $this;
-	}
-
-	/**
-	 * Adds an account to the user's user_meta, if it exists update the user_meta with
-	 * any updated information from the service.
-	 *
-	 * @param  object  $account  account data
-	 * @param  string  $public   public key
-	 * @param  string  $private  private key
-	 * @return Social_Service
-	 */
-	public function add($account, $public, $private) {
-		if (empty($this->account)) {
-			$this->account = (object) array_merge((array) $account, array(
-				'keys' => (object) array(
-					'public' => $public,
-					'private' => $private
-				)
-			));
-		}
-		else {
-			$this->account->user = (object) array_merge((array) $this->account->user, (array) $account);
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Disconnects an account from the user's account.
-	 *
-	 * @param  int  $id
-	 * @return void
-	 */
-	public function disconnect($id) {
-		$accounts = get_user_meta($this->user->ID, Social::$prefix.'accounts', true);;
-		if (isset($accounts[$this->service][$id])) {
-			unset($accounts[$this->service][$id]);
-			update_user_meta($this->user->ID, Social::$prefix.'accounts', $accounts);
-		}
-	}
-
-	/**
-	 * Creates the user.
-	 *
-	 * @return void
-	 */
-	public function create_user() {
-		$id = $this->interface->account($this->account)->create_user();
-		wp_set_current_user($id);
-
-		add_filter('auth_cookie_expiration', array('Social', 'auth_cookie_expiration'));
-		wp_set_auth_cookie($id, true);
-		remove_filter('auth_cookie_expiration', array('Social', 'auth_cookie_expiration'));
-	}
-
-	/**
-	 * Saves a WP_User object.
-	 *
-	 * @return void
-	 */
-	public function save() {
-		$accounts = get_user_meta($this->user->ID, Social::$prefix.'accounts', true);
-		$accounts[$this->service][$this->account->user->id] = $this->account;
-		update_user_meta(get_current_user_id(), Social::$prefix.'accounts', $accounts);
-	}
-
-	/**
-	 * Returns the user's avatar.
-	 *
-	 * @return string
-	 */
-	public function get_avatar() {
-		return $this->interface->get_avatar();
-	}
-
-	/**
-	 * Update's the user's status.
-	 *
-	 * @param  string  $status
-	 * @return void
-	 */
-	public function status_update($status) {
-		$this->interface->status_update($status);
-	}
-
-	/**
-	 * Gets the max broadcast length for the service.
-	 *
-	 * @return int
-	 */
-	public function max_broadcast_length() {
-		return $this->interface->max_broadcast_length();
-	}
-
-	/**
-	 * Returns the user's URL.
-	 *
-	 * @return string
-	 */
-	public function url() {
-		return $this->interface->url();
-	}
-
-	/**
-	 * Returns the user's display name.
-	 *
-	 * @return string
-	 */
-	public function display_name() {
-		return $this->interface->display_name();
-	}
-
-} // End Social_Service
-
-/**
- * Helper class for Social_Service_* classes.
- *
- * @package Social
- */
-abstract class Social_Service_Helper {
-
-	/**
-	 * @var  string  service for the account
-	 */
-	protected $service = null;
-
-	/**
-	 * @var string  the title of the service
-	 */
-	protected $title = null;
-
-	/**
-	 * @var  object  service's account
-	 */
-	protected $account = array();
-
-	/**
-	 * Checks to make sure the service defined their $service variable.
-	 *
-	 * @throws Exception
-	 */
-	public function __construct() {
-		if ($this->service === null) {
-			throw new Exception('You must set the $service variable for '.get_class($this));
-		}
-	}
-
-	/**
-	 * Returns the UI display name of the service.
-	 *
-	 * @return string
-	 */
-	public function title() {
-		return ($this->title === null) ? ucwords(str_replace('_', ' ', $this->service)) : $this->title;
-	}
-
-	/**
-	 * The account to us for this service.
-	 *
-	 * @param  object  $account  user's account
-	 * @return mixed
-	 */
-	public function account($account = null) {
-		if ($account === null) {
-			return $this->account;
-		}
-
-		$this->account = $account;
-		return $this;
-	}
-
-	/**
-	 * Executes the request for the service.
-	 *
-	 * @abstract
-	 * @param  string  $api     API endpoint to request
-	 * @param  array   $params  parameters to pass to the API
-	 * @param  string  $method  GET|POST, default: GET
-	 * @param  string  $service the service to use
-	 * @return array
-	 */
-	public function request($api, array $params = array(), $method = 'GET', $service = null) {
-		$request = wp_remote_post(Social::$api_url.$this->service, array(
-			'sslverify' => false,
-			'body' => array(
-				'api' => $api,
-				'method' => $method,
-				'public_key' => $this->account->keys->public,
-				'hash' => sha1($this->account->keys->public.$this->account->keys->secret),
-				'params' => json_encode($params)
-			)
-		));
-
-		if (!is_wp_error($request)) {
-			$body = json_decode($request['body']);
-			if ($body->result != 'error') {
-				return $body->response;
-			}
-		}
-
-		return array();
-	}
-
-	/**
-	 * Creates an account using the account information.
-	 *
-	 * @return int
-	 */
-	public function create_user() {
-		// Make sure the user doesn't exist
-		$username = $this->service.'_'.$this->account->user->id;
-		$user = get_userdatabylogin($username);
-		if ($user === false) {
-			$id = wp_create_user($username, wp_generate_password(20, false), $this->create_email());
-			update_user_meta($id, Social::$prefix.'commenter', '1');
-			update_user_option($id, 'show_admin_bar_front', 'false');
-		}
-		else {
-			$id = $user->ID;
-		}
-
-		return $id;
-	}
-
-	/**
-	 * Builds the email for user creation.
-	 *
-	 * @param  string $alias
-	 * @return string
-	 */
-	public function create_email($alias = null) {
-		return $this->service.'.'.$alias.'@example.com';
-	}
-
-	/**
-	 * Builds the authorize URL for the provided service.
-	 *
-	 * @static
-	 * @param  string  $service
-	 * @param  bool    $admin
-	 * @return string
-	 */
-	public static function authorize_url($service, $admin = false) {
-		$url = ($admin ? admin_url() : site_url());
-		return Social::$api_url.$service.'/authorize?redirect_to='.urlencode($url);
-	}
-
-} // End Social_Service_Helper
-
-/**
- * An interface that must be used by services that want to hook onto the plugin.
- *
- * @package Social
- */
-interface Social_IService {
-
-	/**
-	 * The account to us for this service.
-	 *
-	 * @abstract
-	 * @param  object  $account  user's account
-	 * @return void
-	 */
-	function account($account);
-
-	/**
-	 * Updates a user's status on the service.
-	 *
-	 * @abstract
-	 * @param  string  $status       status message
-	 * @return void
-	 */
-	function status_update($status);
-
-	/**
-	 * Executes the request for the service.
-	 *
-	 * @abstract
-	 * @param  string  $api          API endpoint to request
-	 * @param  array   $params       parameters to pass to the API
-	 * @param  string  $method       GET|POST, default: GET
-	 * @param  string  $service      service to use
-	 * @return array
-	 */
-	function request($api, array $params = array(), $method = 'GET', $service = null);
-
-	/**
-	 * Creates a WordPress User
-	 *
-	 * @abstract
-	 * @return int
-	 */
-	function create_user();
-
-	/**
-	 * Builds the user's avatar.
-	 *
-	 * @abstract
-	 * @return string
-	 */
-	function get_avatar();
-
-	/**
-	 * The max length a post can be when broadcasted.
-	 *
-	 * @abstract
-	 * @return void
-	 */
-	function max_broadcast_length();
-
-	/**
-	 * Creates the email alias for the new account.
-	 *
-	 * @abstract
-	 * @param  string  $alias
-	 * @return string
-	 */
-	function create_email($alias = null);
-
-	/**
-	 * Returns the URL to the user's account.
-	 *
-	 * @abstract
-	 * @return string
-	 */
-	function url();
-
-	/**
-	 * Returns the user's display name.
-	 *
-	 * @abstract
-	 * @return string
-	 */
-	function display_name();
-
-} // End Social_Service_Interface
-
-/**
- * Twitter integration.
- *
- * @package Social
- */
-final class Social_Service_Twitter extends Social_Service_Helper implements Social_IService {
-
-	/**
-	 * @var  string  the service
-	 */
-	protected $service = 'twitter';
-
-	/**
-	 * @var string  the UI display value
-	 */
-	protected $title = 'Twitter';
-
-	/**
-	 * Updates the user's status.
-	 *
-	 * @param  string  $status  status message
-	 * @return array
-	 */
-	public function status_update($status) {
-		return $this->request('statuses/update', array('status' => $status), 'POST');
-	}
-
-	/**
-	 * Builds the user's avatar.
-	 *
-	 * @return string
-	 */
-	public function get_avatar() {
-		return $this->account->user->profile_image_url;
-	}
-
-	/**
-	 * The max length a post can be when broadcasted.
-	 *
-	 * @return int
-	 */
-	public function max_broadcast_length() {
-		return 140;
-	}
-
-	/**
-	 * Creates the email alias for the new account.
-	 *
-	 * @param  string  $alias
-	 * @return string
-	 */
-	function create_email($alias = null) {
-		return parent::create_email($this->account->user->screen_name);
-	}
-
-	/**
-	 * Returns the URL to the user's account.
-	 *
-	 * @return string
-	 */
-	function url() {
-		return 'http://twitter.com/'.$this->account->user->screen_name;
-	}
-
-	/**
-	 * Returns the user's display name.
-	 *
-	 * @return string
-	 */
-	function display_name() {
-		return $this->account->user->screen_name;
-	}
-
-} // End Social_Service_Twitter
-
-/**
- * Facebook integration.
- *
- * @package Social
- */
-final class Social_Service_Facebook extends Social_Service_Helper implements Social_IService {
-
-	/**
-	 * @var  string  the service
-	 */
-	protected $service = 'facebook';
-
-	/**
-	 * @var string  the UI display value
-	 */
-	protected $title = 'Facebook';
-
-	/**
-	 * Updates the user's status.
-	 *
-	 * @param  string  $status  status message
-	 * @return array
-	 */
-	public function status_update($status) {
-		return $this->request('feed', array('message' => $status), 'POST');
-	}
-
-	/**
-	 * Builds the user's avatar.
-	 *
-	 * @return string
-	 */
-	function get_avatar() {
-		return 'http://graph.facebook.com/'.$this->account->user->username.'/picture';
-	}
-
-	/**
-	 * The max length a post can be when broadcasted.
-	 *
-	 * @return int
-	 */
-	public function max_broadcast_length() {
-		return 400;
-	}
-
-	/**
-	 * Creates the email alias for the new account.
-	 *
-	 * @param  string  $alias
-	 * @return string
-	 */
-	function create_email($alias = null) {
-		return parent::create_email($this->account->user->username);
-	}
-
-	/**
-	 * Returns the URL to the user's account.
-	 *
-	 * @return string
-	 */
-	function url() {
-		return $this->account->user->link;
-	}
-
-	/**
-	 * Returns the user's display name.
-	 *
-	 * @return string
-	 */
-	function display_name() {
-		return $this->account->user->name;
-	}
-
-} // End Social_Service_Facebook
