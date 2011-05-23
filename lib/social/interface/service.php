@@ -27,7 +27,7 @@ interface Social_IService {
 	 * @param  array  $accounts
 	 * @return array
 	 */
-	function accounts(array $accounts);
+	function accounts(array $accounts = null);
 
 	/**
 	 * The account to us for this service.
