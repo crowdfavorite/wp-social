@@ -33,7 +33,11 @@ abstract class Social_Helper {
 		));
 
 		if (!is_wp_error($request)) {
-			$body = json_decode($request['body']);
+			$body = $request['body'];
+			if ($service == 'twitter') {
+				$body = preg_replace('/"id":(\d+)/', '"id":"$1"', $body); // Hack for json_decode on 32-bit systems
+			}
+			$body = json_decode($body);
 			if ($body->result != 'error') {
 				return $body->response;
 			}
