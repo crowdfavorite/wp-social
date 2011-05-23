@@ -977,6 +977,9 @@ final class Social {
 					unset($queued[$post->ID]);
 					$ignored[] = $post->ID;
 				}
+
+				update_option(Social::$prefix.'ignored_posts_for_aggregation', $ignored);
+				update_option(Social::$prefix.'queued_for_aggregation', $queued);
 			}
 		}
 	}
