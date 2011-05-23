@@ -918,7 +918,6 @@ final class Social {
 		$posts = $wpdb->get_results($sql, OBJECT);
 
 		// Compile the search parameters
-		$urls = array();
 		$broadcasted_ids = array();
 		foreach ($posts as $post) {
 			$timestamp = time() - strtotime($post->post_date);
