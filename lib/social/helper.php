@@ -43,7 +43,6 @@ abstract class Social_Helper {
 			}
 		}
 
-		// TODO handle errors
 		return false;
 	}
 

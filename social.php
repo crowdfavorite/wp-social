@@ -1,26 +1,15 @@
 <?php
 /*
-Plugin Name: Social Core
+Plugin Name: Social
 Plugin URI:
-Description: Social Core (Includes Facebook and Twitter)
+Description: Social (Includes Facebook and Twitter)
 Version: 1.0
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com
 */
 // TODO Ask MC about double slashing on the Proxy outbound data
-// TODO Check User ID on the wp_insert_comment() for current_user_id()
 // TODO Add AJAX call to replace the comment form instead of refreshing the page upon authentication. (Comment form only)
 
-/*if (!defined('PLUGINDIR')) {
-	define('PLUGINDIR', 'wp-content/plugins');
-}
-
-if (is_file(trailingslashit(ABSPATH.PLUGINDIR).basename(__FILE__))) {
-	define('SOCIAL_FILE', trailingslashit(ABSPATH.PLUGINDIR).basename(__FILE__));
-}
-else if (is_file(trailingslashit(ABSPATH.PLUGINDIR).basename(dirname(__FILE__)).'/'.basename(__FILE__))) {
-	define('SOCIAL_FILE', trailingslashit(ABSPATH.PLUGINDIR).basename(dirname(__FILE__)).'/'.basename(__FILE__));
-}*/
 $social_file = __FILE__;
 if (isset($mu_plugin)) {
     $social_file = $mu_plugin;
@@ -34,12 +23,13 @@ if (isset($plugin)) {
 define('SOCIAL_FILE', $social_file);
 define('SOCIAL_PATH', dirname($social_file).'/');
 
+$social = new Social;
+
 // Activation Hook
-register_activation_hook(SOCIAL_FILE, array('Social', 'install'));
-register_deactivation_hook(SOCIAL_FILE, array('Social', 'deactivate'));
+register_activation_hook(SOCIAL_FILE, array($social, 'install'));
+register_deactivation_hook(SOCIAL_FILE, array($social, 'deactivate'));
 
 // Actions
-$social = new Social;
 add_action('init', array($social, 'init'), 1);
 add_action('init', array($social, 'request_handler'), 2);
 add_action('do_meta_boxes', array($social, 'do_meta_boxes'));
@@ -53,7 +43,6 @@ add_action('admin_menu', array($social, 'admin_menu'));
 // Filters
 add_filter('redirect_post_location', array($social, 'redirect_post_location'), 10, 2);
 add_filter('comments_template', array($social, 'comments_template'));
-// TODO multiple services
 add_filter('get_avatar_comment_types', array($social, 'get_avatar_comment_types'));
 add_filter('get_avatar', array($social, 'get_avatar'), 10, 5);
 add_filter('get_comment_author_url', array($social, 'get_comment_author_url'));
@@ -62,7 +51,7 @@ add_filter('register', array($social, 'register'));
 add_filter('loginout', array($social, 'loginout'));
 
 /**
- * Social Comments Core
+ * Social Core
  *
  * @package Social
  */
@@ -104,7 +93,8 @@ final class Social {
 	protected static $options = array(
 		'debug' => 'false',
 		'install_date' => false,
-		'installed_version' => false
+		'installed_version' => false,
+		'broadcast_format' => '{title}: {content} {url}'
 	);
 
 	/**
@@ -132,6 +122,22 @@ final class Social {
 			fclose($fh);
 		}
     }
+
+	/**
+	 * Returns the broadcast format tokens.
+	 *
+	 * @static
+	 * @return array
+	 */
+	public static function broadcast_tokens() {
+		return array(
+			'{url}' => __('Blog post\'s permalinke'),
+			'{title}' => __('Blog post\'s title'),
+			'{content}' => __('Blog post\'s content'),
+			'{date}' => __('Blog post\'s date'),
+			'{author}' => __('Blog post\'s author'),
+		);
+	}
 
 	/**
 	 * Returns the service object.
@@ -199,7 +205,7 @@ final class Social {
 	public function install() {
 		if (version_compare(PHP_VERSION, '5.2.1', '<')) {
 			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
-			wp_die(__("Sorry, Social Comments requires PHP 5.2.1 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i10n));
+			wp_die(__("Sorry, Social requires PHP 5.2.1 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i10n));
 		}
 	}
 
@@ -240,7 +246,7 @@ final class Social {
 		}
 
 		if (version_compare(PHP_VERSION, '5.2.1', '<')) {
-			wp_die(__("Sorry, Social Comments requires PHP 5.2.1 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i10n));
+			wp_die(__("Sorry, Social requires PHP 5.2.1 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i10n));
 		}
 
 		// Load Twitter/Facebook
@@ -259,15 +265,18 @@ final class Social {
 					case 'install_date':
 						$value = time();
 					break;
-					case 'install_version':
+					case 'installed_version':
 						$value = Social::$version;
+					break;
+					default:
+						$value = $default;
 					break;
 				}
 
 				update_option(Social::$prefix.$key, $value);
 			}
 
-			if ($key == 'install_version' and (int) $value < (int) Social::$version) {
+			if ($key == 'installed_version' and (int) $value < (int) Social::$version) {
 				// Need to run an upgrade
 				Social::$upgrade = true;
 			}
@@ -314,7 +323,12 @@ final class Social {
 			switch ($_POST[Social::$prefix.'action']) {
                 case 'broadcast_options':
                     $this->broadcast_options($_POST['post_ID'], $_POST['location']);
-                    break;
+				break;
+				case 'settings':
+					update_option(Social::$prefix.'broadcast_format', $_POST[Social::$prefix.'broadcast_format']);
+					wp_redirect(Social_Helper::settings_url(array('saved' => 'true')));
+					exit;
+				break;
 			}
 		}
 		// Authorization complete?
@@ -379,7 +393,7 @@ final class Social {
 		// Already broadcasted?
 		$broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted', true);
 		if (!Social::$update and $broadcasted != '1') {
-			add_meta_box(Social::$prefix.'meta_broadcast', __('Social Comments', Social::$i10n), array($this, 'add_meta_box'), 'post');
+			add_meta_box(Social::$prefix.'meta_broadcast', __('Social', Social::$i10n), array($this, 'add_meta_box'), 'post');
 		}
     }
 
@@ -410,7 +424,7 @@ final class Social {
 	<input type="radio" name="<?php echo Social::$prefix.'notify_'.$key; ?>" id="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle" value="0" <?php echo checked('0', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle-label"><?php echo __('No', Social::$i10n); ?></label>
 	<div id="<?php echo $key.'_options'; ?>" class="form-wrap"<?php echo ($notify != '1' ? ' style="display:none"' : ''); ?>>
 		<div class="form-field">
-			<label for="<?php echo $key.'_preview'; ?>"><?php echo __('Content', Social::$i10n); ?></label>
+			<label for="<?php echo $key.'_preview'; ?>" class="broadcast-label"><?php echo __('Content (Optional)', Social::$i10n); ?></label>
 			<span class="social-preview-counter" id="<?php echo $key.'_counter'; ?>"><?php echo $counter; ?></span>
 			<textarea rows="3" cols="20" id="<?php echo $key.'_preview'; ?>" name="<?php echo Social::$prefix.$key.'_content'; ?>" class="social-preview-content"><?php echo $content; ?></textarea>
 		</div>
@@ -448,13 +462,13 @@ final class Social {
 	/**
 	 * Adds a link to the "Settings" menu in WP-Admin.
 	 */
-	public static function admin_menu() {
+	public function admin_menu() {
 		add_options_page(
-			__('Social Comment Options', Social::$i10n),
-			__('Social Comments', Social::$i10n),
+			__('Social Options', Social::$i10n),
+			__('Social', Social::$i10n),
 			'manage_options',
 			basename(__FILE__),
-			array('Social', 'admin_options_form')
+			array($this, 'admin_options_form')
 		);
 	}
 
@@ -463,8 +477,37 @@ final class Social {
 	 */
 	public function admin_options_form() {
 ?>
+<form id="setup" method="post" action="<?php echo admin_url(); ?>">
+<?php wp_nonce_field(); ?>
+<input type="hidden" name="<?php echo Social::$prefix; ?>action" value="settings" />
+<?php if (isset($_GET['saved'])): ?>
+<div id="message" class="updated">
+	<p><strong><?php echo __('Social settings have been updated.', Social::$i10n); ?></strong></p>
+</div>
+<?php endif; ?>
 <div class="wrap" id="social_options_page">
-	<h2><?php echo __('Social Comment Options', Social::$i10n); ?></h2>
+	<h2><?php echo __('Social Options', Social::$i10n); ?></h2>
+
+	<h3><?php echo __('Broadcasting Format', Social::$i10n); ?></h3>
+	<p><?php echo __('Define how you would like your posts to be formatted when being broadcasted.'); ?></p>
+
+	<table class="form-table">
+		<tr>
+			<th style="width:100px" colspan="2">
+				<strong><?php echo __('Tokens:', Social::$i10n); ?></strong>
+				<ul style="margin:10px 0 0 15px;">
+					<?php foreach (Social::broadcast_tokens() as $token => $description): ?>
+					<li><span style="float:left;width:60px"><?php echo $token; ?></span> - <?php echo $description; ?></li>
+					<?php endforeach; ?>
+				</ul>
+			</th>
+		</tr>
+		<tr>
+			<th style="width:100px"><label for="<?php echo Social::$prefix.'broadcast_format'; ?>">Format</label></th>
+			<td><input type="text" class="text" name="<?php echo Social::$prefix.'broadcast_format'; ?>" id="<?php echo Social::$prefix.'broadcast_format'; ?>" style="width:400px" value="<?php echo Social::option('broadcast_format'); ?>" /></td>
+		</tr>
+	</table>
+	<p class="submit"><input type="submit" name="submit" value="Save Settings" class="button-primary" /></p>
 
 	<h3><?php echo __('Connect to Social Networks', Social::$i10n); ?></h3>
 	<p><?php echo __('Before you can broadcast to your social networks, you will need to connect your account(s).', Social::$i10n); ?></p>
@@ -485,6 +528,7 @@ final class Social {
 	</div>
 	<?php endforeach; ?>
 </div>
+</form>
 <?php
 	}
 
@@ -553,9 +597,12 @@ final class Social {
 <table class="form-table">
 <?php foreach ($notify as $service): ?>
 <?php
+	// Custom content?
 	$content = get_post_meta($post_id, Social::$prefix.$service.'_content', true);
-
 	$service = $this->service($service);
+	if (!$content) {
+		$content = $service->format_content(get_post($post_id), $this->option('broadcast_format'));
+	}
 	$counter = $service->max_broadcast_length();
 	if (!empty($content)) {
 		$length = strlen($content);
@@ -611,9 +658,6 @@ final class Social {
 					}
 					else {
 						$content = get_post_meta($post_id, $content_key, true);
-						if (empty($content)) {
-							$content = substr($_POST['post_content'], 0, $service->max_broadcast_length());
-						}
 						update_post_meta($post_id, $content_key, $content);
 					}
 				}

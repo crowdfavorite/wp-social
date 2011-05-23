@@ -73,6 +73,16 @@ interface Social_IService {
 	function disconnect_url($account, $is_admin = false, $before = '', $after = '');
 
 	/**
+	 * Formats the provided content to the defined tokens.
+	 *
+	 * @abstract
+	 * @param  object  $post
+	 * @param  string  $format
+	 * @return string
+	 */
+	function format_content($post, $format);
+
+	/**
 	 * Updates a user's status on the service.
 	 *
 	 * @abstract

@@ -48,8 +48,6 @@
 				var $textarea = $target.find('textarea');
 
 				if ($(this).val() == '1') {
-					var content = tinyMCE.get('content').getContent();
-					$textarea.html(content.replace(/<[^>]*>?/g, ''));
 					$target.slideDown();
 				} else {
 					$textarea.html('');

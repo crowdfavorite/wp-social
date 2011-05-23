@@ -7,6 +7,9 @@
 	width: 135px;
 	padding-top: 2px;
 }
+#social_meta_broadcast .broadcast-label {
+	float: left;
+}
 #social_proxy_keys label {
 	padding-top: 6px;
 }
