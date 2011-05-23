@@ -292,8 +292,6 @@ final class Social {
 				$this->service($service)->accounts($accounts);
 			}
 		}
-
-		$this->aggregate_comments();
 	}
 
 	/**
@@ -897,8 +895,8 @@ final class Social {
 	public function aggregate_comments() {
 		global $wpdb;
 		// Load the ignored posts
-		$ignored = get_option(Social::$prefix.'ignored_posts_for_aggregation', true);
-		$queued = get_option(Social::$prefix.'queued_for_aggregation', true);
+		$ignored = get_option(Social::$prefix.'ignored_posts_for_aggregation', array());
+		$queued = get_option(Social::$prefix.'queued_for_aggregation', array());
 
 		// Load all the posts
 		$sql = "
@@ -914,7 +912,7 @@ final class Social {
 			   AND p.post_type = 'post'
 			   AND p.post_parent = '0'
 	    ";
-		if (is_array($ignored)) {
+		if (is_array($ignored) and count($ignored)) {
 			$sql .= "AND p.ID NOT IN (".implode(',', $ignored).")";
 		}
 		$posts = $wpdb->get_results($sql, OBJECT);
@@ -945,7 +943,7 @@ final class Social {
 			}
 
 			if (!isset($queued[$post->ID]) or $queued[$post->ID] > $hours) {
-				$queued["$post->ID"] = $hours;
+				$queued[$post->ID] = (string) $hours;
 
 				$urls = array(
 					urlencode(home_url('?p='.$post->ID)),

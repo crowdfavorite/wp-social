@@ -111,7 +111,11 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 		if (is_int($account)) {
 			$account = $this->account($account);
 		}
-		return 'http://graph.facebook.com/'.$account->user->username.'/picture';
+		else if (!$account and $comment_id !== null) {
+			$id = get_comment_meta($comment_id, Social::$prefix.'account_id', true);
+			return 'http://graph.facebook.com/'.$id.'/picture';
+		}
+		return 'http://graph.facebook.com/'.$account->user->id.'/picture';
 	}
 
 	/**
@@ -123,7 +127,59 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 	 * @return array|bool
 	 */
 	function search_for_replies($post, array $urls, $broadcasted_ids = null) {
-		// TODO: Implement search_for_replies() method.
+		// Load the comments already stored for this post
+		$results = array();
+		$post_comments = get_post_meta($post->ID, Social::$prefix.'aggregated_replies', true);
+		if (empty($post_comments)) {
+			$post_comments = array();
+		}
+
+		// Search by URL
+		foreach ($urls as $url) {
+			$url = 'https://graph.facebook.com/search?type=post&q='.$url;
+			$request = wp_remote_get($url);
+			if (!is_wp_error($request)) {
+				$response = json_decode($request['body']);
+
+				if (count($response->data)) {
+					$results = array();
+					foreach ($response->data as $result) {
+						if (!in_array($result->id, array_values($post_comments))) {
+							$post_comments[] = $result->id;
+							$results[] = $result;
+						}
+					}
+				}
+			}
+		}
+
+		// Load the post author and their Twitter accounts
+		if ($broadcasted_ids !== null) {
+			$accounts = get_user_meta($post->post_author, Social::$prefix.'accounts', true);
+			if (isset($accounts['facebook'])) {
+				foreach ($accounts['facebook'] as $account) {
+					if (isset($broadcasted_ids[$account->user->id])) {
+						$comments = $this->request($account, $broadcasted_ids[$account->user->id])->comments;
+
+						if (count($comments->data)) {
+							foreach ($comments->data as $comment) {
+								if (!in_array($comment->id, array_values($post_comments))) {
+									$post_comments[] = $comment->id;
+									$results[] = $comment;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if (count($results)) {
+			update_post_meta($post->ID, Social::$prefix.'aggregated_replies', $post_comments);
+			return $results;
+		}
+
+		return false;
 	}
 
 	/**
@@ -134,7 +190,24 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 	 * @return void
 	 */
 	function save_replies($post_id, array $replies) {
-		// TODO: Implement save_replies() method.
+		foreach ($replies as $reply) {
+			$account = (object) array(
+				'user' => (object) array(
+					'id' => $reply->from->id,
+					'name' => $reply->from->name,
+				)
+			);
+			$comment_id = wp_insert_comment(array(
+				'comment_post_ID' => $post_id,
+				'comment_type' => $this->service,
+				'comment_author' => $reply->from->name,
+				'comment_author_email' => $this->service.'.'.$reply->id.'@example.com',
+				'comment_author_url' => $this->profile_url($account),
+				'comment_content' => $reply->message,
+				'comment_date' => gmdate('Y-m-d H:i:s', strtotime($reply->created_time)),
+			));
+			update_comment_meta($comment_id, Social::$prefix.'account_id', $reply->from->id);
+		}
 	}
 
 } // End Social_Facebook
