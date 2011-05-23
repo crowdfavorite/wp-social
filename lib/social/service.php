@@ -138,6 +138,9 @@ abstract class Social_Service {
 	 * @return string
 	 */
 	public function format_content($post, $format) {
+		// Filter the format
+		$format = apply_filters(Social::$prefix.'broadcast_format', $format);
+
 		$_format = explode(' ', $format);
 		$available = $this->max_broadcast_length() - count($format);
 		foreach (Social::broadcast_tokens() as $token => $description) {
@@ -166,6 +169,9 @@ abstract class Social_Service {
 					$content = '';
 				}
 			}
+
+			// Filter the content
+			$content = apply_filters(Social::$prefix.'format_content', $content, $post, $format);
 
 			foreach ($_format as $haystack) {
 				if (strpos($haystack, $token) !== false) {

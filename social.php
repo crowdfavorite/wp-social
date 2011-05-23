@@ -130,13 +130,14 @@ final class Social {
 	 * @return array
 	 */
 	public static function broadcast_tokens() {
-		return array(
-			'{url}' => __('Blog post\'s permalinke'),
+		$defaults = array(
+			'{url}' => __('Blog post\'s permalink'),
 			'{title}' => __('Blog post\'s title'),
 			'{content}' => __('Blog post\'s content'),
 			'{date}' => __('Blog post\'s date'),
 			'{author}' => __('Blog post\'s author'),
 		);
+		return apply_filters(Social::$prefix.'broadcast_tokens', $defaults);
 	}
 
 	/**

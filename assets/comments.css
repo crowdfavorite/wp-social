@@ -478,6 +478,10 @@
 #social ol li ul li.social-facebook .social-comment-meta {
 	background-position: right -200px;
 }
+#social .social-pingback .social-comment-meta,
+#social ol li ul li.social-pingback .social-comment-meta {
+	background-position: right -400px;
+}
 
 /*Tabs*/
 #social #social-tabs-comments .social-nav {
@@ -518,6 +522,10 @@
 	padding-left: 19px;
 }
 #social #social-tabs-comments .social-nav .social-facebook a span {
+	background-position: 0 -195px;
+	padding-left: 19px;
+}
+#social #social-tabs-comments .social-nav .social-pingback a span {
 	background-position: 0 -195px;
 	padding-left: 19px;
 }
