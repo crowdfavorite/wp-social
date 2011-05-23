@@ -81,7 +81,7 @@ abstract class Social_Helper {
 	 */
 	public static function authorize_url($service, $admin = false) {
 		$url = ($admin ? admin_url('options-general.php?page=social.php') : site_url());
-		return Social::$api_url.$service.'/authorize?redirect_to='.urlencode($url);
+		return Social::$api_url.$service.'/authorize?redirect_to='.urlencode($url).'&t='.time();
 	}
 
 	/**

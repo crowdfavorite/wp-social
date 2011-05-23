@@ -121,7 +121,7 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 	 * @param  array|null  $broadcasted_ids
 	 * @return array|bool
 	 */
-	function search_for_replies($post_id, array $urls, array $broadcasted_ids = null) {
+	function search_for_replies($post_id, array $urls, $broadcasted_ids = null) {
 		// TODO: Implement search_for_replies() method.
 	}
 

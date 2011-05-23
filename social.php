@@ -117,8 +117,6 @@ final class Social {
 	 */
 	protected static $upgrade = false;
 
-
-
 	/**
 	 * Used to log debug data.
 	 *
@@ -129,7 +127,7 @@ final class Social {
 	public static function debug($content) {
 		$debug = get_option(Social::$prefix.'debug', false);
 		if ($debug) {
-			$fh = fopen(plugins_url('/log.txt', SOCIAL_FILE), 'a');
+			$fh = fopen(plugins_url('log.txt', SOCIAL_FILE), 'a');
 			fwrite($fh, $content."\n");
 			fclose($fh);
 		}
