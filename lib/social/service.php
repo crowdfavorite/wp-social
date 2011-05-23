@@ -164,7 +164,7 @@ abstract class Social_Service {
 			'service' => $this->service
 		);
 		if ($is_admin) {
-			$url = Social::settings_url($params);
+			$url = Social_Helper::settings_url($params);
 			$text = '<img src="'.plugins_url('/assets/delete.png', SOCIAL_FILE).'" alt="'.__('Disconnect', Social::$i10n).'" />';
 		}
 		else {

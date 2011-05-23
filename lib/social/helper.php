@@ -95,4 +95,22 @@ abstract class Social_Helper {
 		return $service.'.'.$alias.'@example.com';
 	}
 
+	/**
+	 * Builds the settings URL for the plugin.
+	 *
+	 * @param  array  $params
+	 * @return string
+	 */
+	public static function settings_url(array $params = null) {
+		$path = 'options-general.php?page='.basename(__FILE__);
+
+		if ($params !== null) {
+			foreach ($params as $key => $value) {
+				$path .= '&'.$key.'='.urlencode($value);
+			}
+		}
+
+		return admin_url($path);
+	}
+
 } // End Social_Helper

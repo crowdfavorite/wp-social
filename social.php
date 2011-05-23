@@ -136,25 +136,6 @@ final class Social {
     }
 
 	/**
-	 * Builds the settings URL for the plugin.
-	 *
-	 * @static
-	 * @param  array  $params
-	 * @return string
-	 */
-	public static function settings_url(array $params = null) {
-		$path = 'options-general.php?page='.basename(__FILE__);
-
-		if ($params !== null) {
-			foreach ($params as $key => $value) {
-				$path .= '&'.$key.'='.urlencode($value);
-			}
-		}
-
-		return admin_url($path);
-	}
-
-	/**
 	 * Returns the service object.
 	 *
 	 * @static
@@ -162,7 +143,7 @@ final class Social {
 	 * @param  int     $user_id  custom user to load
 	 * @return Social_Facebook|Social_Twitter|bool
 	 */
-	public static function service($service, $user_id = null) {
+	public function service($service, $user_id = null) {
 		if ($user_id !== null) {
 			if (!isset(Social::$services[$service])) {
 				return false;
@@ -215,9 +196,17 @@ final class Social {
 	}
 
 	/**
+	 * @return void
+	 */
+	public function install() {
+		if (version_compare(PHP_VERSION, '5.2.4', '<=')) {
+			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
+			wp_die(__("Sorry, Social Comments requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i10n));
+		}
+	}
+
+	/**
 	 * Remove the CRON unpon plugin deactivation.
-	 *
-	 * @static
 	 */
 	public function deactivate() {
 		wp_clear_scheduled_hook(Social::$prefix.'aggregate_comments');
@@ -225,9 +214,6 @@ final class Social {
 
 	/**
 	 * Initializes the plugin.
-	 *
-	 * @static
-	 * @return void
 	 */
 	public function init() {
 		$services = get_user_meta(get_current_user_id(), Social::$prefix.'accounts', true);
@@ -256,7 +242,6 @@ final class Social {
 		}
 
 		if (version_compare(PHP_VERSION, '5.2.4', '<=')) {
-			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
 			wp_die(__("Sorry, Social Comments requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i10n));
 		}
 
@@ -306,27 +291,21 @@ final class Social {
 				if (!isset(Social::$services[$service])) {
 					continue;
 				}
-				Social::service($service)->accounts($accounts);
+				$this->service($service)->accounts($accounts);
 			}
 		}
 	}
 
 	/**
 	 * Displays the upgrade message.
-	 *
-	 * @static
-	 * @return void
 	 */
 	public function display_upgrade() {
-		$message = sprintf(__('To broadcast to Twitter or Facebook, please update your <a href="%s">Social Comment settings</a>', Social::$i10n), Social::settings_url());
+		$message = sprintf(__('To broadcast to Twitter or Facebook, please update your <a href="%s">Social Comment settings</a>', Social::$i10n), Social_Helper::settings_url());
 		echo '<div class="error"><p>'.$message.'</p></div>';
 	}
 
 	/**
 	 * Handles the request.
-	 *
-	 * @static
-	 * @return void
 	 */
 	public function request_handler() {
 		if (!empty($_POST[Social::$prefix.'action'])) {
@@ -353,7 +332,7 @@ final class Social {
 			);
 
 			// Add the account to the service.
-			$service = Social::service($data->service)->account($account);
+			$service = $this->service($data->service)->account($account);
 
 			// Do we need to create a user?
 			if (!$service->loaded()) {
@@ -379,11 +358,11 @@ final class Social {
 			exit;
 		}
 		else if (isset($_GET['social_disconnect'])) {
-			$service = Social::service($_GET['service']);
+			$service = $this->service($_GET['service']);
 			$service->disconnect($_GET['id']);
 
 			if (is_admin()) {
-				wp_redirect(Social::settings_url());
+				wp_redirect(Social_Helper::settings_url());
 			}
 			else {
 				wp_logout();
@@ -395,9 +374,6 @@ final class Social {
 
 	/**
      * Add Meta Boxes
-     *
-     * @static
-     * @return void
      */
     public function do_meta_boxes() {
 		global $post;
@@ -411,9 +387,6 @@ final class Social {
 
 	/**
 	 * Adds the broadcasting meta box.
-	 *
-	 * @static
-	 * @return void
 	 */
 	public function add_meta_box() {
 		global $post;
@@ -463,7 +436,6 @@ final class Social {
 	/**
      * Show the broadcast options if publishing.
      *
-     * @static
      * @param  string  $location  default post-publish location
      * @param  int     $post_id   post ID
      * @return string|void
@@ -477,9 +449,6 @@ final class Social {
 
 	/**
 	 * Adds a link to the "Settings" menu in WP-Admin.
-	 *
-	 * @static
-	 * @return void
 	 */
 	public static function admin_menu() {
 		add_options_page(
@@ -493,9 +462,6 @@ final class Social {
 
 	/**
 	 * Displays the option form for the WP-Admin user.
-	 *
-	 * @static
-	 * @return void
 	 */
 	public function admin_options_form() {
 ?>
@@ -527,7 +493,6 @@ final class Social {
 	/**
 	 * Sets the broadcasting options for a post.
 	 *
-	 * @static
 	 * @param  int     $post_id   post ID
      * @param  string  $location  location to send the form to
 	 * @return void
@@ -592,7 +557,7 @@ final class Social {
 <?php
 	$content = get_post_meta($post_id, Social::$prefix.$service.'_content', true);
 
-	$service = Social::service($service);
+	$service = $this->service($service);
 	$counter = $service->max_broadcast_length();
 	if (!empty($content)) {
 		$length = strlen($content);
@@ -630,9 +595,7 @@ final class Social {
 	 *
 	 *   [!] Called during the publish_post action.
 	 *
-	 * @static
 	 * @param  int  $post_id
-	 * @return void
 	 */
 	public function set_broadcast_meta_data($post_id) {
 		$broadcast = false;
@@ -680,11 +643,9 @@ final class Social {
 	/**
 	 * Broadcast the post to Twitter and/or Facebook.
 	 *
-	 * @static
 	 * @param  int  $post_id
-	 * @return void
 	 */
-	public static function broadcast($post_id) {
+	public function broadcast($post_id) {
         $broadcasted = get_post_meta($post_id, Social::$prefix.'broadcasted', true);
         if ($broadcasted == '0' or empty($broadcasted)) {
 	        $broadcast_accounts = get_post_meta($post_id, Social::$prefix.'broadcast_accounts', true);
@@ -716,17 +677,15 @@ final class Social {
 	/**
 	 * Auth Cookie expiration for API users.
 	 *
-	 * @static
 	 * @return int
 	 */
-	public static function auth_cookie_expiration() {
+	public function auth_cookie_expiration() {
 		return 31536000; // 1 Year
 	}
 
 	/**
 	 * Overrides the default WordPress comments_template function.
 	 *
-	 * @static
 	 * @return string
 	 */
 	public static function comments_template() {
@@ -744,18 +703,16 @@ final class Social {
 	/**
 	 * Returns an array of comment types that display avatars.
 	 *
-	 * @static
 	 * @param  array  $types  default WordPress types
 	 * @return array
 	 */
-	public static function get_avatar_comment_types($types) {
+	public function get_avatar_comment_types($types) {
 		return array_merge($types, array('facebook', 'twitter'));
 	}
 
 	/**
 	 * Gets the avatar based on the comment type.
 	 *
-	 * @static
 	 * @param  string  $avatar
 	 * @param  object  $comment
 	 * @param  int     $size
@@ -763,8 +720,8 @@ final class Social {
 	 * @param  string  $alt
 	 * @return string
 	 */
-	public static function get_avatar($avatar, $comment, $size, $default, $alt) {
-		$service = Social::service($comment->comment_type, $comment->user_id);
+	public function get_avatar($avatar, $comment, $size, $default, $alt) {
+		$service = $this->service($comment->comment_type, $comment->user_id);
 		if ($service !== false) {
 			$account_id = get_comment_meta($comment->comment_ID, Social::$prefix.'account_id', true);
 			$image = $service->profile_avatar($service->account($account_id));
@@ -778,14 +735,13 @@ final class Social {
 	/**
 	 * Builds the URL to the author's Facebook/Twitter.
 	 *
-	 * @static
 	 * @param  string  $url
 	 * @return string
 	 */
-	public static function get_comment_author_url($url) {
+	public function get_comment_author_url($url) {
 		global $comment;
 		if ($comment->user_id) {
-			$service = Social::service($comment->comment_type, $comment->user_id);
+			$service = $this->service($comment->comment_type, $comment->user_id);
 			if ($service !== false) {
 				$account_id = get_comment_meta($comment->comment_ID, Social::$prefix.'account_id', true);
 				return $service->profile_url($service->account($account_id));
@@ -797,14 +753,13 @@ final class Social {
 	/**
 	 * Gets the comment author's username from Facebook/Twitter.
 	 *
-	 * @static
 	 * @param  string  $author
 	 * @return string
 	 */
-	public static function get_comment_author($author) {
+	public function get_comment_author($author) {
 		global $comment;
 		if ($comment->user_id) {
-			$service = Social::service($comment->comment_type, $comment->user_id);
+			$service = $this->service($comment->comment_type, $comment->user_id);
 			if ($service !== false) {
 				$account_id = get_comment_meta($comment->comment_ID, Social::$prefix.'account_id', true);
 				return $service->profile_name($service->account($account_id));
@@ -816,13 +771,11 @@ final class Social {
 	/**
 	 * Displays a comment.
 	 *
-	 * @static
 	 * @param  object  $comment  comment object
-	 * @param  array  $args
-	 * @param  int  $depth
-	 * @return void
+	 * @param  array   $args
+	 * @param  int     $depth
 	 */
-	public static function comment($comment, $args, $depth) {
+	public function comment($comment, $args, $depth) {
 		$GLOBALS['comment'] = $comment;
 ?>
 <li class="social-comment social-<?php echo (empty($comment->comment_type) ? 'wordpress' : $comment->comment_type); ?>" id="li-comment-<?php comment_ID(); ?>">
@@ -856,11 +809,9 @@ final class Social {
 	/**
 	 * Sets the comment type upon being saved.
 	 *
-	 * @static
 	 * @param  int  $comment_ID
-	 * @return void
 	 */
-	public static function comment_post($comment_ID) {
+	public function comment_post($comment_ID) {
 		global $wpdb;
 		$type = false;
 		$services = Social::$services;
@@ -887,11 +838,10 @@ final class Social {
 	/**
 	 * Hides the Site Admin link for commenters.
 	 *
-	 * @static
 	 * @param  string  $link
 	 * @return string
 	 */
-	public static function register($link) {
+	public function register($link) {
 		if (is_user_logged_in()) {
 			$commenter = get_user_meta(get_current_user_id(), Social::$prefix.'commenter', true);
 			if ($commenter === '1') {
@@ -905,11 +855,10 @@ final class Social {
 	/**
 	 * Show the disconnect link instead.
 	 *
-	 * @static
 	 * @param  string  $link
 	 * @return string
 	 */
-	public static function loginout($link) {
+	public function loginout($link) {
 		if (is_user_logged_in()) {
 			$commenter = get_user_meta(get_current_user_id(), Social::$prefix.'commenter', true);
 			if ($commenter === '1') {
@@ -928,11 +877,10 @@ final class Social {
 	/**
 	 * Creates the disconnect URL for a user.
 	 *
-	 * @static
 	 * @param  array  $args
 	 * @return string
 	 */
-	public static function commenter_disconnect_url($args) {
+	public function commenter_disconnect_url($args) {
 		$url = site_url().'?';
 		$params = array();
 		foreach ($args as $k => $v) {
@@ -945,11 +893,8 @@ final class Social {
 
 	/**
 	 * Runs the aggregation of comments for all of the services.
-	 *
-	 * @static
-	 * @return void
 	 */
-	public static function aggregate_comments() {
+	public function aggregate_comments() {
 		global $wpdb;
 		// Load the ignored posts
 		$ignored = get_option(Social::$prefix.'ignored_posts_for_aggregation', true);
