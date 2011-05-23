@@ -112,13 +112,12 @@ interface Social_IService {
 	/**
 	 * Searches the service to find any replies to the blog post.
 	 *
-	 * @abstract
-	 * @param  int         $post_id
+	 * @param  object      $post
 	 * @param  array       $urls
 	 * @param  array|null  $broadcasted_ids
 	 * @return array|bool
 	 */
-	function search_for_replies($post_id, array $urls, $broadcasted_ids = null);
+	function search_for_replies($post, array $urls, $broadcasted_ids = null);
 
 	/**
 	 * Saves the replies as comments.

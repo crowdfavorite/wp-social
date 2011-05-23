@@ -659,7 +659,7 @@ final class Social {
 						if (!empty($content)) {
 							foreach ($service->accounts() as $account) {
 								if (in_array($account->user->id, $broadcast_accounts[$key])) {
-									$ids[$key][] = $service->status_update($account, $content)->id;
+									$ids[$key]["{$account->user->id}"] = $service->status_update($account, $content)->id;
 								}
 							}
 						}
@@ -902,7 +902,7 @@ final class Social {
 
 		// Load all the posts
 		$sql = "
-			SELECT p.ID, p.post_date, p.guid, (
+			SELECT p.ID, p.post_author, p.post_date, p.guid, (
 			           SELECT b.meta_value
 			             FROM $wpdb->postmeta AS b
 			            WHERE b.meta_key = '".Social::$prefix."broadcasted_ids'
@@ -966,7 +966,7 @@ final class Social {
 
 				// Run search!
 				foreach (Social::$services as $key => $service) {
-					$results = $service->search_for_replies($post->ID, $urls, (isset($broadcasted_ids[$key]) ? $broadcasted_ids[$key] : null));
+					$results = $service->search_for_replies($post, $urls, (isset($broadcasted_ids[$key]) ? $broadcasted_ids[$key] : null));
 
 					// Results?
 					if (is_array($results)) {

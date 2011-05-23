@@ -127,12 +127,19 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 	/**
 	 * Searches the service to find any replies to the blog post.
 	 *
-	 * @param  int         $post_id
+	 * @param  object      $post
 	 * @param  array       $urls
 	 * @param  array|null  $broadcasted_ids
 	 * @return array|bool
 	 */
-	function search_for_replies($post_id, array $urls, $broadcasted_ids = null) {
+	function search_for_replies($post, array $urls, $broadcasted_ids = null) {
+		// Load the comments already stored for this post
+		$results = array();
+		$post_comments = get_post_meta($post->ID, Social::$prefix.'aggregated_replies', true);
+		if (empty($post_comments)) {
+			$post_comments = array();
+		}
+
 		// Search by URL
 		$url = 'http://search.twitter.com/search.json?q='.implode('+OR+', $urls);
 		$request = wp_remote_get($url);
@@ -140,12 +147,6 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 			$response = json_decode($request['body']);
 
 			if (count($response->results)) {
-				// Load the comments already stored for this post
-				$post_comments = get_post_meta($post_id, Social::$prefix.'aggregated_replies', true);
-				if (empty($post_comments)) {
-					$post_comments = array();
-				}
-
 				$results = array();
 				foreach ($response->results as $result) {
 					if (!in_array($result->id, array_values($post_comments))) {
@@ -153,16 +154,45 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 						$results[] = $result;
 					}
 				}
+			}
+		}
 
-				if (count($results)) {
-					update_post_meta($post_id, Social::$prefix.'aggregated_replies', $post_comments);
-					return $results;
+		// Load the post author and their Twitter accounts
+		if ($broadcasted_ids !== null) {
+			$accounts = get_user_meta($post->post_author, Social::$prefix.'accounts', true);
+			if (isset($accounts['twitter'])) {
+				foreach ($accounts['twitter'] as $account) {
+					if (isset($broadcasted_ids[$account->user->id])) {
+						$tweets = $this->request($account, 'statuses/mentions', array(
+							'since_id' => $broadcasted_ids[$account->user->id],
+							'count' => 200
+						));
+
+						if (count($tweets)) {
+							foreach ($tweets as $tweet) {
+								if ($tweet->in_reply_to_status_id == $broadcasted_ids[$account->user->id]) {
+									if (!in_array($tweet->id, array_values($post_comments))) {
+										$post_comments[] = $tweet->id;
+										$results[] = (object) array(
+											'id' => $tweet->id,
+											'from_user_id' => $tweet->user->id,
+											'from_user' => $tweet->user->screen_name,
+											'text' => $tweet->text,
+											'created_at' => $tweet->created_at
+										);
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		}
 
-		// TODO Search by broadcast IDs
-		//$this->request();
+		if (count($results)) {
+			update_post_meta($post->ID, Social::$prefix.'aggregated_replies', $post_comments);
+			return $results;
+		}
 
 		return false;
 	}
