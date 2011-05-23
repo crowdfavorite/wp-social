@@ -104,9 +104,10 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 	 * Builds the user's avatar.
 	 *
 	 * @param  int|object  $account
+	 * @param  int         $comment_id
 	 * @return string
 	 */
-	function profile_avatar($account) {
+	function profile_avatar($account, $comment_id = null) {
 		if (is_int($account)) {
 			$account = $this->account($account);
 		}

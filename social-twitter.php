@@ -111,11 +111,15 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 	 * Builds the user's avatar.
 	 *
 	 * @param  int|object  $account
+	 * @param  int         $comment_id
 	 * @return string
 	 */
-	public function profile_avatar($account) {
+	public function profile_avatar($account, $comment_id = null) {
 		if (is_int($account)) {
 			$account = $this->account($account);
+		}
+		else if (!$account and $comment_id !== null) {
+			return get_comment_meta($comment_id, Social::$prefix.'profile_image_url', true);
 		}
 		return $account->user->profile_image_url;
 	}
@@ -178,7 +182,7 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 					'screen_name' => $reply->from_user,
 				)
 			);
-			wp_insert_comment(array(
+			$comment_id = wp_insert_comment(array(
 				'comment_post_ID' => $post_id,
 				'comment_type' => $this->service,
 				'comment_author' => $reply->from_user,
@@ -187,6 +191,8 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 				'comment_content' => $reply->text,
 				'comment_date' => gmdate('Y-m-d H:i:s', strtotime($reply->created_at)),
 			));
+			update_comment_meta($comment_id, Social::$prefix.'account_id', $reply->from_user_id);
+			update_comment_meta($comment_id, Social::$prefix.'profile_image_url', $reply->profile_image_url);
 		}
 	}
 

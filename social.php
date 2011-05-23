@@ -292,6 +292,8 @@ final class Social {
 				$this->service($service)->accounts($accounts);
 			}
 		}
+
+		$this->aggregate_comments();
 	}
 
 	/**
@@ -719,10 +721,10 @@ final class Social {
 	 * @return string
 	 */
 	public function get_avatar($avatar, $comment, $size, $default, $alt) {
-		$service = $this->service($comment->comment_type, $comment->user_id);
+		$service = $this->service($comment->comment_type, ($comment->user_id ? $comment->user_id : null));
 		if ($service !== false) {
 			$account_id = get_comment_meta($comment->comment_ID, Social::$prefix.'account_id', true);
-			$image = $service->profile_avatar($service->account($account_id));
+			$image = $service->profile_avatar($service->account($account_id), $comment->comment_ID);
 
 			return "<img alt='{$alt}' src='{$image}' class='avatar avatar-{$size} photo {$comment->comment_type}' height='{$size}' width='{$size}' />";
 		}
@@ -946,8 +948,8 @@ final class Social {
 				$queued["$post->ID"] = $hours;
 
 				$urls = array(
-					'url' => urlencode(home_url('?p='.$post->ID)),
-					'permalink' => urlencode(get_permalink($post->ID)),
+					urlencode(home_url('?p='.$post->ID)),
+					urlencode(get_permalink($post->ID)),
 				);
 
 				$broadcasted = maybe_unserialize($post->broadcasted_ids);

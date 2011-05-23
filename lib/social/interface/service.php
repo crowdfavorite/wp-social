@@ -103,11 +103,11 @@ interface Social_IService {
 	/**
 	 * Builds the user's avatar.
 	 *
-	 * @abstract
 	 * @param  int|object  $account
+	 * @param  int         $comment_id
 	 * @return string
 	 */
-	function profile_avatar($account);
+	function profile_avatar($account, $comment_id = null);
 
 	/**
 	 * Searches the service to find any replies to the blog post.
