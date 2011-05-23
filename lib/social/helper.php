@@ -102,7 +102,7 @@ abstract class Social_Helper {
 	 * @return string
 	 */
 	public static function settings_url(array $params = null) {
-		$path = 'options-general.php?page='.basename(__FILE__);
+		$path = 'options-general.php?page='.basename(SOCIAL_FILE);
 
 		if ($params !== null) {
 			foreach ($params as $key => $value) {

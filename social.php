@@ -300,7 +300,7 @@ final class Social {
 	 * Displays the upgrade message.
 	 */
 	public function display_upgrade() {
-		$message = sprintf(__('To broadcast to Twitter or Facebook, please update your <a href="%s">Social Comment settings</a>', Social::$i10n), Social_Helper::settings_url());
+		$message = sprintf(__('To broadcast to Twitter or Facebook, please update your <a href="%s">Social settings</a>', Social::$i10n), Social_Helper::settings_url());
 		echo '<div class="error"><p>'.$message.'</p></div>';
 	}
 
