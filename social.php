@@ -199,7 +199,7 @@ final class Social {
 	 * @return void
 	 */
 	public function install() {
-		if (version_compare(PHP_VERSION, '5.2.1', '<=')) {
+		if (version_compare(PHP_VERSION, '5.2.1', '<')) {
 			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
 			wp_die(__("Sorry, Social Comments requires PHP 5.2.1 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i10n));
 		}
@@ -241,7 +241,7 @@ final class Social {
 			wp_enqueue_script('social_js', plugins_url('/assets/social.js', SOCIAL_FILE), array('jquery', 'jquery-ui-tabs'), Social::$version, true);
 		}
 
-		if (version_compare(PHP_VERSION, '5.2.1', '<=')) {
+		if (version_compare(PHP_VERSION, '5.2.1', '<')) {
 			wp_die(__("Sorry, Social Comments requires PHP 5.2.1 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i10n));
 		}
 
