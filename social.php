@@ -967,7 +967,7 @@ final class Social {
 					$results = $service->search_for_replies($post->ID, $urls, (isset($broadcasted_ids[$key]) ? $broadcasted_ids[$key] : null));
 
 					// Results?
-					if ($results !== false) {
+					if (is_array($results)) {
 						$service->save_replies($post->ID, $results);
 					}
 				}
