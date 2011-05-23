@@ -181,6 +181,7 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 			wp_insert_comment(array(
 				'comment_post_ID' => $post_id,
 				'comment_type' => $this->service,
+				'comment_author' => $reply->from_user,
 				'comment_author_email' => $this->service.'.'.$reply->id.'@example.com',
 				'comment_author_url' => $this->profile_url($account),
 				'comment_content' => $reply->text,

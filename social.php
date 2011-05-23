@@ -943,7 +943,7 @@ final class Social {
 			}
 
 			if (!isset($queued[$post->ID]) or $queued[$post->ID] > $hours) {
-				$queued[$post->ID] = $hours;
+				$queued["$post->ID"] = $hours;
 
 				$urls = array(
 					'url' => urlencode(home_url('?p='.$post->ID)),
