@@ -965,7 +965,7 @@ final class Social {
 
 				// Run search!
 				foreach (Social::$services as $key => $service) {
-					$results = $service->search_for_replies($urls, (isset($broadcasted_ids[$key]) ? $broadcasted_ids[$key] : null));
+					$results = $service->search_for_replies($post->ID, $urls, (isset($broadcasted_ids[$key]) ? $broadcasted_ids[$key] : null));
 
 					// Results?
 					if ($results !== false) {

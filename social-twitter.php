@@ -128,7 +128,7 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 	 * @param  array|null  $broadcasted_ids
 	 * @return array|bool
 	 */
-	function search_for_replies($post_id, array $urls, $broadcasted_ids = null) {
+	function search_for_replies($post_id, array $urls, array $broadcasted_ids = null) {
 		// Search by URL
 		$url = 'http://search.twitter.com/search.json?q='.implode('+OR+', $urls);
 		$request = wp_remote_get($url);
