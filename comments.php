@@ -4,46 +4,49 @@
 	</div>
 
 	<div class="social-sign-in" id="respond">
+		<?php if (post_password_required()): ?>
+		<p class="nopassword"><?php _e('This post is password protected. Enter the password to view any comments.', Social::$i10n); ?></p>
+		<?php else: ?>
 		<form action="<?php echo site_url('/wp-comments-post.php'); ?>" method="post" id="<?php echo esc_attr($args['id_form']); ?>">
 		<?php comment_id_fields(); ?>
 		<?php if (!is_user_logged_in()): ?>
 		<div class="social-sign-in-links social-clearfix">
 			<?php foreach (Social::$services as $key => $service): ?>
-			<a class="social-<?php echo $key; ?> social-imr social-login" href="<?php echo Social_Helper::authorize_url($key); ?>" id="<?php echo $key; ?>_signin"><?php echo __('Sign in with '.$service->title(), Social::$i10n); ?></a>
+			<a class="social-<?php echo $key; ?> social-imr social-login" href="<?php echo Social_Helper::authorize_url($key); ?>" id="<?php echo $key; ?>_signin"><?php _e('Sign in with '.$service->title(), Social::$i10n); ?></a>
 			<?php endforeach; ?>
 		</div>
 		<div class="social-divider">
-			<span><?php echo __('or', Social::$i10n); ?></span>
+			<span><?php _e('or', Social::$i10n); ?></span>
 		</div>
 		<?php endif; ?>
 		<div class="social-sign-in-form">
 			<?php if (!is_user_logged_in()): ?>
 			<div class="social-input-row">
-				<label for="social-sign-in-name"><?php echo __('Name', Social::$i10n); ?></label>
+				<label for="social-sign-in-name"><?php _e('Name', Social::$i10n); ?></label>
 				<input class="social-input-text" type="text" id="social-sign-in-name" name="author" />
 			</div>
 			<div class="social-input-row">
-				<label for="social-sign-in-email"><?php echo __('Email', Social::$i10n); ?></label>
+				<label for="social-sign-in-email"><?php _e('Email', Social::$i10n); ?></label>
 				<input class="social-input-text" type="text" id="social-sign-in-email" name="email" />
 			</div>
 			<div class="social-input-row">
-				<label for="social-sign-in-website"><?php echo __('Website', Social::$i10n); ?></label>
+				<label for="social-sign-in-website"><?php _e('Website', Social::$i10n); ?></label>
 				<input class="social-input-text" type="text" id="social-sign-in-website" name="url" />
 			</div>
 			<?php endif; ?>
 			<div class="social-input-row">
-				<label for="social-sign-in-comment"><?php echo __('Comment', Social::$i10n); ?></label>
+				<label for="social-sign-in-comment"><?php _e('Comment', Social::$i10n); ?></label>
 				<textarea id="social-sign-in-comment" name="comment"></textarea>
 			</div>
 			<div class="social-input-row">
-				<button type="submit" class="social-input-submit" style="float:left;"><span><?php echo __('Post It', Social::$i10n); ?></span></button>
+				<button type="submit" class="social-input-submit" style="float:left;"><span><?php _e('Post It', Social::$i10n); ?></span></button>
 				<?php if (is_user_logged_in()): ?>
 					<?php if (current_user_can('manage_options')): ?>
 						<span style="float:left;margin:4px 10px;">via</span>
 						<select name="<?php echo Social::$prefix; ?>post_account">
-							<option value=""><?php echo __('WordPress Account', Social::$i10n); ?></option>
+							<option value=""><?php _e('WordPress Account', Social::$i10n); ?></option>
 							<?php foreach (Social::$services as $key => $service): ?>
-							<optgroup label="<?php echo __(ucfirst($key), Social::$i10n); ?>">
+							<optgroup label="<?php _e(ucfirst($key), Social::$i10n); ?>">
 								<?php foreach ($service->accounts() as $account): ?>
 								<option value="<?php echo $account->user->id; ?>"><?php echo ($service == 'twitter' ? $account->user->screen_name : $account->user->name); ?></option>
 								<?php endforeach; ?>
@@ -54,7 +57,7 @@
 						<?php foreach (Social::$services as $key => $service): ?>
 							<?php if (count($service->accounts())): ?>
 							<?php $account = reset($service->accounts()); ?>
-							<span style="float:left;margin:4px 10px;"><?php echo __('via', Social::$i10n); ?></span>
+							<span style="float:left;margin:4px 10px;"><?php _e('via', Social::$i10n); ?></span>
 							<div style="float:left;margin-top:5px;">
 								<span class="social-<?php echo $key; ?>-icon">
 									<i></i>
@@ -71,8 +74,10 @@
 			</div>
 		</div>
 		</form>
+		<?php endif; ?>
 	</div>
 
+	<?php if (!post_password_required()): ?>
 	<div id="social-tabs-comments">
 		<?php if (have_comments()): ?>
 		<?php
@@ -115,7 +120,7 @@
 					<?php wp_list_comments(array('type' => 'comment', 'callback' => array('Social', 'comment'), 'walker' => new Social_Walker_Comment)); ?>
 				</ol>
 				<?php else: ?>
-				<p><?php echo __('There are no comments.', Social::$i10n); ?></p>
+				<p><?php _e('There are no comments.', Social::$i10n); ?></p>
 				<?php endif; ?>
 			</div><!-- #comments -->
 		</div>
@@ -127,7 +132,7 @@
 					<?php wp_list_comments(array('type' => 'twitter', 'callback' => array('Social', 'comment'), 'walker' => new Social_Walker_Comment)); ?>
 				</ol>
 				<?php else: ?>
-				<p><?php echo __('There are no comments.', Social::$i10n); ?></p>
+				<p><?php _e('There are no Twitter comments.', Social::$i10n); ?></p>
 				<?php endif; ?>
 			</div><!-- #comments -->
 		</div>
@@ -139,7 +144,7 @@
 					<?php wp_list_comments(array('type' => 'facebook', 'callback' => array('Social', 'comment'), 'walker' => new Social_Walker_Comment)); ?>
 				</ol>
 				<?php else: ?>
-				<p><?php echo __('There are no comments.', Social::$i10n); ?></p>
+				<p><?php _e('There are no Facebook comments.', Social::$i10n); ?></p>
 				<?php endif; ?>
 			</div><!-- #comments -->
 		</div>
@@ -151,7 +156,7 @@
 					<?php wp_list_comments(array('type' => 'pingback', 'callback' => array('Social', 'comment'), 'walker' => new Social_Walker_Comment)); ?>
 				</ol>
 				<?php else: ?>
-				<p><?php echo __('There are no pingbacks.', Social::$i10n); ?></p>
+				<p><?php _e('There are no pingbacks.', Social::$i10n); ?></p>
 				<?php endif; ?>
 			</div><!-- #comments -->
 		</div>
@@ -159,4 +164,5 @@
 		<?php endif; ?>
 	</div>
 	<!-- #Comments Tabs -->
+	<?php endif; ?>
 </div>

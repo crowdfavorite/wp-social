@@ -7,7 +7,6 @@ Version: 1.0
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com
 */
-// TODO Ask MC about double slashing on the Proxy outbound data
 // TODO Add AJAX call to replace the comment form instead of refreshing the page upon authentication. (Comment form only)
 
 $social_file = __FILE__;
@@ -420,17 +419,17 @@ final class Social {
 ?>
 <input type="hidden" name="<?php echo Social::$prefix.'notify[]'; ?>" value="<?php echo $key; ?>" />
 <div style="padding:10px 0">
-	<span class="service-label"><?php echo __('Send post to '.$service->title().'?', Social::$i10n); ?></span>
-	<input type="radio" name="<?php echo Social::$prefix.'notify_'.$key; ?>" id="<?php echo Social::$prefix.'notify_'.$key.'_yes'; ?>" class="social-toggle" value="1" <?php echo checked('1', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$key.'_yes'; ?>" class="social-toggle-label"><?php echo __('Yes', Social::$i10n); ?></label>
-	<input type="radio" name="<?php echo Social::$prefix.'notify_'.$key; ?>" id="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle" value="0" <?php echo checked('0', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle-label"><?php echo __('No', Social::$i10n); ?></label>
+	<span class="service-label"><?php _e('Send post to '.$service->title().'?', Social::$i10n); ?></span>
+	<input type="radio" name="<?php echo Social::$prefix.'notify_'.$key; ?>" id="<?php echo Social::$prefix.'notify_'.$key.'_yes'; ?>" class="social-toggle" value="1" <?php echo checked('1', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$key.'_yes'; ?>" class="social-toggle-label"><?php _e('Yes', Social::$i10n); ?></label>
+	<input type="radio" name="<?php echo Social::$prefix.'notify_'.$key; ?>" id="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle" value="0" <?php echo checked('0', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle-label"><?php _e('No', Social::$i10n); ?></label>
 	<div id="<?php echo $key.'_options'; ?>" class="form-wrap"<?php echo ($notify != '1' ? ' style="display:none"' : ''); ?>>
 		<div class="form-field">
-			<label for="<?php echo $key.'_preview'; ?>" class="broadcast-label"><?php echo __('Content (Optional)', Social::$i10n); ?></label>
+			<label for="<?php echo $key.'_preview'; ?>" class="broadcast-label"><?php _e('Content (Optional)', Social::$i10n); ?></label>
 			<span class="social-preview-counter" id="<?php echo $key.'_counter'; ?>"><?php echo $counter; ?></span>
 			<textarea rows="3" cols="20" id="<?php echo $key.'_preview'; ?>" name="<?php echo Social::$prefix.$key.'_content'; ?>" class="social-preview-content"><?php echo $content; ?></textarea>
 		</div>
 		<div class="form-field">
-			<label><?php echo __('Broadcast to These Accounts:', Social::$i10n); ?></label>
+			<label><?php _e('Broadcast to These Accounts:', Social::$i10n); ?></label>
 			<?php foreach ($service->accounts() as $account): ?>
 			<div class="social-broadcastable">
 				<input type="checkbox" name="<?php echo Social::$prefix.'broadcast_'.$key.'_accounts[]'; ?>" id="<?php echo Social::$prefix.$key.'_'.$account->user->id; ?>" value="<?php echo $account->user->id; ?>"<?php echo ((empty($broadcast_accounts) or array_search($account->user->id, $broadcast_accounts[$key]) !== false) ? ' checked="checked"' : ''); ?> />
@@ -483,19 +482,19 @@ final class Social {
 <input type="hidden" name="<?php echo Social::$prefix; ?>action" value="settings" />
 <?php if (isset($_GET['saved'])): ?>
 <div id="message" class="updated">
-	<p><strong><?php echo __('Social settings have been updated.', Social::$i10n); ?></strong></p>
+	<p><strong><?php _e('Social settings have been updated.', Social::$i10n); ?></strong></p>
 </div>
 <?php endif; ?>
 <div class="wrap" id="social_options_page">
-	<h2><?php echo __('Social Options', Social::$i10n); ?></h2>
+	<h2><?php _e('Social Options', Social::$i10n); ?></h2>
 
-	<h3><?php echo __('Broadcasting Format', Social::$i10n); ?></h3>
-	<p><?php echo __('Define how you would like your posts to be formatted when being broadcasted.'); ?></p>
+	<h3><?php _e('Broadcasting Format', Social::$i10n); ?></h3>
+	<p><?php _e('Define how you would like your posts to be formatted when being broadcasted.'); ?></p>
 
 	<table class="form-table">
 		<tr>
 			<th style="width:100px" colspan="2">
-				<strong><?php echo __('Tokens:', Social::$i10n); ?></strong>
+				<strong><?php _e('Tokens:', Social::$i10n); ?></strong>
 				<ul style="margin:10px 0 0 15px;">
 					<?php foreach (Social::broadcast_tokens() as $token => $description): ?>
 					<li><span style="float:left;width:60px"><?php echo $token; ?></span> - <?php echo $description; ?></li>
@@ -510,8 +509,8 @@ final class Social {
 	</table>
 	<p class="submit"><input type="submit" name="submit" value="Save Settings" class="button-primary" /></p>
 
-	<h3><?php echo __('Connect to Social Networks', Social::$i10n); ?></h3>
-	<p><?php echo __('Before you can broadcast to your social networks, you will need to connect your account(s).', Social::$i10n); ?></p>
+	<h3><?php _e('Connect to Social Networks', Social::$i10n); ?></h3>
+	<p><?php _e('Before you can broadcast to your social networks, you will need to connect your account(s).', Social::$i10n); ?></p>
 	<?php foreach (Social::$services as $key => $service): ?>
 	<div class="social-settings-connect">
 		<?php foreach ($service->accounts() as $account): ?>
@@ -525,7 +524,7 @@ final class Social {
 		<span class="social-<?php echo $key; ?>-icon big"><i></i><?php echo $output; ?></span>
 		<?php endforeach; ?>
 
-		<a href="<?php echo Social_Helper::authorize_url($key, true); ?>" id="<?php echo $key; ?>_signin" class="social-login"><span><?php echo __('Sign In With '.$service->title, Social::$i10n); ?></span></a>
+		<a href="<?php echo Social_Helper::authorize_url($key, true); ?>" id="<?php echo $key; ?>_signin" class="social-login"><span><?php _e('Sign In With '.$service->title, Social::$i10n); ?></span></a>
 	</div>
 	<?php endforeach; ?>
 </div>
@@ -581,7 +580,7 @@ final class Social {
 	?>
 </head>
 <body>
-<h1 id="logo"><?php echo __('Social Broadcasting Options', Social::$i10n); ?></h1>
+<h1 id="logo"><?php _e('Social Broadcasting Options', Social::$i10n); ?></h1>
 <?php if (count($errors)): ?>
 <div id="social_error">
 	<?php foreach ($errors as $error): ?>
@@ -618,14 +617,14 @@ final class Social {
 ?>
 <tr>
 	<th scope="row">
-		<label for="<?php echo $service->service.'_preview'; ?>"><?php echo __($service->title(), Social::$i10n); ?></label><br />
+		<label for="<?php echo $service->service.'_preview'; ?>"><?php _e($service->title(), Social::$i10n); ?></label><br />
 		<span id="<?php echo $service->service.'_counter'; ?>" class="social-preview-counter"><?php echo $counter; ?></span>
 	</th>
 	<td><textarea id="<?php echo $service->service.'_preview'; ?>" name="<?php echo Social::$prefix.$service->service.'_content'; ?>" class="social-preview-content" cols="40" rows="5"><?php echo ((isset($_POST[Social::$prefix.$service->service.'_content']) and !empty($_POST[Social::$prefix.$service->service.'_content'])) ? $_POST[Social::$prefix.$service->service.'_content'] : $content); ?></textarea></td>
 </tr>
 <?php endforeach; ?>
 </table>
-<p class="step"><input type="submit" value="<?php echo __('Publish', Social::$i10n); ?>" class="button" /></p>
+<p class="step"><input type="submit" value="<?php _e('Publish', Social::$i10n); ?>" class="button" /></p>
 </form>
 <script type="text/javascript" src="<?php echo includes_url('/js/jquery/jquery.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo plugins_url('/assets/js/admin.js', SOCIAL_FILE); ?>"></script>
@@ -828,10 +827,10 @@ final class Social {
 				<?php echo get_avatar($comment, 40); ?>
 				<?php printf('<cite class="social-fn fn">%s</cite>', get_comment_author_link()); ?>
 				<?php if ($depth > 1): ?>
-					<span class="social-replied social-imr"><?php echo __('replied:', Social::$i10n); ?></span>
+					<span class="social-replied social-imr"><?php _e('replied:', Social::$i10n); ?></span>
 				<?php endif; ?>
 			</div><!-- .comment-author .vcard -->
-			<div class="social-comment-meta"><span class="social-posted-from"><?php echo __('via Twitter', Social::$i10n); ?></span> <a href="#" class="social-posted-when"><?php printf(__('%s ago', Social::$i10n), human_time_diff(strtotime($comment->comment_date))); ?></a></div>
+			<div class="social-comment-meta"><span class="social-posted-from"><?php _e('via Twitter', Social::$i10n); ?></span> <a href="#" class="social-posted-when"><?php printf(__('%s ago', Social::$i10n), human_time_diff(strtotime($comment->comment_date))); ?></a></div>
 		</div>
 		<div class="social-comment-body">
 			<?php if ($comment->comment_approved == '0'): ?>
