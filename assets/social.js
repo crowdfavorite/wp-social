@@ -5,11 +5,28 @@
 		$('.social-login').click(function(e){
 			e.preventDefault();
 
+			var $this = $(this);
 			child = window.open($(this).attr('href'), "ServiceAssociate", 'width=700,height=400');
 			polling = setInterval(function(){
 				if (child && child.closed) {
 					clearInterval(polling);
-					window.location.reload();
+
+					if (!$this.hasClass('comments')) {
+						window.location.reload();
+					} else {
+						var $parent = $this.parent().parent().parent();
+						$parent.find('form').hide();
+						$parent.find('#loading').fadeIn();
+						$.get($parent.find('#reload_url').val(), {}, function(response){
+							if (response.result == 'success') {
+								$parent.html(response.html);
+								$('#primary').find('#social_login').parent().html(response.disconnect_url);
+							} else {
+								$parent.find('#loading').hide();
+								$parent.find('form').fadeIn();
+							}
+						}, 'json');
+					}
 				}
 			}, 100);
 		});

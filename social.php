@@ -331,6 +331,19 @@ final class Social {
 				break;
 			}
 		}
+		else if (!empty($_GET[Social::$prefix.'action'])) {
+			switch ($_GET[Social::$prefix.'action']) {
+				case 'reload_form':
+					$form = Social::comment_form();
+					echo json_encode(array(
+						'result' => 'success',
+						'html' => $form,
+						'disconnect_url' => wp_loginout('', false)
+					));
+					exit;
+				break;
+			}
+		}
 		// Authorization complete?
 		else if (isset($_POST['data'])) {
 			$data = stripslashes($_POST['data']);
@@ -912,6 +925,10 @@ final class Social {
 				}
 			}
 		}
+		else {
+			$link = explode('>'.__('Log in'), $link);
+			$link = $link[0].' id="'.Social::$prefix.'login">'.__('Log in').$link[1];
+		}
 
 		return $link;
 	}
@@ -1026,6 +1043,25 @@ final class Social {
 				update_option(Social::$prefix.'queued_for_aggregation', $queued);
 			}
 		}
+	}
+
+	/**
+	 * Loads the comment form.
+	 *
+	 * @static
+	 * @return string
+	 */
+	public static function comment_form() {
+		try {
+			include SOCIAL_PATH.'comment-form.php';
+		}
+		catch (Exception $e) {
+			ob_end_clean();
+			throw $e;
+		}
+
+		return ob_get_clean();
+
 	}
 
 } // End Social
