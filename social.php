@@ -406,7 +406,7 @@ final class Social {
 		// Already broadcasted?
 		$broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted', true);
 		if (!Social::$update and $broadcasted != '1' and $post->post_status != 'publish') {
-			add_meta_box(Social::$prefix.'meta_broadcast', __('Social', Social::$i10n), array($this, 'add_meta_box'), 'post');
+			add_meta_box(Social::$prefix.'meta_broadcast', __('Social', Social::$i10n), array($this, 'add_meta_box'), 'post', 'side', 'core');
 		}
     }
 
@@ -417,40 +417,16 @@ final class Social {
 		global $post;
 
 		if (!Social::$update) {
-			$broadcast_accounts = get_post_meta($post->ID, Social::$prefix.'broadcast_accounts', true);
-
 			// Have Twitter account(s)?
-			$services = Social::$services;
 			foreach (Social::$services as $key => $service) {
 				if (count($service->accounts())) {
-					$content = get_post_meta($post->ID, Social::$prefix.$key.'_content', true);
 					$notify = get_post_meta($post->ID, Social::$prefix.'notify_'.$key, true);
-					$counter = $service->max_broadcast_length();
-					if (!empty($content)) {
-						$counter = $counter - strlen($content);
-					}
 ?>
 <input type="hidden" name="<?php echo Social::$prefix.'notify[]'; ?>" value="<?php echo $key; ?>" />
 <div style="padding:10px 0">
 	<span class="service-label"><?php _e('Send post to '.$service->title().'?', Social::$i10n); ?></span>
 	<input type="radio" name="<?php echo Social::$prefix.'notify_'.$key; ?>" id="<?php echo Social::$prefix.'notify_'.$key.'_yes'; ?>" class="social-toggle" value="1" <?php echo checked('1', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$key.'_yes'; ?>" class="social-toggle-label"><?php _e('Yes', Social::$i10n); ?></label>
 	<input type="radio" name="<?php echo Social::$prefix.'notify_'.$key; ?>" id="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle" value="0" <?php echo checked('0', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle-label"><?php _e('No', Social::$i10n); ?></label>
-	<div id="<?php echo $key.'_options'; ?>" class="form-wrap"<?php echo ($notify != '1' ? ' style="display:none"' : ''); ?>>
-		<div class="form-field">
-			<label for="<?php echo $key.'_preview'; ?>" class="broadcast-label"><?php _e('Content (Optional)', Social::$i10n); ?></label>
-			<span class="social-preview-counter" id="<?php echo $key.'_counter'; ?>"><?php echo $counter; ?></span>
-			<textarea rows="3" cols="20" id="<?php echo $key.'_preview'; ?>" name="<?php echo Social::$prefix.$key.'_content'; ?>" class="social-preview-content"><?php echo $content; ?></textarea>
-		</div>
-		<div class="form-field">
-			<label><?php _e('Broadcast to These Accounts:', Social::$i10n); ?></label>
-			<?php foreach ($service->accounts() as $account): ?>
-			<div class="social-broadcastable">
-				<input type="checkbox" name="<?php echo Social::$prefix.'broadcast_'.$key.'_accounts[]'; ?>" id="<?php echo Social::$prefix.$key.'_'.$account->user->id; ?>" value="<?php echo $account->user->id; ?>"<?php echo ((empty($broadcast_accounts) or array_search($account->user->id, $broadcast_accounts[$key]) !== false) ? ' checked="checked"' : ''); ?> />
-				<span class="<?php echo 'social-'.$key.'-icon'; ?>"><i></i><label for="<?php echo Social::$prefix.$key.'_'.$account->user->id; ?>"><?php echo $service->profile_name($account); ?></label></span>
-			</div>
-			<?php endforeach; ?>
-		</div>
-	</div>
 </div>
 <?php
 				}
@@ -572,15 +548,23 @@ final class Social {
 
 			if (isset($_POST[Social::$prefix.'action'])) {
 				foreach (Social::$services as $key => $service) {
-					if (isset($notify[$key]) and empty($_POST[Social::$prefix.$key.'_content'])) {
-						$errors[$key] = 'Please enter some content for '.$service->title().'.';
+					if (in_array($key, array_values($notify))) {
+						if (empty($_POST[Social::$prefix.$key.'_content'])) {
+							$errors[$key] = 'Please enter some content for '.$service->title().'.';
+						}
+						else if (empty($_POST[Social::$prefix.$key.'_accounts'])) {
+							$errors[$key] = 'Please select at least one '.$service->title().' account.';
+						}
 					}
 				}
 
 				if (!count($errors)) {
+					$broadcast_accounts = array();
 					foreach (Social::$services as $key => $service) {
+						$broadcast_accounts[$key] = $_POST[Social::$prefix.$key.'_accounts'];
 						update_post_meta($post_id, Social::$prefix.$key.'_content', $_POST[Social::$prefix.$key.'_content']);
 					}
+					update_post_meta($post_id, Social::$prefix.'broadcast_accounts', $broadcast_accounts);
 
 					Social::broadcast($post_id);
 					$post->post_status = 'publish';
@@ -642,7 +626,22 @@ final class Social {
 		<label for="<?php echo $service->service.'_preview'; ?>"><?php _e($service->title(), Social::$i10n); ?></label><br />
 		<span id="<?php echo $service->service.'_counter'; ?>" class="social-preview-counter"><?php echo $counter; ?></span>
 	</th>
-	<td><textarea id="<?php echo $service->service.'_preview'; ?>" name="<?php echo Social::$prefix.$service->service.'_content'; ?>" class="social-preview-content" cols="40" rows="5"><?php echo ((isset($_POST[Social::$prefix.$service->service.'_content']) and !empty($_POST[Social::$prefix.$service->service.'_content'])) ? $_POST[Social::$prefix.$service->service.'_content'] : $content); ?></textarea></td>
+	<td>
+		<textarea id="<?php echo $service->service.'_preview'; ?>" name="<?php echo Social::$prefix.$service->service.'_content'; ?>" class="social-preview-content" cols="40" rows="5"><?php echo ((isset($_POST[Social::$prefix.$service->service.'_content']) and !empty($_POST[Social::$prefix.$service->service.'_content'])) ? $_POST[Social::$prefix.$service->service.'_content'] : $content); ?></textarea><br />
+		<strong>Send to these accounts:</strong><br />
+		<?php $total_accounts = count($service->accounts()); ?>
+		<?php foreach ($service->accounts() as $account): ?>
+		<label class="social-broadcastable" for="<?php echo $service->service.$account->user->id; ?>" style="cursor:pointer">
+			<?php if ($total_accounts == '1'): ?>
+			<input type="checkbox" name="<?php echo Social::$prefix.$service->service.'_accounts[]'; ?>" id="<?php echo $service->service.$account->user->id; ?>" value="<?php echo $account->user->id; ?>" />
+			<?php else: ?>
+			<input type="checkbox" name="<?php echo Social::$prefix.$service->service.'_accounts[]'; ?>" id="<?php echo $service->service.$account->user->id; ?>" value="<?php echo $account->user->id; ?>" checked="checked" />
+			<?php endif; ?>
+			<img src="<?php echo $service->profile_avatar($account); ?>" width="24" height="24" />
+			<span><?php echo $service->profile_name($account); ?></span>
+		</label>
+		<?php endforeach; ?>
+	</td>
 </tr>
 <?php endforeach; ?>
 </table>
@@ -669,32 +668,12 @@ final class Social {
 	 */
 	public function set_broadcast_meta_data($post_id) {
 		$broadcast = false;
-		$broadcast_accounts = array();
 		foreach (Social::$services as $key => $service) {
 			$post_key = Social::$prefix.'notify_'.$key;
 			if (isset($_POST[$post_key])) {
 				update_post_meta($post_id, $post_key, $_POST[$post_key]);
-
-				$content_key = Social::$prefix.$key.'_content';
-				if ($_POST[$post_key] == '1') {
-					$broadcast = true;
-					if (isset($_POST[$content_key]) and !empty($_POST[$content_key])) {
-						update_post_meta($post_id, $content_key, $_POST[$content_key]);
-					}
-					else {
-						$content = get_post_meta($post_id, $content_key, true);
-						update_post_meta($post_id, $content_key, $content);
-					}
-				}
-				else {
-					delete_post_meta($post_id, $content_key);
-				}
-
-				// Ignored accounts
-				$broadcast_accounts[$key] = $_POST[Social::$prefix.'broadcast_'.$key.'_accounts'];
 			}
 		}
-		update_post_meta($post_id, Social::$prefix.'broadcast_accounts', $broadcast_accounts);
 
 		if ($broadcast) {
 			$broadcasted = get_post_meta($post_id, Social::$prefix.'broadcasted', true);
