@@ -855,7 +855,7 @@ final class Social {
 					<span class="social-replied social-imr"><?php _e('replied:', Social::$i10n); ?></span>
 				<?php endif; ?>
 			</div><!-- .comment-author .vcard -->
-			<div class="social-comment-meta"><span class="social-posted-from"><?php _e('via Twitter', Social::$i10n); ?></span> <a href="#" class="social-posted-when"><?php printf(__('%s ago', Social::$i10n), human_time_diff(strtotime($comment->comment_date))); ?></a></div>
+			<div class="social-comment-meta"><span class="social-posted-from"><?php _e('via Twitter', Social::$i10n); ?></span> <a href="<?php echo get_comment_link(get_comment_ID()); ?>" class="social-posted-when"><?php printf(__('%s ago', Social::$i10n), human_time_diff(strtotime($comment->comment_date))); ?></a></div>
 		</div>
 		<div class="social-comment-body">
 			<?php if ($comment->comment_approved == '0'): ?>
