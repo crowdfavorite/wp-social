@@ -121,12 +121,17 @@ abstract class Social_Service {
 	 * @param  int|object  $account  the account ID
 	 * @return void
 	 */
-	public function save($account) {
-		if (is_int($account)) {
-			$account = $this->account($account);
-		}
+	public function save($account = null) {
 		$accounts = get_user_meta(get_current_user_id(), Social::$prefix.'accounts', true);
-		$accounts[$this->service][$account->user->id] = $account;
+		if ($account === null) {
+			$accounts[$this->service] = $this->accounts;
+		}
+		else {
+			if (is_int($account)) {
+				$account = $this->account($account);
+			}
+			$accounts[$this->service][$account->user->id] = $account;
+		}
 		update_user_meta(get_current_user_id(), Social::$prefix.'accounts', $accounts);
 	}
 

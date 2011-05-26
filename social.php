@@ -235,6 +235,12 @@ final class Social {
 				add_action('admin_notices', array($this, 'display_upgrade'));
 			}
 
+			// Deauthed accounts?
+			$deauthed = get_option(Social::$prefix.'deauthed', array());
+			if (count($deauthed)) {
+				add_action('admin_notices', array($this, 'display_deauthed'));
+			}
+
 			wp_enqueue_style('social_css', plugins_url('/assets/admin.css', SOCIAL_FILE), array(), Social::$version, 'screen, tv, projection');
 			wp_enqueue_script('social_js', plugins_url('/assets/social.js', SOCIAL_FILE), array('jquery'), Social::$version, true);
 		}
@@ -309,6 +315,18 @@ final class Social {
 	public function display_upgrade() {
 		$message = sprintf(__('To broadcast to Twitter or Facebook, please update your <a href="%s">Social settings</a>', Social::$i10n), Social_Helper::settings_url());
 		echo '<div class="error"><p>'.$message.'</p></div>';
+	}
+
+	/**
+	 * Displays warnings about deauthed accounts.
+	 */
+	public function display_deauthed() {
+		$deauthed = get_option(Social::$prefix.'deauthed', array());
+		foreach ($deauthed as $service => $data) {
+			foreach ($data as $id => $message) {
+				echo '<div class="error"><p>'.$message.' <a href="'.Social_Helper::settings_url(array('clear_deauth' => $id, 'service' => $service)).'" class="'.Social::$prefix.'deauth">[Dismiss]</a></p></div>';
+			}
+		}
 	}
 
 	/**
@@ -394,6 +412,15 @@ final class Social {
 				wp_redirect($_GET['redirect_to']);
 			}
 			exit;
+		}
+		else if (isset($_GET['clear_deauth'])) {
+			$id = $_GET['clear_deauth'];
+			$service = $_GET['service'];
+			$deauthed = get_option(Social::$prefix.'deauthed', array());
+			if (isset($deauthed[$service][$id])) {
+				unset($deauthed[$service][$id]);
+			}
+			update_option(Social::$prefix.'deauthed', $deauthed);
 		}
 	}
 
@@ -622,6 +649,7 @@ final class Social {
 	}
 
 	$total_accounts = count($service->accounts());
+	$heading = sprintf(__('Publish to %s:', Social::$i10n), ($total_accounts == '1' ? 'this account' : 'these accounts'));
 ?>
 <tr>
 	<th scope="row">
@@ -630,7 +658,7 @@ final class Social {
 	</th>
 	<td>
 		<textarea id="<?php echo $service->service.'_preview'; ?>" name="<?php echo Social::$prefix.$service->service.'_content'; ?>" class="social-preview-content" cols="40" rows="5"><?php echo ((isset($_POST[Social::$prefix.$service->service.'_content']) and !empty($_POST[Social::$prefix.$service->service.'_content'])) ? $_POST[Social::$prefix.$service->service.'_content'] : $content); ?></textarea><br />
-		<strong>Publish to <?php echo $total_accounts == '1' ? 'this account:': 'these accounts'; ?>:</strong><br />
+		<strong><?php echo $heading; ?></strong><br />
 		<?php foreach ($service->accounts() as $account): ?>
 		<label class="social-broadcastable" for="<?php echo $service->service.$account->user->id; ?>" style="cursor:pointer">
 			<?php if ($total_accounts == '1'): ?>
@@ -706,7 +734,10 @@ final class Social {
 						if (!empty($content)) {
 							foreach ($service->accounts() as $account) {
 								if (in_array($account->user->id, $broadcast_accounts[$key])) {
-									$ids[$key]["{$account->user->id}"] = $service->status_update($account, $content)->id;
+									$response = $service->status_update($account, $content);
+									if ($service->check_deauthed($response, $account)) {
+										$ids[$key]["{$account->user->id}"] = $response->response->id;
+									}
 								}
 							}
 						}

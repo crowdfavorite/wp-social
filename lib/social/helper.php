@@ -38,9 +38,7 @@ abstract class Social_Helper {
 				$body = preg_replace('/"id":(\d+)/', '"id":"$1"', $body); // Hack for json_decode on 32-bit systems
 			}
 			$body = json_decode($body);
-			if ($body->result != 'error') {
-				return $body->response;
-			}
+			return $body;
 		}
 
 		return false;

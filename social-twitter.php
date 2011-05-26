@@ -168,8 +168,8 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 							'count' => 200
 						));
 
-						if (count($tweets)) {
-							foreach ($tweets as $tweet) {
+						if (count($tweets->response)) {
+							foreach ($tweets->response as $tweet) {
 								if ($tweet->in_reply_to_status_id == $broadcasted_ids[$account->user->id]) {
 									if (!in_array($tweet->id, array_values($post_comments))) {
 										$post_comments[] = $tweet->id;
@@ -204,7 +204,7 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 	 * @param  array  $replies
 	 * @return void
 	 */
-	function save_replies($post_id, array $replies) {
+	public function save_replies($post_id, array $replies) {
 		foreach ($replies as $reply) {
 			$account = (object) array(
 				'user' => (object) array(
@@ -224,6 +224,31 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 			update_comment_meta($comment_id, Social::$prefix.'account_id', $reply->from_user_id);
 			update_comment_meta($comment_id, Social::$prefix.'profile_image_url', $reply->profile_image_url);
 		}
+	}
+
+	/**
+	 * Checks to see if the account has been deauthed based on the request response.
+	 *
+	 * @param  mixed   $response
+	 * @param  object  $account
+	 * @return bool
+	 */
+	public function check_deauthed($response, $account) {
+		if ($response->result == 'error') {
+			if ($response->response == 'Could not authenticate with OAuth.') {
+				$deauthed = get_option(Social::$prefix.'deauthed', array());
+				$deauthed[$this->service][$account->user->id] = 'Unable to publish to '.$this->title().' with account '.$this->profile_name($account).'. Please <a href="'.Social_Helper::settings_url().'">re-authorize</a> this account.';
+				update_option(Social::$prefix.'deauthed', $deauthed);
+
+				// Remove the account from the users
+				unset($this->accounts[$account->user->id]);
+				$this->save();
+			}
+
+			return false;
+		}
+
+		return true;
 	}
 
 } // End Social_Twitter
