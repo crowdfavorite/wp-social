@@ -32,9 +32,11 @@ register_deactivation_hook(SOCIAL_FILE, array($social, 'deactivate'));
 add_action('init', array($social, 'init'), 1);
 add_action('init', array($social, 'request_handler'), 2);
 add_action('do_meta_boxes', array($social, 'do_meta_boxes'));
-add_action('save_post', array($social, 'set_broadcast_meta_data'));
+add_action('save_post', array($social, 'set_broadcast_meta_data'), 10, 2);
 add_action('comment_post', array($social, 'comment_post'));
 add_action('social_aggregate_comments', array($social, 'aggregate_comments'));
+add_action('transition_post_status', array($social, 'transition_post_status'), 10, 3);
+add_action('future_to_publish', array($social, 'future_to_publish'));
 
 // Admin Actions
 add_action('admin_menu', array($social, 'admin_menu'));
@@ -384,6 +386,13 @@ final class Social {
 
 			// Save the services
 			$service->save($account);
+
+			// Remove the service from the errors?
+			$deauthed = get_option(Social::$prefix.'deauthed');
+			if (isset($deauthed[$service->service][$account->user->id])) {
+				unset($deauthed[$service->service][$account->user->id]);
+				update_option(Social::$prefix.'deauthed', $deauthed);
+			}
 ?>
 <html>
 <head>
@@ -419,9 +428,33 @@ final class Social {
 			$deauthed = get_option(Social::$prefix.'deauthed', array());
 			if (isset($deauthed[$service][$id])) {
 				unset($deauthed[$service][$id]);
+				update_option(Social::$prefix.'deauthed', $deauthed);
 			}
-			update_option(Social::$prefix.'deauthed', $deauthed);
 		}
+	}
+
+	/**
+	 * Handles the transition between post-states.
+	 *
+	 * @param  string  $new_status
+	 * @param  string  $old_status
+	 * @param  object  $post
+	 * @return void
+	 */
+	public function transition_post_status($new_status, $old_status, $post) {
+		if ($new_status == 'publish') {
+			$this->broadcast($post);
+		}
+	}
+
+	/**
+	 * Handles the future to publish transition.
+	 *
+	 * @param  object  $post
+	 * @return void
+	 */
+	public function future_to_publish($post) {
+		$this->broadcast($post);
 	}
 
 	/**
@@ -593,9 +626,10 @@ final class Social {
 					}
 					update_post_meta($post_id, Social::$prefix.'broadcast_accounts', $broadcast_accounts);
 
-					Social::broadcast($post_id);
-					$post->post_status = 'publish';
-					wp_update_post($post);
+					if ($post->post_status == 'draft') {
+						$post->post_status = 'publish';
+						wp_update_post($post);
+					}
 					wp_redirect($location);
 					return;
 				}
@@ -675,7 +709,7 @@ final class Social {
 <?php endforeach; ?>
 </table>
 <p class="step">
-	<input type="submit" value="<?php _e('Publish', Social::$i10n); ?>" class="button" />
+	<input type="submit" value="<?php _e(($post->post_status == 'future' ? 'Schedule' : 'Publish'), Social::$i10n); ?>" class="button" />
 	<a href="<?php echo get_edit_post_link($post_id, 'url'); ?>" class="button">Cancel</a>
 </p>
 </form>
@@ -693,9 +727,10 @@ final class Social {
 	 *
 	 *   [!] Called during the publish_post action.
 	 *
-	 * @param  int  $post_id
+	 * @param  int     $post_id
+	 * @param  object  $post
 	 */
-	public function set_broadcast_meta_data($post_id) {
+	public function set_broadcast_meta_data($post_id, $post) {
 		$broadcast = false;
 		foreach (Social::$services as $key => $service) {
 			$post_key = Social::$prefix.'notify_'.$key;
@@ -708,6 +743,10 @@ final class Social {
 			$broadcasted = get_post_meta($post_id, Social::$prefix.'broadcasted', true);
 			if (empty($broadcasted) or $broadcasted != '1') {
 				update_post_meta($post_id, Social::$prefix.'broadcasted', '0');
+
+				// Post needs to stay a draft for now.
+				$post->post_status = 'draft';
+				wp_update_post($post);
 			}
 		}
 		else {
@@ -718,19 +757,20 @@ final class Social {
 	/**
 	 * Broadcast the post to Twitter and/or Facebook.
 	 *
-	 * @param  int  $post_id
+	 * @param  object  $post
 	 */
-	public function broadcast($post_id) {
-        $broadcasted = get_post_meta($post_id, Social::$prefix.'broadcasted', true);
+	public function broadcast($post) {
+        $broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted', true);
         if ($broadcasted == '0' or empty($broadcasted)) {
-	        $broadcast_accounts = get_post_meta($post_id, Social::$prefix.'broadcast_accounts', true);
+	        $broadcast_accounts = get_post_meta($post->ID, Social::$prefix.'broadcast_accounts', true);
 	        if (!empty($broadcast_accounts)) {
 		        $ids = array();
+		        $send_error_notification = false;
 				foreach (Social::$services as $key => $service) {
-					$notify = get_post_meta($post_id, Social::$prefix.'notify_'.$key, true);
+					$notify = get_post_meta($post->ID, Social::$prefix.'notify_'.$key, true);
 
 					if ($notify == '1') {
-						$content = get_post_meta($post_id, Social::$prefix.$key.'_content', true);
+						$content = get_post_meta($post->ID, Social::$prefix.$key.'_content', true);
 						if (!empty($content)) {
 							foreach ($service->accounts() as $account) {
 								if (in_array($account->user->id, $broadcast_accounts[$key])) {
@@ -738,17 +778,27 @@ final class Social {
 									if ($service->check_deauthed($response, $account)) {
 										$ids[$key]["{$account->user->id}"] = $response->response->id;
 									}
+									else {
+										$send_error_notification = true;
+									}
 								}
 							}
 						}
 					}
 
-					delete_post_meta($post_id, Social::$prefix.'notify_'.$key);
+					delete_post_meta($post->ID, Social::$prefix.'notify_'.$key);
 				}
 
-		        update_post_meta($post_id, Social::$prefix.'broadcasted_ids', $ids);
+		        update_post_meta($post->ID, Social::$prefix.'broadcasted_ids', $ids);
+
+		        // Are we in XML_RPC?
+		        if ($send_error_notification) {
+					if (defined('XMLRPC_REQUEST') and XMLRPC_REQUEST === true) {
+						$this->send_publish_error_notification($post->ID);
+					}
+		        }
+		        update_post_meta($post->ID, Social::$prefix.'broadcasted', '1');
 	        }
-	        update_post_meta($post_id, Social::$prefix.'broadcasted', '1');
         }
 	}
 
