@@ -382,7 +382,7 @@ final class Social {
 <?php
 			exit;
 		}
-		else if (isset($_GET[Social::$prefix.'_disconnect'])) {
+		else if (isset($_GET[Social::$prefix.'disconnect'])) {
 			$service = $this->service($_GET['service']);
 			$service->disconnect($_GET['id']);
 
