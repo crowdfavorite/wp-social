@@ -36,7 +36,7 @@
 		<ul class="social-nav social-clearfix">
 			<li class="social-all social-tab-main"><a href="#social-comments-tab-all"><span><?php printf(_n('1 Reply', '%1$s Replies', get_comments_number(), Social::$i10n), get_comments_number()); ?></span></a></li>
 			<li class="social-wordpress"><a href="#social-comments-tab-wordpress"><span><?php printf(_n('1 Comment', '%1$s Comments', count($groups['wordpress']), Social::$i10n), count($groups['wordpress'])); ?></span></a></li>
-			<li class="social-twitter"><a href="#social-comments-tab-twitter"><span><?php printf(_n('1 Twitter', '%1$s Twitter', count($groups['twitter']), Social::$i10n), count($groups['twitter'])); ?></span></a></li>
+			<li class="social-twitter"><a href="#social-comments-tab-twitter"><span><?php printf(_n('1 Tweet', '%1$s Tweets', count($groups['twitter']), Social::$i10n), count($groups['twitter'])); ?></span></a></li>
 			<li class="social-facebook"><a href="#social-comments-tab-facebook"><span><?php printf(_n('1 Facebook', '%1$s Facebook', count($groups['facebook']), Social::$i10n), count($groups['facebook'])); ?></span></a></li>
 			<li class="social-pingback"><a href="#social-comments-tab-pingback"><span><?php printf(_n('1 Pingback', '%1$s Pingbacks', count($groups['pingback']), Social::$i10n), count($groups['pingback'])); ?></span></a></li>
 		</ul>
