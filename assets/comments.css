@@ -14,6 +14,7 @@
 /* Override default theme line-height */
 #social {
 	line-height: 1.5;
+	margin: 40px 0;
 }
 
 /**
@@ -327,11 +328,12 @@
 }
 
 #social .social-comment {
-	border: #e1e1e1 1px solid;
-	-moz-border-radius: 4px; /* FF1+ */
-	-webkit-border-radius: 4px; /* Saf3+, Chrome */
-	-khtml-border-radius: 4px; /* Konqueror */
-	border-radius: 4px; /* Standard. IE9 */
+	border-top: 1px solid #e1e1e1;
+	border-left: 1px solid #e1e1e1;
+	-moz-border-radius-topleft: 4px; /* FF1+ */
+	-webkit-border-top-left-radius: 4px; /* Saf3+, Chrome */
+	-khtml-border-top-left-radius: 4px; /* Konqueror */
+	border-top-left-radius: 4px; /* Standard. IE9 */
 	margin: 0 0 10px;
 	zoom: 1;
 }
@@ -420,7 +422,6 @@
 	-khtml-border-bottom-right-radius: 0; /* Konqueror */
 	border-bottom-right-radius: 0; /* Standard. IE9 */
 	margin-left: 6px;
-	margin-bottom: 9px;
 }
 
 #social .social-actions,
@@ -481,6 +482,9 @@
 #social .social-pingback .social-comment-meta,
 #social ol li ul li.social-pingback .social-comment-meta {
 	background-position: right -400px;
+}
+#social .social-pingback > .social-comment-inner {
+	padding-left: 10px;
 }
 
 /*Tabs*/
