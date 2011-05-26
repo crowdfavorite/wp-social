@@ -382,7 +382,7 @@ final class Social {
 <?php
 			exit;
 		}
-		else if (isset($_GET['social_disconnect'])) {
+		else if (isset($_GET[Social::$prefix.'_disconnect'])) {
 			$service = $this->service($_GET['service']);
 			$service->disconnect($_GET['id']);
 
@@ -405,7 +405,7 @@ final class Social {
 
 		// Already broadcasted?
 		$broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted', true);
-		if (!Social::$update and $broadcasted != '1') {
+		if (!Social::$update and $broadcasted != '1' and $post->post_status != 'publish') {
 			add_meta_box(Social::$prefix.'meta_broadcast', __('Social', Social::$i10n), array($this, 'add_meta_box'), 'post');
 		}
     }
@@ -563,6 +563,13 @@ final class Social {
 
 		$errors = array();
 		if (!empty($notify)) {
+			// Post shouldn't be published yet
+			$post = get_post($post_id);
+			if ($post->post_status == 'publish') {
+				$post->post_status = 'draft';
+				wp_update_post($post);
+			}
+
 			if (isset($_POST[Social::$prefix.'action'])) {
 				foreach (Social::$services as $key => $service) {
 					if (isset($notify[$key]) and empty($_POST[Social::$prefix.$key.'_content'])) {
@@ -576,6 +583,8 @@ final class Social {
 					}
 
 					Social::broadcast($post_id);
+					$post->post_status = 'publish';
+					wp_update_post($post);
 					wp_redirect($location);
 					return;
 				}
@@ -637,7 +646,10 @@ final class Social {
 </tr>
 <?php endforeach; ?>
 </table>
-<p class="step"><input type="submit" value="<?php _e('Publish', Social::$i10n); ?>" class="button" /></p>
+<p class="step">
+	<input type="submit" value="<?php _e('Publish', Social::$i10n); ?>" class="button" />
+	<a href="<?php echo get_edit_post_link($post_id, 'url'); ?>" class="button">Cancel</a>
+</p>
 </form>
 <script type="text/javascript" src="<?php echo includes_url('/js/jquery/jquery.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo plugins_url('/assets/js/admin.js', SOCIAL_FILE); ?>"></script>
