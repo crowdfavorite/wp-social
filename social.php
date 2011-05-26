@@ -879,16 +879,28 @@ final class Social {
 	 * @param  int  $comment_ID
 	 */
 	public function comment_post($comment_ID) {
-		global $wpdb;
+		global $wpdb, $comment_content;
 		$type = false;
 		$services = Social::$services;
 		if (!empty($services)) {
 			$account_id = $_POST[Social::$prefix.'post_account'];
 
+			$url = get_comment_link($comment_ID);
+			$url_length = strlen($url) + 1;
+			$comment_length = strlen($comment_content);
+			$combined_length = $url_length + $comment_length;
 			foreach ($services as $key => $service) {
+				$max_length = $service->max_broadcast_length();
+				if ($combined_length > $max_length) {
+					$output = substr($comment_content, 0, ($max_length - $url_length - 3)).'...';
+				} else {
+					$output = $comment_content;
+				}
+				$output .= ' '.$url;
+
 				foreach ($service->accounts() as $account) {
 					if ($account_id == $account->user->id) {
-						$service->status_update($account, 'Check out this comment I posted!');
+						$service->status_update($account, $output);
 						update_comment_meta($comment_ID, Social::$prefix.'account_id', $account_id);
 						$wpdb->query("UPDATE $wpdb->comments SET comment_type='$key' WHERE comment_ID='$comment_ID'");
 						break;
