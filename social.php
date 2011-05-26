@@ -391,7 +391,7 @@ final class Social {
 			}
 			else {
 				wp_logout();
-				wp_redirect(site_url());
+				wp_redirect($_GET['redirect_to']);
 			}
 			exit;
 		}

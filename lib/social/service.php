@@ -233,7 +233,7 @@ abstract class Social_Service {
 			foreach ($params as $key => $value) {
 				$path[] = $key.'='.urlencode($value);
 			}
-			$url = site_url('?'.implode('&', $path));
+			$url = site_url('?'.implode('&', $path).'&redirect_to='.$_SERVER['REQUEST_URI']);
 			$text = 'Disconnect';
 		}
 
