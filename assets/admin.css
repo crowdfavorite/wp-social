@@ -32,11 +32,9 @@
 .form-table .social-preview-counter {
 	float: none;
 }
-.form-field .social-preview-content {
-	width: 100%;
-}
 .form-table .social-preview-content {
 	width: 99%;
+	margin-bottom: 10px;
 }
 #social_error {
 	background-color: #ffebe8;

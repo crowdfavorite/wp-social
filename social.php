@@ -620,6 +620,8 @@ final class Social {
 			$counter = $counter - strlen($content);
 		}
 	}
+
+	$total_accounts = count($service->accounts());
 ?>
 <tr>
 	<th scope="row">
@@ -628,12 +630,11 @@ final class Social {
 	</th>
 	<td>
 		<textarea id="<?php echo $service->service.'_preview'; ?>" name="<?php echo Social::$prefix.$service->service.'_content'; ?>" class="social-preview-content" cols="40" rows="5"><?php echo ((isset($_POST[Social::$prefix.$service->service.'_content']) and !empty($_POST[Social::$prefix.$service->service.'_content'])) ? $_POST[Social::$prefix.$service->service.'_content'] : $content); ?></textarea><br />
-		<strong>Send to these accounts:</strong><br />
-		<?php $total_accounts = count($service->accounts()); ?>
+		<strong>Publish to <?php echo $total_accounts == '1' ? 'this account:': 'these accounts'; ?>:</strong><br />
 		<?php foreach ($service->accounts() as $account): ?>
 		<label class="social-broadcastable" for="<?php echo $service->service.$account->user->id; ?>" style="cursor:pointer">
 			<?php if ($total_accounts == '1'): ?>
-			<input type="checkbox" name="<?php echo Social::$prefix.$service->service.'_accounts[]'; ?>" id="<?php echo $service->service.$account->user->id; ?>" value="<?php echo $account->user->id; ?>" />
+			<input type="hidden" name="<?php echo Social::$prefix.$service->service.'_accounts[]'; ?>" id="<?php echo $service->service.$account->user->id; ?>" value="<?php echo $account->user->id; ?>" />
 			<?php else: ?>
 			<input type="checkbox" name="<?php echo Social::$prefix.$service->service.'_accounts[]'; ?>" id="<?php echo $service->service.$account->user->id; ?>" value="<?php echo $account->user->id; ?>" checked="checked" />
 			<?php endif; ?>
