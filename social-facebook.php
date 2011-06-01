@@ -218,7 +218,7 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 	 * @return bool
 	 */
 	public function check_deauthed($response, $account) {
-		if (strpos($response, 'Error validating access token') !== false) {
+		if (is_string($response) and strpos($response, 'Error validating access token') !== false) {
 			$deauthed = get_option(Social::$prefix.'deauthed', array());
 			$deauthed[$this->service][$account->user->id] = 'Unable to publish to '.$this->title().' with account '.$this->profile_name($account).'. Please <a href="'.Social_Helper::settings_url().'">re-authorize</a> this account.';
 			update_option(Social::$prefix.'deauthed', $deauthed);
