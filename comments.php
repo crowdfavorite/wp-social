@@ -58,7 +58,7 @@
 					<?php wp_list_comments(array('type' => 'comment', 'callback' => array('Social', 'comment'), 'walker' => new Social_Walker_Comment)); ?>
 				</ol>
 				<?php else: ?>
-				<p><?php _e('There are no comments.', Social::$i10n); ?></p>
+				<p class="social-comments-no-comments wordpress"><?php _e('There are no comments.', Social::$i10n); ?></p>
 				<?php endif; ?>
 			</div><!-- #comments -->
 		</div>
@@ -70,7 +70,7 @@
 					<?php wp_list_comments(array('type' => 'twitter', 'callback' => array('Social', 'comment'), 'walker' => new Social_Walker_Comment)); ?>
 				</ol>
 				<?php else: ?>
-				<p><?php _e('There are no Twitter comments.', Social::$i10n); ?></p>
+				<p class="social-comments-no-comments twitter"><?php _e('There are no Twitter comments.', Social::$i10n); ?></p>
 				<?php endif; ?>
 			</div><!-- #comments -->
 		</div>
@@ -82,7 +82,7 @@
 					<?php wp_list_comments(array('type' => 'facebook', 'callback' => array('Social', 'comment'), 'walker' => new Social_Walker_Comment)); ?>
 				</ol>
 				<?php else: ?>
-				<p><?php _e('There are no Facebook comments.', Social::$i10n); ?></p>
+				<p class="social-comments-no-comments facebook"><?php _e('There are no Facebook comments.', Social::$i10n); ?></p>
 				<?php endif; ?>
 			</div><!-- #comments -->
 		</div>
@@ -94,7 +94,7 @@
 					<?php wp_list_comments(array('type' => 'pingback', 'callback' => array('Social', 'comment'), 'walker' => new Social_Walker_Comment)); ?>
 				</ol>
 				<?php else: ?>
-				<p><?php _e('There are no pingbacks.', Social::$i10n); ?></p>
+				<p class="social-comments-no-comments pingbacks"><?php _e('There are no pingbacks.', Social::$i10n); ?></p>
 				<?php endif; ?>
 			</div><!-- #comments -->
 		</div>

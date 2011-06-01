@@ -7,7 +7,6 @@ Version: 1.0
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com
 */
-// TODO Add AJAX call to replace the comment form instead of refreshing the page upon authentication. (Comment form only)
 
 $social_file = __FILE__;
 if (isset($mu_plugin)) {
