@@ -89,4 +89,15 @@
 			$this.parent().parent().fadeOut();
 		});
 	});
+
+	$('#post_accounts').change(function(){
+		$(this).find('option:selected').each(function(){
+			var label = $(this).parent().attr('label');
+			if (label !== undefined) {
+				$('#post_to').show().find('span').html(label);
+			} else {
+				$('#post_to').hide();
+			}
+		});
+	});
 })(jQuery);

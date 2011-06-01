@@ -961,7 +961,10 @@ final class Social {
 
 				foreach ($service->accounts() as $account) {
 					if ($account_id == $account->user->id) {
-						$service->status_update($account, $output);
+						if (isset($_POST['post_to_service'])) {
+							$service->status_update($account, $output);
+						}
+
 						update_comment_meta($comment_ID, Social::$prefix.'account_id', $account_id);
 						$wpdb->query("UPDATE $wpdb->comments SET comment_type='$key' WHERE comment_ID='$comment_ID'");
 						break;

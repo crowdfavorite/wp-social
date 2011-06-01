@@ -34,16 +34,24 @@
 		<?php if (is_user_logged_in()): ?>
 			<?php if (current_user_can('manage_options')): ?>
 				<span style="float:left;margin:4px 10px;">via</span>
-				<select name="<?php echo Social::$prefix; ?>post_account">
+				<select id="post_accounts" name="<?php echo Social::$prefix; ?>post_account" style="float:left;">
 					<option value=""><?php _e('WordPress Account', Social::$i10n); ?></option>
 					<?php foreach (Social::$services as $key => $service): ?>
-					<optgroup label="<?php _e(ucfirst($key), Social::$i10n); ?>">
-						<?php foreach ($service->accounts() as $account): ?>
-						<option value="<?php echo $account->user->id; ?>"><?php echo ($service == 'twitter' ? $account->user->screen_name : $account->user->name); ?></option>
-						<?php endforeach; ?>
-					</optgroup>
+						<?php if (count($service->accounts())): ?>
+						<optgroup label="<?php _e(ucfirst($key), Social::$i10n); ?>">
+							<?php foreach ($service->accounts() as $account): ?>
+							<option value="<?php echo $account->user->id; ?>"><?php echo $service->profile_name($account); ?></option>
+							<?php endforeach; ?>
+						</optgroup>
+						<?php endif; ?>
 					<?php endforeach; ?>
 				</select>
+				<div id="post_to" style="display:none">
+					<label for="post_to_service">
+						<input type="checkbox" name="post_to_service" id="post_to_service" value="1" />
+						Post to <span></span>
+					</label>
+				</div>
 			<?php else: ?>
 				<?php foreach (Social::$services as $key => $service): ?>
 					<?php if (count($service->accounts())): ?>
@@ -55,6 +63,12 @@
 							<?php echo $service->profile_name($account); ?>.
 							(<?php echo $service->disconnect_url($account); ?>)
 						</span>
+					</div>
+					<div id="post_to">
+						<label for="post_to_service">
+							<input type="checkbox" name="post_to_service" id="post_to_service" value="1" />
+							Post to <?php echo $service->title(); ?>
+						</label>
 					</div>
 					<input type="hidden" name="<?php echo Social::$prefix; ?>post_account" value="<?php echo $account->user->id; ?>" />
 					<?php endif; ?>
