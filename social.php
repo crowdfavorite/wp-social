@@ -45,8 +45,6 @@ add_filter('redirect_post_location', array($social, 'redirect_post_location'), 1
 add_filter('comments_template', array($social, 'comments_template'));
 add_filter('get_avatar_comment_types', array($social, 'get_avatar_comment_types'));
 add_filter('get_avatar', array($social, 'get_avatar'), 10, 5);
-add_filter('get_comment_author_url', array($social, 'get_comment_author_url'));
-add_filter('get_comment_author', array($social, 'get_comment_author'));
 add_filter('register', array($social, 'register'));
 add_filter('loginout', array($social, 'loginout'));
 
@@ -848,51 +846,13 @@ final class Social {
 	 * @return string
 	 */
 	public function get_avatar($avatar, $comment, $size, $default, $alt) {
-		$service = $this->service($comment->comment_type, ($comment->user_id ? $comment->user_id : null));
+		$service = $this->service($comment->comment_type);
 		if ($service !== false) {
-			$account_id = get_comment_meta($comment->comment_ID, Social::$prefix.'account_id', true);
-			$image = $service->profile_avatar($service->account($account_id), $comment->comment_ID);
-
+			$image = get_comment_meta($comment->comment_ID, Social::$prefix.'profile_image_url', true);
 			return "<img alt='{$alt}' src='{$image}' class='avatar avatar-{$size} photo {$comment->comment_type}' height='{$size}' width='{$size}' />";
 		}
 
 		return $avatar;
-	}
-
-	/**
-	 * Builds the URL to the author's Facebook/Twitter.
-	 *
-	 * @param  string  $url
-	 * @return string
-	 */
-	public function get_comment_author_url($url) {
-		global $comment;
-		if ($comment->user_id) {
-			$service = $this->service($comment->comment_type, $comment->user_id);
-			if ($service !== false) {
-				$account_id = get_comment_meta($comment->comment_ID, Social::$prefix.'account_id', true);
-				return $service->profile_url($service->account($account_id));
-			}
-		}
-		return $url;
-	}
-
-	/**
-	 * Gets the comment author's username from Facebook/Twitter.
-	 *
-	 * @param  string  $author
-	 * @return string
-	 */
-	public function get_comment_author($author) {
-		global $comment;
-		if ($comment->user_id) {
-			$service = $this->service($comment->comment_type, $comment->user_id);
-			if ($service !== false) {
-				$account_id = get_comment_meta($comment->comment_ID, Social::$prefix.'account_id', true);
-				return $service->profile_name($service->account($account_id));
-			}
-		}
-		return $author;
 	}
 
 	/**
@@ -939,7 +899,7 @@ final class Social {
 	 * @param  int  $comment_ID
 	 */
 	public function comment_post($comment_ID) {
-		global $wpdb, $comment_content;
+		global $wpdb, $comment_content, $commentdata;
 		$type = false;
 		$services = Social::$services;
 		if (!empty($services)) {
@@ -965,7 +925,21 @@ final class Social {
 						}
 
 						update_comment_meta($comment_ID, Social::$prefix.'account_id', $account_id);
-						$wpdb->query("UPDATE $wpdb->comments SET comment_type='$key' WHERE comment_ID='$comment_ID'");
+						update_comment_meta($comment_ID, Social::$prefix.'profile_image_url', $service->profile_avatar($account));
+						$sql = "
+							UPDATE $wpdb->comments
+							   SET comment_type='$key'
+						";
+						if ($commentdata['user_ID'] != '0') {
+							$sql .= "
+							    , comment_author='{$service->profile_name($account)}'
+							    , comment_author_url='{$service->profile_url($account)}'
+							";
+						}
+						$sql .= "
+							 WHERE comment_ID='$comment_ID'
+						";
+						$wpdb->query($sql);
 						break;
 					}
 				}
