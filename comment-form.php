@@ -19,6 +19,7 @@
 	<div class="social-input-row">
 		<label for="social-sign-in-email"><?php _e('Email', Social::$i10n); ?></label>
 		<input class="social-input-text" type="text" id="social-sign-in-email" name="email" />
+		<em>We'll kept this private</em>
 	</div>
 	<div class="social-input-row">
 		<label for="social-sign-in-website"><?php _e('Website', Social::$i10n); ?></label>

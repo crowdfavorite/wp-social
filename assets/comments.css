@@ -236,6 +236,11 @@
 	width: 80px;
 }
 
+#social .social-sign-in-form .social-input-row em {
+	font-style: italic;
+	color: #aaa
+}
+
 #social .social-twitter-icon i,
 #social .social-facebook-icon i {
     background: url('social.png') 0 -66px;
