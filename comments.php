@@ -8,7 +8,7 @@
 		<p class="nopassword"><?php _e('This post is password protected. Enter the password to view any comments.', Social::$i10n); ?></p>
 		<?php else: ?>
 		<div id="loading" style="display:none">
-			<input type="hidden" id="reload_url" value="<?php echo site_url('?'.Social::$prefix.'action=reload_form'); ?>" />
+			<input type="hidden" id="reload_url" value="<?php echo site_url('?'.Social::$prefix.'action=reload_form&redirect_to='.$_SERVER['REQUEST_URI']); ?>" />
 			<img src="<?php echo admin_url('images/loading.gif'); ?>" style="position:relative;top:2px" /> Logging In...
 		</div>
 		<?php echo Social::comment_form(); ?>

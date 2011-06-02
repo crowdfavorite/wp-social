@@ -238,7 +238,13 @@ abstract class Social_Service {
 			foreach ($params as $key => $value) {
 				$path[] = $key.'='.urlencode($value);
 			}
-			$url = site_url('?'.implode('&', $path).'&redirect_to='.$_SERVER['REQUEST_URI']);
+
+			$redirect_to = $_SERVER['REQUEST_URI'];
+			if (isset($_GET['redirect_to'])) {
+				$redirect_to = $_GET['redirect_to'];
+			}
+
+			$url = site_url('?'.implode('&', $path).'&redirect_to='.$redirect_to);
 			$text = 'Disconnect';
 		}
 
