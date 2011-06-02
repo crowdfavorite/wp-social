@@ -2,8 +2,6 @@
 /**
  * Handles the different services that can be connected to Social.
  *
- * @author Crowd Favorite
- * @copyright (c) 2010 Crowd Favorite. All Rights Reserved.
  * @package Social
  */
 abstract class Social_Service {

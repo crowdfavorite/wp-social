@@ -1,11 +1,5 @@
 <?php
 /**
- * A generic helper for social services.
- *
- * @author Crowd Favorite
- * @copyright (c) 2010 Crowd Favorite. All Rights Reserved.
- * @package Social
- *//**
  * An interface that must be used by services that want to hook onto the plugin.
  *
  * @package Social

@@ -2,8 +2,6 @@
 /**
  * Custom comment walker.
  *
- * @author Crowd Favorite
- * @copyright (c) 2010 Crowd Favorite. All Rights Reserved.
  * @package Social
  */
 class Social_Walker_Comment extends Walker_Comment {

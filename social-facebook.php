@@ -1,7 +1,7 @@
 <?php
 /**
- * @author Crowd Favorite
- * @copyright (c) 2010 Crowd Favorite. All Rights Reserved.
+ * Facebook integration for Social.
+ *
  * @package Social
  */
 add_filter(Social::$prefix.'register_service', array('Social_Facebook', 'register_service'));

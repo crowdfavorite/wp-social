@@ -1,9 +1,7 @@
 <?php
 /**
- * Twitter integration.
+ * Twitter integration for Social.
  *
- * @author Crowd Favorite
- * @copyright (c) 2010 Crowd Favorite. All Rights Reserved.
  * @package Social
  */
 add_filter(Social::$prefix.'register_service', array('Social_Twitter', 'register_service'));

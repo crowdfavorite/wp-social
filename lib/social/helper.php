@@ -2,8 +2,6 @@
 /**
  * A generic helper for social services.
  *
- * @author Crowd Favorite
- * @copyright (c) 2010 Crowd Favorite. All Rights Reserved.
  * @package Social
  */
 abstract class Social_Helper {
