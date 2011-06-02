@@ -77,6 +77,7 @@
 			<?php endif; ?>
 		<?php endif; ?>
 		<div style="clear:both;"></div>
+		<small><?php cancel_comment_reply_link(__('Cancel reply', Social::$i10n)); ?></small>
 	</div>
 </div>
 </form>
