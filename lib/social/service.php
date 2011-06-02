@@ -122,17 +122,32 @@ abstract class Social_Service {
 	 * @return void
 	 */
 	public function save($account = null) {
-		$accounts = get_user_meta(get_current_user_id(), Social::$prefix.'accounts', true);
-		if ($account === null) {
-			$accounts[$this->service] = $this->accounts;
+		if (defined('IS_PROFILE_PAGE')) {
+			$accounts = get_user_meta(get_current_user_id(), Social::$prefix.'accounts', true);
+			if ($account === null) {
+				$accounts[$this->service] = $this->accounts;
+			}
+			else {
+				if (is_int($account)) {
+					$account = $this->account($account);
+				}
+				$accounts[$this->service][$account->user->id] = $account;
+			}
+			update_user_meta(get_current_user_id(), Social::$prefix.'accounts', $accounts);
 		}
 		else {
-			if (is_int($account)) {
-				$account = $this->account($account);
+			$accounts = get_option(Social::$prefix.'accounts', array());
+			if ($account === null) {
+				$accounts[$this->service] = $this->accounts;
 			}
-			$accounts[$this->service][$account->user->id] = $account;
+			else {
+				if (is_int($account)) {
+					$account = $this->account($account);
+				}
+				$accounts[$this->service][$account->user->id] = $account;
+			}
+			update_option(Social::$prefix.'accounts', $accounts);
 		}
-		update_user_meta(get_current_user_id(), Social::$prefix.'accounts', $accounts);
 	}
 
 	/**

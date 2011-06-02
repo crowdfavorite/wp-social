@@ -12,9 +12,14 @@
 			<img src="<?php echo admin_url('images/loading.gif'); ?>" style="position:relative;top:2px" /> Logging In...
 		</div>
 		<?php if (comments_open()): ?>
-		<div id="responsd">
-			<?php echo Social::comment_form(); ?>
-		</div>
+			<?php if ( get_option( 'comment_registration' ) && !is_user_logged_in() ) : ?>
+				<?php echo $args['must_log_in']; ?>
+				<?php do_action( 'comment_form_must_log_in_after' ); ?>
+			<?php else : ?>
+			<div id="responsd">
+				<?php echo Social::comment_form(); ?>
+			</div>
+			<?php endif; ?>
 		<?php else: ?>
 		<?php do_action('comment_form_comments_closed'); ?>
 		<p class="nocomments"><?php _e('Comments are closed.', Social::$i10n); ?></p>

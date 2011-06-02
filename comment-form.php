@@ -37,10 +37,18 @@
 				<span style="float:left;margin:4px 10px;">via</span>
 				<select id="post_accounts" name="<?php echo Social::$prefix; ?>post_account" style="float:left;">
 					<option value=""><?php _e('WordPress Account', Social::$i10n); ?></option>
-					<?php foreach (Social::$services as $key => $service): ?>
-						<?php if (count($service->accounts())): ?>
+					<?php foreach (array_merge(Social::$services, Social::$global_services) as $key => $service): ?>
+						<?php
+							$accounts = Social::$services[$key]->accounts();
+							if (isset(Social::$global_services[$key])) {
+								foreach (Social::$global_services[$key]->accounts() as $id => $account) {
+									$accounts[$id] = $account;
+								}
+							}
+						?>
+						<?php if (count($accounts)): ?>
 						<optgroup label="<?php _e(ucfirst($key), Social::$i10n); ?>">
-							<?php foreach ($service->accounts() as $account): ?>
+							<?php foreach ($accounts as $account): ?>
 							<option value="<?php echo $account->user->id; ?>"><?php echo $service->profile_name($account); ?></option>
 							<?php endforeach; ?>
 						</optgroup>

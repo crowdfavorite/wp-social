@@ -36,6 +36,7 @@ add_action('comment_post', array($social, 'comment_post'));
 add_action('social_aggregate_comments', array($social, 'aggregate_comments'));
 add_action('transition_post_status', array($social, 'transition_post_status'), 10, 3);
 add_action('future_to_publish', array($social, 'future_to_publish'));
+add_action('show_user_profile', array($social, 'show_user_profile'));
 
 // Admin Actions
 add_action('admin_menu', array($social, 'admin_menu'));
@@ -79,6 +80,11 @@ final class Social {
 	 * @var  array  services registered to Social
 	 */
 	public static $services = array();
+
+	/**
+	 * @var  array  global services registered to Social
+	 */
+	public static $global_services = array();
 
 	/**
 	 * @var  array  commenter user accounts
@@ -144,9 +150,10 @@ final class Social {
 	 * @static
 	 * @param  string  $service  name of the service
 	 * @param  int     $user_id  custom user to load
+	 * @param  bool    $global   global service?
 	 * @return Social_Facebook|Social_Twitter|bool
 	 */
-	public function service($service, $user_id = null) {
+	public function service($service, $user_id = null, $global = false) {
 		if ($user_id !== null) {
 			if (!isset(Social::$services[$service])) {
 				return false;
@@ -160,8 +167,11 @@ final class Social {
 			return Social::$commenters[$user_id];
 		}
 
-		if (isset(Social::$services[$service])) {
+		if (!$global and isset(Social::$services[$service])) {
 			return Social::$services[$service];
+		}
+		else if ($global and isset(Social::$global_services[$service])) {
+			return Social::$global_services[$service];
 		}
 
 		return false;
@@ -219,8 +229,19 @@ final class Social {
 	 * Initializes the plugin.
 	 */
 	public function init() {
+		$global_services = get_option(Social::$prefix.'accounts');
 		$services = get_user_meta(get_current_user_id(), Social::$prefix.'accounts', true);
-		if (!empty($services)) {
+
+		if (!empty($global_services)) {
+			foreach ($global_services as $service => $accounts) {
+				if (!empty($accounts)) {
+					Social::$update = false;
+					break;
+				}
+			}
+		}
+
+		if (Social::$update and !empty($services)) {
 			foreach ($services as $service => $accounts) {
 				if (!empty($accounts)) {
 					Social::$update = false;
@@ -296,6 +317,7 @@ final class Social {
 
 		// Register the Social services
 		Social::$services = apply_filters(Social::$prefix.'register_service', Social::$services);
+		Social::$global_services = apply_filters(Social::$prefix.'register_service', Social::$global_services);
 
 		// Load the user's accounts
 		if (!empty($services)) {
@@ -304,6 +326,16 @@ final class Social {
 					continue;
 				}
 				$this->service($service)->accounts($accounts);
+			}
+		}
+
+		// Load the global accounts
+		if (!empty($global_services)) {
+			foreach ($global_services as $service => $accounts) {
+				if (!isset(Social::$global_services[$service])) {
+					continue;
+				}
+				$this->service($service, null, true)->accounts($accounts);
 			}
 		}
 	}
@@ -374,7 +406,12 @@ final class Social {
 			);
 
 			// Add the account to the service.
-			$service = $this->service($data->service)->account($account);
+			if (defined('IS_PROFILE_PAGE')) {
+				$service = $this->service($data->service)->account($account);
+			}
+			else {
+				$service = $this->service($data->service, null, true)->account($account);
+			}
 
 			// Do we need to create a user?
 			if (!$service->loaded()) {
@@ -474,8 +511,8 @@ final class Social {
 		global $post;
 
 		if (!Social::$update) {
-			// Have Twitter account(s)?
-			foreach (Social::$services as $key => $service) {
+			$services = array_merge(Social::$services, Social::$global_services);
+			foreach ($services as $key => $service) {
 				if (count($service->accounts())) {
 					$notify = get_post_meta($post->ID, Social::$prefix.'notify_'.$key, true);
 ?>
@@ -555,7 +592,39 @@ final class Social {
 	</table>
 	<p class="submit"><input type="submit" name="submit" value="Save Settings" class="button-primary" /></p>
 
-	<h3><?php _e('Connect to Social Networks', Social::$i10n); ?></h3>
+	<h3 id="social-networks"><?php _e('Connect to Social Networks', Social::$i10n); ?></h3>
+	<p><?php _e('Before blog authors can broadcast to social networks you need to connect some accounts. <strong>These accounts will be accessible by every blog author.</strong>', Social::$i10n); ?></p>
+	<?php foreach (Social::$global_services as $key => $service): ?>
+	<div class="social-settings-connect">
+		<?php foreach ($service->accounts() as $account): ?>
+		<?php
+			$profile_url = $service->profile_url($account);
+			$profile_name = $service->profile_name($account);
+			$url = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
+			$disconnect = $service->disconnect_url($account, true);
+			$output = sprintf(__('Connected to %s. %s', Social::$i10n), $url, $disconnect);
+		?>
+		<span class="social-<?php echo $key; ?>-icon big"><i></i><?php echo $output; ?></span>
+		<?php endforeach; ?>
+
+		<a href="<?php echo Social_Helper::authorize_url($key, true); ?>" id="<?php echo $key; ?>_signin" class="social-login"><span><?php _e('Sign In With '.$service->title, Social::$i10n); ?></span></a>
+	</div>
+	<?php endforeach; ?>
+	<div style="clear:both"></div>
+</div>
+</form>
+<?php
+	}
+
+	/**
+	 * Shows the user's social network accounts.
+	 *
+	 * @param  object  $profileuser
+	 * @return void
+	 */
+	public function show_user_profile($profileuser) {
+?>
+	<h3 id="social-networks"><?php _e('Connect to Social Networks', Social::$i10n); ?></h3>
 	<p><?php _e('Before you can broadcast to your social networks, you will need to connect your account(s).', Social::$i10n); ?></p>
 	<?php foreach (Social::$services as $key => $service): ?>
 	<div class="social-settings-connect">
@@ -573,8 +642,7 @@ final class Social {
 		<a href="<?php echo Social_Helper::authorize_url($key, true); ?>" id="<?php echo $key; ?>_signin" class="social-login"><span><?php _e('Sign In With '.$service->title, Social::$i10n); ?></span></a>
 	</div>
 	<?php endforeach; ?>
-</div>
-</form>
+	<div style="clear:both"></div>
 <?php
 	}
 
@@ -587,10 +655,11 @@ final class Social {
 	 */
 	public function broadcast_options($post_id, $location) {
 		$notify = array();
-		foreach (Social::$services as $key => $service) {
+		$services = array_merge_recursive(Social::$services, Social::$global_services);
+		foreach ($services as $key => $service) {
 			$meta = get_post_meta($post_id, Social::$prefix.'notify_'.$key, true);
 			if ($meta == '1') {
-				$notify[] = $key;
+				$notify[$key] = $key;
 			}
 		}
 
@@ -604,7 +673,7 @@ final class Social {
 			}
 
 			if (isset($_POST[Social::$prefix.'action'])) {
-				foreach (Social::$services as $key => $service) {
+				foreach ($services as $key => $service) {
 					if (in_array($key, array_values($notify))) {
 						if (empty($_POST[Social::$prefix.$key.'_content'])) {
 							$errors[$key] = 'Please enter some content for '.$service->title().'.';
@@ -617,8 +686,21 @@ final class Social {
 
 				if (!count($errors)) {
 					$broadcast_accounts = array();
-					foreach (Social::$services as $key => $service) {
-						$broadcast_accounts[$key] = $_POST[Social::$prefix.$key.'_accounts'];
+					foreach ($services as $key => $service) {
+						$accounts = $_POST[Social::$prefix.$key.'_accounts'];
+						$_accounts = array();
+						foreach ($accounts as $account) {
+							$account = explode('|', $account);
+
+							$_accounts[] = array(
+								'id' => $account[0],
+								'global' => (isset($account[1]) ? true : false)
+							);
+						}
+
+						if (!empty($_accounts)) {
+							$broadcast_accounts[$key] = $_accounts;
+						}
 						update_post_meta($post_id, Social::$prefix.$key.'_content', $_POST[Social::$prefix.$key.'_content']);
 					}
 					update_post_meta($post_id, Social::$prefix.'broadcast_accounts', $broadcast_accounts);
@@ -679,7 +761,14 @@ final class Social {
 		}
 	}
 
-	$total_accounts = count($service->accounts());
+	$accounts = $service->accounts();
+	if (isset(Social::$global_services[$service->service])) {
+		foreach (Social::$global_services[$service->service]->accounts() as $id => $account) {
+			$accounts[$id] = (object) array_merge((array) $account, array('global' => true));
+		}
+	}
+
+	$total_accounts = count($accounts);
 	$heading = sprintf(__('Publish to %s:', Social::$i10n), ($total_accounts == '1' ? 'this account' : 'these accounts'));
 ?>
 <tr>
@@ -690,12 +779,12 @@ final class Social {
 	<td>
 		<textarea id="<?php echo $service->service.'_preview'; ?>" name="<?php echo Social::$prefix.$service->service.'_content'; ?>" class="social-preview-content" cols="40" rows="5"><?php echo ((isset($_POST[Social::$prefix.$service->service.'_content']) and !empty($_POST[Social::$prefix.$service->service.'_content'])) ? $_POST[Social::$prefix.$service->service.'_content'] : $content); ?></textarea><br />
 		<strong><?php echo $heading; ?></strong><br />
-		<?php foreach ($service->accounts() as $account): ?>
+		<?php foreach ($accounts as $account): ?>
 		<label class="social-broadcastable" for="<?php echo $service->service.$account->user->id; ?>" style="cursor:pointer">
 			<?php if ($total_accounts == '1'): ?>
-			<input type="hidden" name="<?php echo Social::$prefix.$service->service.'_accounts[]'; ?>" id="<?php echo $service->service.$account->user->id; ?>" value="<?php echo $account->user->id; ?>" />
+			<input type="hidden" name="<?php echo Social::$prefix.$service->service.'_accounts[]'; ?>" id="<?php echo $service->service.$account->user->id; ?>" value="<?php echo $account->user->id.(isset($account->global) ? '|true' : ''); ?>" />
 			<?php else: ?>
-			<input type="checkbox" name="<?php echo Social::$prefix.$service->service.'_accounts[]'; ?>" id="<?php echo $service->service.$account->user->id; ?>" value="<?php echo $account->user->id; ?>" checked="checked" />
+			<input type="checkbox" name="<?php echo Social::$prefix.$service->service.'_accounts[]'; ?>" id="<?php echo $service->service.$account->user->id; ?>" value="<?php echo $account->user->id.(isset($account->global) ? '|true' : ''); ?>" checked="checked" />
 			<?php endif; ?>
 			<img src="<?php echo $service->profile_avatar($account); ?>" width="24" height="24" />
 			<span><?php echo $service->profile_name($account); ?></span>
@@ -762,21 +851,47 @@ final class Social {
 	        $broadcast_accounts = get_post_meta($post->ID, Social::$prefix.'broadcast_accounts', true);
 	        if (!empty($broadcast_accounts)) {
 		        $ids = array();
-		        $send_error_notification = false;
-				foreach (Social::$services as $key => $service) {
+		        $errored_accounts = false;
+		        $services = array_merge(Social::$services, Social::$global_services);
+				foreach ($services as $key => $service) {
 					$notify = get_post_meta($post->ID, Social::$prefix.'notify_'.$key, true);
 
 					if ($notify == '1') {
 						$content = get_post_meta($post->ID, Social::$prefix.$key.'_content', true);
 						if (!empty($content)) {
-							foreach ($service->accounts() as $account) {
-								if (in_array($account->user->id, $broadcast_accounts[$key])) {
-									$response = $service->status_update($account, $content);
-									if ($service->check_deauthed($response, $account)) {
-										$ids[$key]["{$account->user->id}"] = $response->response->id;
+							foreach ($broadcast_accounts as $key => $accounts) {
+								foreach ($accounts as $account) {
+									$id = $account['id'];
+									if (isset($account['global'])) {
+										$global_accounts = Social::$global_services[$key]->accounts();
+										if (isset($global_accounts[$id])) {
+											$account = $global_accounts[$id];
+										}
+										else {
+											$account = false;
+										}
 									}
 									else {
-										$send_error_notification = true;
+										$user_accounts = Social::$services[$key]->accounts();
+										if (isset($user_accounts[$id])) {
+											$account = $user_accounts[$id];
+										}
+										else {
+											$account = false;
+										}
+									}
+
+									if ($account !== false) {
+										$response = $service->status_update($account, $content);
+										if ($service->check_deauthed($response, $account)) {
+											$ids[$key]["{$account->user->id}"] = $response->response->id;
+										}
+										else {
+											$errored_accounts[$service->service][] = $account;
+										}
+									}
+									else {
+										$errored_accounts[$service->service][] = $account;
 									}
 								}
 							}
@@ -788,15 +903,44 @@ final class Social {
 
 		        update_post_meta($post->ID, Social::$prefix.'broadcasted_ids', $ids);
 
-		        // Are we in XML_RPC?
-		        if ($send_error_notification) {
-					if (defined('XMLRPC_REQUEST') and XMLRPC_REQUEST === true) {
-						$this->send_publish_error_notification($post->ID);
-					}
+		        // Accounts errored?
+		        if ($errored_accounts !== false) {
+					$this->send_publish_error_notification($post, $errored_accounts);
 		        }
 		        update_post_meta($post->ID, Social::$prefix.'broadcasted', '1');
 	        }
         }
+	}
+
+	/**
+	 * Sends the error notification to the blog post author.
+	 *
+	 * @param  object  $post
+	 * @param  array   $errored_accounts
+	 * @return void
+	 */
+	private function send_publish_error_notification($post, $errored_accounts) {
+		$author = get_userdata($post->post_author);
+
+		$services = array_merge(Social::$services, Social::$global_services);
+
+		$message  = 'Hello,'."\n\n";
+		$message .= wordwrap('Social failed to broadcast the blog post "'.$post->post_title.'" to one or more of your Social accounts.', 60)."\n\n";
+		foreach ($errored_accounts as $service => $accounts) {
+			$message .= $services[$service]->title().':'."\n";
+			foreach ($accounts as $account) {
+				$message .= '- '.$services[$service]->profile_name($account)."\n";
+			}
+			$message .= "\n";
+		}
+		$message .= 'Please login and reauthenticate the above accounts if you'."\n";
+		$message .= 'wish to continue using them.'."\n\n";
+		$message .= 'Global accounts: '."\n";
+		$message .= Social_Helper::settings_url()."\n\n";
+		$message .= 'Personal accounts: '."\n";
+		$message .= admin_url('profile.php#social-networks')."\n\n";
+
+		wp_mail($author->user_email, get_bloginfo('name').': Failed to broadcast post with Social.', $message);
 	}
 
 	/**

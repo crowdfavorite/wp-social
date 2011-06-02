@@ -81,7 +81,12 @@ abstract class Social_Helper {
 	 * @return string
 	 */
 	public static function authorize_url($service, $admin = false) {
-		$url = ($admin ? admin_url('options-general.php?page=social.php') : site_url('?authorized=true'));
+		if (defined('IS_PROFILE_PAGE')) {
+			$url = admin_url('profile.php#social-networks');
+		}
+		else {
+			$url = ($admin ? admin_url('options-general.php?page=social.php') : site_url('?authorized=true'));
+		}
 		return Social::$api_url.$service.'/authorize?redirect_to='.urlencode($url);
 	}
 
@@ -103,12 +108,22 @@ abstract class Social_Helper {
 	 * @return string
 	 */
 	public static function settings_url(array $params = null) {
-		$path = 'options-general.php?page='.basename(SOCIAL_FILE);
+		if (defined('IS_PROFILE_PAGE')) {
+			$path = 'profile.php?';
+		}
+		else {
+			$path = 'options-general.php?page='.basename(SOCIAL_FILE).'&';
+		}
 
 		if ($params !== null) {
 			foreach ($params as $key => $value) {
-				$path .= '&'.$key.'='.urlencode($value);
+				$path .= $key.'='.urlencode($value).'&';
 			}
+			rtrim('&', $path);
+		}
+
+		if (IS_PROFILE_PAGE) {
+			$path .= '#social-networks';
 		}
 
 		return admin_url($path);
