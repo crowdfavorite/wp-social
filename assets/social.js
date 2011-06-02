@@ -14,7 +14,7 @@
 					if (!$this.hasClass('comments')) {
 						window.location.reload();
 					} else {
-						var $parent = $this.parent().parent().parent();
+						var $parent = $this.closest('.social-sign-in');
 						$parent.find('form').hide();
 						$parent.find('#loading').fadeIn();
 						$.get($parent.find('#reload_url').val(), {}, function(response){

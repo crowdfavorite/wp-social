@@ -6,7 +6,7 @@
 		<h2 class="social-title social-tab-active"><span>Profile</span></h2>
 	</div>
 
-	<div class="social-sign-in" id="respond">
+	<div class="social-sign-in">
 		<div id="loading" style="display:none">
 			<input type="hidden" id="reload_url" value="<?php echo site_url('?'.Social::$prefix.'action=reload_form&redirect_to='.$_SERVER['REQUEST_URI']); ?>" />
 			<img src="<?php echo admin_url('images/loading.gif'); ?>" style="position:relative;top:2px" /> Logging In...
