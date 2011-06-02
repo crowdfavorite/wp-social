@@ -1,21 +1,23 @@
 <div id="social">
+	<?php if (post_password_required()): ?>
+	<p class="nopassword"><?php _e('This post is password protected. Enter the password to view any comments.', Social::$i10n); ?></p>
+	<?php else: ?>
 	<div class="social-heading">
 		<h2 class="social-title social-tab-active"><span>Profile</span></h2>
 	</div>
-
+	
 	<div class="social-sign-in" id="respond">
-		<?php if (post_password_required()): ?>
-		<p class="nopassword"><?php _e('This post is password protected. Enter the password to view any comments.', Social::$i10n); ?></p>
-		<?php else: ?>
 		<div id="loading" style="display:none">
 			<input type="hidden" id="reload_url" value="<?php echo site_url('?'.Social::$prefix.'action=reload_form&redirect_to='.$_SERVER['REQUEST_URI']); ?>" />
 			<img src="<?php echo admin_url('images/loading.gif'); ?>" style="position:relative;top:2px" /> Logging In...
 		</div>
+		<?php if (comments_open()): ?>
 		<?php echo Social::comment_form(); ?>
+		<?php else: ?>
+		<?php do_action('comment_form_comments_closed'); ?>
 		<?php endif; ?>
 	</div>
 
-	<?php if (!post_password_required()): ?>
 	<div id="social-tabs-comments">
 		<?php if (have_comments()): ?>
 		<?php
