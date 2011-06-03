@@ -173,11 +173,25 @@
 }
 
 #social .social-sign-in-form .social-input-row input.social-input-text {
-	width: 322px;
+	float: left;
+	margin: 0 5px 10px 0;
+	width: 265px;
 }
 #social .social-sign-in-form .social-input-row textarea {
 	height: 90px;
 	width: 472px;
+}
+#social .social-comment #respond .social-input-row {
+	position: relative;
+}
+#social .social-comment #respond textarea {
+	width: 96%;
+}
+#social .social-comment #respond small {
+}
+#social-email-notice {
+	position: relative;
+	top: 4px;
 }
 
 #social .social-sign-in {
@@ -222,6 +236,7 @@
 }
 
 #social .social-sign-in-form .social-input-row {
+	clear: left;
 	margin-bottom: 10px;
 	padding-left: 88px;
 	position: relative;
@@ -277,13 +292,6 @@
  -------------------------------------------------- */
 
 /**
- * UI Tabs required JS
- */
-#social .ui-tabs .ui-tabs-hide {
-	display: none;
-}
-
-/**
  * Work around Javascript FOUC accessibly
  * Prevent flash before tabs init...
  * Relies on snippet in master.js
@@ -291,8 +299,7 @@
 .social-js .social-tabs-panel {
 	display: none;
 }
-.social-js .social-tabs-first-panel,
-.social-js .ui-tabs-panel /* Show after tabs init */ {
+.social-js .social-tabs-first-panel {
 	display: block;
 }
 
@@ -333,6 +340,7 @@
 }
 
 #social .social-comment {
+	position: relative;
 	border-top: 1px solid #e1e1e1;
 	border-left: 1px solid #e1e1e1;
 	-moz-border-radius-topleft: 4px; /* FF1+ */
@@ -363,6 +371,21 @@
 	 * @affected IE6
 	 */
 	width: 100%;
+}
+#social #respond {
+	background-color: transparent;
+}
+#social .social-comment #respond {
+	margin: 30px 0 0 60px;
+}
+#social .social-comment #cancel-comment-reply-link {
+	float: left;
+	position: relative;
+	top: 0;
+	right: 0;
+	margin: 3px 10px;
+	font-size: 12px;
+	text-transform: none;
 }
 
 #social .social-comment-header .avatar {
@@ -541,7 +564,7 @@
 
 /* Tab graphical treatment - selected tabs, and section headers*/
 
-#social .ui-tabs-selected,
+#social .social-current-tab,
 #social .social-heading .social-title  {
 	background: url('sprite-y-24.png') right -300px no-repeat;
 	display: -moz-inline-box; /* FF2 */
@@ -554,7 +577,7 @@
 	zoom: 1;
 	*display: inline;
 }
-#social .ui-tabs-selected a,
+#social .social-current-tab a,
 #social .social-heading .social-title span {
 	background: url('sprite-y-24.png') 0 -200px no-repeat;
 	color: #000;
@@ -577,16 +600,15 @@
 #post_to {
 	float: left;
 	white-space: nowrap;
-	position: relative;
-	top: 3px;
-	left: 10px;
 }
 
-#post_to label {
+#social .social-sign-in-form .social-input-row #post_to label {
 	cursor: pointer;
-	position: inherit!important;
-	top: 0;
-	left: 0;
+	position: relative;
+	top: -3px;
+	left: 10px;
+	margin-right: 10px;
+	width: auto;
 }
 
 #post_to input {

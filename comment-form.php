@@ -19,7 +19,7 @@
 	<div class="social-input-row">
 		<label for="social-sign-in-email"><?php _e('Email', Social::$i18n); ?></label>
 		<input class="social-input-text" type="text" id="social-sign-in-email" name="email" />
-		<em>We'll kept this private</em>
+		<em id="social-email-notice">We'll kept this private</em>
 	</div>
 	<div class="social-input-row">
 		<label for="social-sign-in-website"><?php _e('Website', Social::$i18n); ?></label>
@@ -84,8 +84,8 @@
 				<?php endforeach; ?>
 			<?php endif; ?>
 		<?php endif; ?>
+		<?php cancel_comment_reply_link(__('Cancel reply', Social::$i18n)); ?>
 		<div style="clear:both;"></div>
-		<small><?php cancel_comment_reply_link(__('Cancel reply', Social::$i18n)); ?></small>
 	</div>
 </div>
 </form>

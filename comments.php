@@ -18,7 +18,7 @@
 					<?php do_action('comment_form_must_log_in_after'); ?>
 				<?php endif; ?>
 			<?php else : ?>
-			<div id="responsd">
+			<div id="respond">
 				<?php echo Social::comment_form(); ?>
 			</div>
 			<?php endif; ?>
@@ -31,26 +31,30 @@
 	<div id="social-tabs-comments">
 		<?php if (have_comments()): ?>
 		<?php
-			$groups = array(
-				'wordpress' => array(),
-				'twitter' => array(),
-				'facebook' => array(),
-			);
+			$groups = array();
 			foreach ($comments as $comment) {
-				$type = (empty($comment->comment_type) ? 'wordpress' : $comment->comment_type);
-				$groups[$type][] = $comment;
-			}
+				if (empty($comment->comment_type)) {
+					$comment_type = get_comment_meta($comment->comment_ID, Social::$prefix.'comment_type', true);
+					if (empty($comment_type)) {
+						$comment_type = 'wordpress';
+					}
+					$comment->comment_type = $comment_type;
+				}
 
-			foreach ($groups as $type => $data) {
-				$groups[$type] = array_reverse($data);
+				if (!isset($groups[$comment->comment_type])) {
+					$groups[$comment->comment_type] = 1;
+				}
+				else {
+					++$groups[$comment->comment_type];
+				}
 			}
 		?>
 		<ul class="social-nav social-clearfix">
-			<li class="social-all social-tab-main"><a href="#social-comments-tab-all"><span><?php printf(_n('1 Reply', '%1$s Replies', get_comments_number(), Social::$i18n), get_comments_number()); ?></span></a></li>
-			<li class="social-wordpress"><a href="#social-comments-tab-wordpress"><span><?php printf(_n('1 Comment', '%1$s Comments', count($groups['wordpress']), Social::$i18n), count($groups['wordpress'])); ?></span></a></li>
-			<li class="social-twitter"><a href="#social-comments-tab-twitter"><span><?php printf(_n('1 Tweet', '%1$s Tweets', count($groups['twitter']), Social::$i18n), count($groups['twitter'])); ?></span></a></li>
-			<li class="social-facebook"><a href="#social-comments-tab-facebook"><span><?php printf(_n('1 Facebook', '%1$s Facebook', count($groups['facebook']), Social::$i18n), count($groups['facebook'])); ?></span></a></li>
-			<li class="social-pingback"><a href="#social-comments-tab-pingback"><span><?php printf(_n('1 Pingback', '%1$s Pingbacks', count($groups['pingback']), Social::$i18n), count($groups['pingback'])); ?></span></a></li>
+			<li class="social-all social-tab-main social-current-tab"><a href="#" rel="social-all"><span><?php comments_number(__('0 Replies', Social::$i18n), __('1 Reply', Social::$i18n), __('% Replies', Social::$i18n)); ?></span></a></li>
+			<li class="social-wordpress"><a href="#" rel="social-wordpress"><span><?php printf(_n('1 Comment', '%1$s Comments', $groups['wordpress'], Social::$i18n), $groups['wordpress']); ?></span></a></li>
+			<li class="social-twitter"><a href="#" rel="social-twitter"><span><?php printf(_n('1 Tweet', '%1$s Tweets', $groups['twitter'], Social::$i18n), (isset($groups['twitter']) ? $groups['twitter'] : 0)); ?></span></a></li>
+			<li class="social-facebook"><a href="#" rel="social-facebook"><span><?php printf(_n('1 Facebook', '%1$s Facebook', $groups['facebook'], Social::$i18n), (isset($groups['facebook']) ? $groups['facebook'] : 0)); ?></span></a></li>
+			<li class="social-pingback"><a href="#" rel="social-pingback"><span><?php printf(_n('1 Pingback', '%1$s Pingbacks', $groups['pingback'], Social::$i18n), (isset($groups['pingback']) ? $groups['pingback'] : 0)); ?></span></a></li>
 		</ul>
 
 		<!-- panel items -->
@@ -60,54 +64,6 @@
 				<ol class="social-commentlist">
 					<?php wp_list_comments(array('callback' => array('Social', 'comment'), 'walker' => new Social_Walker_Comment)); ?>
 				</ol>
-			</div><!-- #comments -->
-		</div>
-		<div id="social-comments-tab-wordpress" class="social-tabs-panel">
-			<div class="social-comments">
-				<?php if (count($groups['wordpress'])): ?>
-				<div class="social-last-reply-when"><?php printf(__('Last reply was %s ago', Social::$i18n), human_time_diff(strtotime($groups['wordpress'][0]->comment_date))); ?></div>
-				<ol class="social-commentlist">
-					<?php wp_list_comments(array('type' => 'comment', 'callback' => array('Social', 'comment'), 'walker' => new Social_Walker_Comment)); ?>
-				</ol>
-				<?php else: ?>
-				<p class="social-comments-no-comments wordpress"><?php _e('There are no comments.', Social::$i18n); ?></p>
-				<?php endif; ?>
-			</div><!-- #comments -->
-		</div>
-		<div id="social-comments-tab-twitter" class="social-tabs-panel">
-			<div class="social-comments">
-				<?php if (count($groups['twitter'])): ?>
-				<div class="social-last-reply-when"><?php printf(__('Last reply was %s ago', Social::$i18n), human_time_diff(strtotime($groups['twitter'][0]->comment_date))); ?></div>
-				<ol class="social-commentlist">
-					<?php wp_list_comments(array('type' => 'twitter', 'callback' => array('Social', 'comment'), 'walker' => new Social_Walker_Comment)); ?>
-				</ol>
-				<?php else: ?>
-				<p class="social-comments-no-comments twitter"><?php _e('There are no Twitter comments.', Social::$i18n); ?></p>
-				<?php endif; ?>
-			</div><!-- #comments -->
-		</div>
-		<div id="social-comments-tab-facebook" class="social-tabs-panel">
-			<div class="social-comments">
-				<?php if (count($groups['facebook'])): ?>
-				<div class="social-last-reply-when"><?php printf(__('Last reply was %s ago', Social::$i18n), human_time_diff(strtotime($groups['facebook'][0]->comment_date))); ?></div>
-				<ol class="social-commentlist">
-					<?php wp_list_comments(array('type' => 'facebook', 'callback' => array('Social', 'comment'), 'walker' => new Social_Walker_Comment)); ?>
-				</ol>
-				<?php else: ?>
-				<p class="social-comments-no-comments facebook"><?php _e('There are no Facebook comments.', Social::$i18n); ?></p>
-				<?php endif; ?>
-			</div><!-- #comments -->
-		</div>
-		<div id="social-comments-tab-pingback" class="social-tabs-panel">
-			<div class="social-comments">
-				<?php if (count($groups['pingback'])): ?>
-				<div class="social-last-reply-when"><?php printf(__('Last pingback was %s ago', Social::$i18n), human_time_diff(strtotime($groups['pingback'][0]->comment_date))); ?></div>
-				<ol class="social-commentlist">
-					<?php wp_list_comments(array('type' => 'pingback', 'callback' => array('Social', 'comment'), 'walker' => new Social_Walker_Comment)); ?>
-				</ol>
-				<?php else: ?>
-				<p class="social-comments-no-comments pingbacks"><?php _e('There are no pingbacks.', Social::$i18n); ?></p>
-				<?php endif; ?>
 			</div><!-- #comments -->
 		</div>
 		<?php else: ?>

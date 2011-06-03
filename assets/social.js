@@ -42,7 +42,35 @@
 			c.className += ' social-js';
 
 			// MCC Tabs
-			$('#social-tabs-comments').tabs();
+			$('.social-nav a').click(function(e){
+				e.preventDefault();
+				$('#cancel-comment-reply-link').trigger('click');
+
+				$('.social-current-tab').removeClass('social-current-tab');
+				$(this).parent().addClass('social-current-tab');
+
+				var className = $(this).attr('rel');
+				if (className == 'social-all') {
+					$('.social-commentlist').find('.social-comment-author img, .social-comment-body, .social-actions').show();
+				} else {
+					$('.social-commentlist li').each(function(){
+						if (!$(this).hasClass(className)) {
+							$(this).find('.social-comment-author img, .social-comment-body, .social-actions').hide();
+						}
+						else {
+							$(this).find('.social-comment-author img, .social-comment-body, .social-actions').show();
+						}
+					});
+				}
+			});
+
+			$('.comment-reply-link').click(function(){
+				$(this).hide();
+			});
+
+			$('#cancel-comment-reply-link').click(function(){
+				$('.comment-reply-link').show();
+			});
 		}
 		// wp-admin
 		else {

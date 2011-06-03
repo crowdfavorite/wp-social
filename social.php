@@ -283,8 +283,7 @@ final class Social {
 		else {
 			wp_enqueue_style('social_css', plugins_url('/assets/comments.css', SOCIAL_FILE), array(), Social::$version, 'screen, tv, projection');
 			wp_enqueue_script('jquery');
-			wp_enqueue_script('jquery-ui-tabs');
-			wp_enqueue_script('social_js', plugins_url('/assets/social.js', SOCIAL_FILE), array('jquery', 'jquery-ui-tabs'), Social::$version, true);
+			wp_enqueue_script('social_js', plugins_url('/assets/social.js', SOCIAL_FILE), array('jquery'), Social::$version, true);
 		}
 
 		if (version_compare(PHP_VERSION, '5.2.1', '<')) {
@@ -1029,9 +1028,16 @@ final class Social {
 	 * @param  int     $depth
 	 */
 	public function comment($comment, $args, $depth) {
+		if (empty($comment->comment_type)) {
+			$comment_type = get_comment_meta($comment->comment_ID, Social::$prefix.'comment_type', true);
+			if (empty($comment_type)) {
+				$comment_type = 'wordpress';
+			}
+			$comment->comment_type = $comment_type;
+		}
 		$GLOBALS['comment'] = $comment;
 ?>
-<li class="social-comment social-<?php echo (empty($comment->comment_type) ? 'wordpress' : $comment->comment_type); ?>" id="li-comment-<?php comment_ID(); ?>">
+<li class="social-comment social-<?php echo $comment->comment_type; ?>" id="li-comment-<?php comment_ID(); ?>">
 	<div class="social-comment-inner" id="comment-<?php comment_ID(); ?>">
 		<div class="social-comment-header">
 			<div class="social-comment-author vcard">
