@@ -32,9 +32,7 @@ abstract class Social_Helper {
 
 		if (!is_wp_error($request)) {
 			$body = $request['body'];
-			if ($service == 'twitter') {
-				$body = preg_replace('/"id":(\d+)/', '"id":"$1"', $body); // Hack for json_decode on 32-bit systems
-			}
+			$body = apply_filters(Social::$prefix.'request_body', $body);
 			$body = json_decode($body);
 			return $body;
 		}

@@ -5,6 +5,7 @@
  * @package Social
  */
 add_filter(Social::$prefix.'register_service', array('Social_Twitter', 'register_service'));
+add_filter(Social::$prefix.'request_body', array('Social_Twitter', 'request_body'));
 
 final class Social_Twitter extends Social_Service implements Social_IService {
 
@@ -21,6 +22,17 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 		);
 
 		return $services;
+	}
+
+	/**
+	 * Hack to fix the "Twitpocalypse" bug on 32-bit systems.
+	 *
+	 * @static
+	 * @param  string  $body
+	 * @return string
+	 */
+	public static function request_body($body) {
+		return preg_replace('/"id":(\d+)/', '"id":"$1"', $body);
 	}
 
 	/**
