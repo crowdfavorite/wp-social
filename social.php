@@ -74,7 +74,7 @@ final class Social {
 	/**
 	 * @var  string  domain to use for i10n
 	 */
-	public static $i10n = 'social';
+	public static $i18n = 'social';
 
 	/**
 	 * @var  array  services registered to Social
@@ -214,7 +214,7 @@ final class Social {
 	public function install() {
 		if (version_compare(PHP_VERSION, '5.2.1', '<')) {
 			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
-			wp_die(__("Sorry, Social requires PHP 5.2.1 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i10n));
+			wp_die(__("Sorry, Social requires PHP 5.2.1 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i18n));
 		}
 	}
 
@@ -272,7 +272,7 @@ final class Social {
 		}
 
 		if (version_compare(PHP_VERSION, '5.2.1', '<')) {
-			wp_die(__("Sorry, Social requires PHP 5.2.1 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i10n));
+			wp_die(__("Sorry, Social requires PHP 5.2.1 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i18n));
 		}
 
 		// Load Twitter/Facebook
@@ -344,7 +344,7 @@ final class Social {
 	 * Displays the upgrade message.
 	 */
 	public function display_upgrade() {
-		$message = sprintf(__('To broadcast to Twitter or Facebook, please update your <a href="%s">Social settings</a>', Social::$i10n), Social_Helper::settings_url());
+		$message = sprintf(__('To broadcast to Twitter or Facebook, please update your <a href="%s">Social settings</a>', Social::$i18n), Social_Helper::settings_url());
 		echo '<div class="error"><p>'.$message.'</p></div>';
 	}
 
@@ -500,7 +500,7 @@ final class Social {
 		// Already broadcasted?
 		$broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted', true);
 		if (!Social::$update and $broadcasted != '1' and $post->post_status != 'publish') {
-			add_meta_box(Social::$prefix.'meta_broadcast', __('Social', Social::$i10n), array($this, 'add_meta_box'), 'post', 'side', 'core');
+			add_meta_box(Social::$prefix.'meta_broadcast', __('Social', Social::$i18n), array($this, 'add_meta_box'), 'post', 'side', 'core');
 		}
     }
 
@@ -518,9 +518,9 @@ final class Social {
 ?>
 <input type="hidden" name="<?php echo Social::$prefix.'notify[]'; ?>" value="<?php echo $key; ?>" />
 <div style="padding:10px 0">
-	<span class="service-label"><?php _e('Send post to '.$service->title().'?', Social::$i10n); ?></span>
-	<input type="radio" name="<?php echo Social::$prefix.'notify_'.$key; ?>" id="<?php echo Social::$prefix.'notify_'.$key.'_yes'; ?>" class="social-toggle" value="1" <?php echo checked('1', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$key.'_yes'; ?>" class="social-toggle-label"><?php _e('Yes', Social::$i10n); ?></label>
-	<input type="radio" name="<?php echo Social::$prefix.'notify_'.$key; ?>" id="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle" value="0" <?php echo checked('0', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle-label"><?php _e('No', Social::$i10n); ?></label>
+	<span class="service-label"><?php _e('Send post to '.$service->title().'?', Social::$i18n); ?></span>
+	<input type="radio" name="<?php echo Social::$prefix.'notify_'.$key; ?>" id="<?php echo Social::$prefix.'notify_'.$key.'_yes'; ?>" class="social-toggle" value="1" <?php echo checked('1', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$key.'_yes'; ?>" class="social-toggle-label"><?php _e('Yes', Social::$i18n); ?></label>
+	<input type="radio" name="<?php echo Social::$prefix.'notify_'.$key; ?>" id="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle" value="0" <?php echo checked('0', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle-label"><?php _e('No', Social::$i18n); ?></label>
 </div>
 <?php
 				}
@@ -547,8 +547,8 @@ final class Social {
 	 */
 	public function admin_menu() {
 		add_options_page(
-			__('Social Options', Social::$i10n),
-			__('Social', Social::$i10n),
+			__('Social Options', Social::$i18n),
+			__('Social', Social::$i18n),
 			'manage_options',
 			basename(__FILE__),
 			array($this, 'admin_options_form')
@@ -565,19 +565,19 @@ final class Social {
 <input type="hidden" name="<?php echo Social::$prefix; ?>action" value="settings" />
 <?php if (isset($_GET['saved'])): ?>
 <div id="message" class="updated">
-	<p><strong><?php _e('Social settings have been updated.', Social::$i10n); ?></strong></p>
+	<p><strong><?php _e('Social settings have been updated.', Social::$i18n); ?></strong></p>
 </div>
 <?php endif; ?>
 <div class="wrap" id="social_options_page">
-	<h2><?php _e('Social Options', Social::$i10n); ?></h2>
+	<h2><?php _e('Social Options', Social::$i18n); ?></h2>
 
-	<h3><?php _e('Broadcasting Format', Social::$i10n); ?></h3>
+	<h3><?php _e('Broadcasting Format', Social::$i18n); ?></h3>
 	<p><?php _e('Define how you would like your posts to be formatted when being broadcasted.'); ?></p>
 
 	<table class="form-table">
 		<tr>
 			<th style="width:100px" colspan="2">
-				<strong><?php _e('Tokens:', Social::$i10n); ?></strong>
+				<strong><?php _e('Tokens:', Social::$i18n); ?></strong>
 				<ul style="margin:10px 0 0 15px;">
 					<?php foreach (Social::broadcast_tokens() as $token => $description): ?>
 					<li><span style="float:left;width:60px"><?php echo $token; ?></span> - <?php echo $description; ?></li>
@@ -592,8 +592,8 @@ final class Social {
 	</table>
 	<p class="submit"><input type="submit" name="submit" value="Save Settings" class="button-primary" /></p>
 
-	<h3 id="social-networks"><?php _e('Connect to Social Networks', Social::$i10n); ?></h3>
-	<p><?php _e('Before blog authors can broadcast to social networks you need to connect some accounts. <strong>These accounts will be accessible by every blog author.</strong>', Social::$i10n); ?></p>
+	<h3 id="social-networks"><?php _e('Connect to Social Networks', Social::$i18n); ?></h3>
+	<p><?php _e('Before blog authors can broadcast to social networks you need to connect some accounts. <strong>These accounts will be accessible by every blog author.</strong>', Social::$i18n); ?></p>
 	<?php foreach (Social::$global_services as $key => $service): ?>
 	<div class="social-settings-connect">
 		<?php foreach ($service->accounts() as $account): ?>
@@ -602,12 +602,12 @@ final class Social {
 			$profile_name = $service->profile_name($account);
 			$url = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
 			$disconnect = $service->disconnect_url($account, true);
-			$output = sprintf(__('Connected to %s. %s', Social::$i10n), $url, $disconnect);
+			$output = sprintf(__('Connected to %s. %s', Social::$i18n), $url, $disconnect);
 		?>
 		<span class="social-<?php echo $key; ?>-icon big"><i></i><?php echo $output; ?></span>
 		<?php endforeach; ?>
 
-		<a href="<?php echo Social_Helper::authorize_url($key, true); ?>" id="<?php echo $key; ?>_signin" class="social-login"><span><?php _e('Sign In With '.$service->title, Social::$i10n); ?></span></a>
+		<a href="<?php echo Social_Helper::authorize_url($key, true); ?>" id="<?php echo $key; ?>_signin" class="social-login"><span><?php _e('Sign In With '.$service->title, Social::$i18n); ?></span></a>
 	</div>
 	<?php endforeach; ?>
 	<div style="clear:both"></div>
@@ -624,8 +624,8 @@ final class Social {
 	 */
 	public function show_user_profile($profileuser) {
 ?>
-	<h3 id="social-networks"><?php _e('Connect to Social Networks', Social::$i10n); ?></h3>
-	<p><?php _e('Before you can broadcast to your social networks, you will need to connect your account(s).', Social::$i10n); ?></p>
+	<h3 id="social-networks"><?php _e('Connect to Social Networks', Social::$i18n); ?></h3>
+	<p><?php _e('Before you can broadcast to your social networks, you will need to connect your account(s).', Social::$i18n); ?></p>
 	<?php foreach (Social::$services as $key => $service): ?>
 	<div class="social-settings-connect">
 		<?php foreach ($service->accounts() as $account): ?>
@@ -634,12 +634,12 @@ final class Social {
 			$profile_name = $service->profile_name($account);
 			$url = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
 			$disconnect = $service->disconnect_url($account, true);
-			$output = sprintf(__('Connected to %s. %s', Social::$i10n), $url, $disconnect);
+			$output = sprintf(__('Connected to %s. %s', Social::$i18n), $url, $disconnect);
 		?>
 		<span class="social-<?php echo $key; ?>-icon big"><i></i><?php echo $output; ?></span>
 		<?php endforeach; ?>
 
-		<a href="<?php echo Social_Helper::authorize_url($key, true); ?>" id="<?php echo $key; ?>_signin" class="social-login"><span><?php _e('Sign In With '.$service->title, Social::$i10n); ?></span></a>
+		<a href="<?php echo Social_Helper::authorize_url($key, true); ?>" id="<?php echo $key; ?>_signin" class="social-login"><span><?php _e('Sign In With '.$service->title, Social::$i18n); ?></span></a>
 	</div>
 	<?php endforeach; ?>
 	<div style="clear:both"></div>
@@ -726,7 +726,7 @@ final class Social {
 	?>
 </head>
 <body>
-<h1 id="logo"><?php _e('Social Broadcasting Options', Social::$i10n); ?></h1>
+<h1 id="logo"><?php _e('Social Broadcasting Options', Social::$i18n); ?></h1>
 <?php if (count($errors)): ?>
 <div id="social_error">
 	<?php foreach ($errors as $error): ?>
@@ -734,7 +734,7 @@ final class Social {
 	<?php endforeach; ?>
 </div>
 <?php endif; ?>
-<p><?php __('You have chosen to broadcast this blog post to your social accounts. Use the form below to edit your broadcasted messages.', Social::$i10n); ?></p>
+<p><?php __('You have chosen to broadcast this blog post to your social accounts. Use the form below to edit your broadcasted messages.', Social::$i18n); ?></p>
 <form id="setup" method="post" action="<?php echo admin_url(); ?>">
 <?php wp_nonce_field(); ?>
 <input type="hidden" name="post_ID" value="<?php echo $post_id; ?>" />
@@ -769,11 +769,11 @@ final class Social {
 	}
 
 	$total_accounts = count($accounts);
-	$heading = sprintf(__('Publish to %s:', Social::$i10n), ($total_accounts == '1' ? 'this account' : 'these accounts'));
+	$heading = sprintf(__('Publish to %s:', Social::$i18n), ($total_accounts == '1' ? 'this account' : 'these accounts'));
 ?>
 <tr>
 	<th scope="row">
-		<label for="<?php echo $service->service.'_preview'; ?>"><?php _e($service->title(), Social::$i10n); ?></label><br />
+		<label for="<?php echo $service->service.'_preview'; ?>"><?php _e($service->title(), Social::$i18n); ?></label><br />
 		<span id="<?php echo $service->service.'_counter'; ?>" class="social-preview-counter"><?php echo $counter; ?></span>
 	</th>
 	<td>
@@ -795,7 +795,7 @@ final class Social {
 <?php endforeach; ?>
 </table>
 <p class="step">
-	<input type="submit" value="<?php _e(($post->post_status == 'future' ? 'Schedule' : 'Publish'), Social::$i10n); ?>" class="button" />
+	<input type="submit" value="<?php _e(($post->post_status == 'future' ? 'Schedule' : 'Publish'), Social::$i18n); ?>" class="button" />
 	<a href="<?php echo get_edit_post_link($post_id, 'url'); ?>" class="button">Cancel</a>
 </p>
 </form>
@@ -1016,10 +1016,10 @@ final class Social {
 				<?php echo get_avatar($comment, 40); ?>
 				<?php printf('<cite class="social-fn fn">%s</cite>', get_comment_author_link()); ?>
 				<?php if ($depth > 1): ?>
-					<span class="social-replied social-imr"><?php _e('replied:', Social::$i10n); ?></span>
+					<span class="social-replied social-imr"><?php _e('replied:', Social::$i18n); ?></span>
 				<?php endif; ?>
 			</div><!-- .comment-author .vcard -->
-			<div class="social-comment-meta"><span class="social-posted-from"><?php _e('via Twitter', Social::$i10n); ?></span> <a href="<?php echo get_comment_link(get_comment_ID()); ?>" class="social-posted-when"><?php printf(__('%s ago', Social::$i10n), human_time_diff(strtotime($comment->comment_date))); ?></a></div>
+			<div class="social-comment-meta"><span class="social-posted-from"><?php _e('via Twitter', Social::$i18n); ?></span> <a href="<?php echo get_comment_link(get_comment_ID()); ?>" class="social-posted-when"><?php printf(__('%s ago', Social::$i18n), human_time_diff(strtotime($comment->comment_date))); ?></a></div>
 		</div>
 		<div class="social-comment-body">
 			<?php if ($comment->comment_approved == '0'): ?>

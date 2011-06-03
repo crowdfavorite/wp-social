@@ -3,40 +3,40 @@
 <?php if (!is_user_logged_in()): ?>
 <div class="social-sign-in-links social-clearfix">
 	<?php foreach (Social::$services as $key => $service): ?>
-	<a class="social-<?php echo $key; ?> social-imr social-login comments" href="<?php echo Social_Helper::authorize_url($key); ?>" id="<?php echo $key; ?>_signin"><?php _e('Sign in with '.$service->title(), Social::$i10n); ?></a>
+	<a class="social-<?php echo $key; ?> social-imr social-login comments" href="<?php echo Social_Helper::authorize_url($key); ?>" id="<?php echo $key; ?>_signin"><?php _e('Sign in with '.$service->title(), Social::$i18n); ?></a>
 	<?php endforeach; ?>
 </div>
 <div class="social-divider">
-	<span><?php _e('or', Social::$i10n); ?></span>
+	<span><?php _e('or', Social::$i18n); ?></span>
 </div>
 <?php endif; ?>
 <div class="social-sign-in-form">
 	<?php if (!is_user_logged_in()): ?>
 	<div class="social-input-row">
-		<label for="social-sign-in-name"><?php _e('Name', Social::$i10n); ?></label>
+		<label for="social-sign-in-name"><?php _e('Name', Social::$i18n); ?></label>
 		<input class="social-input-text" type="text" id="social-sign-in-name" name="author" />
 	</div>
 	<div class="social-input-row">
-		<label for="social-sign-in-email"><?php _e('Email', Social::$i10n); ?></label>
+		<label for="social-sign-in-email"><?php _e('Email', Social::$i18n); ?></label>
 		<input class="social-input-text" type="text" id="social-sign-in-email" name="email" />
 		<em>We'll kept this private</em>
 	</div>
 	<div class="social-input-row">
-		<label for="social-sign-in-website"><?php _e('Website', Social::$i10n); ?></label>
+		<label for="social-sign-in-website"><?php _e('Website', Social::$i18n); ?></label>
 		<input class="social-input-text" type="text" id="social-sign-in-website" name="url" />
 	</div>
 	<?php endif; ?>
 	<div class="social-input-row">
-		<label for="social-sign-in-comment"><?php _e('Comment', Social::$i10n); ?></label>
+		<label for="social-sign-in-comment"><?php _e('Comment', Social::$i18n); ?></label>
 		<textarea id="social-sign-in-comment" name="comment"></textarea>
 	</div>
 	<div class="social-input-row">
-		<button type="submit" class="social-input-submit" style="float:left;"><span><?php _e('Post It', Social::$i10n); ?></span></button>
+		<button type="submit" class="social-input-submit" style="float:left;"><span><?php _e('Post It', Social::$i18n); ?></span></button>
 		<?php if (is_user_logged_in()): ?>
 			<?php if (current_user_can('manage_options')): ?>
 				<span style="float:left;margin:4px 10px;">via</span>
 				<select id="post_accounts" name="<?php echo Social::$prefix; ?>post_account" style="float:left;">
-					<option value=""><?php _e('WordPress Account', Social::$i10n); ?></option>
+					<option value=""><?php _e('WordPress Account', Social::$i18n); ?></option>
 					<?php foreach (array_merge(Social::$services, Social::$global_services) as $key => $service): ?>
 						<?php
 							$accounts = Social::$services[$key]->accounts();
@@ -47,7 +47,7 @@
 							}
 						?>
 						<?php if (count($accounts)): ?>
-						<optgroup label="<?php _e(ucfirst($key), Social::$i10n); ?>">
+						<optgroup label="<?php _e(ucfirst($key), Social::$i18n); ?>">
 							<?php foreach ($accounts as $account): ?>
 							<option value="<?php echo $account->user->id; ?>"><?php echo $service->profile_name($account); ?></option>
 							<?php endforeach; ?>
@@ -65,7 +65,7 @@
 				<?php foreach (Social::$services as $key => $service): ?>
 					<?php if (count($service->accounts())): ?>
 					<?php $account = reset($service->accounts()); ?>
-					<span style="float:left;margin:4px 10px;"><?php _e('via', Social::$i10n); ?></span>
+					<span style="float:left;margin:4px 10px;"><?php _e('via', Social::$i18n); ?></span>
 					<div style="float:left;margin-top:5px;">
 						<span class="social-<?php echo $key; ?>-icon">
 							<i></i>
@@ -85,7 +85,7 @@
 			<?php endif; ?>
 		<?php endif; ?>
 		<div style="clear:both;"></div>
-		<small><?php cancel_comment_reply_link(__('Cancel reply', Social::$i10n)); ?></small>
+		<small><?php cancel_comment_reply_link(__('Cancel reply', Social::$i18n)); ?></small>
 	</div>
 </div>
 </form>

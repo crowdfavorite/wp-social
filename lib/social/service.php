@@ -244,7 +244,7 @@ abstract class Social_Service {
 		);
 		if ($is_admin) {
 			$url = Social_Helper::settings_url($params);
-			$text = '<img src="'.plugins_url('/assets/delete.png', SOCIAL_FILE).'" alt="'.__('Disconnect', Social::$i10n).'" />';
+			$text = '<img src="'.plugins_url('/assets/delete.png', SOCIAL_FILE).'" alt="'.__('Disconnect', Social::$i18n).'" />';
 		}
 		else {
 			$path = array();
