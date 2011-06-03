@@ -48,6 +48,7 @@ add_filter('get_avatar_comment_types', array($social, 'get_avatar_comment_types'
 add_filter('get_avatar', array($social, 'get_avatar'), 10, 5);
 add_filter('register', array($social, 'register'));
 add_filter('loginout', array($social, 'loginout'));
+add_filter('cron_schedules', array($social, 'cron_schedules'));
 
 /**
  * Social Core
@@ -225,6 +226,21 @@ final class Social {
 		wp_clear_scheduled_hook(Social::$prefix.'aggregate_comments');
 	}
 
+
+	/**
+	 * Adds the 15 minute interval.
+	 *
+	 * @param  array  $schedules
+	 * @return array
+	 */
+	public function cron_schedules($schedules) {
+		$schedules['every15min'] = array(
+			'interval' => 900,
+			'display' => 'Every 15 minutes'
+		);
+		return $schedules;
+	}
+
 	/**
 	 * Initializes the plugin.
 	 */
@@ -312,7 +328,13 @@ final class Social {
 
 		// Schedule the CRON?
 		if (wp_next_scheduled(Social::$prefix.'aggregate_comments') === false) {
-			wp_schedule_event(time() + 1200, 'hourly', Social::$prefix.'aggregate_comments');
+			wp_schedule_event(time() + 3600, 'hourly', Social::$prefix.'aggregate_comments');
+		}
+		if (wp_next_scheduled(Social::$prefix.'cron_15') === false) {
+			wp_schedule_event(time() + 900, 'every15min', Social::$prefix.'cron_15');
+		}
+		if (wp_next_scheduled(Social::$prefix.'cron_60') === false) {
+			wp_schedule_event(time() + 3600, 'hourly', Social::$prefix.'cron_60');
 		}
 
 		// Register the Social services
@@ -1070,20 +1092,17 @@ final class Social {
 
 						update_comment_meta($comment_ID, Social::$prefix.'account_id', $account_id);
 						update_comment_meta($comment_ID, Social::$prefix.'profile_image_url', $service->profile_avatar($account));
-						$sql = "
-							UPDATE $wpdb->comments
-							   SET comment_type='$key'
-						";
+						update_comment_meta($comment_ID, Social::$prefix.'comment_type', $service->service);
+
 						if ($commentdata['user_ID'] != '0') {
-							$sql .= "
-							    , comment_author='{$service->profile_name($account)}'
-							    , comment_author_url='{$service->profile_url($account)}'
+							$sql = "
+								UPDATE $wpdb->comments
+								   SET comment_author='{$service->profile_name($account)}',
+									   comment_author_url='{$service->profile_url($account)}'
+								 WHERE comment_ID='$comment_ID'
 							";
+							$wpdb->query($sql);
 						}
-						$sql .= "
-							 WHERE comment_ID='$comment_ID'
-						";
-						$wpdb->query($sql);
 						break;
 					}
 				}
