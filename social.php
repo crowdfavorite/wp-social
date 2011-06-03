@@ -406,7 +406,7 @@ final class Social {
 			);
 
 			// Add the account to the service.
-			if (defined('IS_PROFILE_PAGE')) {
+			if (!defined('IS_PROFILE_PAGE')) {
 				$service = $this->service($data->service)->account($account);
 			}
 			else {

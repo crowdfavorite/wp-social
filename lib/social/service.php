@@ -120,7 +120,7 @@ abstract class Social_Service {
 	 * @return void
 	 */
 	public function save($account = null) {
-		if (defined('IS_PROFILE_PAGE')) {
+		if (!defined('IS_PROFILE_PAGE')) {
 			$accounts = get_user_meta(get_current_user_id(), Social::$prefix.'accounts', true);
 			if ($account === null) {
 				$accounts[$this->service] = $this->accounts;

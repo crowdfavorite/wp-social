@@ -49,9 +49,9 @@ abstract class Social_Helper {
 	 */
 	public static function create_user($service, $username) {
 		// Make sure the user doesn't exist
-		$user = get_userdatabylogin($username);
+		$user = get_userdatabylogin($service.'_'.$username);
 		if ($user === false) {
-			$id = wp_create_user($username, wp_generate_password(20, false), self::create_email($service, $username));
+			$id = wp_create_user($service.'_'.$username, wp_generate_password(20, false), self::create_email($service, $username));
 			update_user_meta($id, Social::$prefix.'commenter', '1');
 			update_user_option($id, 'show_admin_bar_front', 'false');
 		}
