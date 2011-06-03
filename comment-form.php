@@ -1,4 +1,19 @@
+<?php
+$use_twitter_reply = 0;
+if (is_user_logged_in() and !current_user_can('manage_options')) {
+	foreach (Social::$services as $key => $service) {
+		if (count($service->accounts())) {
+			if ($key == 'twitter') {
+				$use_twitter_reply = 1;
+			}
+			break;
+		}
+	}
+}
+?>
 <form action="<?php echo site_url('/wp-comments-post.php'); ?>" method="post" id="<?php echo esc_attr($args['id_form']); ?>">
+<input type="hidden" id="use_twitter_reply" name="use_twitter_reply" value="0" />
+<input type="hidden" id="in_reply_to_status_id" name="in_reply_to_status_id" value="" />
 <?php comment_id_fields(); ?>
 <?php if (!is_user_logged_in()): ?>
 <div class="social-sign-in-links social-clearfix">

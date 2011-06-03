@@ -6,6 +6,7 @@
  */
 add_filter(Social::$prefix.'register_service', array('Social_Twitter', 'register_service'));
 add_filter(Social::$prefix.'request_body', array('Social_Twitter', 'request_body'));
+add_filter('get_comment_author_link', array('Social_Twitter', 'get_comment_author_link'));
 
 final class Social_Twitter extends Social_Service implements Social_IService {
 
@@ -33,6 +34,23 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 	 */
 	public static function request_body($body) {
 		return preg_replace('/"id":(\d+)/', '"id":"$1"', $body);
+	}
+
+	/**
+	 * Adds the account ID to the rel for the author link.
+	 *
+	 * @static
+	 * @param  string  $url
+	 * @return string
+	 */
+	public static function get_comment_author_link($url) {
+		global $comment;
+		if ($comment->comment_type == 'twitter') {
+			$status_id = get_comment_meta($comment->comment_ID, Social::$prefix.'status_id', true);
+			return str_replace("rel='", "rel='".$status_id." ", $url);
+		}
+
+		return $url;
 	}
 
 	/**
@@ -94,7 +112,13 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 	 * @return array
 	 */
 	public function status_update($account, $status) {
-		return $this->request($account, 'statuses/update', array('status' => $status), 'POST');
+		$args = array(
+			'status' => $status
+		);
+		if (isset($_POST['in_reply_to_status_id']) and !empty($_POST['in_reply_to_status_id'])) {
+			$args['in_reply_to_status_id'] = $_POST['in_reply_to_status_id'];
+		}
+		return $this->request($account, 'statuses/update', $args, 'POST');
 	}
 
 	/**

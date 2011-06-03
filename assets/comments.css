@@ -101,6 +101,7 @@
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 14px;
 	padding: 2px 4px;
+	text-indent: 0;
 }
 
 /**
@@ -513,6 +514,23 @@
 }
 #social .social-pingback > .social-comment-inner {
 	padding-left: 10px;
+}
+#social .social-comment-collapse > .social-comment-inner > .social-comment-body,
+#social .social-comment-collapse > .social-comment-inner > .social-actions {
+	display: none;
+}
+#social .social-comment-collapse > .social-comment-inner > .social-comment-header {
+	filter:alpha(opacity=30);
+	opacity: .3;
+}
+#social .social-comment-collapse > .social-comment-inner > .social-comment-header social-fn {
+	font-size: 12px;
+}
+#social .social-comment-collapse > .social-comment-inner > .social-comment-header > .social-comment-author img {
+	width: 20px;
+	height: 20px;
+	left: -35px;
+	top: -1px;
 }
 
 /*Tabs*/
