@@ -13,8 +13,10 @@
 		</div>
 		<?php if (comments_open()): ?>
 			<?php if ( get_option( 'comment_registration' ) && !is_user_logged_in() ) : ?>
-				<?php echo $args['must_log_in']; ?>
-				<?php do_action( 'comment_form_must_log_in_after' ); ?>
+				<?php if ( get_option( 'comment_registration' ) && !is_user_logged_in() ) : ?>
+					<p class="must-log-in"><?php printf(__('You must be <a href="%s">logged in</a> to post a comment.'), wp_login_url(apply_filters('the_permalink', get_permalink(get_the_ID())))); ?></p>
+					<?php do_action('comment_form_must_log_in_after'); ?>
+				<?php endif; ?>
 			<?php else : ?>
 			<div id="responsd">
 				<?php echo Social::comment_form(); ?>
