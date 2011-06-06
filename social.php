@@ -487,7 +487,12 @@ final class Social {
 			exit;
 		}
 		else if (isset($_GET[Social::$prefix.'disconnect'])) {
-			$service = $this->service($_GET['service']);
+			if (defined('IS_PROFILE_PAGE')) {
+				$service = $this->service($_GET['service']);
+			}
+			else {
+				$service = Social::$global_services[$_GET['service']];
+			}
 			$service->disconnect($_GET['id']);
 
 			if (is_admin()) {

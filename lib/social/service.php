@@ -106,10 +106,19 @@ abstract class Social_Service {
 	 * @return void
 	 */
 	public function disconnect($id) {
-		$accounts = get_user_meta($this->user->ID, Social::$prefix.'accounts', true);;
-		if (isset($accounts[$this->service][$id])) {
-			unset($accounts[$this->service][$id]);
-			update_user_meta($this->user->ID, Social::$prefix.'accounts', $accounts);
+		if (defined('IS_PROFILE_PAGE')) {
+			$accounts = get_user_meta($this->user->ID, Social::$prefix.'accounts', true);;
+			if (isset($accounts[$this->service][$id])) {
+				unset($accounts[$this->service][$id]);
+				update_user_meta($this->user->ID, Social::$prefix.'accounts', $accounts);
+			}
+		}
+		else {
+			$accounts = get_option(Social::$prefix.'accounts', array());
+			if (isset($accounts[$this->service][$id])) {
+				unset($accounts[$this->service][$id]);
+				update_option(Social::$prefix.'accounts', $accounts);
+			}
 		}
 	}
 
