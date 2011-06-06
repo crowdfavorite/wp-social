@@ -385,7 +385,15 @@ final class Social {
 	 * Handles the request.
 	 */
 	public function request_handler() {
-		if (!empty($_POST[Social::$prefix.'action'])) {
+		if (isset($_GET[Social::$prefix.'cron'])) {
+			$schedule = wp_get_schedule($_GET[Social::$prefix.'cron']);
+			$timestamp = wp_next_scheduled($_GET[Social::$prefix.'cron']);
+			if (!$schedule !== false and $timestamp !== false) {
+				wp_reschedule_event(time(), $schedule, $_GET[Social::$prefix.'cron']);
+				spawn_cron();
+			}
+		}
+		else if (!empty($_POST[Social::$prefix.'action'])) {
 			if (!wp_verify_nonce($_POST['_wpnonce'])) {
 				wp_die('Oops, please try again.');
 			}
