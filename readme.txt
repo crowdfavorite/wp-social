@@ -31,6 +31,19 @@ Once a post has been broadcasted to Facebook and/or Twitter Social will attempt 
 24, 48, and every 24 hours after the 48 hour mark after being broadcasted. If the post was broadcasted more than 48
 hours ago, and there have been no replies through Facebook and/or Twitter then aggregation for that post will stop.
 
+= What CRON jobs are built into Social? =
+
+Currently Social contains 3 CRON jobs:
+
+1. social_aggregate_comments
+2. social_cron_15
+3. social_cron_60
+
+= How can I manually call Social's CRON jobs? =
+
+Simple, just make a request to http://example.com/?social_cron={key} where "{key}" is the name of the CRON you would
+like to call.
+
 == Changelog ==
 
 = 1.0 =
