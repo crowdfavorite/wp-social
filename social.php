@@ -520,6 +520,9 @@ final class Social {
 			if (isset($deauthed[$service->service][$account->user->id])) {
 				unset($deauthed[$service->service][$account->user->id]);
 				update_option(Social::$prefix.'deauthed', $deauthed);
+
+				// Remove from the global broadcast content as well.
+				$this->remove_from_xmlrpc($service->service, $account->user->id);
 			}
 ?>
 <html>
@@ -543,6 +546,7 @@ final class Social {
 			}
 			else {
 				$service = Social::$global_services[$_GET['service']];
+				$this->remove_from_xmlrpc($_GET['service'], $_GET['id']);
 			}
 			$service->disconnect($_GET['id']);
 
@@ -562,6 +566,33 @@ final class Social {
 			if (isset($deauthed[$service][$id])) {
 				unset($deauthed[$service][$id]);
 				update_option(Social::$prefix.'deauthed', $deauthed);
+
+				$this->remove_from_xmlrpc($service, $id);
+			}
+		}
+	}
+
+	/**
+	 * Removes an account from the XML-RPC stack.
+	 *
+	 * @param  string  $service
+	 * @param  int     $service_id
+	 * @return void
+	 */
+	private function remove_from_xmlrpc($service, $service_id) {
+		// Remove from the XML-RPC
+		$xmlrpc = get_option(Social::$prefix.'xmlrpc_accounts', array());
+		if (isset($xmlrpc[$service])) {
+			$ids = array_values($xmlrpc[$service]);
+			if (in_array($service_id, $ids)) {
+				$_ids = array();
+				foreach ($ids as $id) {
+					if ($id != $_GET['id']) {
+						$_ids[] = $id;
+					}
+				}
+				$xmlrpc[$_GET['service']] = $_ids;
+				update_option(Social::$prefix.'xmlrpc_accounts', $xmlrpc);
 			}
 		}
 	}
