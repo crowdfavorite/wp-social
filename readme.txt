@@ -44,6 +44,12 @@ Currently Social contains 3 CRON jobs:
 Simple, just make a request to http://example.com/?social_cron={key} where "{key}" is the name of the CRON you would
 like to call.
 
+= How can I hook into a CRON for extra functionality? =
+
+If you want to hook into a CRON for extra functionality for a service, all you have to do is add an action:
+
+    <?php add_action(Social::$prefix.'cron_15', array('Your_Class', 'your_method')); ?>
+
 == Changelog ==
 
 = 1.0 =

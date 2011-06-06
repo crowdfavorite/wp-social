@@ -108,9 +108,14 @@ final class Social {
 	protected static $update = true;
 
 	/**
-	 * @var bool  upgrade the plugin
+	 * @var  bool  upgrade the plugin
 	 */
 	protected static $upgrade = false;
+
+	/**
+	 * @var  string  directory for the cron lock files
+	 */
+	private $cron_lock_dir = false;
 
 	/**
 	 * Used to log debug data.
@@ -327,13 +332,33 @@ final class Social {
 
 		// Schedule the CRON?
 		if (wp_next_scheduled(Social::$prefix.'aggregate_comments') === false) {
-			wp_schedule_event(time() + 3600, 'hourly', Social::$prefix.'aggregate_comments');
+			wp_schedule_event(time() + 3600, 'hourly', Social::$prefix.'aggregate_comments_core');
 		}
 		if (wp_next_scheduled(Social::$prefix.'cron_15') === false) {
-			wp_schedule_event(time() + 900, 'every15min', Social::$prefix.'cron_15');
+			wp_schedule_event(time() + 900, 'every15min', Social::$prefix.'cron_15_core');
 		}
 		if (wp_next_scheduled(Social::$prefix.'cron_60') === false) {
-			wp_schedule_event(time() + 3600, 'hourly', Social::$prefix.'cron_60');
+			wp_schedule_event(time() + 3600, 'hourly', Social::$prefix.'cron_60_core');
+		}
+
+		// CRON Lock Location
+		if (is_writable(SOCIAL_PATH)) {
+			$this->cron_lock_dir = SOCIAL_PATH;
+		}
+		else {
+			$upload_dir = wp_upload_dir();
+			if (is_writable($upload_dir['baseurl'])) {
+				$this->cron_lock_dir = $upload_dir['baseurl'];
+			}
+			else if ($_GET['page'] == 'social.php') {
+				add_action('admin_notices', array($this, 'display_cron_lock_write_error'));
+			}
+		}
+
+		// CRON Lock files missing?
+		$cron_lock_errors = get_option(Social::$prefix.'cron_lock_errors', array());
+		foreach ($cron_lock_errors as $cron => $error) {
+			add_action('admin_notices', array($this, 'display_cron_lock_file_error'), $cron);
 		}
 
 		// Register the Social services
@@ -379,6 +404,32 @@ final class Social {
 				echo '<div class="error"><p>'.$message.' <a href="'.Social_Helper::settings_url(array('clear_deauth' => $id, 'service' => $service)).'" class="'.Social::$prefix.'deauth">[Dismiss]</a></p></div>';
 			}
 		}
+	}
+
+	/**
+	 * Displays the CRON lock directory error.
+	 */
+	public function display_cron_lock_write_error() {
+		$upload_dir = wp_upload_dir();
+		$message = sprintf(__('Social requires that either %s or %s be writeable for CRON jobs.', Social::$i18n), SOCIAL_PATH, $upload_dir['baseurl']);
+		echo '<div class="error"><p>'.$message.'</p></div>';
+	}
+
+	/**
+	 * Displays the CRON lock file error.
+	 *
+	 * @param  string  $cron
+	 */
+	public function display_cron_lock_file_error($cron) {
+		$upload_dir = wp_upload_dir();
+		if (is_writable(SOCIAL_PATH)) {
+			$upload_dir = SOCIAL_PATH;
+		}
+		else {
+			$upload_dir = $upload_dir['baseurl'];
+		}
+		$message = sprintf(__('Social requires a %s file to be placed in %s for the %s CRON to run.', Social::$i18n), $cron.'.txt', $upload_dir, $cron);
+		echo '<div class="error"><p>'.$message.'</p></div>';
 	}
 
 	/**
@@ -619,26 +670,6 @@ final class Social {
 <div class="wrap" id="social_options_page">
 	<h2><?php _e('Social Options', Social::$i18n); ?></h2>
 
-	<h3><?php _e('Broadcasting Format', Social::$i18n); ?></h3>
-	<p><?php _e('Define how you would like your posts to be formatted when being broadcasted.'); ?></p>
-
-	<table class="form-table">
-		<tr>
-			<th style="width:100px" colspan="2">
-				<strong><?php _e('Tokens:', Social::$i18n); ?></strong>
-				<ul style="margin:10px 0 0 15px;">
-					<?php foreach (Social::broadcast_tokens() as $token => $description): ?>
-					<li><span style="float:left;width:60px"><?php echo $token; ?></span> - <?php echo $description; ?></li>
-					<?php endforeach; ?>
-				</ul>
-			</th>
-		</tr>
-		<tr>
-			<th style="width:100px"><label for="<?php echo Social::$prefix.'broadcast_format'; ?>">Format</label></th>
-			<td><input type="text" class="text" name="<?php echo Social::$prefix.'broadcast_format'; ?>" id="<?php echo Social::$prefix.'broadcast_format'; ?>" style="width:400px" value="<?php echo Social::option('broadcast_format'); ?>" /></td>
-		</tr>
-	</table>
-
 	<h3 id="social-networks"><?php _e('Connect to Social Networks', Social::$i18n); ?></h3>
 	<p><?php _e('Before blog authors can broadcast to social networks you need to connect some accounts. <strong>These accounts will be accessible by every blog author.</strong>', Social::$i18n); ?></p>
 	<?php foreach (Social::$global_services as $key => $service): ?>
@@ -657,6 +688,26 @@ final class Social {
 		<a href="<?php echo Social_Helper::authorize_url($key, true); ?>" id="<?php echo $key; ?>_signin" class="social-login"><span><?php _e('Sign In With '.$service->title, Social::$i18n); ?></span></a>
 	</div>
 	<?php endforeach; ?>
+
+	<h3 style="clear:both;"><?php _e('Broadcasting Format', Social::$i18n); ?></h3>
+	<p><?php _e('Define how you would like your posts to be formatted when being broadcasted.'); ?></p>
+
+	<table class="form-table">
+		<tr>
+			<th style="width:100px" colspan="2">
+				<strong><?php _e('Tokens:', Social::$i18n); ?></strong>
+				<ul style="margin:10px 0 0 15px;">
+					<?php foreach (Social::broadcast_tokens() as $token => $description): ?>
+					<li><span style="float:left;width:60px"><?php echo $token; ?></span> - <?php echo $description; ?></li>
+					<?php endforeach; ?>
+				</ul>
+			</th>
+		</tr>
+		<tr>
+			<th style="width:100px"><label for="<?php echo Social::$prefix.'broadcast_format'; ?>">Format</label></th>
+			<td><input type="text" class="text" name="<?php echo Social::$prefix.'broadcast_format'; ?>" id="<?php echo Social::$prefix.'broadcast_format'; ?>" style="width:400px" value="<?php echo Social::option('broadcast_format'); ?>" /></td>
+		</tr>
+	</table>
 
 	<div id="social_xmlrpc">
 		<h3><?php _e('XML-RPC/Email Broadcasting Accounts', Social::$i18n); ?></h3>
@@ -1225,6 +1276,76 @@ final class Social {
 		$url .= implode('&', $params);
 
 		return $url;
+	}
+
+	/**
+	 * Creates the file lock.
+	 *
+	 * @param  string  $cron
+	 * @return bool
+	 */
+	private function cron_lock($cron) {
+		$locked = false;
+		$file = trailingslashit($this->cron_lock_dir.$cron.'.txt');
+		$fp = fopen($file, 'r+');
+		if (flock($fp, LOCK_EX)) {
+			$locked = true;
+			fwrite($fp, time());
+		}
+		else {
+			$cron_lock_errors = get_option(Social::$prefix.'cron_lock_errors', array());
+			if (!isset($cron_lock_errors[$cron])) {
+				$cron_lock_errors[$cron] = true;
+				update_option(Social::$prefix.'cron_lock_errors', $cron_lock_errors);
+			}
+		}
+		fclose($fp);
+		return $locked;
+	}
+
+	/**
+	 * Unlocks the file.
+	 *
+	 * @param  string  $cron
+	 * @return bool
+	 */
+	private function cron_unlock($cron) {
+		$file = trailingslashit($this->cron_lock_dir.$cron.'.txt');
+		$fp = fopen($file, 'r+');
+		ftruncate($fp, 0);
+		flock($fp, LOCK_UN);
+		fclose($fp);
+	}
+
+	/**
+	 * Handles the file locking for aggregate_comments.
+	 */
+	public function aggregate_comments_core() {
+		if ($this->cron_lock('aggregate_comments')) {
+			$this->aggregate_comments();
+			do_action(Social::$prefix.'aggregate_comments');
+		}
+		$this->cron_unlock('aggregate_comments');
+	}
+
+	/**
+	 * Handles the file locking for cron_15.
+	 */
+	public function cron_15_core() {
+		if ($this->cron_lock('cron_15')) {
+			do_action(Social::$prefix.'cron_15');
+		}
+		$this->cron_unlock('cron_15');
+	}
+
+	/**
+	 * Handles the file locking for cron_60.
+	 */
+	public function cron_60_core() {
+		if ($this->cron_lock('cron_60')) {
+			do_action(Social::$prefix.'cron_60');
+		}
+		$this->cron_unlock('cron_60');
 	}
 
 	/**
