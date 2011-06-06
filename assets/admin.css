@@ -85,12 +85,19 @@
 }
 .social-login {
 	display: block;
+	margin-bottom: 15px;
 	width: 150px;
 	height: 22px;
 }
 .social-disconnect {
 	position: relative;
 	top: 2px;
+}
+#social_xmlrpc {
+	clear: both;
+}
+#social_xmlrpc label {
+	width: 15%;
 }
 
 /**

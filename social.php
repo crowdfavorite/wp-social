@@ -404,6 +404,20 @@ final class Social {
 				break;
 				case 'settings':
 					update_option(Social::$prefix.'broadcast_format', $_POST[Social::$prefix.'broadcast_format']);
+
+					// Store the XML-RPC accounts
+					if (isset($_POST[Social::$prefix.'xmlrpc_accounts'])) {
+						$accounts = array();
+						foreach ($_POST[Social::$prefix.'xmlrpc_accounts'] as $account) {
+							$account = explode('|', $account);
+							$accounts[$account[0]][] = $account[1];
+						}
+						update_option(Social::$prefix.'xmlrpc_accounts', $accounts);
+					}
+					else {
+						delete_option(Social::$prefix.'xmlrpc_accounts');
+					}
+
 					wp_redirect(Social_Helper::settings_url(array('saved' => 'true')));
 					exit;
 				break;
@@ -619,7 +633,6 @@ final class Social {
 			<td><input type="text" class="text" name="<?php echo Social::$prefix.'broadcast_format'; ?>" id="<?php echo Social::$prefix.'broadcast_format'; ?>" style="width:400px" value="<?php echo Social::option('broadcast_format'); ?>" /></td>
 		</tr>
 	</table>
-	<p class="submit"><input type="submit" name="submit" value="Save Settings" class="button-primary" /></p>
 
 	<h3 id="social-networks"><?php _e('Connect to Social Networks', Social::$i18n); ?></h3>
 	<p><?php _e('Before blog authors can broadcast to social networks you need to connect some accounts. <strong>These accounts will be accessible by every blog author.</strong>', Social::$i18n); ?></p>
@@ -639,7 +652,27 @@ final class Social {
 		<a href="<?php echo Social_Helper::authorize_url($key, true); ?>" id="<?php echo $key; ?>_signin" class="social-login"><span><?php _e('Sign In With '.$service->title, Social::$i18n); ?></span></a>
 	</div>
 	<?php endforeach; ?>
-	<div style="clear:both"></div>
+
+	<div id="social_xmlrpc">
+		<h3><?php _e('XML-RPC/Email Broadcasting Accounts', Social::$i18n); ?></h3>
+		<p>These accounts will be the accounts that are automatically broadcasted to when you publish a blog post via
+		XML-RPC or email.</p>
+
+		<?php $accounts = get_option(Social::$prefix.'xmlrpc_accounts', array()); ?>
+		<?php foreach (Social::$global_services as $key => $service): ?>
+			<?php foreach ($service->accounts() as $account): ?>
+			<label class="social-broadcastable" for="<?php echo $service->service.$account->user->id; ?>" style="cursor:pointer">
+				<input type="checkbox" name="<?php echo Social::$prefix.'xmlrpc_accounts[]'; ?>" id="<?php echo $service->service.$account->user->id; ?>" value="<?php echo $key.'|'.$account->user->id; ?>"<?php echo ((isset($accounts[$key]) and in_array($account->user->id, array_values($accounts[$key]))) ? ' checked="checked"' : ''); ?> />
+				<img src="<?php echo $service->profile_avatar($account); ?>" width="24" height="24" />
+				<span><?php echo $service->profile_name($account); ?></span>
+			</label>
+			<?php endforeach; ?>
+		<?php endforeach; ?>
+	</div>
+
+	<p class="submit" style="clear:both">
+		<input type="submit" name="submit" value="Save Settings" class="button-primary" />
+	</p>
 </div>
 </form>
 <?php
