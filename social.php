@@ -1182,9 +1182,7 @@ final class Social {
 				<em class="comment-awaiting-moderation"><?php _e('Your comment is awaiting moderation.', 'social'); ?></em>
 				<br />
 			<?php endif; ?>
-			<p>
-				<?php comment_text(); ?>
-			</p>
+			<?php comment_text(); ?>
 		</div>
 		<div class="social-actions">
 			<?php comment_reply_link(array_merge($args, array('depth' => $depth, 'max_depth' => $args['max_depth']))); ?>
