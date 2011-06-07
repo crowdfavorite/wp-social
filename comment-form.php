@@ -11,10 +11,7 @@ if (is_user_logged_in() and !current_user_can('manage_options')) {
 	}
 }
 ?>
-<form action="<?php echo site_url('/wp-comments-post.php'); ?>" method="post" id="<?php echo esc_attr($args['id_form']); ?>">
-<input type="hidden" id="use_twitter_reply" name="use_twitter_reply" value="0" />
-<input type="hidden" id="in_reply_to_status_id" name="in_reply_to_status_id" value="" />
-<?php comment_id_fields(); ?>
+<form class="social-respond-inner" action="<?php echo site_url('/wp-comments-post.php'); ?>" method="post" id="<?php echo esc_attr($args['id_form']); ?>">
 <?php if (!is_user_logged_in()): ?>
 <div class="social-sign-in-links social-clearfix">
 	<?php foreach (Social::$services as $key => $service): ?>
@@ -104,4 +101,7 @@ if (is_user_logged_in() and !current_user_can('manage_options')) {
 		cancel_comment_reply_link(__('Cancel reply', Social::$i18n)); ?>
 	</div>
 </div>
+<input type="hidden" id="use_twitter_reply" name="use_twitter_reply" value="0" />
+<input type="hidden" id="in_reply_to_status_id" name="in_reply_to_status_id" value="" />
+<?php comment_id_fields(); ?>
 </form>

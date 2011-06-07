@@ -26,7 +26,7 @@
 					<?php do_action('comment_form_must_log_in_after'); ?>
 				<?php endif; ?>
 			<?php else : ?>
-			<div id="respond">
+			<div id="respond" class="social-respond">
 				<?php echo Social::comment_form(); ?>
 			</div>
 			<?php endif; ?>

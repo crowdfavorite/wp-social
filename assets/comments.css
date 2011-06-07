@@ -184,10 +184,8 @@
 	height: 90px;
 	width: 472px;
 }
-#social .social-comment #respond .social-input-row {
-	position: relative;
-}
-#social .social-comment #respond textarea {
+
+#social .social-comment .social-respond textarea {
 	width: 96%;
 }
 #social-email-notice {
@@ -229,12 +227,6 @@
 	background-position: -150px -44px;
 }
 
-#social .social-post-form {
-	color: #333;
-	font-size: 14px;
-	margin-bottom: 40px;
-}
-
 #social .social-input-row {
 	clear: left;
 	margin-bottom: 10px;
@@ -245,14 +237,15 @@
 }
 #social .social-input-row-submit {
 	height: 30px;
+	margin-bottom: 0;
 }
 
 #social .social-input-row .social-label {
 	display: block;
-	left: 0;
+	left: 10px;
 	position: absolute;
 	top: 4px;
-	width: 80px;
+	width: 60px;
 }
 #social .social-input-row .social-input-text {
 	/* Bypasses vertical alignment issues. 
@@ -376,16 +369,30 @@
 	 */
 	width: 100%;
 }
-#social #respond {
+#social .social-respond {
 	background-color: transparent;
+	color: #333;
+	font-size: 14px;
+	margin-bottom: 40px;
 }
-#social #respond .avatar {
-	left: 0;
+/* Respond form in threaded situations */
+#social .social-comment .social-respond {
+	border-top: 1px solid #e1e1e1;
+	border-left: 1px solid #e1e1e1;
+	-moz-border-radius-topleft: 4px; /* FF1+ */
+	-webkit-border-top-left-radius: 4px; /* Saf3+, Chrome */
+	-khtml-border-top-left-radius: 4px; /* Konqueror */
+	border-top-left-radius: 4px; /* Standard. IE9 */
+	margin: 0 0 10px 6px;
+}
+#social .social-comment .social-respond-inner {
+	margin: 7px 0 0 0;
+	position: relative;
+}
+#social .social-respond .avatar {
+	left: 10px;
 	position: absolute;
-	top: 2px;
-}
-#social .social-comment #respond {
-	margin: 30px 0 0 60px;
+	top: 1px;
 }
 #social .social-comment #cancel-comment-reply-link {
 	font-family: Helvetica, Arial, sans-serif;
