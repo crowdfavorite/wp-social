@@ -50,12 +50,6 @@ if (is_user_logged_in() and !current_user_can('manage_options')) {
 						<?php endif; ?>
 					<?php endforeach; ?>
 				</select>
-				<span id="post_to" style="display:none">
-					<label for="post_to_service">
-						<input type="checkbox" name="post_to_service" id="post_to_service" value="1" />
-						Also post to <span></span>
-					</label>
-				</span>
 			</div>
 		<?php else: ?>
 			<?php foreach (Social::$services as $key => $service): ?>
@@ -67,10 +61,6 @@ if (is_user_logged_in() and !current_user_can('manage_options')) {
 						<?php echo $service->profile_name($account); ?>.
 						(<?php echo $service->disconnect_url($account); ?>)
 					</span>
-					<label id="post_to" for="post_to_service">
-						<input type="checkbox" name="post_to_service" id="post_to_service" value="1" />
-						Post to <?php echo $service->title(); ?>
-					</label>
 				</div>
 				<input type="hidden" name="<?php echo Social::$prefix; ?>post_account" value="<?php echo $account->user->id; ?>" />
 				<?php endif; ?>
@@ -94,10 +84,19 @@ if (is_user_logged_in() and !current_user_can('manage_options')) {
 	<div class="social-input-row">
 		<textarea id="social-sign-in-comment" name="comment"></textarea>
 	</div>
-	<div class="social-input-row">
+	<div class="social-input-row social-input-row-submit">
 		<button type="submit" class="social-input-submit"><span><?php _e('Post It', Social::$i18n); ?></span></button>
+		
+		<?php if (is_user_logged_in()):
+			$display =  current_user_can('manage_options') ? ' style="display:none;"' : '';
+			?>
+			<label id="post_to"<?php echo $display; ?> for="post_to_service">
+				<input type="checkbox" name="post_to_service" id="post_to_service" value="1" />
+				Also post to <span></span>
+			</label>
+		<?php endif ?>
+		
 		<?php cancel_comment_reply_link(__('Cancel reply', Social::$i18n)); ?>
-		<div style="clear:both;"></div>
 	</div>
 </div>
 </form>

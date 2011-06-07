@@ -180,6 +180,7 @@
 	width: 265px;
 }
 #social .social-post-form .social-input-row textarea {
+	display: block;
 	height: 90px;
 	width: 472px;
 }
@@ -241,6 +242,9 @@
 	padding-left: 62px;
 	position: relative;
 	zoom: 1;
+}
+#social .social-input-row-submit {
+	height: 30px;
 }
 
 #social .social-input-row .social-label {
@@ -617,11 +621,13 @@
 	font-weight: bold;
 }
 
+#social #post_to {
+	margin: 0 10px;
+}
 #social #post_to label {
 	cursor: pointer;
 	width: auto;
 }
-
-#post_to input {
+#social #post_to input {
 	width: auto;
 }
