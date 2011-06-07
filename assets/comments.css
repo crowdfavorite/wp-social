@@ -307,6 +307,7 @@
 #social .social-heading {
 	background: url('background-strikethrough.gif') 0 13px repeat-x;
 	font-family: Helvetica, Arial, sans-serif;
+	margin-bottom: 10px;
 }
 #social .social-title {
 	margin: 0 0 0 9px;

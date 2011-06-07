@@ -3,7 +3,15 @@
 	<p class="nopassword"><?php _e('This post is password protected. Enter the password to view any comments.', Social::$i18n); ?></p>
 	<?php else: ?>
 	<div class="social-heading">
-		<h2 class="social-title social-tab-active"><span>Profile</span></h2>
+		<?php
+		if (is_user_logged_in()) {
+			$tab = __('Post a Comment', Social::$i18n);
+		}
+		else {
+			$tab = __('Profile', Social::$i18n);
+		}
+		?>
+		<h2 class="social-title social-tab-active"><span><?php echo $tab; ?></span></h2>
 	</div>
 
 	<div class="social-sign-in">
