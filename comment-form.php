@@ -26,9 +26,14 @@ if (is_user_logged_in() and !current_user_can('manage_options')) {
 </div>
 <?php endif; ?>
 <div class="social-post-form">
-	<?php if (is_user_logged_in()): ?>
-		<?php echo get_avatar(get_current_user_id(), 40); ?>
-		<?php if (current_user_can('manage_options')): ?>
+	<?php
+	if (is_user_logged_in()):
+		echo get_avatar(get_current_user_id(), 40);
+		
+		if (current_user_can('manage_options')):
+			// We'll use this in a sec, next to the submit button
+			$post_to = '<label id="post_to" for="post_to_service" style="display:none;"><input type="checkbox" name="post_to_service" id="post_to_service" value="1" /> '.sprintf(__('Also post to %s'), '<span></span>').'</label>';
+		?>
 			<div class="social-input-row">
 				<select id="post_accounts" name="<?php echo Social::$prefix; ?>post_account">
 					<option value=""><?php _e('WordPress Account', Social::$i18n); ?></option>
@@ -51,11 +56,16 @@ if (is_user_logged_in() and !current_user_can('manage_options')) {
 					<?php endforeach; ?>
 				</select>
 			</div>
-		<?php else: ?>
-			<?php foreach (Social::$services as $key => $service): ?>
-				<?php if (count($service->accounts())): ?>
-				<?php $account = reset($service->accounts()); ?>
-				<div class="social-input-row">
+		<?php
+		else:
+			foreach (Social::$services as $key => $service):
+				if (count($service->accounts())):
+					$account = reset($service->accounts());
+					
+					// We'll use this in a sec, next to the submit button
+					$post_to = '<label id="post_to" for="post_to_service"><input type="checkbox" name="post_to_service" id="post_to_service" value="1" /> '.sprintf(__('Also post to %s'), $service->title()).'</label>';
+			?>
+			<div class="social-input-row">
 					<span class="social-<?php echo $key; ?>-icon">
 						<i></i>
 						<?php echo $service->profile_name($account); ?>.
@@ -63,10 +73,11 @@ if (is_user_logged_in() and !current_user_can('manage_options')) {
 					</span>
 				</div>
 				<input type="hidden" name="<?php echo Social::$prefix; ?>post_account" value="<?php echo $account->user->id; ?>" />
-				<?php endif; ?>
-			<?php endforeach; ?>
-		<?php endif; ?>
-	<?php else: // If not logged in... ?>
+				<?php
+				endif;
+			endforeach;
+		endif;
+	else: // If not logged in... ?>
 	<div class="social-input-row">
 		<label class="social-label" for="social-sign-in-name"><?php _e('Name', Social::$i18n); ?></label>
 		<input class="social-input-text" type="text" id="social-sign-in-name" name="author" />
@@ -80,23 +91,17 @@ if (is_user_logged_in() and !current_user_can('manage_options')) {
 		<label class="social-label" for="social-sign-in-website"><?php _e('Website', Social::$i18n); ?></label>
 		<input class="social-input-text" type="text" id="social-sign-in-website" name="url" />
 	</div>
-	<?php endif; ?>
+	<?php
+	endif; ?>
+	
 	<div class="social-input-row">
 		<textarea id="social-sign-in-comment" name="comment"></textarea>
 	</div>
 	<div class="social-input-row social-input-row-submit">
 		<button type="submit" class="social-input-submit"><span><?php _e('Post It', Social::$i18n); ?></span></button>
-		
-		<?php if (is_user_logged_in()):
-			$display =  current_user_can('manage_options') ? ' style="display:none;"' : '';
-			?>
-			<label id="post_to"<?php echo $display; ?> for="post_to_service">
-				<input type="checkbox" name="post_to_service" id="post_to_service" value="1" />
-				Also post to <span></span>
-			</label>
-		<?php endif ?>
-		
-		<?php cancel_comment_reply_link(__('Cancel reply', Social::$i18n)); ?>
+		<?php
+		echo $post_to;
+		cancel_comment_reply_link(__('Cancel reply', Social::$i18n)); ?>
 	</div>
 </div>
 </form>
