@@ -76,6 +76,7 @@
 #social .social-quiet {
 	color: #999;
 	font-family: Helvetica, Arial, sans-serif;
+	font-size: 12px;
 }
 
 /** @section Sign-in and forms
@@ -115,6 +116,7 @@
 }
 #social button {
 	background: url('sprite-y-24.png') right -100px no-repeat;
+	font-family: Helvetica, Arial, sans-serif;
 	color: #0867ab;
 	cursor: pointer;
 	display: -moz-inline-box; /* FF2 */
@@ -173,12 +175,11 @@
 	background-position: 0 -400px;
 }
 
-#social .social-sign-in-form .social-input-row input.social-input-text {
-	float: left;
-	margin: 0 5px 10px 0;
+#social .social-post-form .social-input-row input.social-input-text {
+	margin: 0 5px 0 0;
 	width: 265px;
 }
-#social .social-sign-in-form .social-input-row textarea {
+#social .social-post-form .social-input-row textarea {
 	height: 90px;
 	width: 472px;
 }
@@ -188,19 +189,16 @@
 #social .social-comment #respond textarea {
 	width: 96%;
 }
-#social .social-comment #respond small {
-}
 #social-email-notice {
 	position: relative;
 	top: 4px;
 }
 
-#social .social-sign-in {
+#social .social-post {
 	font-family: Helvetica, Arial, sans-serif;
-	margin: 0 15px;
 }
 #social .social-sign-in-links {
-	margin: 6px auto 9px;
+	margin: 0 auto 9px;
 	width: 360px;
 }
 #social .social-sign-in-links a {
@@ -230,31 +228,32 @@
 	background-position: -150px -44px;
 }
 
-#social .social-sign-in-form {
+#social .social-post-form {
 	color: #333;
 	font-size: 14px;
 	margin-bottom: 40px;
 }
 
-#social .social-sign-in-form .social-input-row {
+#social .social-input-row {
 	clear: left;
 	margin-bottom: 10px;
-	padding-left: 88px;
+	overflow: hidden;
+	padding-left: 62px;
 	position: relative;
 	zoom: 1;
 }
 
-#social .social-sign-in-form .social-input-row label {
+#social .social-input-row .social-label {
 	display: block;
 	left: 0;
 	position: absolute;
 	top: 4px;
 	width: 80px;
 }
-
-#social .social-sign-in-form .social-input-row em {
-	font-style: italic;
-	color: #aaa
+#social .social-input-row .social-input-text {
+	/* Bypasses vertical alignment issues. 
+	only effects social-input-row inputs */
+	float: left;
 }
 
 #social .social-twitter-icon i,
@@ -321,9 +320,8 @@
 #social .social-divider {
 	background: url('background-strikethrough.gif') center repeat-x;
 	clear: both;
-	font-size: 13px;
-	font-style: italic;
-	margin-bottom: 7px;
+	font: italic 13px/1.5 Helvetica, Arial, sans-serif;
+	margin: 0 62px 9px;
 	text-align: center;
 }
 #social .social-divider span {
@@ -377,14 +375,16 @@
 #social #respond {
 	background-color: transparent;
 }
+#social #respond .avatar {
+	left: 0;
+	position: absolute;
+	top: 2px;
+}
 #social .social-comment #respond {
 	margin: 30px 0 0 60px;
 }
 #social .social-comment #cancel-comment-reply-link {
-	float: left;
-	position: relative;
-	top: 0;
-	right: 0;
+	font-family: Helvetica, Arial, sans-serif;
 	margin: 3px 10px;
 	font-size: 12px;
 	text-transform: none;
@@ -616,17 +616,9 @@
 	font-size: 14px;
 	font-weight: bold;
 }
-#post_to {
-	float: left;
-	white-space: nowrap;
-}
 
-#social .social-sign-in-form .social-input-row #post_to label {
+#social #post_to label {
 	cursor: pointer;
-	position: relative;
-	top: -3px;
-	left: 10px;
-	margin-right: 10px;
 	width: auto;
 }
 
