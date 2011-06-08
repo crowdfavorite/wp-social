@@ -1125,7 +1125,7 @@ final class Social {
 	 * @return array
 	 */
 	public function get_avatar_comment_types($types) {
-		return array_merge($types, array('facebook', 'twitter'));
+		return array_merge($types, array('facebook', 'twitter', 'wordpress'));
 	}
 
 	/**
@@ -1139,9 +1139,23 @@ final class Social {
 	 * @return string
 	 */
 	public function get_avatar($avatar, $comment, $size, $default, $alt) {
-		$service = $this->service($comment->comment_type);
-		if ($service !== false) {
-			$image = get_comment_meta($comment->comment_ID, Social::$prefix.'profile_image_url', true);
+		$image = null;
+		if (is_object($comment)) {
+			$service = $this->service($comment->comment_type);
+			if ($service !== false) {
+				$image = get_comment_meta($comment->comment_ID, Social::$prefix.'profile_image_url', true);
+			}
+		}
+		else {
+			$services = Social::$services;
+			foreach ($services as $key => $service) {
+				if (count($service->accounts())) {
+					$image = $service->profile_avatar(reset($service->accounts()));
+				}
+			}
+		}
+
+		if ($image !== null) {
 			return "<img alt='{$alt}' src='{$image}' class='avatar avatar-{$size} photo {$comment->comment_type}' height='{$size}' width='{$size}' />";
 		}
 

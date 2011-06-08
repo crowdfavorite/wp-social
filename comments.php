@@ -20,15 +20,11 @@
 			<img src="<?php echo admin_url('images/loading.gif'); ?>" style="position:relative;top:2px" /> Logging In...
 		</div>
 		<?php if (comments_open()): ?>
-			<?php if ( get_option( 'comment_registration' ) && !is_user_logged_in() ) : ?>
-				<?php if ( get_option( 'comment_registration' ) && !is_user_logged_in() ) : ?>
-					<p class="must-log-in"><?php printf(__('You must be <a href="%s">logged in</a> to post a comment.'), wp_login_url(apply_filters('the_permalink', get_permalink(get_the_ID())))); ?></p>
-					<?php do_action('comment_form_must_log_in_after'); ?>
-				<?php endif; ?>
-			<?php else : ?>
-			<div id="respond" class="social-respond">
-				<?php echo Social::comment_form(); ?>
-			</div>
+			<?php if (get_option( 'comment_registration' ) && !is_user_logged_in() ): ?>
+				<p class="must-log-in"><?php printf(__('You must be <a href="%s">logged in</a> to post a comment.'), wp_login_url(apply_filters('the_permalink', get_permalink(get_the_ID())))); ?></p>
+				<?php do_action('comment_form_must_log_in_after'); ?>
+			<?php else: ?>
+			<?php echo Social::comment_form(); ?>
 			<?php endif; ?>
 		<?php else: ?>
 		<?php do_action('comment_form_comments_closed'); ?>

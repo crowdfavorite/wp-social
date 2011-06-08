@@ -325,6 +325,15 @@
 	background-color: #fff;
 	padding: 0 10px;
 }
+#social .must-log-in {
+	text-align: center;
+}
+#social .social-must-log-in {
+	margin-bottom: 25px;
+}
+#social #respond.social-registration {
+	width: auto;
+}
 
 
 /** @section Comments List
