@@ -1177,20 +1177,22 @@ final class Social {
 		$comment->comment_type = $comment_type;
 		$GLOBALS['comment'] = $comment;
 
-		$service = Social::service($comment->comment_type);
-		$status_url = null;
-		if ($service !== false) {
-			$status_id = get_comment_meta($comment->comment_ID, Social::$prefix.'status_id', true);
-			if (!empty($status_id)) {
-				$status_url = $service->status_url(get_comment_author(), $status_id);
+		if ($comment_type != 'wordpress') {
+			$service = Social::service($comment->comment_type);
+			$status_url = null;
+			if ($service !== false) {
+				$status_id = get_comment_meta($comment->comment_ID, Social::$prefix.'status_id', true);
+				if (!empty($status_id)) {
+					$status_url = $service->status_url(get_comment_author(), $status_id);
+				}
+			}
+
+			if ($status_url === null) {
+				$comment_type = 'wordpress';
 			}
 		}
-
-		if ($status_url === null) {
-			$comment->comment_type = 'wordpress';
-		}
 ?>
-<li class="social-comment social-<?php echo $comment->comment_type; ?>" id="li-comment-<?php comment_ID(); ?>">
+<li class="social-comment social-<?php echo $comment_type; ?>" id="li-comment-<?php comment_ID(); ?>">
 	<div class="social-comment-inner" id="comment-<?php comment_ID(); ?>">
 		<div class="social-comment-header">
 			<div class="social-comment-author vcard">
