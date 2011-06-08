@@ -285,4 +285,15 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 		return true;
 	}
 
+	/**
+	 * Builds the status URL.
+	 *
+	 * @param  string  $username
+	 * @param  int     $status_id
+	 * @return string
+	 */
+	public function status_url($username, $status_id) {
+		return 'http://twitter.com/'.$username.'/status/'.$status_id;
+	}
+
 } // End Social_Twitter

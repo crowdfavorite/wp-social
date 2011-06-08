@@ -1170,14 +1170,25 @@ final class Social {
 	 * @param  int     $depth
 	 */
 	public function comment($comment, $args, $depth) {
-		if (empty($comment->comment_type)) {
-			$comment_type = get_comment_meta($comment->comment_ID, Social::$prefix.'comment_type', true);
-			if (empty($comment_type)) {
-				$comment_type = 'wordpress';
-			}
-			$comment->comment_type = $comment_type;
+		$comment_type = get_comment_meta($comment->comment_ID, Social::$prefix.'comment_type', true);
+		if (empty($comment_type)) {
+			$comment_type = 'wordpress';
 		}
+		$comment->comment_type = $comment_type;
 		$GLOBALS['comment'] = $comment;
+
+		$service = Social::service($comment->comment_type);
+		$status_url = null;
+		if ($service !== false) {
+			$status_id = get_comment_meta($comment->comment_ID, Social::$prefix.'status_id', true);
+			if (!empty($status_id)) {
+				$status_url = $service->status_url(get_comment_author(), $status_id);
+			}
+		}
+
+		if ($status_url === null) {
+			$comment->comment_type = 'wordpress';
+		}
 ?>
 <li class="social-comment social-<?php echo $comment->comment_type; ?>" id="li-comment-<?php comment_ID(); ?>">
 	<div class="social-comment-inner" id="comment-<?php comment_ID(); ?>">
@@ -1189,7 +1200,18 @@ final class Social {
 					<span class="social-replied social-imr"><?php _e('replied:', Social::$i18n); ?></span>
 				<?php endif; ?>
 			</div><!-- .comment-author .vcard -->
-			<div class="social-comment-meta"><span class="social-posted-from"><?php _e('via Twitter', Social::$i18n); ?></span> <a href="<?php echo get_comment_link(get_comment_ID()); ?>" class="social-posted-when"><?php printf(__('%s ago', Social::$i18n), human_time_diff(strtotime($comment->comment_date))); ?></a></div>
+			<div class="social-comment-meta">
+				<span class="social-posted-from">
+					<?php if ($status_url !== null): ?>
+					<a href="<?php echo $status_url; ?>" title="<?php _e(sprintf('View on %s', $service->title()), Social::$i18n); ?>">
+					<?php endif; ?>
+					<span><?php _e('View', Social::$i18n); ?></span>
+					<?php if ($status_url !== null): ?>
+					</a>
+					<?php endif; ?>
+				</span>
+				<a href="<?php echo get_comment_link(get_comment_ID()); ?>" class="social-posted-when"><?php printf(__('%s ago', Social::$i18n), human_time_diff(strtotime($comment->comment_date))); ?></a>
+			</div>
 		</div>
 		<div class="social-comment-body">
 			<?php if ($comment->comment_approved == '0'): ?>

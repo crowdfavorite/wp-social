@@ -248,7 +248,7 @@
 	width: 60px;
 }
 #social .social-input-row .social-input-text {
-	/* Bypasses vertical alignment issues. 
+	/* Bypasses vertical alignment issues.
 	only effects social-input-row inputs */
 	float: left;
 }
@@ -495,12 +495,20 @@
 	background: url('sprite-y-24-icons.png') no-repeat;
 	display: block;
 	line-height: 16px;
-	padding-right: 22px;
 	position: absolute;
 	right: 0;
 	top: 2px;
+	white-space: nowrap;
 }
-#social .social-comment-meta .social-posted-from {
+#social .social-comment-meta .social-posted-from a,
+#social .social-comment-meta .social-posted-from{
+	float: right;
+	display: block;
+	width: 16px;
+	height: 16px;
+	margin-left: 5px;
+}
+#social .social-comment-meta .social-posted-from span {
 	display: none;
 }
 #social .social-actions,

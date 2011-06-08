@@ -133,4 +133,14 @@ interface Social_IService {
 	 */
 	function save_replies($post_id, array $replies);
 
+	/**
+	 * Builds the status URL.
+	 *
+	 * @abstract
+	 * @param  string  $username
+	 * @param  int     $status_id
+	 * @return string
+	 */
+	function status_url($username, $status_id);
+
 } // End Social_Service_Interface
