@@ -47,7 +47,9 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 		global $comment;
 		if ($comment->comment_type == 'twitter') {
 			$status_id = get_comment_meta($comment->comment_ID, Social::$prefix.'status_id', true);
-			return str_replace("rel='", "rel='".$status_id." ", $url);
+			$url = str_replace("rel='", "rel='".$status_id." ", $url);
+			$url = str_replace("'>", "'>@", $url);
+			return $url;
 		}
 
 		return $url;
