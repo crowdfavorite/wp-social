@@ -1,4 +1,4 @@
-=== Plugin Name ===
+=== Social ===
 Contributors: crowdfavorite
 Tags: comments, facebook, twitter
 Requires at least: 3.1.3
@@ -35,9 +35,9 @@ hours ago, and there have been no replies through Facebook and/or Twitter then a
 
 Currently Social contains 3 CRON jobs:
 
-1. social_aggregate_comments
-2. social_cron_15
-3. social_cron_60
+1. `social_aggregate_comments`
+2. `social_cron_15`
+3. `social_cron_60`
 
 = How can I manually call Social's CRON jobs? =
 
