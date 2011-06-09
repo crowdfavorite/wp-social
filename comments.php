@@ -42,6 +42,13 @@
 					if (empty($comment_type)) {
 						$comment_type = 'wordpress';
 					}
+
+					if ($comment_type != 'wordpress') {
+						$status_id = get_comment_meta($comment->comment_ID, Social::$prefix.'status_id', true);
+						if (empty($status_id)) {
+							$comment_type = 'wordpress';
+						}
+					}
 					$comment->comment_type = $comment_type;
 				}
 
