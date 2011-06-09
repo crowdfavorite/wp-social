@@ -472,6 +472,13 @@ final class Social {
 					wp_redirect(Social_Helper::settings_url(array('saved' => 'true')));
 					exit;
 				break;
+				case 'aggregate_comments':
+					if ($this->cron_lock('aggregate_comments')) {
+						$this->aggregate_comments();
+						do_action(Social::$prefix.'aggregate_comments');
+					}
+					$this->cron_unlock('aggregate_comments');
+				break;
 			}
 		}
 		else if (!empty($_GET[Social::$prefix.'action'])) {
@@ -1388,11 +1395,7 @@ final class Social {
 	 * Handles the file locking for aggregate_comments.
 	 */
 	public function aggregate_comments_core() {
-		if ($this->cron_lock('aggregate_comments')) {
-			$this->aggregate_comments();
-			do_action(Social::$prefix.'aggregate_comments');
-		}
-		$this->cron_unlock('aggregate_comments');
+		wp_remote_post(site_url(Social::$prefix.'action=aggregate_comments'), array('timeout' => 0.01, 'blocking' => false, 'sslverify' => apply_filters('https_local_ssl_verify', true)));
 	}
 
 	/**
