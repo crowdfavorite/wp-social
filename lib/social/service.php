@@ -204,10 +204,7 @@ abstract class Social_Service {
 				if (strpos($haystack, $token) !== false) {
 					if ($available > 0) {
 						$haystack = str_replace($token, $content, $haystack);
-
-						// TODO If the URL is longer than max broadcast length, do we send the URL to a shortener?
 						$available = $available - strlen($haystack);
-
 						$format = str_replace($token, $content, $format);
 						break;
 					}

@@ -120,7 +120,13 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 		if (isset($_POST['in_reply_to_status_id']) and !empty($_POST['in_reply_to_status_id'])) {
 			$args['in_reply_to_status_id'] = $_POST['in_reply_to_status_id'];
 		}
-		return $this->request($account, 'statuses/update', $args, 'POST');
+		$request = $this->request($account, 'statuses/update', $args, 'POST');
+
+		if (!isset($request->response) or !isset($request->response->id)) {
+			return false;
+		}
+
+		return $request;
 	}
 
 	/**

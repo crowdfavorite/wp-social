@@ -77,7 +77,13 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 	 * @return array
 	 */
 	public function status_update($account, $status) {
-		return $this->request($account, 'feed', array('message' => $status), 'POST');
+		$request = $this->request($account, 'feed', array('message' => $status), 'POST');
+
+		if (!isset($request->response) or !isset($request->response->id)) {
+			return false;
+		}
+
+		return $request;
 	}
 
 	/**

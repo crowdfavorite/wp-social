@@ -1244,7 +1244,7 @@ final class Social {
 	public function comment_post($comment_ID) {
 		global $wpdb, $comment_content, $commentdata;
 		$type = false;
-		$services = Social::$services;
+		$services = array_merge(Social::$services, Social::$global_services);
 		if (!empty($services)) {
 			$account_id = $_POST[Social::$prefix.'post_account'];
 
@@ -1265,6 +1265,19 @@ final class Social {
 					if ($account_id == $account->user->id) {
 						if (isset($_POST['post_to_service'])) {
 							$id = $service->status_update($account, $output)->response->id;
+							if ($id === false) {
+								// An error occurred...
+								$sql = "
+									DELETE
+									  FROM $wpdb->comments
+									 WHERE comment_ID='$comment_ID'
+								";
+								$wpdb->query($sql);
+								$commentdata = null;
+								$comment_content = null;
+
+								wp_die(sprintf(__('Error: Failed to post your comment to %s, please go back and try again.', Social::$i18n), $service->title()));
+							}
 							update_comment_meta($comment_ID, Social::$prefix.'status_id', $id);
 						}
 

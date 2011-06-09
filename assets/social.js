@@ -142,6 +142,7 @@
 					}
 				});
 			});
+			$('#post_accounts').trigger('change');
 		}
 		// wp-admin
 		else {
