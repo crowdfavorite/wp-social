@@ -577,6 +577,14 @@ final class Social {
 				$this->remove_from_xmlrpc($service, $id);
 			}
 		}
+		else if (isset($_GET['post']) and isset($_GET['action']) and $_GET['action'] == 'edit') {
+			$error = get_post_meta($_GET['post'], Social::$prefix.'broadcast_error', true);
+			if ($error === 'true') {
+				add_action('admin_notices', array($this, 'display_failed_broadcast'));
+
+				delete_post_meta($_GET['post'], Social::$prefix.'broadcast_error');
+			}
+		}
 	}
 
 	/**
@@ -1004,6 +1012,7 @@ final class Social {
 	public function broadcast($post) {
         $broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted', true);
         if ($broadcasted == '0' or empty($broadcasted)) {
+	        $_broadcast_accounts = false;
 	        $broadcast_accounts = get_post_meta($post->ID, Social::$prefix.'broadcast_accounts', true);
 	        if (!empty($broadcast_accounts)) {
 		        $ids = array();
@@ -1017,6 +1026,7 @@ final class Social {
 						if (!empty($content)) {
 							foreach ($broadcast_accounts as $key => $accounts) {
 								foreach ($accounts as $account) {
+									$_account = $account;
 									$id = $account['id'];
 									if (isset($account['global'])) {
 										$global_accounts = Social::$global_services[$key]->accounts();
@@ -1039,11 +1049,16 @@ final class Social {
 
 									if ($account !== false) {
 										$response = $service->status_update($account, $content);
-										if ($service->check_deauthed($response, $account)) {
+										if ($response !== false and $service->check_deauthed($response, $account)) {
 											$ids[$key]["{$account->user->id}"] = $response->response->id;
 										}
 										else {
-											$errored_accounts[$service->service][] = $account;
+											if ($response === false) {
+												$_broadcast_accounts[$key][] = $_account;
+											}
+											else {
+												$errored_accounts[$service->service][] = $account;
+											}
 										}
 									}
 									else {
@@ -1054,18 +1069,62 @@ final class Social {
 						}
 					}
 
-					delete_post_meta($post->ID, Social::$prefix.'notify_'.$key);
+					if (!isset($_broadcast_accounts[$key])) {
+						delete_post_meta($post->ID, Social::$prefix.'notify_'.$key);
+						delete_post_meta($post->ID, Social::$prefix.$key.'_content');
+					}
 				}
 
+		        $broadcasted_ids = get_post_meta($post->ID, Social::$prefix.'broadcasted_ids', true);
+		        if (!empty($broadcasted_ids)) {
+		            $ids = array_merge_recursive($ids, $broadcasted_ids);
+		        }
 		        update_post_meta($post->ID, Social::$prefix.'broadcasted_ids', $ids);
 
 		        // Accounts errored?
 		        if ($errored_accounts !== false) {
 					$this->send_publish_error_notification($post, $errored_accounts);
 		        }
-		        update_post_meta($post->ID, Social::$prefix.'broadcasted', '1');
+		        if ($_broadcast_accounts !== false) {
+			        update_post_meta($post->ID, Social::$prefix.'broadcast_accounts', $_broadcast_accounts);
+			        update_post_meta($post->ID, Social::$prefix.'broadcast_error', 'true');
+
+			        $retry_broadcast = get_option(Social::$prefix.'retry_broadcast');
+			        $retry_broadcast[] = $post->ID;
+			        update_option(Social::$prefix.'retry_broadcast', $retry_broadcast);
+		        }
+		        else {
+		            update_post_meta($post->ID, Social::$prefix.'broadcasted', '1');
+			        delete_post_meta($post->ID, Social::$prefix.'broadcast_accounts');
+		        }
 	        }
         }
+	}
+
+	/**
+	 * Displays the upgrade message.
+	 */
+	public function display_failed_broadcast() {
+		$accounts = get_post_meta($_GET['post'], Social::$prefix.'broadcast_accounts', true);
+		if (!empty($accounts)) {
+			$services = array_merge(Social::$services, Social::$global_services);
+			$message = __('Failed to broadcast to the following accounts:', Social::$i18n);
+?>
+<div class="error">
+	<p><?php echo $message; ?></p>
+	<?php foreach ($accounts as $key => $_accounts): ?>
+	<p>
+		<?php echo $services[$key]->title(); ?>
+		<ul>
+			<?php foreach ($_accounts as $account): ?>
+			<li>- <?php echo $services[$key]->profile_name($account); ?></li>
+			<?php endforeach; ?>
+		</ul>
+	</p>
+	<?php endforeach; ?>
+</div>
+<?php
+		}
 	}
 
 	/**
@@ -1416,6 +1475,15 @@ final class Social {
 	 */
 	public function cron_15_core() {
 		if ($this->cron_lock('cron_15')) {
+			// Find posts that require a rebroadcast
+			$retry_ids = get_option(Social::$prefix.'retry_broadcast');
+			if ($retry_ids !== false) {
+				foreach ($retry_ids as $id) {
+					$post = get_post($id);
+					$this->broadcast($post);
+				}
+			}
+
 			do_action(Social::$prefix.'cron_15');
 		}
 		$this->cron_unlock('cron_15');
