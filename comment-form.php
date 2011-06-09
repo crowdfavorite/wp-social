@@ -47,7 +47,7 @@ if (is_user_logged_in() and !current_user_can('manage_options')) {
 							<?php if (count($accounts)): ?>
 							<optgroup label="<?php _e(ucfirst($key), Social::$i18n); ?>">
 								<?php foreach ($accounts as $account): ?>
-								<option value="<?php echo $account->user->id; ?>"><?php echo $service->profile_name($account); ?></option>
+								<option value="<?php echo $account->user->id; ?>" rel="<?php echo $service->profile_avatar($account); ?>"><?php echo $service->profile_name($account); ?></option>
 								<?php endforeach; ?>
 							</optgroup>
 							<?php endif; ?>

@@ -110,8 +110,16 @@
 				$('.comment-reply-link').show();
 			});
 
+			var $avatar = $('.social-post-form .avatar:first');
+			var original_avatar = $avatar.attr('src');
 			$('#post_accounts').live('change', function(){
 				$(this).find('option:selected').each(function(){
+					var avatar = $(this).attr('rel');
+					if (avatar !== undefined) {
+						$avatar.attr('src', avatar);
+					} else {
+						$avatar.attr('src', original_avatar);
+					}
 					var label = $(this).parent().attr('label');
 					if (label !== undefined) {
 						$('#post_to').show().find('span').html(label);
