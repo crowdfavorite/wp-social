@@ -193,7 +193,7 @@ final class Social {
 	 */
 	public function option($key, $value = null) {
 		if ($value === null) {
-			return Social::$options[$key];
+			return (isset(Social::$options[$key]) ? Social::$options[$key] : null);
 		}
 
 		Social::$options[$key] = $value;
@@ -467,6 +467,11 @@ final class Social {
 					}
 					else {
 						delete_option(Social::$prefix.'xmlrpc_accounts');
+					}
+
+					// Anywhere key
+					if (isset($_POST[Social::$prefix.'twitter_anywhere_api_key'])) {
+						update_option(Social::$prefix.'twitter_anywhere_api_key', $_POST[Social::$prefix.'twitter_anywhere_api_key']);
 					}
 
 					wp_redirect(Social_Helper::settings_url(array('saved' => 'true')));
@@ -770,7 +775,14 @@ final class Social {
 			</label>
 			<?php endforeach; ?>
 		<?php endforeach; ?>
+		<div style="clear:both"></div>
 	</div>
+
+	<h3><?php _e('Twitter @Anywhere Settings', Social::$i18n); ?></h3>
+	<p>If you would like to utilize Twitter's @Anywhere hovercards for Twitter usernames, then enter your application's
+	API key here. (How do I get an API key? <a href="http://dev.twitter.com/anywhere" target="_blank">Click Here</a>)</p>
+
+	<p><input type="text" class="text" name="<?php echo Social::$prefix.'twitter_anywhere_api_key'; ?>" id="<?php echo Social::$prefix.'twitter_anywhere_api_key'; ?>" style="width:400px" value="<?php echo Social::option('twitter_anywhere_api_key'); ?>" /></p>
 
 	<p class="submit" style="clear:both">
 		<input type="submit" name="submit" value="Save Settings" class="button-primary" />

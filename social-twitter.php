@@ -7,6 +7,7 @@
 add_filter(Social::$prefix.'register_service', array('Social_Twitter', 'register_service'));
 add_filter(Social::$prefix.'request_body', array('Social_Twitter', 'request_body'));
 add_filter('get_comment_author_link', array('Social_Twitter', 'get_comment_author_link'));
+add_action('wp_head', array('Social_Twitter', 'wp_head'));
 
 final class Social_Twitter extends Social_Service implements Social_IService {
 
@@ -46,6 +47,11 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 	public static function get_comment_author_link($url) {
 		global $comment;
 		if ($comment->comment_type == 'twitter') {
+			$api_key = get_option(Social::$prefix.'twitter_anywhere_api_key');
+			if ($api_key !== false) {
+				return '@'.get_comment_author($comment->comment_ID);
+			}
+
 			$status_id = get_comment_meta($comment->comment_ID, Social::$prefix.'status_id', true);
 			$url = str_replace("rel='", "rel='".$status_id." ", $url);
 			$url = str_replace("'>", "'>@", $url);
@@ -53,6 +59,26 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 		}
 
 		return $url;
+	}
+
+	/**
+	 * Adds the hovercard JS.
+	 *
+	 * @static
+	 * @return void
+	 */
+	public static function wp_head() {
+		$api_key = get_option(Social::$prefix.'twitter_anywhere_api_key');
+		if ($api_key !== false) {
+?>
+<script src="http://platform.twitter.com/anywhere.js?id=<?php echo $api_key; ?>&amp;v=1"></script>
+<script type="text/javascript">
+twttr.anywhere(function(twitter) {
+	twitter.hovercards();
+});
+</script>
+<?php
+		}
 	}
 
 	/**
