@@ -1471,7 +1471,7 @@ final class Social {
 				$hours = 2;
 			}
 
-			if (!isset($queued[$post->ID]) or $queued[$post->ID] > $hours) {
+			if (!isset($queued[$post->ID]) or $queued[$post->ID] < $hours) {
 				$queued[$post->ID] = (string) $hours;
 
 				$urls = array(
@@ -1492,7 +1492,8 @@ final class Social {
 				}
 
 				// Run search!
-				foreach (Social::$services as $key => $service) {
+				$services = array_merge(Social::$services, Social::$global_services);
+				foreach ($services as $key => $service) {
 					$results = $service->search_for_replies($post, $urls, (isset($broadcasted_ids[$key]) ? $broadcasted_ids[$key] : null));
 
 					// Results?
