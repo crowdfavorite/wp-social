@@ -368,7 +368,7 @@ final class Social {
 		// Load the user's accounts
 		if (!empty($services)) {
 			foreach ($services as $service => $accounts) {
-				if (!isset(Social::$services[$service])) {
+				if (!isset(Social::$services[$service]) or empty($accounts)) {
 					continue;
 				}
 				$this->service($service)->accounts($accounts);
@@ -378,7 +378,7 @@ final class Social {
 		// Load the global accounts
 		if (!empty($global_services)) {
 			foreach ($global_services as $service => $accounts) {
-				if (!isset(Social::$global_services[$service])) {
+				if (!isset(Social::$global_services[$service]) or empty($accounts)) {
 					continue;
 				}
 				$this->service($service, null, true)->accounts($accounts);
@@ -1315,7 +1315,7 @@ final class Social {
 	public function comment_post($comment_ID) {
 		global $wpdb, $comment_content, $commentdata;
 		$type = false;
-		$services = array_merge(Social::$services, Social::$global_services);
+		$services = $this->services();
 		if (!empty($services)) {
 			$account_id = $_POST[Social::$prefix.'post_account'];
 
@@ -1623,7 +1623,33 @@ final class Social {
 		}
 
 		return ob_get_clean();
+	}
 
+	/**
+	 * Merges the user and global accounts together.
+	 *
+	 * @return array
+	 */
+	private function services() {
+		$user = Social::$services;
+		$global = Social::$global_services;
+		$services = array();
+
+		foreach ($user as $key => $service) {
+			$services[$key] = $service;
+		}
+
+		foreach ($global as $key => $service) {
+			if (!isset($services[$key])) {
+				$services[$key] = $service;
+			}
+			else {
+				$accounts = $services[$key]->accounts();
+				$services[$key]->accounts(array_merge($service->accounts(), $accounts));
+			}
+		}
+
+		return $services;
 	}
 
 } // End Social

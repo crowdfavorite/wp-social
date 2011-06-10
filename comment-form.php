@@ -104,6 +104,6 @@ if (is_user_logged_in() and !current_user_can('manage_options')) {
 	</div>
 	<input type="hidden" id="use_twitter_reply" name="use_twitter_reply" value="0" />
 	<input type="hidden" id="in_reply_to_status_id" name="in_reply_to_status_id" value="" />
-	<?php comment_id_fields(); ?>
+	<?php comment_id_fields((isset($_GET['p']) ? $_GET['p'] : 0)); ?>
 	</form>
 </div>
