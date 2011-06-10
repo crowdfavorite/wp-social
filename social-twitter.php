@@ -212,40 +212,19 @@ twttr.anywhere(function(twitter) {
 			$post_comments = array();
 		}
 
-		// Search by URL
-		$url = 'http://search.twitter.com/search.json?q='.implode('+OR+', $urls);
-		$request = wp_remote_get($url);
-		if (!is_wp_error($request)) {
-			$response = json_decode($request['body']);
-
-			if (count($response->results)) {
-				$results = array();
-				foreach ($response->results as $result) {
-					if (!in_array($result->id, array_values($post_comments))) {
-						$post_comments[] = $result->id;
-						$results[] = $result;
-					}
-				}
-			}
-		}
-
 		// Load the post author and their Twitter accounts
 		if ($broadcasted_ids !== null) {
 			$accounts = get_user_meta($post->post_author, Social::$prefix.'accounts', true);
 			if (isset($accounts['twitter'])) {
 				foreach ($accounts['twitter'] as $account) {
 					if (isset($broadcasted_ids[$account->user->id])) {
-						$tweets = $this->request($account, 'statuses/mentions', array(
-							'since_id' => $broadcasted_ids[$account->user->id],
-							'count' => 200
-						));
-
+						$tweets = $this->request($account, 'statuses/retweets/'.$broadcasted_ids[$account->user->id]);
 						if (count($tweets->response)) {
 							foreach ($tweets->response as $tweet) {
 								if ($tweet->in_reply_to_status_id == $broadcasted_ids[$account->user->id]) {
 									if (!in_array($tweet->id, array_values($post_comments))) {
 										$post_comments[] = $tweet->id;
-										$results[] = (object) array(
+										$results[$tweet->id] = (object) array(
 											'id' => $tweet->id,
 											'from_user_id' => $tweet->user->id,
 											'from_user' => $tweet->user->screen_name,
@@ -255,6 +234,47 @@ twttr.anywhere(function(twitter) {
 									}
 								}
 							}
+						}
+
+						$tweets = $this->request($account, 'statuses/mentions', array(
+							'since_id' => $broadcasted_ids[$account->user->id],
+							'count' => 200
+						));
+						if (count($tweets->response)) {
+							foreach ($tweets->response as $tweet) {
+								if ($tweet->in_reply_to_status_id == $broadcasted_ids[$account->user->id]) {
+									if (!in_array($tweet->id, array_values($post_comments))) {
+										if (!isset($results[$tweet->id])) {
+											$post_comments[] = $tweet->id;
+											$results[$tweet->id] = (object) array(
+												'id' => $tweet->id,
+												'from_user_id' => $tweet->user->id,
+												'from_user' => $tweet->user->screen_name,
+												'text' => $tweet->text,
+												'created_at' => $tweet->created_at
+											);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// Search by URL
+		$url = 'http://search.twitter.com/search.json?q='.implode('+OR+', $urls);
+		$request = wp_remote_get($url);
+		if (!is_wp_error($request)) {
+			$response = json_decode($request['body']);
+
+			if (count($response->results)) {
+				foreach ($response->results as $result) {
+					if (!in_array($result->id, array_values($post_comments))) {
+						if (!isset($results[$result->id])) {
+							$post_comments[] = $result->id;
+							$results[$result->id] = $result;
 						}
 					}
 				}
