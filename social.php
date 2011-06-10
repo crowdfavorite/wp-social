@@ -34,8 +34,7 @@ add_action('do_meta_boxes', array($social, 'do_meta_boxes'));
 add_action('save_post', array($social, 'set_broadcast_meta_data'), 10, 2);
 add_action('comment_post', array($social, 'comment_post'));
 add_action('social_aggregate_comments', array($social, 'aggregate_comments'));
-add_action('transition_post_status', array($social, 'transition_post_status'), 10, 3);
-add_action('future_to_publish', array($social, 'future_to_publish'));
+add_action('publish_post', array($social, 'publish_post'));
 add_action('show_user_profile', array($social, 'show_user_profile'));
 
 // Admin Actions
@@ -618,26 +617,12 @@ final class Social {
 	}
 
 	/**
-	 * Handles the transition between post-states.
-	 *
-	 * @param  string  $new_status
-	 * @param  string  $old_status
-	 * @param  object  $post
-	 * @return void
-	 */
-	public function transition_post_status($new_status, $old_status, $post) {
-		if ($new_status == 'publish') {
-			$this->broadcast($post);
-		}
-	}
-
-	/**
 	 * Handles the future to publish transition.
 	 *
 	 * @param  object  $post
 	 * @return void
 	 */
-	public function future_to_publish($post) {
+	public function publish_post($post) {
 		$this->broadcast($post);
 	}
 
