@@ -661,7 +661,7 @@ final class Social {
 		global $post;
 
 		if (!Social::$update) {
-			$services = array_merge(Social::$services, Social::$global_services);
+			$services = $this->services();
 			foreach ($services as $key => $service) {
 				if (count($service->accounts())) {
 					$notify = get_post_meta($post->ID, Social::$prefix.'notify_'.$key, true);
@@ -831,7 +831,7 @@ final class Social {
 	 */
 	public function broadcast_options($post_id, $location) {
 		$notify = array();
-		$services = array_merge_recursive(Social::$services, Social::$global_services);
+		$services = $this->services();
 		foreach ($services as $key => $service) {
 			$meta = get_post_meta($post_id, Social::$prefix.'notify_'.$key, true);
 			if ($meta == '1') {
@@ -1029,7 +1029,7 @@ final class Social {
 	        if (!empty($broadcast_accounts)) {
 		        $ids = array();
 		        $errored_accounts = false;
-		        $services = array_merge(Social::$services, Social::$global_services);
+		        $services = $this->services();
 				foreach ($services as $key => $service) {
 					$notify = get_post_meta($post->ID, Social::$prefix.'notify_'.$key, true);
 
@@ -1119,7 +1119,7 @@ final class Social {
 	public function display_failed_broadcast() {
 		$accounts = get_post_meta($_GET['post'], Social::$prefix.'broadcast_accounts', true);
 		if (!empty($accounts)) {
-			$services = array_merge(Social::$services, Social::$global_services);
+			$services = $this->services();
 			$message = __('Failed to broadcast to the following accounts:', Social::$i18n);
 ?>
 <div class="error">
@@ -1149,7 +1149,7 @@ final class Social {
 	private function send_publish_error_notification($post, $errored_accounts) {
 		$author = get_userdata($post->post_author);
 
-		$services = array_merge(Social::$services, Social::$global_services);
+		$services = $this->services();
 
 		$message  = 'Hello,'."\n\n";
 		$message .= wordwrap('Social failed to broadcast the blog post "'.$post->post_title.'" to one or more of your Social accounts.', 60)."\n\n";
@@ -1585,7 +1585,7 @@ final class Social {
 				}
 
 				// Run search!
-				$services = array_merge(Social::$services, Social::$global_services);
+				$services = $this->services();
 				foreach ($services as $key => $service) {
 					$results = $service->search_for_replies($post, $urls, (isset($broadcasted_ids[$key]) ? $broadcasted_ids[$key] : null));
 
