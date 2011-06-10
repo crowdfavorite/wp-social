@@ -1007,6 +1007,9 @@ final class Social {
 	 * @param  object  $post
 	 */
 	public function broadcast($post) {
+		if (is_int($post)) {
+			$post = get_post($post);
+		}
         $broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted', true);
         if ($broadcasted == '0' or empty($broadcasted)) {
 	        $_broadcast_accounts = false;
@@ -1025,7 +1028,7 @@ final class Social {
 								foreach ($accounts as $account) {
 									$_account = $account;
 									$id = $account['id'];
-									if (isset($account['global'])) {
+									if (isset($account['global']) and !empty($account['global'])) {
 										$global_accounts = Social::$global_services[$key]->accounts();
 										if (isset($global_accounts[$id])) {
 											$account = $global_accounts[$id];
@@ -1036,6 +1039,12 @@ final class Social {
 									}
 									else {
 										$user_accounts = Social::$services[$key]->accounts();
+										if (!count($user_accounts)) {
+											$accounts = get_user_meta($post->post_author, Social::$prefix.'accounts', true);
+											if (isset($accounts[$key])) {
+												$user_accounts = $accounts[$key];
+											}
+										}
 										if (isset($user_accounts[$id])) {
 											$account = $user_accounts[$id];
 										}
@@ -1629,8 +1638,10 @@ final class Social {
 				$services[$key] = $service;
 			}
 			else {
-				$accounts = $services[$key]->accounts();
-				$services[$key]->accounts(array_merge($service->accounts(), $accounts));
+				$accounts = $service->accounts();
+				if (count($accounts)) {
+					$services[$key]->accounts(array_merge($service->accounts(), $accounts));
+				}
 			}
 		}
 
