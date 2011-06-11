@@ -93,6 +93,7 @@ if (is_user_logged_in() and !current_user_can('manage_options')) {
 		endif; ?>
 
 		<div class="social-input-row">
+			<label class="social-label" for="social-sign-in-comment"><?php _e('Comment', Social::$i18n); ?></label>
 			<textarea id="social-sign-in-comment" name="comment"></textarea>
 		</div>
 		<div class="social-input-row social-input-row-submit">
