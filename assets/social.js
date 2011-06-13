@@ -17,7 +17,9 @@
 						var $parent = $this.closest('.social-post');
 						$parent.find('form').hide();
 						$parent.find('#loading').fadeIn();
-						$.get($parent.find('#reload_url').val(), {}, function(response){
+						$.get($parent.find('#reload_url').val(), {
+							p: $('#comment_post_ID').val()
+						}, function(response){
 							if (response.result == 'success') {
 								$parent.html(response.html);
 								$('#primary').find('#social_login').parent().html(response.disconnect_url);
