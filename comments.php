@@ -16,7 +16,7 @@
 
 	<div class="social-post">
 		<div id="loading" style="display:none">
-			<input type="hidden" id="reload_url" value="<?php echo site_url('?'.Social::$prefix.'action=reload_form&p='.$_GET['p']); ?>" />
+			<input type="hidden" id="reload_url" value="<?php echo site_url('?'.Social::$prefix.'action=reload_form&redirect_to='.$_SERVER['REQUEST_URI'].'&p='.$_GET['p']); ?>" />
 			<img src="<?php echo admin_url('images/loading.gif'); ?>" style="position:relative;top:2px" /> Logging In...
 		</div>
 		<?php if (comments_open()): ?>
