@@ -48,6 +48,7 @@ add_filter('get_avatar', array($social, 'get_avatar'), 10, 5);
 add_filter('register', array($social, 'register'));
 add_filter('loginout', array($social, 'loginout'));
 add_filter('cron_schedules', array($social, 'cron_schedules'));
+add_filter('comment_id_fields', array($social, 'comment_id_fields'), 10, 3);
 
 /**
  * Social Core
@@ -1618,6 +1619,26 @@ final class Social {
 		}
 
 		return ob_get_clean();
+	}
+
+	/**
+	 * Fix for the comment ID fields.
+	 *
+	 * @param  string  $result
+	 * @param  int     $id
+	 * @param  int     $replytoid
+	 * @return string
+	 */
+	public function comment_id_fields($result, $id, $replytoid) {
+		// TODO remove this once support for 3.1.x is dropped
+		$id = isset($_GET['p']) ? $_GET['p'] : 0;
+		if (empty($id)) {
+			$id = get_the_ID();
+		}
+
+		$result  = "<input type='hidden' name='comment_post_ID' value='$id' id='comment_post_ID' />\n";
+		$result .= "<input type='hidden' name='comment_parent' id='comment_parent' value='$replytoid' />\n";
+		return $result;
 	}
 
 	/**
