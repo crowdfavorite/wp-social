@@ -231,7 +231,7 @@
 	clear: left;
 	margin-bottom: 10px;
 	overflow: hidden;
-	padding-left: 62px;
+	padding-left: 80px;
 	position: relative;
 	zoom: 1;
 }
@@ -399,7 +399,7 @@
 	position: relative;
 }
 #social .social-respond .avatar {
-	left: 10px;
+	left: 25px;
 	position: absolute;
 	top: 1px;
 }
