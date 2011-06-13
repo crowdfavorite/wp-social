@@ -98,7 +98,8 @@ final class Social {
 		'debug' => 'false',
 		'install_date' => false,
 		'installed_version' => false,
-		'broadcast_format' => '{title}: {content} {url}'
+		'broadcast_format' => '{title}: {content} {url}',
+		'twitter_anywhere_api_key' => '',
 	);
 
 	/**
