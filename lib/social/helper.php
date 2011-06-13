@@ -81,7 +81,7 @@ abstract class Social_Helper {
 			$url = admin_url('profile.php#social-networks');
 		}
 		else {
-			$url = ($admin ? admin_url('options-general.php?page=social.php') : site_url('?authorized=true&p='.$_GET['id']));
+			$url = ($admin ? admin_url('options-general.php?page=social.php') : site_url('?authorized=true&p='.$_GET['p']));
 		}
 		return Social::$api_url.$service.'/authorize?redirect_to='.urlencode($url);
 	}

@@ -73,7 +73,7 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 	 */
 	public static function wp_head() {
 		$api_key = get_option(Social::$prefix.'twitter_anywhere_api_key');
-		if ($api_key !== false) {
+		if (!empty($api_key) and $api_key !== false) {
 ?>
 <script src="http://platform.twitter.com/anywhere.js?id=<?php echo $api_key; ?>&amp;v=1"></script>
 <script type="text/javascript">
