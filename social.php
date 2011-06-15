@@ -260,7 +260,6 @@ final class Social {
 		
 		Social::$plugins_url = trailingslashit($url.SOCIAL_PATH);
 
-		var_dump(Social::$plugins_url);
 
 		$global_services = get_option(Social::$prefix.'accounts');
 		$services = get_user_meta(get_current_user_id(), Social::$prefix.'accounts', true);
