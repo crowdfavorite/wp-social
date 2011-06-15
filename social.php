@@ -62,6 +62,11 @@ final class Social {
 	public static $api_url = 'https://sopresto.mailchimp.com/';
 
 	/**
+	 * @var  string  $plugins_url  Path to the Social Plugin's directory.  Set in constructor
+	 */
+	public static $plugins_url = '';
+
+	/**
 	 * @var  string  $version  plugin version
 	 */
 	public static $version = '1.0';
@@ -101,7 +106,7 @@ final class Social {
 		'broadcast_format' => '{title}: {content} {url}',
 		'twitter_anywhere_api_key' => '',
 	);
-
+	
 	/**
 	 * @var  bool  update plugin settings
 	 */
@@ -127,7 +132,7 @@ final class Social {
 	public static function debug($content) {
 		$debug = get_option(Social::$prefix.'debug', false);
 		if ($debug) {
-			$fh = fopen(plugins_url('log.txt', SOCIAL_FILE), 'a');
+			$fh = fopen(Social::$plugins_url.'log.txt', 'a');
 			fwrite($fh, $content."\n");
 			fclose($fh);
 		}
@@ -250,6 +255,13 @@ final class Social {
 	 * Initializes the plugin.
 	 */
 	public function init() {
+		
+		$url = trailingslashit(apply_filters('social_plugins_url', plugins_url()));
+		
+		Social::$plugins_url = trailingslashit($url.SOCIAL_PATH);
+
+		var_dump(Social::$plugins_url);
+
 		$global_services = get_option(Social::$prefix.'accounts');
 		$services = get_user_meta(get_current_user_id(), Social::$prefix.'accounts', true);
 
@@ -281,14 +293,14 @@ final class Social {
 			if (count($deauthed)) {
 				add_action('admin_notices', array($this, 'display_deauthed'));
 			}
-
-			wp_enqueue_style('social_css', plugins_url('/assets/admin.css', SOCIAL_FILE), array(), Social::$version, 'screen, tv, projection');
-			wp_enqueue_script('social_js', plugins_url('/assets/social.js', SOCIAL_FILE), array('jquery'), Social::$version, true);
+			
+			wp_enqueue_style('social_css', Social::$plugins_url.'/assets/admin.css', array(), Social::$version, 'screen, tv, projection');
+			wp_enqueue_script('social_js', Social::$plugins_url.'/assets/social.js', array('jquery'), Social::$version, true);
 		}
 		else {
-			wp_enqueue_style('social_css', plugins_url('/assets/comments.css', SOCIAL_FILE), array(), Social::$version, 'screen, tv, projection');
+			wp_enqueue_style('social_css', Social::$plugins_url.'/assets/comments.css', array(), Social::$version, 'screen, tv, projection');
 			wp_enqueue_script('jquery');
-			wp_enqueue_script('social_js', plugins_url('/assets/social.js', SOCIAL_FILE), array('jquery'), Social::$version, true);
+			wp_enqueue_script('social_js', Social::$plugins_url.'/assets/social.js', array('jquery'), Social::$version, true);
 		}
 
 		if (version_compare(PHP_VERSION, '5.2.1', '<')) {
@@ -962,7 +974,7 @@ final class Social {
 </p>
 </form>
 <script type="text/javascript" src="<?php echo includes_url('/js/jquery/jquery.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo plugins_url('/assets/js/admin.js', SOCIAL_FILE); ?>"></script>
+<script type="text/javascript" src="<?php echo Social::$plugins_url.'/assets/js/admin.js'; ?>"></script>
 </body>
 </html>
 <?php
@@ -1269,13 +1281,22 @@ final class Social {
 ?>
 <li class="social-comment social-<?php echo $comment_type; ?>" id="li-comment-<?php comment_ID(); ?>">
 	<div class="social-comment-inner" id="comment-<?php comment_ID(); ?>">
+		
+		
 		<div class="social-comment-header">
 			<div class="social-comment-author vcard">
-				<?php echo get_avatar($comment, 40); ?>
+				<?php switch ($comment_type) : 
+					case 'pingback': ?>
+						<span class="social-comment-label">Pingback</span>
+						<?php break; ?>
+					<?php default: ?>
+						<?php echo get_avatar($comment, 40); ?>
+				<?php endswitch; ?>
+				
 				<?php printf('<cite class="social-fn fn">%s</cite>', get_comment_author_link()); ?>
-				<?php if ($depth > 1): ?>
+				<?php if ($depth > 1) : ?>
 					<span class="social-replied social-imr"><?php _e('replied:', Social::$i18n); ?></span>
-				<?php endif; ?>
+				<?php endif; ?>				
 			</div><!-- .comment-author .vcard -->
 			<div class="social-comment-meta">
 				<span class="social-posted-from">
@@ -1300,6 +1321,7 @@ final class Social {
 		<div class="social-actions">
 			<?php comment_reply_link(array_merge($args, array('depth' => $depth, 'max_depth' => $args['max_depth']))); ?>
 		</div><!-- .reply -->
+	
 	</div><!-- #comment-##  -->
 <?php
 	}
