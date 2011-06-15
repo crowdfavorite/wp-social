@@ -256,10 +256,8 @@ final class Social {
 	 */
 	public function init() {
 		
-		$url = trailingslashit(apply_filters('social_plugins_url', plugins_url()));
-		
-		Social::$plugins_url = trailingslashit($url.SOCIAL_PATH);
-
+		$url = plugins_url('', SOCIAL_FILE);
+		Social::$plugins_url = apply_filters('social_plugins_url', $url);
 
 		$global_services = get_option(Social::$prefix.'accounts');
 		$services = get_user_meta(get_current_user_id(), Social::$prefix.'accounts', true);
@@ -293,8 +291,10 @@ final class Social {
 				add_action('admin_notices', array($this, 'display_deauthed'));
 			}
 			
+
 			wp_enqueue_style('social_admin', Social::$plugins_url.'/assets/admin.css', array(), Social::$version, 'screen');
 			wp_enqueue_script('social_admin', Social::$plugins_url.'/assets/social.js', array('jquery'), Social::$version, true);
+
 		}
 		else {
 			wp_enqueue_style('social', Social::$plugins_url.'/assets/comments.css', array(), Social::$version, 'screen');
