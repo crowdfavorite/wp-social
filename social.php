@@ -1631,17 +1631,17 @@ final class Social {
 		$services = array();
 
 		foreach ($user as $key => $service) {
-			$services[$key] = $service;
+			$services[$key] = clone $service;
 		}
 
 		foreach ($global as $key => $service) {
 			if (!isset($services[$key])) {
-				$services[$key] = $service;
+				$services[$key] = clone $service;
 			}
 			else {
 				$accounts = $service->accounts();
 				if (count($accounts)) {
-					$services[$key]->accounts(array_merge($service->accounts(), $accounts));
+					$services[$key]->accounts(array_merge($services[$key]->accounts(), $accounts));
 				}
 			}
 		}
