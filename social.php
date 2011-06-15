@@ -1245,12 +1245,12 @@ final class Social {
 	public function comment($comment, $args, $depth) {
 		$comment_type = get_comment_meta($comment->comment_ID, Social::$prefix.'comment_type', true);
 		if (empty($comment_type)) {
-			$comment_type = 'wordpress';
+			$comment_type = (empty($comment->comment_type) ? 'wordpress' : $comment->comment_type);
 		}
 		$comment->comment_type = $comment_type;
 		$GLOBALS['comment'] = $comment;
 
-		if ($comment_type != 'wordpress') {
+		if (!in_array($comment_type, array('wordpress', 'pingback'))) {
 			$service = Social::service($comment->comment_type);
 			$status_url = null;
 			if ($service !== false) {
