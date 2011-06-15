@@ -1219,7 +1219,7 @@ final class Social {
 				$image = get_comment_meta($comment->comment_ID, Social::$prefix.'profile_image_url', true);
 			}
 		}
-		else {
+		else if (!is_string($comment) && !is_int($comment)) {
 			$services = Social::$services;
 			foreach ($services as $key => $service) {
 				if (count($service->accounts())) {
