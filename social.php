@@ -1019,57 +1019,59 @@ final class Social {
 		        $ids = array();
 		        $errored_accounts = false;
 		        $services = $this->services();
-				foreach ($services as $key => $service) {
-					$notify = get_post_meta($post->ID, Social::$prefix.'notify_'.$key, true);
+				foreach ($services as $service_key => $service) {
+					$notify = get_post_meta($post->ID, Social::$prefix.'notify_'.$service_key, true);
 
 					if ($notify == '1') {
-						$content = get_post_meta($post->ID, Social::$prefix.$key.'_content', true);
+						$content = get_post_meta($post->ID, Social::$prefix.$service_key.'_content', true);
 						if (!empty($content)) {
 							foreach ($broadcast_accounts as $key => $accounts) {
-								foreach ($accounts as $account) {
-									$_account = $account;
-									$id = $account['id'];
-									if (isset($account['global']) and !empty($account['global'])) {
-										$global_accounts = Social::$global_services[$key]->accounts();
-										if (isset($global_accounts[$id])) {
-											$account = $global_accounts[$id];
-										}
-										else {
-											$account = false;
-										}
-									}
-									else {
-										$user_accounts = Social::$services[$key]->accounts();
-										if (!count($user_accounts)) {
-											$accounts = get_user_meta($post->post_author, Social::$prefix.'accounts', true);
-											if (isset($accounts[$key])) {
-												$user_accounts = $accounts[$key];
-											}
-										}
-										if (isset($user_accounts[$id])) {
-											$account = $user_accounts[$id];
-										}
-										else {
-											$account = false;
-										}
-									}
-
-									if ($account !== false) {
-										$response = $service->status_update($account, $content);
-										if ($response !== false and $service->check_deauthed($response, $account)) {
-											$ids[$key]["{$account->user->id}"] = $response->response->id;
-										}
-										else {
-											if ($response === false) {
-												$_broadcast_accounts[$key][] = $_account;
+								if ($key == $service_key) {
+									foreach ($accounts as $account) {
+										$_account = $account;
+										$id = $account['id'];
+										if (isset($account['global']) and !empty($account['global'])) {
+											$global_accounts = Social::$global_services[$key]->accounts();
+											if (isset($global_accounts[$id])) {
+												$account = $global_accounts[$id];
 											}
 											else {
-												$errored_accounts[$service->service][] = $account;
+												$account = false;
 											}
 										}
-									}
-									else {
-										$errored_accounts[$service->service][] = $account;
+										else {
+											$user_accounts = Social::$services[$key]->accounts();
+											if (!count($user_accounts)) {
+												$accounts = get_user_meta($post->post_author, Social::$prefix.'accounts', true);
+												if (isset($accounts[$key])) {
+													$user_accounts = $accounts[$key];
+												}
+											}
+											if (isset($user_accounts[$id])) {
+												$account = $user_accounts[$id];
+											}
+											else {
+												$account = false;
+											}
+										}
+
+										if ($account !== false) {
+											$response = $service->status_update($account, $content);
+											if ($response !== false and $service->check_deauthed($response, $account)) {
+												$ids[$key]["{$account->user->id}"] = $response->response->id;
+											}
+											else {
+												if ($response === false) {
+													$_broadcast_accounts[$key][] = $_account;
+												}
+												else {
+													$errored_accounts[$service->service][] = $account;
+												}
+											}
+										}
+										else {
+											$errored_accounts[$service->service][] = $account;
+										}
 									}
 								}
 							}
