@@ -50,6 +50,17 @@ If you want to hook into a CRON for extra functionality for a service, all you h
 
     <?php add_action(Social::$prefix.'cron_15', array('Your_Class', 'your_method')); ?>
 
+= How can I turn on and off Twitter's @Anywhere functionality? =
+
+To utilize Twitter's @Anywhere functionality you will need to have an @Anywhere API key. If you don't have an API key,
+visit http://dev.twitter.com/anywhere.
+
+Once you have an API key login to your WordPress installation and navigate to Settings -> Social -> Twitter @Anywhere
+Settings. Enter your API key in the text box and click on "Save Settings".
+
+If you want to disable the @Anywhere functionality, simply remove the API key from the Social settings page and click
+"Save Settings".
+
 == Changelog ==
 
 = 1.0 =
