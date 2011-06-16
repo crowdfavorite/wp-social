@@ -48,6 +48,16 @@ Many individuals use Facebook or Twitter as their primary identity(ies) on the w
 
 == Frequently Asked Questions ==
 
+= How can I customize the comments form in my theme? =
+
+We recommend using CSS styles to selectively target the following:
+
+- TBD
+- TBD
+- TBD
+
+Note: we do not recommend making changes to the included plugin files as they may be overwritten during an upgrade.
+
 = Why are the tabs on my comment form not displaying correctly? =
 
 Chances are your theme is missing the `<?php wp_footer(); ?>` snippet in the footer.php.
