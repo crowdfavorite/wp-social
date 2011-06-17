@@ -247,7 +247,8 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 	 * @return string
 	 */
 	public function status_url($username, $status_id) {
-		return 'http://facebook.com/'.$username.'/posts/'.$status_id;
+		$ids = explode('_', $status_id);
+		return 'http://facebook.com/permalink.php?story_fbid='.$ids[1].'&id='.$ids[0];
 	}
 
 } // End Social_Facebook
