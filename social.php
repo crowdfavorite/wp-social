@@ -255,7 +255,6 @@ final class Social {
 	 * Initializes the plugin.
 	 */
 	public function init() {
-		
 		$url = plugins_url('', SOCIAL_FILE);
 		Social::$plugins_url = apply_filters('social_plugins_url', $url);
 
@@ -1193,7 +1192,7 @@ final class Social {
 	 * @return string
 	 */
 	public static function comments_template() {
-		global $post;
+		global $post;	
 
 		if (!(is_singular() and (have_comments() or $post->comment_status == 'open'))) {
 			return;
@@ -1202,6 +1201,7 @@ final class Social {
 		require SOCIAL_PATH.'lib/social/walker/comment.php';
 		$file = trailingslashit(dirname(SOCIAL_FILE)).'comments.php';
 		return $file;
+
 	}
 
 	/**

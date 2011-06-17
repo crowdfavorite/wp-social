@@ -12,6 +12,17 @@ if (is_user_logged_in() and !current_user_can('manage_options')) {
 }
 ?>
 <div id="respond" class="social-respond">
+	<div class="social-heading">
+		<?php
+		if (is_user_logged_in()) {
+			$tab = __('Post a Comment', Social::$i18n);
+		}
+		else {
+			$tab = __('Profile', Social::$i18n);
+		}
+		?>
+		<h2 class="social-title social-tab-active"><span><?php echo $tab; ?></span></h2>
+	</div>
 	<form class="social-respond-inner" action="<?php echo site_url('/wp-comments-post.php'); ?>" method="post" id="<?php echo esc_attr($args['id_form']); ?>">
 	<?php if (!is_user_logged_in()): ?>
 	<div class="social-sign-in-links social-clearfix">
@@ -98,7 +109,7 @@ if (is_user_logged_in() and !current_user_can('manage_options')) {
 			<?php endif; ?>
 			<textarea id="social-sign-in-comment" name="comment"></textarea>
 		</div>
-		<div class="social-input-row social-input-row-submit">
+		<div class="social-input-row social-input-row-submit social-clearfix">
 			<button type="submit" class="social-input-submit"><span><?php _e('Post It', Social::$i18n); ?></span></button>
 			<?php
 			echo $post_to;

@@ -2,18 +2,6 @@
 	<?php if (post_password_required()): ?>
 	<p class="nopassword"><?php _e('This post is password protected. Enter the password to view any comments.', Social::$i18n); ?></p>
 	<?php else: ?>
-	<div class="social-heading">
-		<?php
-		if (is_user_logged_in()) {
-			$tab = __('Post a Comment', Social::$i18n);
-		}
-		else {
-			$tab = __('Profile', Social::$i18n);
-		}
-		?>
-		<h2 class="social-title social-tab-active"><span><?php echo $tab; ?></span></h2>
-	</div>
-
 	<div class="social-post">
 		<div id="loading" style="display:none">
 			<input type="hidden" id="reload_url" value="<?php echo site_url('?'.Social::$prefix.'action=reload_form&redirect_to='.$_SERVER['REQUEST_URI'].'&p='.$_GET['p']); ?>" />
