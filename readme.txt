@@ -52,9 +52,19 @@ Many individuals use Facebook or Twitter as their primary identity(ies) on the w
 
 We recommend using CSS styles to selectively change the look and feel of your comments and comment form. The classes `social-comments-[no-comments|wordpress|twitter|facebook|pingbacks]` are available as as class names. More specific classes include:
 
-- TBD
-- TBD
-- TBD
+
+- .social-comment-header - contains the author information, avatar, and meta information
+- .social-comment-inner - a wrapper for the actual comment content, allowing more freedom with comment styling.
+- .social-comment-body - the container for the comment content.
+- .social-comment-collapsed - use this hook to create a more compact version of a comment.  hide comment text, shrink the size of the avatar, etc.
+- .social-post-form - where the comment form controls reside.  Use this hook to customize the look of form inputs and labels.
+- #facebook_signin - style the link that activates Facebook oAuthorization
+- #twitter_signin - style the link that activates Facebook oAuthorization
+
+
+- Social Plugin Icons - The icons are currently 16x16 pixels, and reside in a vertical sprite with each icon at 100px intervals.  Adhering to these intervals will ensure that icon positions will not need to change
+- .social-quiet - a muted typography style, for subdued display of text
+
 
 Note: we do not recommend making changes to the included plugin files as they may be overwritten during an upgrade.
 
