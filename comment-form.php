@@ -44,9 +44,10 @@ if (is_user_logged_in() and !current_user_can('manage_options')) {
 					$post_to = '<label id="post_to" for="post_to_service" style="display:none;"><input type="checkbox" name="post_to_service" id="post_to_service" value="1" /> '.sprintf(__('Also post to %s'), '<span></span>').'</label>';
 		?>
 				<div class="social-input-row">
+					<?php if (count(Social::$combined_services)): ?>
 					<select id="post_accounts" name="<?php echo Social::$prefix; ?>post_account">
 						<option value=""><?php _e('WordPress Account', Social::$i18n); ?></option>
-						<?php foreach (array_merge(Social::$services, Social::$global_services) as $key => $service): ?>
+						<?php foreach (Social::$combined_services as $key => $service): ?>
 							<?php
 								$accounts = Social::$services[$key]->accounts();
 								if (isset(Social::$global_services[$key])) {
@@ -64,6 +65,13 @@ if (is_user_logged_in() and !current_user_can('manage_options')) {
 							<?php endif; ?>
 						<?php endforeach; ?>
 					</select>
+					<?php else: ?>
+					<input type="hidden" name="<?php echo Social::$prefix; ?>post_account" value="" />
+					<?php
+						$user = wp_get_current_user();
+						echo sprintf(__('Logged in as <a href="%1$s">%2$s</a>. <a href="%3$s" title="Log out of this account">Log out?</a>', Social::$i18n), admin_url('profile.php'), $user->display_name, wp_logout_url(apply_filters( 'the_permalink', get_permalink($post_id))));
+					?>
+					<?php endif; ?>
 				</div>
 			<?php
 			else:

@@ -92,6 +92,11 @@ final class Social {
 	public static $global_services = array();
 
 	/**
+	 * @var  array  combined services
+	 */
+	public static $combined_services = array();
+
+	/**
 	 * @var  array  commenter user accounts
 	 */
 	public static $commenters = array();
@@ -1648,28 +1653,32 @@ final class Social {
 	 *
 	 * @return array
 	 */
-	private function services() {
-		$user = Social::$services;
-		$global = Social::$global_services;
-		$services = array();
+	public function services() {
+		if (!count(Social::$combined_services)) {
+			$user = Social::$services;
+			$global = Social::$global_services;
+			$services = array();
 
-		foreach ($user as $key => $service) {
-			$services[$key] = clone $service;
-		}
-
-		foreach ($global as $key => $service) {
-			if (!isset($services[$key])) {
+			foreach ($user as $key => $service) {
 				$services[$key] = clone $service;
 			}
-			else {
-				$accounts = $service->accounts();
-				if (count($accounts)) {
-					$services[$key]->accounts(array_merge($services[$key]->accounts(), $accounts));
+
+			foreach ($global as $key => $service) {
+				if (!isset($services[$key])) {
+					$services[$key] = clone $service;
+				}
+				else {
+					$accounts = $service->accounts();
+					if (count($accounts)) {
+						$services[$key]->accounts(array_merge($services[$key]->accounts(), $accounts));
+					}
 				}
 			}
+
+			Social::$combined_services = $services;
 		}
 
-		return $services;
+		return Social::$combined_services;
 	}
 
 } // End Social
