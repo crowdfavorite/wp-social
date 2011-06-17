@@ -401,7 +401,7 @@
 #social .social-respond .avatar {
 	left: 25px;
 	position: absolute;
-	top: 1px;
+	top: 35px;
 }
 #social .social-comment #cancel-comment-reply-link {
 	font-family: Helvetica, Arial, sans-serif;
@@ -558,6 +558,9 @@
 	font-size: 12px;
 	position: relative;
 	left: -10px;
+}
+#social .social-pingback.social-comment-collapse > .social-comment-inner > .social-comment-header .social-fn {
+	left: 0;
 }
 #social .social-comment-collapse > .social-comment-inner > .social-comment-header > .social-comment-author img {
 	width: 16px;
