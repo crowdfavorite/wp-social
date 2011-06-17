@@ -50,7 +50,7 @@ Many individuals use Facebook or Twitter as their primary identity(ies) on the w
 
 = How can I customize the comments form in my theme? =
 
-We recommend using CSS styles to selectively target the following:
+We recommend using CSS styles to selectively change the look and feel of your comments and comment form. The classes `social-comments-[no-comments|wordpress|twitter|facebook|pingbacks]` are available as as class names. More specific classes include:
 
 - TBD
 - TBD
