@@ -8,46 +8,7 @@ Author: Crowd Favorite
 Author URI: http://crowdfavorite.com
 */
 
-$social_file = __FILE__;
-if (isset($mu_plugin)) {
-    $social_file = $mu_plugin;
-}
-if (isset($network_plugin)) {
-    $social_file = $network_plugin;
-}
-if (isset($plugin)) {
-    $social_file = $plugin;
-}
-define('SOCIAL_FILE', $social_file);
-define('SOCIAL_PATH', dirname($social_file).'/');
-
-$social = new Social;
-
-// Activation Hook
-register_activation_hook(SOCIAL_FILE, array($social, 'install'));
-register_deactivation_hook(SOCIAL_FILE, array($social, 'deactivate'));
-
-// Actions
-add_action('init', array($social, 'init'), 1);
-add_action('init', array($social, 'request_handler'), 2);
-add_action('do_meta_boxes', array($social, 'do_meta_boxes'));
-add_action('save_post', array($social, 'set_broadcast_meta_data'), 10, 2);
-add_action('comment_post', array($social, 'comment_post'));
-add_action('social_aggregate_comments', array($social, 'aggregate_comments'));
-add_action('publish_post', array($social, 'publish_post'));
-add_action('show_user_profile', array($social, 'show_user_profile'));
-
-// Admin Actions
-add_action('admin_menu', array($social, 'admin_menu'));
-
-// Filters
-add_filter('redirect_post_location', array($social, 'redirect_post_location'), 10, 2);
-add_filter('comments_template', array($social, 'comments_template'));
-add_filter('get_avatar_comment_types', array($social, 'get_avatar_comment_types'));
-add_filter('get_avatar', array($social, 'get_avatar'), 10, 5);
-add_filter('register', array($social, 'register'));
-add_filter('loginout', array($social, 'loginout'));
-add_filter('cron_schedules', array($social, 'cron_schedules'));
+if (!class_exists('Social')) { // try to avoid double-loading...
 
 /**
  * Social Core
@@ -1682,3 +1643,47 @@ final class Social {
 	}
 
 } // End Social
+
+$social_file = __FILE__;
+if (isset($mu_plugin)) {
+    $social_file = $mu_plugin;
+}
+if (isset($network_plugin)) {
+    $social_file = $network_plugin;
+}
+if (isset($plugin)) {
+    $social_file = $plugin;
+}
+
+define('SOCIAL_FILE', $social_file);
+define('SOCIAL_PATH', dirname($social_file).'/');
+
+$social = new Social;
+
+// Activation Hook
+register_activation_hook(SOCIAL_FILE, array($social, 'install'));
+register_deactivation_hook(SOCIAL_FILE, array($social, 'deactivate'));
+
+// Actions
+add_action('init', array($social, 'init'), 1);
+add_action('init', array($social, 'request_handler'), 2);
+add_action('do_meta_boxes', array($social, 'do_meta_boxes'));
+add_action('save_post', array($social, 'set_broadcast_meta_data'), 10, 2);
+add_action('comment_post', array($social, 'comment_post'));
+add_action('social_aggregate_comments', array($social, 'aggregate_comments'));
+add_action('publish_post', array($social, 'publish_post'));
+add_action('show_user_profile', array($social, 'show_user_profile'));
+
+// Admin Actions
+add_action('admin_menu', array($social, 'admin_menu'));
+
+// Filters
+add_filter('redirect_post_location', array($social, 'redirect_post_location'), 10, 2);
+add_filter('comments_template', array($social, 'comments_template'));
+add_filter('get_avatar_comment_types', array($social, 'get_avatar_comment_types'));
+add_filter('get_avatar', array($social, 'get_avatar'), 10, 5);
+add_filter('register', array($social, 'register'));
+add_filter('loginout', array($social, 'loginout'));
+add_filter('cron_schedules', array($social, 'cron_schedules'));
+
+} // End class_exists check
