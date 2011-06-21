@@ -685,10 +685,12 @@ final class Social {
 
 	<h3 id="social-networks"><?php _e('Connect to Social Networks', Social::$i18n); ?></h3>
 	<p><?php _e('Before blog authors can broadcast to social networks you need to connect some accounts. <strong>These accounts will be accessible by every blog author.</strong>', Social::$i18n); ?></p>
+	<?php $have_accounts = false; ?>
 	<?php foreach (Social::$global_services as $key => $service): ?>
 	<div class="social-settings-connect">
 		<?php foreach ($service->accounts() as $account): ?>
 		<?php
+			$have_accounts = true;
 			$profile_url = $service->profile_url($account);
 			$profile_name = $service->profile_name($account);
 			$url = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
@@ -722,6 +724,7 @@ final class Social {
 		</tr>
 	</table>
 
+	<?php if ($have_accounts): ?>
 	<div id="social_xmlrpc">
 		<h3><?php _e('XML-RPC/Email Broadcasting Accounts', Social::$i18n); ?></h3>
 		<p>These accounts will be the accounts that are automatically broadcasted to when you publish a blog post via
@@ -739,6 +742,7 @@ final class Social {
 		<?php endforeach; ?>
 		<div style="clear:both"></div>
 	</div>
+	<?php endif; ?>
 
 	<h3><?php _e('Twitter @Anywhere Settings', Social::$i18n); ?></h3>
 	<p>If you would like to utilize Twitter's @Anywhere hovercards for Twitter usernames, then enter your application's
@@ -764,7 +768,7 @@ final class Social {
 ?>
 	<h3 id="social-networks"><?php _e('Connect to Social Networks', Social::$i18n); ?></h3>
 	<p><?php _e('Before you can broadcast to your social networks, you will need to connect your account(s).', Social::$i18n); ?></p>
-	<?php foreach (Social::$services as $key => $service): ?>
+	<?php foreach ($this->services() as $key => $service): ?>
 	<div class="social-settings-connect">
 		<?php foreach ($service->accounts() as $account): ?>
 		<?php
