@@ -24,7 +24,7 @@ Through use of a proxy application, you can associate your Twitter and Facebook 
 When publishing to Facebook and Twitter, the discussion is likely to continue there. Through Social, we can aggregate the various mentions, retweets, @replies, comments and responses and republish them as WordPress comments.
 
 - Automatically polls Twitter and Facebook for mentions of your post
-- Displays mentions inline with commments
+- Displays mentions inline with comments
 - Filter comments by originating source (Facebook, Twitter, or your blog as comments)
 - Allow users to reply to the offsite responses
 
