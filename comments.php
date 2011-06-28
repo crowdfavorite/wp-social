@@ -58,7 +58,7 @@
 
 		<!-- panel items -->
 		<div id="social-comments-tab-all" class="social-tabs-panel social-tabs-first-panel">
-			<div class="social-comments">
+			<div id="comments" class="social-comments">
 				<div class="social-last-reply-when"><?php printf(__('Last reply was %s ago', Social::$i18n), human_time_diff(strtotime($comments[(count($comments)-1)]->comment_date))); ?></div>
 				<ol class="social-commentlist">
 					<?php wp_list_comments(array('callback' => array('Social', 'comment'), 'walker' => new Social_Walker_Comment)); ?>
