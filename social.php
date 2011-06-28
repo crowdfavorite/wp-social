@@ -366,7 +366,7 @@ final class Social {
 	 * Displays the upgrade message.
 	 */
 	public function display_upgrade() {
-		if (current_user_can('manage_options') or current_user_can('publish_post')) {
+		if (current_user_can('manage_options') or current_user_can('publish_posts')) {
 			if (current_user_can('manage_options')) {
 				$url = Social_Helper::settings_url(null, true);
 			}
