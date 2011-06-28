@@ -102,7 +102,7 @@ if (is_user_logged_in() and !current_user_can('manage_options')) {
 		<div class="social-input-row">
 			<label class="social-label" for="social-sign-in-email"><?php _e('Email', Social::$i18n); ?></label>
 			<input class="social-input-text" type="text" id="social-sign-in-email" name="email" />
-			<em id="social-email-notice" class="social-quiet">We'll keep this private</em>
+			<em id="social-email-notice" class="social-quiet">Not published</em>
 		</div>
 		<div class="social-input-row">
 			<label class="social-label" for="social-sign-in-website"><?php _e('Website', Social::$i18n); ?></label>
