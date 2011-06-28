@@ -366,8 +366,16 @@ final class Social {
 	 * Displays the upgrade message.
 	 */
 	public function display_upgrade() {
-		$message = sprintf(__('To broadcast to Twitter or Facebook, please update your <a href="%s">Social settings</a>', Social::$i18n), Social_Helper::settings_url());
-		echo '<div class="error"><p>'.$message.'</p></div>';
+		if (current_user_can('manage_options') or current_user_can('publish_post')) {
+			if (current_user_can('manage_options')) {
+				$url = Social_Helper::settings_url(null, true);
+			}
+			else {
+				$url = admin_url('profile.php#social-networks');
+			}
+			$message = sprintf(__('To broadcast to Twitter or Facebook, please update your <a href="%s">Social settings</a>', Social::$i18n), $url);
+			echo '<div class="error"><p>'.$message.'</p></div>';
+		}
 	}
 
 	/**

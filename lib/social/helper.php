@@ -101,10 +101,11 @@ abstract class Social_Helper {
 	 * Builds the settings URL for the plugin.
 	 *
 	 * @param  array  $params
+	 * @param  bool   $ignore
 	 * @return string
 	 */
-	public static function settings_url(array $params = null) {
-		if (defined('IS_PROFILE_PAGE')) {
+	public static function settings_url(array $params = null, $ignore = false) {
+		if (defined('IS_PROFILE_PAGE') and !$ignore) {
 			$path = 'profile.php?';
 		}
 		else {
@@ -115,10 +116,10 @@ abstract class Social_Helper {
 			foreach ($params as $key => $value) {
 				$path .= $key.'='.urlencode($value).'&';
 			}
-			rtrim('&', $path);
 		}
 
-		if (IS_PROFILE_PAGE) {
+		rtrim('&', $path);
+		if (IS_PROFILE_PAGE and !$ignore) {
 			$path .= '#social-networks';
 		}
 
