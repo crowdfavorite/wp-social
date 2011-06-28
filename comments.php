@@ -63,7 +63,7 @@
 				<ol class="social-commentlist">
 					<?php wp_list_comments(array('callback' => array('Social', 'comment'), 'walker' => new Social_Walker_Comment)); ?>
 				</ol>
-			</div><!-- #comments -->
+			</div>
 		</div>
 		<?php else: ?>
 		<?php endif; ?>
