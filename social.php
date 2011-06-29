@@ -1569,9 +1569,13 @@ final class Social {
 				$queued[$post->ID] = (string) $hours;
 
 				$urls = array(
-					urlencode(home_url('?p='.$post->ID)),
-					urlencode(get_permalink($post->ID)),
+					urlencode(site_url('?p='.$post->ID)),
 				);
+
+				$permalink = urlencode(get_permalink($post->ID));
+				if ($urls[0] != $permalink) {
+					$urls[] = $permalink;
+				}
 
 				$broadcasted = maybe_unserialize($post->broadcasted_ids);
 				if (is_array($broadcasted)) {
