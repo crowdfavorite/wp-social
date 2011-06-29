@@ -1523,7 +1523,12 @@ final class Social {
 			             FROM $wpdb->postmeta AS b
 			            WHERE b.meta_key = '".Social::$prefix."broadcasted_ids'
 			              AND b.post_id = p.ID
-			       ) AS broadcasted_ids
+			       ) AS broadcasted_ids, (
+			           SELECT a.meta_value
+			             FROM $wpdb->postmeta AS a
+			            WHERE a.meta_key = '".Social::$prefix."aggregated_ids'
+			              AND a.post_id = p.ID
+			       ) AS aggregated_ids
 			  FROM $wpdb->posts AS p
 			 WHERE p.post_status = 'publish'
 			   AND p.comment_status = 'open'
@@ -1587,7 +1592,23 @@ final class Social {
 
 					// Results?
 					if (is_array($results)) {
-						$service->save_replies($post->ID, $results);
+						if (!is_array($post->aggregated_ids)) {
+							$post->aggregated_ids = array();
+						}
+
+						// Remove the results that have already been stored.
+						$replies = array();
+						foreach ($results as $result) {
+							if (!in_array($result->id, $post->aggregated_ids)) {
+								$replies[] = $result;
+								$post->aggregated_ids[] = $result->id;
+							}
+						}
+
+						$service->save_replies($post->ID, $replies);
+
+						// Update the aggregated IDs.
+						update_post_meta($post->ID, Social::$prefix.'aggregated_ids', $post->aggregated_ids);
 					}
 				}
 
