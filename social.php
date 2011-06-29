@@ -89,6 +89,11 @@ final class Social {
 	private $cron_lock_dir = false;
 
 	/**
+	 * @var  bool  broadcast meta set
+	 */
+	private $broadcast_meta_set = false;
+
+	/**
 	 * Used to log debug data.
 	 *
 	 * @static
@@ -967,26 +972,28 @@ final class Social {
 	 * @param  object  $post
 	 */
 	public function set_broadcast_meta_data($post_id, $post) {
-		$broadcast = false;
-		foreach (Social::$services as $key => $service) {
-			$post_key = Social::$prefix.'notify_'.$key;
-			if (isset($_POST[$post_key])) {
-				update_post_meta($post_id, $post_key, $_POST[$post_key]);
+		if (!$this->broadcast_meta_set) {
+			$broadcast = false;
+			$services = $this->services();
+			foreach ($services as $key => $service) {
+				$post_key = Social::$prefix.'notify_'.$key;
+				if (isset($_POST[$post_key])) {
+					$broadcast = true;
+					update_post_meta($post_id, $post_key, $_POST[$post_key]);
+				}
 			}
-		}
 
-		if ($broadcast) {
-			$broadcasted = get_post_meta($post_id, Social::$prefix.'broadcasted', true);
-			if (empty($broadcasted) or $broadcasted != '1') {
-				update_post_meta($post_id, Social::$prefix.'broadcasted', '0');
+			if ($broadcast) {
+				$this->broadcast_meta_set = true;
+				$broadcasted = get_post_meta($post_id, Social::$prefix.'broadcasted', true);
+				if (empty($broadcasted) or $broadcasted != '1') {
+					update_post_meta($post_id, Social::$prefix.'broadcasted', '0');
 
-				// Post needs to stay a draft for now.
-				$post->post_status = 'draft';
-				wp_update_post($post);
+					// Post needs to stay a draft for now.
+					$post->post_status = 'draft';
+					wp_update_post($post);
+				}
 			}
-		}
-		else {
-			delete_post_meta($post_id, Social::$prefix.'broadcasted');
 		}
 	}
 
@@ -1066,9 +1073,9 @@ final class Social {
 						}
 					}
 
-					if (!isset($_broadcast_accounts[$key])) {
-						delete_post_meta($post->ID, Social::$prefix.'notify_'.$key);
-						delete_post_meta($post->ID, Social::$prefix.$key.'_content');
+					if (!isset($_broadcast_accounts[$service_key])) {
+						delete_post_meta($post->ID, Social::$prefix.'notify_'.$service_key);
+						delete_post_meta($post->ID, Social::$prefix.$service_key.'_content');
 					}
 				}
 
