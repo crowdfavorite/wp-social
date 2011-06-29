@@ -77,13 +77,7 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 	 * @return array
 	 */
 	public function status_update($account, $status) {
-		$request = $this->request($account, 'feed', array('message' => $status), 'POST');
-
-		if (!isset($request->response) or !isset($request->response->id)) {
-			return false;
-		}
-
-		return $request;
+		return $this->request($account, 'feed', array('message' => $status), 'POST');
 	}
 
 	/**
@@ -223,8 +217,8 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 	 * @param  object  $account
 	 * @return bool
 	 */
-	public function check_deauthed($response, $account) {
-		if (is_string($response) and strpos($response, 'Error validating access token') !== false) {
+	public function deauthed($response, $account) {
+		if ($response->result == 'error' and strpos($response->response, 'Error validating access token') !== false) {
 			$deauthed = get_option(Social::$prefix.'deauthed', array());
 			$deauthed[$this->service][$account->user->id] = 'Unable to publish to '.$this->title().' with account '.$this->profile_name($account).'. Please <a href="'.Social_Helper::settings_url().'">re-authorize</a> this account.';
 			update_option(Social::$prefix.'deauthed', $deauthed);
@@ -233,10 +227,10 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 			unset($this->accounts[$account->user->id]);
 			$this->save();
 
-			return false;
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	/**

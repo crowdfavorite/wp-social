@@ -1045,11 +1045,11 @@ final class Social {
 
 										if ($account !== false) {
 											$response = $service->status_update($account, $content);
-											if ($response !== false and $service->check_deauthed($response, $account)) {
+											if (!$service->deauthed($response, $account)) {
 												$ids[$key]["{$account->user->id}"] = $response->response->id;
 											}
 											else {
-												if ($response === false) {
+												if ($response === false or ($response == 'deauthed')) {
 													$_broadcast_accounts[$key][] = $_account;
 												}
 												else {

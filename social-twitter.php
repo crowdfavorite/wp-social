@@ -150,13 +150,7 @@ twttr.anywhere(function(twitter) {
 		if (isset($_POST['in_reply_to_status_id']) and !empty($_POST['in_reply_to_status_id'])) {
 			$args['in_reply_to_status_id'] = $_POST['in_reply_to_status_id'];
 		}
-		$request = $this->request($account, 'statuses/update', $args, 'POST');
-
-		if (!isset($request->response) or !isset($request->response->id)) {
-			return false;
-		}
-
-		return $request;
+		return $this->request($account, 'statuses/update', $args, 'POST');
 	}
 
 	/**
@@ -325,7 +319,7 @@ twttr.anywhere(function(twitter) {
 	 * @param  object  $account
 	 * @return bool
 	 */
-	public function check_deauthed($response, $account) {
+	public function deauthed($response, $account) {
 		if ($response->result == 'error') {
 			if ($response->response == 'Could not authenticate with OAuth.') {
 				$deauthed = get_option(Social::$prefix.'deauthed', array());
@@ -337,10 +331,10 @@ twttr.anywhere(function(twitter) {
 				$this->save();
 			}
 
-			return false;
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	/**
