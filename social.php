@@ -758,7 +758,7 @@ final class Social {
 ?>
 	<h3 id="social-networks"><?php _e('Connect to Social Networks', Social::$i18n); ?></h3>
 	<p><?php _e('Before you can broadcast to your social networks, you will need to connect your account(s).', Social::$i18n); ?></p>
-	<?php foreach ($this->services() as $key => $service): ?>
+	<?php foreach (Social::$services as $key => $service): ?>
 	<div class="social-settings-connect">
 		<?php foreach ($service->accounts() as $account): ?>
 		<?php
