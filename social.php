@@ -359,6 +359,9 @@ final class Social {
 				$this->service($service, null, true)->accounts($accounts);
 			}
 		}
+
+		// Cache the global and user accounts.
+		$this->services();
 	}
 
 	/**
@@ -1636,7 +1639,13 @@ final class Social {
 				else {
 					$accounts = $service->accounts();
 					if (count($accounts)) {
-						$services[$key]->accounts(array_merge($services[$key]->accounts(), $accounts));
+						$_accounts = $services[$key]->accounts();
+						foreach ($accounts as $account) {
+							if (!isset($_accounts[$account->user->id])) {
+								$_accounts[$account->user->id] = $account;
+							}
+						}
+						$services[$key]->accounts($_accounts);
 					}
 				}
 			}

@@ -4,8 +4,8 @@
 	<?php else: ?>
 	<div class="social-post">
 		<div id="loading" style="display:none">
-			<input type="hidden" id="reload_url" value="<?php echo site_url('?'.Social::$prefix.'action=reload_form&redirect_to='.$_SERVER['REQUEST_URI'].'&p='.$_GET['p']); ?>" />
-			<img src="<?php echo admin_url('images/loading.gif'); ?>" style="position:relative;top:2px" /> Logging In...
+			<input type="hidden" id="reload_url" value="<?php echo esc_url(site_url('?'.Social::$prefix.'action=reload_form&redirect_to='.get_permalink(get_the_ID()))); ?>" />
+			<?php _e('Logging In...', Social::$i18n); ?>
 		</div>
 		<?php if (comments_open()): ?>
 			<?php if (get_option( 'comment_registration' ) && !is_user_logged_in() ): ?>
