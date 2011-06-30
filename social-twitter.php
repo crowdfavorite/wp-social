@@ -209,6 +209,14 @@ twttr.anywhere(function(twitter) {
 		// Load the post author and their Twitter accounts
 		if ($broadcasted_ids !== null) {
 			$accounts = get_user_meta($post->post_author, Social::$prefix.'accounts', true);
+			if (isset(Social::$global_services['twitter'])) {
+				foreach (Social::$global_services['twitter']->accounts() as $account) {
+					if (!isset($accounts['twitter'][$account->user->id])) {
+						$accounts['twitter'][$account->user->id] = $account;
+					}
+				}
+			}
+
 			if (isset($accounts['twitter'])) {
 				foreach ($accounts['twitter'] as $account) {
 					if (isset($broadcasted_ids[$account->user->id])) {
@@ -223,7 +231,8 @@ twttr.anywhere(function(twitter) {
 											'from_user_id' => $tweet->user->id,
 											'from_user' => $tweet->user->screen_name,
 											'text' => $tweet->text,
-											'created_at' => $tweet->created_at
+											'created_at' => $tweet->created_at,
+											'profile_image_url' => $tweet->user->profile_image_url,
 										);
 									}
 								}
@@ -245,7 +254,8 @@ twttr.anywhere(function(twitter) {
 												'from_user_id' => $tweet->user->id,
 												'from_user' => $tweet->user->screen_name,
 												'text' => $tweet->text,
-												'created_at' => $tweet->created_at
+												'created_at' => $tweet->created_at,
+												'profile_image_url' => $tweet->user->profile_image_url,
 											);
 										}
 									}
@@ -309,6 +319,7 @@ twttr.anywhere(function(twitter) {
 			));
 			update_comment_meta($comment_id, Social::$prefix.'account_id', $reply->from_user_id);
 			update_comment_meta($comment_id, Social::$prefix.'profile_image_url', $reply->profile_image_url);
+			update_comment_meta($comment_id, Social::$prefix.'status_id', $reply->id);
 		}
 	}
 

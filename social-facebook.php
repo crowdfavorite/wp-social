@@ -153,19 +153,32 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 			}
 		}
 
-		// Load the post author and their Twitter accounts
+		// Load the post author and their Facebook accounts
 		if ($broadcasted_ids !== null) {
 			$accounts = get_user_meta($post->post_author, Social::$prefix.'accounts', true);
+			if (isset(Social::$global_services['facebook'])) {
+				foreach (Social::$global_services['facebook']->accounts() as $account) {
+					if (!isset($accounts['facebook'][$account->user->id])) {
+						$accounts['facebook'][$account->user->id] = $account;
+					}
+				}
+			}
+
 			if (isset($accounts['facebook'])) {
 				foreach ($accounts['facebook'] as $account) {
 					if (isset($broadcasted_ids[$account->user->id])) {
-						$comments = $this->request($account, $broadcasted_ids[$account->user->id])->response->comments;
+						$id = explode('_', $broadcasted_ids[$account->user->id]);
+						$url = 'https://graph.facebook.com/'.$id[1].'/comments';
+						$request = wp_remote_get($url);
+						if (!is_wp_error($request)) {
+							$response = json_decode($request['body']);
 
-						if (count($comments->data)) {
-							foreach ($comments->data as $comment) {
-								if (!in_array($comment->id, array_values($post_comments))) {
-									$post_comments[] = $comment->id;
-									$results[] = $comment;
+							if (count($response->data)) {
+								foreach ($response->data as $comment) {
+									if (!in_array($comment->id, array_values($post_comments))) {
+										$post_comments[] = $comment->id;
+										$results[] = $comment;
+									}
 								}
 							}
 						}
@@ -191,22 +204,28 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 	 */
 	function save_replies($post_id, array $replies) {
 		foreach ($replies as $reply) {
-			$account = (object) array(
-				'user' => (object) array(
-					'id' => $reply->from->id,
-					'name' => $reply->from->name,
-				)
-			);
-			$comment_id = wp_insert_comment(array(
-				'comment_post_ID' => $post_id,
-				'comment_type' => $this->service,
-				'comment_author' => $reply->from->name,
-				'comment_author_email' => $this->service.'.'.$reply->id.'@example.com',
-				'comment_author_url' => $this->profile_url($account),
-				'comment_content' => $reply->message,
-				'comment_date' => gmdate('Y-m-d H:i:s', strtotime($reply->created_time)),
-			));
-			update_comment_meta($comment_id, Social::$prefix.'account_id', $reply->from->id);
+			$url = 'http://graph.facebook.com/'.$reply->from->id;
+			$request = wp_remote_get($url);
+			if (!is_wp_error($request)) {
+				$response = json_decode($request['body']);
+
+				$account = (object) array(
+					'user' => $response
+				);
+
+				$comment_id = wp_insert_comment(array(
+					'comment_post_ID' => $post_id,
+					'comment_type' => $this->service,
+					'comment_author' => $reply->from->name,
+					'comment_author_email' => $this->service.'.'.$reply->id.'@example.com',
+					'comment_author_url' => $this->profile_url($account),
+					'comment_content' => $reply->message,
+					'comment_date' => gmdate('Y-m-d H:i:s', strtotime($reply->created_time)),
+				));
+				update_comment_meta($comment_id, Social::$prefix.'account_id', $reply->from->id);
+				update_comment_meta($comment_id, Social::$prefix.'profile_image_url', 'http://graph.facebook.com/'.$reply->from->id.'/picture');
+				update_comment_meta($comment_id, Social::$prefix.'status_id', $reply->id);
+			}
 		}
 	}
 

@@ -336,12 +336,6 @@ final class Social {
 			}
 		}
 
-		// CRON Lock files missing?
-		$cron_lock_errors = get_option(Social::$prefix.'cron_lock_errors', array());
-		foreach ($cron_lock_errors as $cron => $error) {
-			add_action('admin_notices', array($this, 'display_cron_lock_file_error'), $cron);
-		}
-
 		// Register the Social services
 		Social::$services = apply_filters(Social::$prefix.'register_service', Social::$services);
 		Social::$global_services = apply_filters(Social::$prefix.'register_service', Social::$global_services);
@@ -405,23 +399,6 @@ final class Social {
 	}
 
 	/**
-	 * Displays the CRON lock file error.
-	 *
-	 * @param  string  $cron
-	 */
-	public function display_cron_lock_file_error($cron) {
-		$upload_dir = wp_upload_dir();
-		if (is_writable(SOCIAL_PATH)) {
-			$upload_dir = SOCIAL_PATH;
-		}
-		else {
-			$upload_dir = $upload_dir['baseurl'];
-		}
-		$message = sprintf(__('Social requires a %s file to be placed in %s for the %s CRON to run.', Social::$i18n), $cron.'.txt', $upload_dir, $cron);
-		echo '<div class="error"><p>'.$message.'</p></div>';
-	}
-
-	/**
 	 * Handles the request.
 	 */
 	public function request_handler() {
@@ -466,13 +443,6 @@ final class Social {
 					wp_redirect(Social_Helper::settings_url(array('saved' => 'true')));
 					exit;
 				break;
-				case 'aggregate_comments':
-					if ($this->cron_lock('aggregate_comments')) {
-						$this->aggregate_comments();
-						do_action(Social::$prefix.'aggregate_comments');
-					}
-					$this->cron_unlock('aggregate_comments');
-				break;
 			}
 		}
 		else if (!empty($_GET[Social::$prefix.'action'])) {
@@ -485,6 +455,13 @@ final class Social {
 						'disconnect_url' => wp_loginout('', false)
 					));
 					exit;
+				break;
+				case 'aggregate_comments':
+					if ($this->cron_lock('aggregate_comments')) {
+						$this->aggregate_comments();
+						do_action(Social::$prefix.'aggregate_comments');
+					}
+					$this->cron_unlock('aggregate_comments');
 				break;
 			}
 		}
@@ -1217,7 +1194,7 @@ final class Social {
 				$image = get_comment_meta($comment->comment_ID, Social::$prefix.'profile_image_url', true);
 			}
 		}
-		else if (!is_string($comment) && !is_int($comment)) {
+		else if (is_string($comment) or is_int($comment)) {
 			$services = Social::$services;
 			foreach ($services as $key => $service) {
 				if (count($service->accounts())) {
@@ -1248,9 +1225,9 @@ final class Social {
 		$comment->comment_type = $comment_type;
 		$GLOBALS['comment'] = $comment;
 
+		$status_url = null;
 		if (!in_array($comment_type, array('wordpress', 'pingback'))) {
 			$service = Social::service($comment->comment_type);
-			$status_url = null;
 			if ($service !== false) {
 				$status_id = get_comment_meta($comment->comment_ID, Social::$prefix.'status_id', true);
 				if (!empty($status_id)) {
@@ -1447,8 +1424,8 @@ final class Social {
 	 */
 	private function cron_lock($cron) {
 		$locked = false;
-		$file = trailingslashit($this->cron_lock_dir.$cron.'.txt');
-		$fp = fopen($file, 'r+');
+		$file = trailingslashit($this->cron_lock_dir).$cron.'.txt';
+		$fp = fopen($file, 'w+');
 		if (flock($fp, LOCK_EX)) {
 			$locked = true;
 			fwrite($fp, time());
@@ -1568,15 +1545,16 @@ final class Social {
 			else if ($timestamp >= 14400) {
 				$hours = 4;
 			}
-			else if ($timestamp >= 7200) {
-				$hours = 2;
+			else if ($timestamp >= 24) {
+				$hours = 25;
 			}
 
 			if (!isset($queued[$post->ID]) or $queued[$post->ID] < $hours) {
 				$queued[$post->ID] = (string) $hours;
 
 				$urls = array(
-					urlencode(site_url('?p='.$post->ID)),
+					//urlencode(site_url('?p='.$post->ID)),
+					urlencode('http://cf.awellis.me/?p=9')
 				);
 
 				$permalink = urlencode(get_permalink($post->ID));
@@ -1585,7 +1563,7 @@ final class Social {
 				}
 
 				$broadcasted = maybe_unserialize($post->broadcasted_ids);
-				if (is_array($broadcasted)) {
+				if (count($broadcasted)) {
 					foreach ($broadcasted as $service => $ids) {
 						if (!isset($broadcasted_ids[$service])) {
 							$broadcasted_ids[$service] = $ids;
@@ -1594,32 +1572,16 @@ final class Social {
 							$broadcasted_ids[$service] = array_merge($broadcasted_ids[$service], $ids);
 						}
 					}
-				}
 
-				// Run search!
-				$services = $this->services();
-				foreach ($services as $key => $service) {
-					$results = $service->search_for_replies($post, $urls, (isset($broadcasted_ids[$key]) ? $broadcasted_ids[$key] : null));
+					// Run search!
+					$services = $this->services();
+					foreach ($services as $key => $service) {
+						$results = $service->search_for_replies($post, $urls, (isset($broadcasted_ids[$key]) ? $broadcasted_ids[$key] : null));
 
-					// Results?
-					if (is_array($results)) {
-						if (!is_array($post->aggregated_ids)) {
-							$post->aggregated_ids = array();
+						// Results?
+						if (is_array($results)) {
+							$service->save_replies($post->ID, $results);
 						}
-
-						// Remove the results that have already been stored.
-						$replies = array();
-						foreach ($results as $result) {
-							if (!in_array($result->id, $post->aggregated_ids)) {
-								$replies[] = $result;
-								$post->aggregated_ids[] = $result->id;
-							}
-						}
-
-						$service->save_replies($post->ID, $replies);
-
-						// Update the aggregated IDs.
-						update_post_meta($post->ID, Social::$prefix.'aggregated_ids', $post->aggregated_ids);
 					}
 				}
 
