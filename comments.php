@@ -12,7 +12,10 @@
 				<p class="must-log-in"><?php printf(__('You must be <a href="%s">logged in</a> to post a comment.'), wp_login_url(apply_filters('the_permalink', get_permalink(get_the_ID())))); ?></p>
 				<?php do_action('comment_form_must_log_in_after'); ?>
 			<?php else: ?>
-			<?php echo Social::comment_form(); ?>
+			<?php
+			//Social_Comment_Form::as_html();
+			Social::comment_form();
+			 ?>
 			<?php endif; ?>
 		<?php else: ?>
 		<?php do_action('comment_form_comments_closed'); ?>

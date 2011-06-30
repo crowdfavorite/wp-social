@@ -448,7 +448,7 @@ final class Social {
 		else if (!empty($_GET[Social::$prefix.'action'])) {
 			switch ($_GET[Social::$prefix.'action']) {
 				case 'reload_form':
-					$form = Social::comment_form();
+					$form = Social_Comment_Form::as_html();
 					echo json_encode(array(
 						'result' => 'success',
 						'html' => $form,
@@ -1595,7 +1595,7 @@ final class Social {
 			}
 		}
 	}
-
+	
 	/**
 	 * Loads the comment form.
 	 *
@@ -1610,7 +1610,7 @@ final class Social {
 			ob_end_clean();
 			throw $e;
 		}
-
+	
 		return ob_get_clean();
 	}
 
@@ -1648,6 +1648,143 @@ final class Social {
 	}
 
 } // End Social
+
+/**
+ * Just a singleton for filter methods to live under.
+ * @uses Social
+ */
+final class Social_Comment_Form {
+	protected static $ins;
+	protected function __construct() {}
+	
+	/**
+	 * Singleton factory method
+	 */
+	public static function get_instance() {
+		if (!self::$ins) {
+			self::$ins = new Social_Comment_Form();
+		}
+		return self::$ins;
+	}
+	
+	/**
+	 * Instantiates singleton and renders the comment form.
+	 * Facade for filtering WP's comment_form function.
+	 * @static
+	 * @return string
+	 */
+	public static function as_html($args = array(), $post_id = null) {
+		$ins = self::get_instance();
+		$ins->attach_hooks();
+		comment_form($args, $post_id);
+	}
+	
+	public function attach_hooks() {
+		add_action('comment_form_before', array($this, 'before'));
+		add_action('comment_form_top', array($this, 'top'));
+		add_filter('comment_form_logged_in', array($this, 'logged_in_as'));
+		add_action('comment_form_defaults', array($this, 'configure_args'));
+	}
+	
+	public function configure_args($default_args) {
+		$args = array(
+			'comment_notes_after' => '',
+			'comment_notes_before' => ''
+		);
+		return array_merge($default_args, $args);
+	}
+
+	/**
+	 * Hook for 'comment_form_before' action.
+	 */
+	public function before() {
+	?>
+		<div class="social-heading">
+			<?php
+			if (is_user_logged_in()) {
+				$tab = __('Post a Comment', Social::$i18n);
+			}
+			else {
+				$tab = __('Profile', Social::$i18n);
+			}
+			?>
+			<h2 class="social-title social-tab-active"><span><?php echo $tab; ?></span></h2>
+		</div>
+	<?php
+	}
+	
+	public function top() {
+	if (!is_user_logged_in()): ?>
+		<div class="social-sign-in-links social-clearfix">
+			<?php foreach (Social::$services as $key => $service): ?>
+			<a class="social-<?php echo $key; ?> social-imr social-login comments" href="<?php echo Social_Helper::authorize_url($key); ?>" id="<?php echo $key; ?>_signin"><?php _e('Sign in with '.$service->title(), Social::$i18n); ?></a>
+			<?php endforeach; ?>
+		</div>
+		<div class="social-divider">
+			<span><?php _e('or', Social::$i18n); ?></span>
+		</div>
+	<?php
+	endif;
+	}
+
+	public function logged_in_as() {
+		$html = '';
+		$html .= get_avatar(get_current_user_id(), 40);
+		if (current_user_can('manage_options')) {
+			$html .= '<div class="social-input-row">'.$this->get_logged_in_management_controls().'</div>';
+		}
+		else {
+			foreach (Social::$services as $key => $service) {
+				if (count($service->accounts())) {
+					$account = reset($service->accounts());
+					$html .= '<div class="social-input-row">
+						<span class="social-'.$key.'-icon">
+							<i></i>
+							'.$service->profile_name($account).'.
+							('.$service->disconnect_url($account).')
+						</span>
+					</div>
+					<input type="hidden" name="'.Social::$prefix.'post_account" value="'.$account->user->id.'" />';
+				}
+			}
+		}
+		return $html;
+	}
+
+	public function get_logged_in_management_controls() {
+		$html = '';
+		if (count(Social::$combined_services)) {
+			$html .= '
+			<select id="post_accounts" name="'.Social::$prefix.'post_account">
+				<option value="">'.__('WordPress Account', Social::$i18n).'</option>';
+			foreach (Social::$combined_services as $key => $service) {
+				$accounts = Social::$services[$key]->accounts();
+				if (isset(Social::$global_services[$key])) {
+					foreach (Social::$global_services[$key]->accounts() as $id => $account) {
+						$accounts[$id] = $account;
+					}
+				}
+				if (count($accounts)) {
+					$html .= '<optgroup label="'.__(ucfirst($key), Social::$i18n).'">';
+					foreach ($accounts as $account) {
+						$html .= '<option value="'.$account->user->id.'" rel="'.$service->profile_avatar($account).'">'.$service->profile_name($account).'</option>';
+					}
+					$html .= '</optgroup>';
+				}
+			}
+			$html .= '
+			</select>';
+		// Logged into WordPress, but not other services
+		}
+		else {
+			global $post;
+			$html .= '<input type="hidden" name="'.Social::$prefix.'post_account" value="" />';
+			$user = wp_get_current_user();
+			$html .= sprintf(__('Logged in as <a href="%1$s">%2$s</a>. <a href="%3$s" title="Log out of this account">Log out?</a>', Social::$i18n), admin_url('profile.php'), $user->display_name, wp_logout_url(apply_filters('the_permalink', get_permalink($post->ID))));
+		}
+		return $html;
+	}
+}
 
 $social_file = __FILE__;
 if (isset($mu_plugin)) {
