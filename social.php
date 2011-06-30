@@ -1545,16 +1545,15 @@ final class Social {
 			else if ($timestamp >= 14400) {
 				$hours = 4;
 			}
-			else if ($timestamp >= 24) {
-				$hours = 25;
+			else if ($timestamp >= 7200) {
+				$hours = 2;
 			}
 
 			if (!isset($queued[$post->ID]) or $queued[$post->ID] < $hours) {
 				$queued[$post->ID] = (string) $hours;
 
 				$urls = array(
-					//urlencode(site_url('?p='.$post->ID)),
-					urlencode('http://cf.awellis.me/?p=9')
+					urlencode(site_url('?p='.$post->ID)),
 				);
 
 				$permalink = urlencode(get_permalink($post->ID));
