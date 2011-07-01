@@ -136,41 +136,12 @@
 #social .social-post {
 	font-family: Helvetica, Arial, sans-serif;
 }
-#social .social-sign-in-links {
-	margin: 0 auto 9px;
-	width: 360px;
-}
-#social .social-sign-in-links a {
-	display: inline;
-	float: left;
-	height: 22px;
-	margin: 0 15px;
-	width: 150px;
-}
-
-#social .social-sign-in-links .social-twitter {
-	background: url('social.png') 0 0 no-repeat;
-}
-#social .social-sign-in-links .social-twitter:hover {
-	background-position: 0 -22px;
-}
-#social .social-sign-in-links .social-twitter:active {
-	background-position: 0 -44px;
-}
-#social .social-sign-in-links .social-facebook {
-	background: url('social.png') -150px 0 no-repeat;
-}
-#social .social-sign-in-links .social-facebook:hover {
-	background-position: -150px -22px;
-}
-#social .social-sign-in-links .social-facebook:active {
-	background-position: -150px -44px;
-}
 
 /* Input row styles */
-#social .social-input-row {
+#social .social-input-row,
+#social .form-submit {
 	clear: left;
-	margin-bottom: 10px;
+	margin: 10px 0;
 	overflow: hidden;
 	padding-left: 80px;
 	position: relative;
@@ -190,6 +161,7 @@
 	top: 4px;
 	width: 60px;
 }
+#social .form-submit input,
 #social .social-input-row .social-input {
 	/* Bypasses vertical alignment issues.
 	only effects social-input-row inputs */
@@ -204,6 +176,28 @@
 	margin-left: 7px;
 }
 
+#social #respond input.social-input {
+	width: 314px;
+}
+#social #respond textarea.social-input {
+	height: 83px;
+}
+
+#social .form-submit input {
+	border: 1px solid #ccc;
+	-moz-border-radius: 4px; /* FF1+ */
+	-webkit-border-radius: 4px; /* Saf3+, Chrome */
+	-khtml-border-radius: 4px; /* Konqueror */
+	border-radius: 4px; /* Standard. IE9 */
+	/**
+	 * @bugfix border-radius background bleed
+	 * @see http://tumble.sneak.co.nz/post/928998513/fixing-the-background-bleed
+	 */
+	-webkit-background-clip: padding-box;
+	color: #0867ab;
+	font-weight: bold;
+}
+
 #social .social-twitter-icon,
 #social .social-facebook-icon {
 	background: url(social.png) 0 -150px;
@@ -213,28 +207,34 @@
     background-position: 0 -250px;
 }
 
-#social .social-twitter-icon.big,
-#social .social-facebook-icon.big {
-    line-height: 30px;
+#social .social-sign-in-links {
+	margin: 0 auto 9px;
+	width: 360px;
 }
-
-#social .social-twitter-icon.big i,
-#social .social-facebook-icon.big i {
-    background-position: 0 -82px;
-    margin-right: 10px;
-    width: 30px;
-    height: 30px;
+#social .social-sign-in-links a {
+	display: inline;
+	float: left;
+	height: 22px;
+	margin: 0 15px;
+	width: 150px;
 }
-
-#social .social-facebook-icon.big i {
-    background-position: -30px -82px;
+#social .social-sign-in-links .social-twitter {
+	background: url('social.png') 0 0 no-repeat;
 }
-
-#social #respond input.social-input {
-	width: 314px;
+#social .social-sign-in-links .social-twitter:hover {
+	background-position: 0 -22px;
 }
-#social #respond textarea.social-input {
-	height: 83px;
+#social .social-sign-in-links .social-twitter:active {
+	background-position: 0 -44px;
+}
+#social .social-sign-in-links .social-facebook {
+	background: url('social.png') -150px 0 no-repeat;
+}
+#social .social-sign-in-links .social-facebook:hover {
+	background-position: -150px -22px;
+}
+#social .social-sign-in-links .social-facebook:active {
+	background-position: -150px -44px;
 }
 
 /** @section Tabs
