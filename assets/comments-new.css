@@ -1,0 +1,680 @@
+/**
+ * Social comments styles
+ * @package social-comments
+ * ================================================ */
+
+/** @section Basics
+ * Covers resets and typography
+ * a #social id is used to namespace our styles and create enough
+ * specificity to make sure they take work.
+ *
+ * Always use a social- prefix on classes and IDs to prevent naming conflicts
+ -------------------------------------------------- */
+
+/* Override default theme line-height */
+#social {
+	line-height: 1.5;
+	margin: 40px 0;
+}
+
+/**
+ * Browser/theme style reset
+ * This gives us a reliable foundation for our styles, regardless of theme
+ * but scoped to our comments.
+ *
+ * Based on work by Eric Meyer
+ * @see http://meyerweb.com/eric/thoughts/2007/05/01/reset-reloaded/
+ */
+#social * {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+
+#social a {
+	text-decoration: none;
+	outline: 0;
+}
+#social a:hover {
+	text-decoration: underline;
+}
+
+/** @section Utility
+ -------------------------------------------------- */
+
+/**
+ * Updated super safe clearfix
+ * Taken from CSS section of HTML5 Boilerplate http://html5boilerplate.com/. Thanks guys!
+ */
+#social .social-clearfix:before,
+#social .social-clearfix:after {
+	content: "\0020";
+	display: block;
+	height: 0;
+	visibility: hidden;
+}
+#social .social-clearfix:after {
+	clear: both;
+}
+#social .social-clearfix {
+	zoom: 1;
+}
+
+#social .social-imr {
+	font-size: 0;
+	line-height: 0;
+	overflow: hidden;
+	text-indent: -32000px;
+}
+
+/**
+ * Subtext, help text, etc
+ */
+#social .social-quiet {
+	color: #999;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 12px;
+}
+
+/** @section Sign-in and forms
+ -------------------------------------------------- */
+
+#social #reply-title {
+	background: url(sprite-y-24.png) 0 -200px no-repeat;
+	overflow: hidden;
+	padding-left: 13px;
+	zoom: 1;
+}
+#social #reply-title span {
+	background: url(sprite-y-24.png) right -300px no-repeat;
+	color: #000;
+	font-size: 14px;
+	float: left;
+	height: 26px;
+	line-height: 26px;
+	padding: 0 13px 4px 9px;
+}
+
+#social input.social-input-text,
+#social select,
+#social textarea {
+	background: #f8f8f8;
+	border: 1px solid #ccc;
+	-moz-border-radius: 3px; /* FF1+ */
+	-webkit-border-radius: 3px; /* Saf3+, Chrome */
+	-khtml-border-radius: 3px; /* Konqueror */
+	border-radius: 3px; /* Standard. IE9 */
+	/**
+	 * @bugfix border-radius background bleed
+	 * @see http://tumble.sneak.co.nz/post/928998513/fixing-the-background-bleed
+	 */
+	-webkit-background-clip: padding-box;
+	-moz-box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.1); /* FF3.5+ */
+	-webkit-box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.1); /* Saf3+, Chrome */
+	box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.1); /* Standard. Opera 10.5, IE9 */
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	padding: 2px 4px;
+	text-indent: 0;
+}
+
+/**
+ * Line-height fix
+ */
+#social input.social-input-text,
+#social select {
+	height: 22px;
+	padding-bottom: 1px;
+	padding-top: 3px;
+}
+#social button {
+	background: url('sprite-y-24.png') right -100px no-repeat;
+	font-family: Helvetica, Arial, sans-serif;
+	color: #0867ab;
+	cursor: pointer;
+	display: -moz-inline-box; /* FF2 */
+	display: inline-block; /* Standard. IE8+, Saf, FF3+ */
+	font-size: 14px;
+	font-weight: bold;
+	/**
+	 * @workaround height fixes IE button height calculation bug
+	 * Squished!
+	 */
+	height: 26px;
+	padding-right: 4px;
+	position: relative;
+	text-shadow: #fff 0 1px 0;
+
+	/**
+	 * @bugfix IE7 button width
+	 * @affected IE6, IE7
+	 * @valid yes
+	 * @see http://jehiah.cz/a/button-width-in-ie
+	 */
+	overflow: visible;
+	width: auto;
+}
+
+#social select {
+	margin-top: 2px;
+}
+
+#social select optgroup {
+	padding: 2px;
+	font-weight: bold;
+}
+
+#social select option {
+	font-weight: normal;
+}
+/**
+ * @bugfix Firefox border and padding treatment in buttons
+ */
+#social button::-moz-focus-inner {
+	border: 0;
+	outline: 0;
+	padding: 0;
+}
+#social button span {
+	background: url('sprite-y-24.png') 0 0 no-repeat;
+	display: block;
+	line-height: 25px;
+	padding: 1px 9px 0 13px;
+}
+#social button:active {
+	background-position: right -500px;
+}
+#social button:active span {
+	background-position: 0 -400px;
+}
+
+#social .social-post-form .social-input-row input.social-input-text {
+	margin: 0 5px 0 0;
+	width: 265px;
+}
+#social .social-post-form .social-input-row textarea {
+	display: block;
+	height: 90px;
+	width: 472px;
+}
+
+#social .social-comment .social-respond textarea {
+	width: 96%;
+}
+#social-email-notice {
+	position: relative;
+	top: 4px;
+}
+
+#social .social-post {
+	font-family: Helvetica, Arial, sans-serif;
+}
+#social .social-sign-in-links {
+	margin: 0 auto 9px;
+	width: 360px;
+}
+#social .social-sign-in-links a {
+	display: inline;
+	float: left;
+	height: 22px;
+	margin: 0 15px;
+	width: 150px;
+}
+
+#social .social-sign-in-links .social-twitter {
+	background: url('social.png') 0 0 no-repeat;
+}
+#social .social-sign-in-links .social-twitter:hover {
+	background-position: 0 -22px;
+}
+#social .social-sign-in-links .social-twitter:active {
+	background-position: 0 -44px;
+}
+#social .social-sign-in-links .social-facebook {
+	background: url('social.png') -150px 0 no-repeat;
+}
+#social .social-sign-in-links .social-facebook:hover {
+	background-position: -150px -22px;
+}
+#social .social-sign-in-links .social-facebook:active {
+	background-position: -150px -44px;
+}
+
+#social .social-input-row {
+	clear: left;
+	margin-bottom: 10px;
+	overflow: hidden;
+	padding-left: 80px;
+	position: relative;
+	zoom: 1;
+}
+#social .social-input-row-submit {
+	height: 30px;
+	margin-bottom: 0;
+}
+
+#social .social-input-row .social-label {
+	display: block;
+	left: 10px;
+	position: absolute;
+	top: 4px;
+	width: 60px;
+}
+#social .social-input-row .social-input-text {
+	/* Bypasses vertical alignment issues.
+	only effects social-input-row inputs */
+	float: left;
+}
+
+#social .social-twitter-icon i,
+#social .social-facebook-icon i {
+    background: url('social.png') 0 -66px;
+    display: block;
+    float: left;
+    margin-right: 5px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+}
+
+#social .social-facebook-icon i {
+    background-position: -16px -66px;
+}
+
+#social .social-twitter-icon.big,
+#social .social-facebook-icon.big {
+    line-height: 30px;
+}
+
+#social .social-twitter-icon.big i,
+#social .social-facebook-icon.big i {
+    background-position: 0 -82px;
+    margin-right: 10px;
+    width: 30px;
+    height: 30px;
+}
+
+#social .social-facebook-icon.big i {
+    background-position: -30px -82px;
+}
+
+/** @section Tabs
+ -------------------------------------------------- */
+
+/**
+ * Work around Javascript FOUC accessibly
+ * Prevent flash before tabs init...
+ * Relies on snippet in master.js
+ */
+.social-js .social-tabs-panel {
+	display: none;
+}
+.social-js .social-tabs-first-panel {
+	display: block;
+}
+
+#social .social-heading {
+	background: url('background-strikethrough.gif') 0 13px repeat-x;
+	font-family: Helvetica, Arial, sans-serif;
+	margin-bottom: 10px;
+}
+#social .social-title {
+	margin: 0 0 0 9px;
+	zoom: 1;
+}
+#social .social-title span {
+	display: block;
+}
+
+
+#social .social-divider {
+	background: url('background-strikethrough.gif') center repeat-x;
+	clear: both;
+	font: italic 13px/1.5 Helvetica, Arial, sans-serif;
+	margin: 0 62px 9px;
+	text-align: center;
+}
+#social .social-divider span {
+	background-color: #fff;
+	padding: 0 10px;
+}
+#social .must-log-in {
+	text-align: center;
+}
+#social .social-must-log-in {
+	margin-bottom: 25px;
+}
+#social #respond.social-registration {
+	width: auto;
+}
+
+
+/** @section Comments List
+ -------------------------------------------------- */
+#social .social-commentlist {
+	list-style-image: none;
+	list-style-position: outside;
+	list-style-type: none;
+	margin: 0;
+}
+
+#social .social-comment {
+	position: relative;
+	border-top: 1px solid #e1e1e1;
+	border-left: 1px solid #e1e1e1;
+	-moz-border-radius-topleft: 4px; /* FF1+ */
+	-webkit-border-top-left-radius: 4px; /* Saf3+, Chrome */
+	-khtml-border-top-left-radius: 4px; /* Konqueror */
+	border-top-left-radius: 4px; /* Standard. IE9 */
+	margin: 0 0 10px;
+	zoom: 1;
+}
+#social .social-comment-header {
+	margin-bottom: 6px;
+	position: relative;
+	z-index: 2;
+}
+#social .social-comment-author {
+	margin-right: 125px;
+}
+#social .social-fn {
+	display: block;
+	font-size: 16px;
+	line-height: 1.2;
+	-o-text-overflow: ellipsis; /* Opera */
+	text-overflow: ellipsis; /* IE6+, Safari, Konqueror, Standard? */
+	overflow: hidden;
+	/**
+	 * @workaround Prevent ugly overflow issues in IE6
+	 * @valid yes
+	 * @affected IE6
+	 */
+	width: 100%;
+}
+#social .social-respond {
+	background-color: transparent;
+	color: #333;
+	font-size: 14px;
+	margin-bottom: 40px;
+}
+/* Respond form in threaded situations */
+#social .social-comment .social-respond {
+	border-top: 1px solid #e1e1e1;
+	border-left: 1px solid #e1e1e1;
+	-moz-border-radius-topleft: 4px; /* FF1+ */
+	-webkit-border-top-left-radius: 4px; /* Saf3+, Chrome */
+	-khtml-border-top-left-radius: 4px; /* Konqueror */
+	border-top-left-radius: 4px; /* Standard. IE9 */
+	margin: 0 0 10px 6px;
+}
+#social .social-comment .social-respond-inner {
+	margin: 7px 0 0 0;
+	position: relative;
+}
+#social .social-respond .avatar {
+	left: 25px;
+	position: absolute;
+	top: 35px;
+}
+#social .social-comment #cancel-comment-reply-link {
+	font-family: Helvetica, Arial, sans-serif;
+	margin: 3px 10px;
+	font-size: 12px;
+	text-transform: none;
+}
+
+#social .social-comment-header .avatar {
+	left: -50px;
+	position: absolute;
+	/**
+	 * Align with visual text top
+	 */
+	top: 3px;
+}
+
+#social .social-replied {
+	background: url(sprite-y-24-icons.png) 0 -300px no-repeat;
+	display: block;
+	height: 16px;
+	left: -67px;
+	position: absolute;
+	top: -17px;
+	width: 16px;
+}
+
+#social .social-comment-inner {
+	margin-right: 10px;
+	padding: 7px 0 0 60px;
+	position: relative;
+	zoom: 1;
+}
+
+#social .social-comment-body {
+	font-size: 14px;
+	line-height: 18px;
+	overflow: hidden;
+	/**
+	 * @workaround Prevent ugly overflow issues in IE6
+	 * @valid yes
+	 * @affected IE6
+	 */
+	width: 100%;
+}
+
+#social .social-comment-body p {
+	margin: 0 0 5px;
+}
+/* Children Comments */
+#social .social-children {
+	margin: 0;
+	padding: 0;
+}
+#social .social-children li {
+	list-style: none;
+	margin: 0;
+}
+
+#social .social-children .social-comment {
+	border-right: 0;
+	-moz-border-radius-topright: 0; /* FF1+ */
+	-webkit-border-top-right-radius: 0; /* Saf3+, Chrome */
+	-khtml-border-top-right-radius: 0; /* Konqueror */
+	border-top-right-radius: 0; /* Standard. IE9 */
+	-moz-border-radius-bottomright: 0; /* FF1+ */
+	-webkit-border-bottom-right-radius: 0; /* Saf3+, Chrome */
+	-khtml-border-bottom-right-radius: 0; /* Konqueror */
+	border-bottom-right-radius: 0; /* Standard. IE9 */
+	margin-left: 6px;
+}
+
+#social .social-actions,
+#social .social-actions a,
+#social .social-comment-meta,
+#social .social-comment-meta a,
+#social .social-last-reply-when {
+	color: #999;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 12px;
+}
+
+#social .social-actions {
+	margin-bottom: 8px;
+}
+#social .social-actions a,
+#social .social-comment-meta a {
+	text-decoration: underline;
+}
+#social .social-comment-meta {
+	background: url('sprite-y-24-icons.png') no-repeat;
+	display: block;
+	line-height: 16px;
+	position: absolute;
+	right: 0;
+	top: 2px;
+	white-space: nowrap;
+}
+#social .social-comment-meta .social-posted-from a,
+#social .social-comment-meta .social-posted-from{
+	float: right;
+	display: block;
+	width: 16px;
+	height: 16px;
+	margin-left: 5px;
+}
+#social .social-comment-meta .social-posted-from span {
+	display: none;
+}
+#social .social-actions,
+#social .social-actions a,
+#social .social-last-reply-when,
+#social .social-last-reply-when a {
+	text-transform: lowercase;
+}
+
+#social .social-last-reply-when {
+	font-size: 11px;
+	font-style: italic;
+	margin-bottom: 4px;
+	text-align: right;
+}
+
+#social .social-wordpress .social-comment-meta,
+#social ol li ul li.social-wordpress .social-comment-meta {
+	background-position: right -1px;
+}
+#social .social-twitter .social-comment-meta,
+#social ol li ul li.social-twitter .social-comment-meta {
+	background-position: right -100px;
+}
+#social .social-facebook .social-comment-meta,
+#social ol li ul li.social-facebook .social-comment-meta {
+	background-position: right -200px;
+}
+#social .social-pingback .social-comment-meta,
+#social ol li ul li.social-pingback .social-comment-meta {
+	background-position: right -400px;
+}
+#social .social-pingback > .social-comment-inner {
+	padding-left: 10px;
+}
+
+#social .social-comment-collapse > .social-comment-inner > .social-comment-body,
+#social .social-comment-collapse > .social-comment-inner > .social-actions {
+	display: none;
+}
+#social .social-comment-collapse > .social-comment-inner > .social-comment-header {
+	filter:alpha(opacity=30);
+	opacity: .3;
+	font-size: 12px;
+}
+#social .social-comment-collapse > .social-comment-inner > .social-comment-header .social-fn {
+	font-size: 12px;
+	position: relative;
+	left: -10px;
+}
+#social .social-pingback.social-comment-collapse > .social-comment-inner > .social-comment-header .social-fn {
+	left: 0;
+}
+#social .social-comment-collapse > .social-comment-inner > .social-comment-header > .social-comment-author img {
+	width: 16px;
+	height: 16px;
+	left: -35px;
+	top: -1px;
+}
+
+/*Tabs*/
+#social #social-tabs-comments .social-nav {
+	background: url('background-strikethrough.gif') center repeat-x;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 13px;
+	line-height: 28px;
+	list-style: none;
+	margin: 0 0 3px;
+	padding: 0;
+	width: 100%;
+}
+#social #social-tabs-comments .social-nav li,
+#social .social-heading .social-title {
+	margin-left: 9px;
+	padding-right: 4px;
+}
+#social #social-tabs-comments .social-nav li {
+	display: inline;
+	float: left;
+}
+#social #social-tabs-comments .social-nav li a {
+	background-color: #fff;
+	display: block;
+	padding: 0 6px 0 10px;
+	text-decoration: none;
+}
+#social #social-tabs-comments .social-nav li a span {
+	background: url('sprite-y-24-icons.png') 0 100px no-repeat;
+	display: block;
+}
+#social #social-tabs-comments .social-nav .social-wordpress a span {
+	background-position: 0 4px;
+	padding-left: 19px;
+}
+#social #social-tabs-comments .social-nav .social-twitter a span {
+	background-position: 0 -96px;
+	padding-left: 19px;
+}
+#social #social-tabs-comments .social-nav .social-facebook a span {
+	background-position: 0 -195px;
+	padding-left: 19px;
+}
+#social #social-tabs-comments .social-nav .social-pingback a span {
+	background-position: 0 -394px;
+	padding-left: 19px;
+}
+
+/* Tab graphical treatment - selected tabs, and section headers*/
+
+#social .social-current-tab,
+#social .social-heading .social-title  {
+	background: url('sprite-y-24.png') right -300px no-repeat;
+	display: -moz-inline-box; /* FF2 */
+	display: inline-block; /* Standard. IE8+, Saf, FF3+ */
+	/**
+	 * @bugfix inline-block fix
+	 * @see http://blog.mozilla.com/webdev/2009/02/20/cross-browser-inline-block/
+	 * @valid no
+	 */
+	zoom: 1;
+	*display: inline;
+}
+#social .social-current-tab a,
+#social .social-heading .social-title span {
+	background: url('sprite-y-24.png') 0 -200px no-repeat;
+	color: #000;
+	display: block;
+	line-height: 28px;
+	padding-left: 13px;
+	padding-right: 9px;
+
+}
+
+/**
+ * This is for the "more important" tabs
+ */
+#social .social-tab-main,
+#social .social-heading .social-title {
+	color: #000;
+	font-size: 14px;
+	font-weight: bold;
+}
+
+#social #post_to {
+	margin: 0 10px;
+}
+#social #post_to label {
+	cursor: pointer;
+	width: auto;
+}
+#social #post_to input {
+	width: auto;
+}

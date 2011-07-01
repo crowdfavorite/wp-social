@@ -267,7 +267,7 @@ final class Social {
 
 		}
 		else {
-			wp_enqueue_style('social', Social::$plugins_url.'/assets/comments.css', array(), Social::$version, 'screen');
+			wp_enqueue_style('social', Social::$plugins_url.'/assets/comments-new.css', array(), Social::$version, 'screen');
 			wp_enqueue_script('jquery');
 			wp_enqueue_script('social', Social::$plugins_url.'/assets/social.js', array('jquery'), Social::$version, true);
 		}
@@ -1689,7 +1689,7 @@ final class Social_Comment_Form {
 	}
 	
 	public function attach_hooks() {
-		add_action('comment_form_before', array($this, 'before'));
+		// add_action('comment_form_before', array($this, 'before'));
 		add_action('comment_form_top', array($this, 'top'));
 		add_filter('comment_form_logged_in', array($this, 'logged_in_as'));
 		add_action('comment_form_defaults', array($this, 'configure_args'));
@@ -1697,9 +1697,19 @@ final class Social_Comment_Form {
 	
 	public function configure_args($default_args) {
 		$args = array(
+			'title_reply' => '<span>'.__('Profile', Social::$i18n).'</span>',
+			'title_reply_to' => '<span>'.__('Post a Reply to %s', Social::$i18n).'</span>',
 			'comment_notes_after' => '',
 			'comment_notes_before' => ''
 		);
+		
+		if (is_user_logged_in()) {
+			$override = array(
+				'title_reply' => '<span>'.__('Post a Comment', Social::$i18n).'</span>'
+			);
+			$args = array_merge($args, $override);
+		}
+		
 		return array_merge($default_args, $args);
 	}
 
@@ -1740,19 +1750,19 @@ final class Social_Comment_Form {
 		$html = '';
 		$html .= get_avatar(get_current_user_id(), 40);
 		if (current_user_can('manage_options')) {
-			$html .= '<div class="social-input-row">'.$this->get_logged_in_management_controls().'</div>';
+			$html .= '<p class="social-input-row">'.$this->get_logged_in_management_controls().'</p>';
 		}
 		else {
 			foreach (Social::$services as $key => $service) {
 				if (count($service->accounts())) {
 					$account = reset($service->accounts());
-					$html .= '<div class="social-input-row">
+					$html .= '<p class="social-input-row">
 						<span class="social-'.$key.'-icon">
 							<i></i>
 							'.$service->profile_name($account).'.
 							('.$service->disconnect_url($account).')
 						</span>
-					</div>
+					</p>
 					<input type="hidden" name="'.Social::$prefix.'post_account" value="'.$account->user->id.'" />';
 				}
 			}

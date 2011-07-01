@@ -13,8 +13,8 @@
 				<?php do_action('comment_form_must_log_in_after'); ?>
 			<?php else: ?>
 			<?php
-			//Social_Comment_Form::as_html();
-			Social::comment_form();
+			Social_Comment_Form::as_html();
+			//Social::comment_form();
 			 ?>
 			<?php endif; ?>
 		<?php else: ?>
