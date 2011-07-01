@@ -1834,7 +1834,7 @@ final class Social_Comment_Form {
 		$html = '<div class="social-identity">';
 		$html .= get_avatar(get_current_user_id(), 40);
 		if (current_user_can('manage_options')) {
-			$html .= '<p class="social-input-row">'.$this->get_logged_in_management_controls().'</p>';
+			$html .= '<p class="social-input-row">'.$this->get_logged_in_management_controls().' <small class="social-psst">('.wp_loginout(null, false).')</small></p>';
 		}
 		else {
 			foreach (Social::$services as $key => $service) {
@@ -1843,7 +1843,7 @@ final class Social_Comment_Form {
 					$html .= '<p class="social-input-row">
 						<span class="social-'.$key.'-icon">
 							'.$service->profile_name($account).'.
-							('.$service->disconnect_url($account).')
+							<small class="social-psst">('.$service->disconnect_url($account).')</small>
 						</span>
 					</p>
 					<input type="hidden" name="'.Social::$prefix.'post_account" value="'.$account->user->id.'" />';

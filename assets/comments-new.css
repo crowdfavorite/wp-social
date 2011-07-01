@@ -74,10 +74,13 @@
 /**
  * Subtext, help text, etc
  */
-#social .social-help {
+#social .social-help,
+#social .social-psst {
 	color: #999;
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 12px;
+}
+#social .social-help {
 	font-style: italic;
 }
 
@@ -86,7 +89,7 @@
 
 /* Threaded respond form */
 #social .social-commentlist #respond {
-	margin: 10px 0 0;
+	margin: 6px 0 0;
 	padding: 0 0 0 7px;
 }
 #social .social-commentlist #reply-title {
@@ -165,10 +168,10 @@
 	color: #333;
 	font-size: 14px;
 	display: block;
-	left: 0;
+	left: 7px;
 	position: absolute;
 	top: 4px;
-	width: 80px;
+	width: 70px;
 }
 #social .form-submit input,
 #social .social-input-row .social-input {
@@ -322,7 +325,7 @@
 	background: url('background-strikethrough.gif') center repeat-x;
 	clear: both;
 	font: italic 13px/1.5 Helvetica, Arial, sans-serif;
-	margin: 0 62px 9px;
+	margin: 0 7px 10px;
 	text-align: center;
 }
 #social .social-divider span {
@@ -381,6 +384,7 @@
 }
 
 #social .social-identity {
+	margin-top: 10px;
 	position: relative;
 }
 #social .social-identity .avatar {
