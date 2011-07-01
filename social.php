@@ -1727,7 +1727,7 @@ final class Social_Comment_Form {
 		add_action('comment_form_defaults', array($this, 'configure_args'));
 	}
 	
-	public function to_field_group($label, $id, $tag, $text, $attr1 = array(), $attr2 = array()) {
+	public function to_field_group($label, $id, $tag, $text, $attr1 = array(), $attr2 = array(), $help_text = '') {
 		$attr = array_merge($attr1, $attr2);
 		
 		$label = Social::to_tag('label', $label, array(
@@ -1742,7 +1742,9 @@ final class Social_Comment_Form {
 		);
 		$input = Social::to_tag($tag, $text, $input_defaults, $attr);
 		
-		return Social::to_tag('p', $label . $input, array(
+		$help = Social::to_tag('small', $help_text, array('class' => 'social-help'));
+		
+		return Social::to_tag('p', $label . $input . $help, array(
 			'class' => 'social-input-row social-input-row-'.$id
 		));
 	}
@@ -1751,13 +1753,13 @@ final class Social_Comment_Form {
 	 * Helper for generating input row HTML
 	 * @uses Social::to_tag()
 	 */
-	public function to_input_group($label, $id, $value, $req = null) {
+	public function to_input_group($label, $id, $value, $req = null, $help_text = '') {
 		$maybe_req = ($req ? array('required' => 'required') : array() );
 		
 		return $this->to_field_group($label, $id, 'input', false, $maybe_req, array(
 			'type' => 'text',
 			'value' => $value
-		));
+		), $help_text);
 	}
 	
 	public function to_textarea_group($label, $id, $value, $req = true) {
@@ -1771,7 +1773,7 @@ final class Social_Comment_Form {
 		
 		$fields = array(
 			'author' => $this->to_input_group(__( 'Name', Social::$i18n ), 'author', $commenter['comment_author'], $req),
-			'email' => $this->to_input_group(__( 'Email', Social::$i18n ), 'email', $commenter['comment_author_email'], $req),
+			'email' => $this->to_input_group(__( 'Email', Social::$i18n ), 'email', $commenter['comment_author_email'], $req, __('We&rsquo;ll keep this private', Social::$i18n)),
 			'url' => $this->to_input_group(__( 'Website', Social::$i18n ), 'url', $commenter['comment_author_url'])
 		);
 		
