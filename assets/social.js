@@ -1,4 +1,13 @@
 (function($){
+	/*
+	 * Append social-js class to html element. This allows us to prevent JS FOUC
+	 * in an accessible way.
+	 * Run it ASAP. Doesn't need to run on domReady because the html element is
+	 * the first thing available.
+	 */
+	var c = document.getElementsByTagName('html')[0];
+	c.className += ' social-js';
+	
 	$(function(){
 		var child = null;
 		var polling = null;
@@ -33,14 +42,6 @@
 
 		// comments.php
 		if ($('#social').length) {
-			/**
-			 * Append social-js class to html element. This allows us to prevent JS FOUC in an accessible way.
-			 * In a self-executing function, so it runs immediately. Doesn't need to run on domReady
-			 * because the html element is the first thing available.
-			 */
-			var c = document.getElementsByTagName('html')[0];
-			c.className += ' social-js';
-
 			// MCC Tabs
 			$('.social-nav a').click(function(e){
 				e.preventDefault();
@@ -110,7 +111,7 @@
 				$('.comment-reply-link').show();
 			});
 
-			var $avatar = $('.social-post-form .avatar:first');
+			var $avatar = $('#social #respond .avatar:first');
 			var original_avatar = $avatar.attr('src');
 			$('#post_accounts').live('change', function(){
 				$(this).find('option:selected').each(function(){
