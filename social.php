@@ -1778,6 +1778,7 @@ final class Social_Comment_Form {
 		);
 		
 		$args = array(
+			'label_submit' => __('Post It', Social::$i18n),
 			'title_reply' => '<span>'.__('Profile', Social::$i18n).'</span>',
 			'title_reply_to' => '<span>'.__('Post a Reply to %s', Social::$i18n).'</span>',
 			'comment_notes_after' => '',

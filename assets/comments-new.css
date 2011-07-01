@@ -199,9 +199,29 @@
 	cursor: pointer;
 	font-weight: bold;
 	height: 24px;
+	line-height: 13px;
+	/**
+	 * @bugfix input width issue
+	 * @affected IE7
+	 * IE7 likes to make buttons with CSS applied WIDE, unless you apply overflow:visible
+	 */
+	overflow: visible;
+	padding: 4px 13px;
+	text-shadow: #fff 0 1px 0;
 }
 #social .form-submit input:active {
 	background: #dedede url(sprite-y-24.png) 0 -100px no-repeat;
+}
+/**
+ * @bugfix invisible hidden element
+ * FF adds an invisible pseudo element to inputs. Reset it here.
+ * @affected Firefox
+ * @valid no
+ */
+#social .form-submit input::-moz-focus-inner {
+	border: 0;
+	margin: 0;
+	padding: 0;
 }
 
 #social .social-twitter-icon,
