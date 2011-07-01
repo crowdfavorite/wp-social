@@ -82,6 +82,11 @@
 /** @section Sign-in and forms
  -------------------------------------------------- */
 
+/* Threaded respond form */
+#social .social-commentlist #respond {
+	padding: 10px;
+}
+
 #social input.social-input-text,
 #social select,
 #social textarea {
@@ -114,33 +119,6 @@
 	padding-bottom: 1px;
 	padding-top: 3px;
 }
-#social button {
-	background: url('sprite-y-24.png') right -100px no-repeat;
-	font-family: Helvetica, Arial, sans-serif;
-	color: #0867ab;
-	cursor: pointer;
-	display: -moz-inline-box; /* FF2 */
-	display: inline-block; /* Standard. IE8+, Saf, FF3+ */
-	font-size: 14px;
-	font-weight: bold;
-	/**
-	 * @workaround height fixes IE button height calculation bug
-	 * Squished!
-	 */
-	height: 26px;
-	padding-right: 4px;
-	position: relative;
-	text-shadow: #fff 0 1px 0;
-
-	/**
-	 * @bugfix IE7 button width
-	 * @affected IE6, IE7
-	 * @valid yes
-	 * @see http://jehiah.cz/a/button-width-in-ie
-	 */
-	overflow: visible;
-	width: auto;
-}
 
 #social select {
 	margin-top: 2px;
@@ -153,40 +131,6 @@
 
 #social select option {
 	font-weight: normal;
-}
-/**
- * @bugfix Firefox border and padding treatment in buttons
- */
-#social button::-moz-focus-inner {
-	border: 0;
-	outline: 0;
-	padding: 0;
-}
-#social button span {
-	background: url('sprite-y-24.png') 0 0 no-repeat;
-	display: block;
-	line-height: 25px;
-	padding: 1px 9px 0 13px;
-}
-#social button:active {
-	background-position: right -500px;
-}
-#social button:active span {
-	background-position: 0 -400px;
-}
-
-#social .social-post-form .social-input-row input.social-input-text {
-	margin: 0 5px 0 0;
-	width: 265px;
-}
-#social .social-post-form .social-input-row textarea {
-	display: block;
-	height: 90px;
-	width: 472px;
-}
-
-#social .social-comment .social-respond textarea {
-	width: 96%;
 }
 #social-email-notice {
 	position: relative;
@@ -325,9 +269,6 @@
 #social .social-must-log-in {
 	margin-bottom: 25px;
 }
-#social #respond.social-registration {
-	width: auto;
-}
 
 
 /** @section Comments List
@@ -372,26 +313,7 @@
 	 */
 	width: 100%;
 }
-#social .social-respond {
-	background-color: transparent;
-	color: #333;
-	font-size: 14px;
-	margin-bottom: 40px;
-}
-/* Respond form in threaded situations */
-#social .social-comment .social-respond {
-	border-top: 1px solid #e1e1e1;
-	border-left: 1px solid #e1e1e1;
-	-moz-border-radius-topleft: 4px; /* FF1+ */
-	-webkit-border-top-left-radius: 4px; /* Saf3+, Chrome */
-	-khtml-border-top-left-radius: 4px; /* Konqueror */
-	border-top-left-radius: 4px; /* Standard. IE9 */
-	margin: 0 0 10px 6px;
-}
-#social .social-comment .social-respond-inner {
-	margin: 7px 0 0 0;
-	position: relative;
-}
+
 #social .social-identity {
 	position: relative;
 }
@@ -609,6 +531,7 @@
 
 /* Tab graphical treatment - selected tabs, and section headers*/
 #social #reply-title {
+	margin: 0;
 	overflow: hidden;
 	padding-left: 13px;
 	zoom: 1;

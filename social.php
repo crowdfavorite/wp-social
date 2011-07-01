@@ -1656,6 +1656,38 @@ final class Social {
 		return Social::$combined_services;
 	}
 
+	/**
+	 * Helper: Turn an array or two into HTML attribute string
+	 */
+	public static function to_attr($arr1 = array(), $arr2 = array()) {
+		$attrs = array();
+		$arr = array_merge($arr1, $arr2);
+		foreach ($arr as $key => $value) {
+			if (function_exists('esc_attr')) {
+				$key = esc_attr($key);
+				$value = esc_attr($value);
+			}
+			$attrs[] = $key.'="'.$value.'"';
+		}
+		return implode(' ', $attrs);
+	}
+	
+	/**
+	 * Helper for creating HTML tag from strings and arrays of attributes.
+	 */
+	public static function to_tag($tag, $text = '', $attr1 = array(), $attr2 = array()) {
+		if (function_exists('esc_attr')) {
+			$tag = esc_attr($tag);
+		}
+		$attrs = self::to_attr($attr1, $attr2);
+		if ($text !== false) {
+			return '<'.$tag.' '.$attrs.'>'.$text.'</'.$tag.'>';
+		}
+		// No text == self closing tag
+		else {
+			return '<'.$tag.' '.$attrs.' />';
+		}
+	}
 } // End Social
 
 /**
@@ -1695,12 +1727,42 @@ final class Social_Comment_Form {
 		add_action('comment_form_defaults', array($this, 'configure_args'));
 	}
 	
+	/**
+	 * Helper for generating input row HTML
+	 * @uses Social::to_tag()
+	 */
+	public function to_input_group($label, $id, $value, $req = null) {
+		$maybe_req = ($req ? array('required' => 'required') : array() );
+		
+		$label = Social::to_tag('label', $label, array(
+			'for' => $id,
+			'class' => 'social-label'
+		));
+		$input = Social::to_tag('input', false, $maybe_req, array(
+			'id' => $id,
+			'name' => $id,
+			'type' => 'text',
+			'value' => $value
+		));
+		return Social::to_tag('p', $label . $input, array('class' => 'social-input-row'));
+	}
+	
 	public function configure_args($default_args) {
+		$commenter = wp_get_current_commenter();
+		$req = get_option( 'require_name_email' );
+		
+		$fields = array(
+			'author' => $this->to_input_group(__( 'Name', Social::$i18n ), 'author', $commenter['comment_author'], $req),
+			'email' => $this->to_input_group(__( 'Email', Social::$i18n ), 'email', $commenter['comment_author_email'], $req),
+			'url' => $this->to_input_group(__( 'Website', Social::$i18n ), 'url', $commenter['comment_author_url'])
+		);
+		
 		$args = array(
 			'title_reply' => '<span>'.__('Profile', Social::$i18n).'</span>',
 			'title_reply_to' => '<span>'.__('Post a Reply to %s', Social::$i18n).'</span>',
 			'comment_notes_after' => '',
-			'comment_notes_before' => ''
+			'comment_notes_before' => '',
+			'fields' => $fields
 		);
 		
 		if (is_user_logged_in()) {
