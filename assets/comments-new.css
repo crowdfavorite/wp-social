@@ -87,7 +87,7 @@
 	padding: 10px;
 }
 
-#social .social-input-text,
+#social .social-input,
 #social select {
 	background: #f8f8f8;
 	border: 1px solid #ccc;
@@ -112,7 +112,7 @@
 /**
  * Line-height fix
  */
-#social input.social-input-text,
+#social input.social-input,
 #social select {
 	height: 22px;
 	padding-bottom: 1px;
@@ -190,7 +190,7 @@
 	top: 4px;
 	width: 60px;
 }
-#social .social-input-row .social-input-text {
+#social .social-input-row .social-input {
 	/* Bypasses vertical alignment issues.
 	only effects social-input-row inputs */
 	float: left;

@@ -1738,7 +1738,7 @@ final class Social_Comment_Form {
 		$input_defaults = array(
 			'id' => $id,
 			'name' => $id,
-			'class' => 'social-input-text'
+			'class' => 'social-input'
 		);
 		$input = Social::to_tag($tag, $text, $input_defaults, $attr);
 		
