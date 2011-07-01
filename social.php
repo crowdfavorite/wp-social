@@ -1737,11 +1737,14 @@ final class Social_Comment_Form {
 		
 		$input_defaults = array(
 			'id' => $id,
-			'name' => $id
+			'name' => $id,
+			'class' => 'social-input-text'
 		);
 		$input = Social::to_tag($tag, $text, $input_defaults, $attr);
 		
-		return Social::to_tag('p', $label . $input, array('class' => 'social-input-row'));
+		return Social::to_tag('p', $label . $input, array(
+			'class' => 'social-input-row social-input-row-'.$id
+		));
 	}
 	
 	/**

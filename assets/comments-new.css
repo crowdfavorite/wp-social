@@ -87,9 +87,8 @@
 	padding: 10px;
 }
 
-#social input.social-input-text,
-#social select,
-#social textarea {
+#social .social-input-text,
+#social select {
 	background: #f8f8f8;
 	border: 1px solid #ccc;
 	-moz-border-radius: 3px; /* FF1+ */
