@@ -13,6 +13,7 @@
 
 /* Override default theme line-height */
 #social {
+	background: #fff;
 	line-height: 1.5;
 	margin: 40px 0;
 }
@@ -85,7 +86,15 @@
 
 /* Threaded respond form */
 #social .social-commentlist #respond {
-	padding: 10px;
+	margin: 10px 0 0;
+	padding: 0 0 0 7px;
+}
+#social .social-commentlist #reply-title {
+	background-position: 0 -400px;
+}
+#social .social-commentlist #commentform {
+	border-left: 1px solid #e1e1e1;
+	padding-left: 10px;
 }
 
 #social .social-input,
@@ -141,7 +150,7 @@
 #social .social-input-row,
 #social .form-submit {
 	clear: left;
-	margin: 10px 0;
+	margin: 0 0 10px;
 	overflow: hidden;
 	padding-left: 80px;
 	position: relative;
@@ -178,6 +187,9 @@
 
 #social #respond {
 	margin-bottom: 30px;
+}
+#social #commentform {
+	overflow: hidden;
 }
 #social #respond input.social-input {
 	width: 314px;
@@ -263,6 +275,18 @@
 }
 #social .social-sign-in-links .social-facebook:active {
 	background-position: -150px -44px;
+}
+
+/* Logged in form */
+
+.logged-in #social .social-input-row-comment .social-label {
+	/* Hide visually, but remain readable by screen readers */
+	left: -999em;
+	position: absolute;
+}
+.logged-in #social #respond .form-submit,
+.logged-in #social .social-input-row {
+	padding-left: 50px;
 }
 
 /** @section Tabs
@@ -362,7 +386,7 @@
 #social .social-identity .avatar {
 	left: 0;
 	position: absolute;
-	top: 0;
+	top: 2px;
 }
 #social .social-comment #cancel-comment-reply-link {
 	font-family: Helvetica, Arial, sans-serif;
@@ -539,7 +563,6 @@
 	list-style: none;
 	margin: 0 0 3px;
 	padding: 0 0 0 4px;
-	width: 100%;
 }
 
 #social .social-nav li {
