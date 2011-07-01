@@ -1736,7 +1736,7 @@ final class Social_Comment_Form {
 	if (!is_user_logged_in()): ?>
 		<div class="social-sign-in-links social-clearfix">
 			<?php foreach (Social::$services as $key => $service): ?>
-			<a class="social-<?php echo $key; ?> social-imr social-login comments" href="<?php echo Social_Helper::authorize_url($key); ?>" id="<?php echo $key; ?>_signin"><?php _e('Sign in with '.$service->title(), Social::$i18n); ?></a>
+			<a class="social-<?php echo $key; ?> social-imr social-login comments" href="<?php echo Social_Helper::authorize_url($key); ?>" id="<?php echo $key; ?>_signin"><?php printf(__('Sign in with %s', Social::$i18n), $service->title()); ?></a>
 			<?php endforeach; ?>
 		</div>
 		<div class="social-divider">
