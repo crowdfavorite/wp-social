@@ -82,22 +82,6 @@
 /** @section Sign-in and forms
  -------------------------------------------------- */
 
-#social #reply-title {
-	background: url(sprite-y-24.png) 0 -200px no-repeat;
-	overflow: hidden;
-	padding-left: 13px;
-	zoom: 1;
-}
-#social #reply-title span {
-	background: url(sprite-y-24.png) right -300px no-repeat;
-	color: #000;
-	font-size: 14px;
-	float: left;
-	height: 26px;
-	line-height: 26px;
-	padding: 0 13px 4px 9px;
-}
-
 #social input.social-input-text,
 #social select,
 #social textarea {
@@ -586,30 +570,24 @@
 }
 
 /*Tabs*/
-#social #social-tabs-comments .social-nav {
-	background: url('background-strikethrough.gif') center repeat-x;
+#social .social-nav {
+	background: url('background-strikethrough.gif') 0 13px repeat-x;
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 13px;
 	line-height: 28px;
 	list-style: none;
 	margin: 0 0 3px;
-	padding: 0;
+	padding: 0 0 0 4px;
 	width: 100%;
 }
-#social #social-tabs-comments .social-nav li,
-#social .social-heading .social-title {
-	margin-left: 9px;
-	padding-right: 4px;
-}
-#social #social-tabs-comments .social-nav li {
+
+#social .social-nav li {
 	display: inline;
 	float: left;
+	margin-left: 10px;
 }
-#social #social-tabs-comments .social-nav li a {
-	background-color: #fff;
-	display: block;
-	padding: 0 6px 0 10px;
-	text-decoration: none;
+#social .social-nav .social-tab-main {
+	margin-left: 0;
 }
 #social #social-tabs-comments .social-nav li a span {
 	background: url('sprite-y-24-icons.png') 0 100px no-repeat;
@@ -633,29 +611,38 @@
 }
 
 /* Tab graphical treatment - selected tabs, and section headers*/
-
-#social .social-current-tab,
-#social .social-heading .social-title  {
-	background: url('sprite-y-24.png') right -300px no-repeat;
-	display: -moz-inline-box; /* FF2 */
-	display: inline-block; /* Standard. IE8+, Saf, FF3+ */
-	/**
-	 * @bugfix inline-block fix
-	 * @see http://blog.mozilla.com/webdev/2009/02/20/cross-browser-inline-block/
-	 * @valid no
-	 */
-	zoom: 1;
-	*display: inline;
-}
-#social .social-current-tab a,
-#social .social-heading .social-title span {
-	background: url('sprite-y-24.png') 0 -200px no-repeat;
-	color: #000;
-	display: block;
-	line-height: 28px;
+#social #reply-title {
+	overflow: hidden;
 	padding-left: 13px;
-	padding-right: 9px;
-
+	zoom: 1;
+}
+#social #reply-title span,
+#social .social-nav li a {
+	float: left;
+	font-size: 14px;
+	height: 26px;
+	line-height: 26px;
+}
+#social .social-nav li a {
+	background: #fff;
+	padding: 0 12px 4px 12px;
+}
+#social #reply-title span,
+#social .social-nav .social-current-tab a {
+	padding: 0 12px 4px 8px;
+}
+#social #reply-title,
+#social .social-nav .social-current-tab {
+	background: url(sprite-y-24.png) 0 -200px no-repeat;
+}
+#social .social-nav .social-current-tab {
+	background-position: -9px -200px;
+	padding-left: 4px;
+}
+#social #reply-title span,
+#social .social-nav .social-current-tab a {
+	background: url(sprite-y-24.png) right -300px no-repeat;
+	color: #000;
 }
 
 /**
