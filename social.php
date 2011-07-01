@@ -1857,7 +1857,7 @@ final class Social_Comment_Form {
 		$html = '';
 		if (count(Social::$combined_services)) {
 			$html .= '
-			<select id="post_accounts" name="'.Social::$prefix.'post_account">
+			<select class="social-select" id="post_accounts" name="'.Social::$prefix.'post_account">
 				<option value="">'.__('WordPress Account', Social::$i18n).'</option>';
 			foreach (Social::$combined_services as $key => $service) {
 				$accounts = Social::$services[$key]->accounts();

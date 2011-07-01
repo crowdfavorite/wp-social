@@ -73,10 +73,11 @@
 /**
  * Subtext, help text, etc
  */
-#social .social-quiet {
+#social .social-help {
 	color: #999;
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 12px;
+	font-style: italic;
 }
 
 /** @section Sign-in and forms
@@ -88,7 +89,7 @@
 }
 
 #social .social-input,
-#social select {
+#social .social-select {
 	background: #f8f8f8;
 	border: 1px solid #ccc;
 	-moz-border-radius: 3px; /* FF1+ */
@@ -113,27 +114,23 @@
  * Line-height fix
  */
 #social input.social-input,
-#social select {
+#social .social-select {
 	height: 22px;
 	padding-bottom: 1px;
 	padding-top: 3px;
 }
 
-#social select {
+#social .social-select {
 	margin-top: 2px;
 }
 
-#social select optgroup {
+#social .social-select optgroup {
 	padding: 2px;
 	font-weight: bold;
 }
 
-#social select option {
+#social .social-select option {
 	font-weight: normal;
-}
-#social-email-notice {
-	position: relative;
-	top: 4px;
 }
 
 #social .social-post {
@@ -195,6 +192,9 @@
 	only effects social-input-row inputs */
 	float: left;
 }
+#social .social-input-row .social-help {
+	margin-left: 7px;
+}
 
 #social .social-twitter-icon,
 #social .social-facebook-icon {
@@ -220,6 +220,13 @@
 
 #social .social-facebook-icon.big i {
     background-position: -30px -82px;
+}
+
+#social #respond input.social-input {
+	width: 314px;
+}
+#social #respond textarea.social-input {
+	height: 83px;
 }
 
 /** @section Tabs
