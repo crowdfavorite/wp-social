@@ -1723,8 +1723,25 @@ final class Social_Comment_Form {
 	public function attach_hooks() {
 		// add_action('comment_form_before', array($this, 'before'));
 		add_action('comment_form_top', array($this, 'top'));
-		add_filter('comment_form_logged_in', array($this, 'logged_in_as'));
 		add_action('comment_form_defaults', array($this, 'configure_args'));
+		add_action('comment_form', array($this, 'end_of_form'));
+		add_filter('comment_form_logged_in', array($this, 'logged_in_as'));
+		add_filter('comment_id_fields', array($this, 'comment_id_fields'));
+	}
+	
+	public function comment_id_fields($html) {
+		$hidden = array('type' => 'hidden');
+		$html .= Social::to_tag('input', false, $hidden, array(
+			'id' => 'use_twitter_reply',
+			'name' => 'use_twitter_reply',
+			'value' => 0
+		));
+		$html .= Social::to_tag('input', false, $hidden, array(
+			'id' => 'in_reply_to_status_id',
+			'name' => 'in_reply_to_status_id',
+			'value' => ''
+		));
+		return $html;
 	}
 	
 	public function to_field_group($label, $id, $tag, $text, $attr1 = array(), $attr2 = array(), $help_text = '') {
@@ -1795,6 +1812,10 @@ final class Social_Comment_Form {
 		}
 		
 		return array_merge($default_args, $args);
+	}
+	
+	public function end_of_form() {
+		// @TODO This needs to output the "Also post to links"
 	}
 
 	/**
