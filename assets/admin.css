@@ -130,7 +130,7 @@
 }
 .social-twitter-icon i,
 .social-facebook-icon i {
-    background: url('social.png') 0 -66px;
+    background: url('social.png') 0 -150px;
     display: block;
     float: left;
     margin-right: 5px;
@@ -139,7 +139,7 @@
     line-height: 16px;
 }
 .social-facebook-icon i {
-    background-position: -16px -66px;
+    background-position: 0 -250px;
 }
 .social-twitter-icon.big,
 .social-facebook-icon.big {

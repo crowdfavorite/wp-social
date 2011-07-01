@@ -1747,7 +1747,7 @@ final class Social_Comment_Form {
 	}
 
 	public function logged_in_as() {
-		$html = '';
+		$html = '<div class="social-identity">';
 		$html .= get_avatar(get_current_user_id(), 40);
 		if (current_user_can('manage_options')) {
 			$html .= '<p class="social-input-row">'.$this->get_logged_in_management_controls().'</p>';
@@ -1758,7 +1758,6 @@ final class Social_Comment_Form {
 					$account = reset($service->accounts());
 					$html .= '<p class="social-input-row">
 						<span class="social-'.$key.'-icon">
-							<i></i>
 							'.$service->profile_name($account).'.
 							('.$service->disconnect_url($account).')
 						</span>
@@ -1767,6 +1766,7 @@ final class Social_Comment_Form {
 				}
 			}
 		}
+		$html .= '</div>';
 		return $html;
 	}
 
