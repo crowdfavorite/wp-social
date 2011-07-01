@@ -156,10 +156,10 @@
 	color: #333;
 	font-size: 14px;
 	display: block;
-	left: 10px;
+	left: 0;
 	position: absolute;
 	top: 4px;
-	width: 60px;
+	width: 80px;
 }
 #social .form-submit input,
 #social .social-input-row .social-input {
@@ -176,6 +176,9 @@
 	margin-left: 7px;
 }
 
+#social #respond {
+	margin-bottom: 30px;
+}
 #social #respond input.social-input {
 	width: 314px;
 }
@@ -197,9 +200,8 @@
 	-webkit-background-clip: padding-box;
 	color: #0867ab;
 	cursor: pointer;
-	font-weight: bold;
+	font: bold 14px/13px Helvetica, Arial, sans-serif;
 	height: 24px;
-	line-height: 13px;
 	/**
 	 * @bugfix input width issue
 	 * @affected IE7
