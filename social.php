@@ -1727,6 +1727,23 @@ final class Social_Comment_Form {
 		add_action('comment_form_defaults', array($this, 'configure_args'));
 	}
 	
+	public function to_field_group($label, $id, $tag, $text, $attr1 = array(), $attr2 = array()) {
+		$attr = array_merge($attr1, $attr2);
+		
+		$label = Social::to_tag('label', $label, array(
+			'for' => $id,
+			'class' => 'social-label'
+		));
+		
+		$input_defaults = array(
+			'id' => $id,
+			'name' => $id
+		);
+		$input = Social::to_tag($tag, $text, $input_defaults, $attr);
+		
+		return Social::to_tag('p', $label . $input, array('class' => 'social-input-row'));
+	}
+	
 	/**
 	 * Helper for generating input row HTML
 	 * @uses Social::to_tag()
@@ -1734,17 +1751,15 @@ final class Social_Comment_Form {
 	public function to_input_group($label, $id, $value, $req = null) {
 		$maybe_req = ($req ? array('required' => 'required') : array() );
 		
-		$label = Social::to_tag('label', $label, array(
-			'for' => $id,
-			'class' => 'social-label'
-		));
-		$input = Social::to_tag('input', false, $maybe_req, array(
-			'id' => $id,
-			'name' => $id,
+		return $this->to_field_group($label, $id, 'input', false, $maybe_req, array(
 			'type' => 'text',
 			'value' => $value
 		));
-		return Social::to_tag('p', $label . $input, array('class' => 'social-input-row'));
+	}
+	
+	public function to_textarea_group($label, $id, $value, $req = true) {
+		$maybe_req = ($req ? array('required' => 'required') : array() );
+		return $this->to_field_group($label, $id, 'textarea', $value, $maybe_req);
 	}
 	
 	public function configure_args($default_args) {
@@ -1762,7 +1777,8 @@ final class Social_Comment_Form {
 			'title_reply_to' => '<span>'.__('Post a Reply to %s', Social::$i18n).'</span>',
 			'comment_notes_after' => '',
 			'comment_notes_before' => '',
-			'fields' => $fields
+			'fields' => $fields,
+			'comment_field' => $this->to_textarea_group(__('Comment', Social::$i18n ), 'comment', '', true, 'textarea')
 		);
 		
 		if (is_user_logged_in()) {
