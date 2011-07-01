@@ -167,6 +167,7 @@
 	background-position: -150px -44px;
 }
 
+/* Input row styles */
 #social .social-input-row {
 	clear: left;
 	margin-bottom: 10px;
@@ -181,6 +182,8 @@
 }
 
 #social .social-input-row .social-label {
+	color: #333;
+	font-size: 14px;
 	display: block;
 	left: 10px;
 	position: absolute;
@@ -191,8 +194,13 @@
 	/* Bypasses vertical alignment issues.
 	only effects social-input-row inputs */
 	float: left;
+	/* Specifically here to counteract issues with margins in TwentyTen,
+	but good to have either way */
+	margin: 0;
 }
 #social .social-input-row .social-help {
+	float: left;
+	line-height: 28px;
 	margin-left: 7px;
 }
 
