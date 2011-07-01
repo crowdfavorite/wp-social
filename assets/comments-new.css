@@ -184,6 +184,7 @@
 }
 
 #social .form-submit input {
+	background: #e9e9e9 url(sprite-y-24.png) 0 0 no-repeat;
 	border: 1px solid #ccc;
 	-moz-border-radius: 4px; /* FF1+ */
 	-webkit-border-radius: 4px; /* Saf3+, Chrome */
@@ -195,7 +196,12 @@
 	 */
 	-webkit-background-clip: padding-box;
 	color: #0867ab;
+	cursor: pointer;
 	font-weight: bold;
+	height: 24px;
+}
+#social .form-submit input:active {
+	background: #dedede url(sprite-y-24.png) 0 -100px no-repeat;
 }
 
 #social .social-twitter-icon,
