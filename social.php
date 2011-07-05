@@ -312,13 +312,13 @@ final class Social {
 		}
 
 		// Schedule the CRON?
-		if (wp_next_scheduled(Social::$prefix.'aggregate_comments') === false) {
+		if (wp_next_scheduled(Social::$prefix.'aggregate_comments_core') === false) {
 			wp_schedule_event(time() + 3600, 'hourly', Social::$prefix.'aggregate_comments_core');
 		}
-		if (wp_next_scheduled(Social::$prefix.'cron_15') === false) {
+		if (wp_next_scheduled(Social::$prefix.'cron_15_core') === false) {
 			wp_schedule_event(time() + 900, 'every15min', Social::$prefix.'cron_15_core');
 		}
-		if (wp_next_scheduled(Social::$prefix.'cron_60') === false) {
+		if (wp_next_scheduled(Social::$prefix.'cron_60_core') === false) {
 			wp_schedule_event(time() + 3600, 'hourly', Social::$prefix.'cron_60_core');
 		}
 
