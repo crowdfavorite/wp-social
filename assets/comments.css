@@ -104,7 +104,11 @@
 	padding-left: 10px;
 }
 
-#social .social-input,
+/* Specificity of selector is dialed to
+override TwentyEleven's treatment of text inputs in
+the respond form */
+#social input.social-input,
+#social textarea.social-input,
 #social .social-select {
 	background: #f8f8f8;
 	border: 1px solid #ccc;
@@ -162,6 +166,12 @@
 	padding-left: 80px;
 	position: relative;
 	zoom: 1;
+}
+
+/* Override TwentyEleven
+Remove float from para wrapping submit button. */
+#social .form-submit {
+	float: none;
 }
 
 #social .form-submit,
