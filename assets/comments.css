@@ -271,7 +271,8 @@ override submit styles in TwentyEleven theme */
 
 #social .social-twitter-icon,
 #social .social-facebook-icon {
-	background: url(social.png) 0 -150px;
+	background: url(social.png) 0 -150px no-repeat;
+	display: block;
 	padding-left: 21px;
 }
 #social .social-facebook-icon {
