@@ -89,7 +89,7 @@
 
 /* Threaded respond form */
 #social .social-commentlist #respond {
-	margin: 6px 0 0;
+	margin: 6px 0;
 	padding: 0 0 0 7px;
 }
 #social .social-commentlist #reply-title {
@@ -159,6 +159,8 @@
 	position: relative;
 	zoom: 1;
 }
+
+#social .form-submit,
 #social .social-input-row-submit {
 	height: 30px;
 	margin-bottom: 0;
