@@ -368,7 +368,7 @@ final class Social {
 	 * Displays the upgrade message.
 	 */
 	public function display_upgrade() {
-		if (current_user_can('manage_options') or current_user_can('publish_posts')) {
+		if (current_user_can('manage_options') || current_user_can('publish_posts')) {
 			if (current_user_can('manage_options')) {
 				$url = Social_Helper::settings_url(null, true);
 			}
@@ -1825,8 +1825,42 @@ final class Social_Comment_Form {
 		return array_merge($default_args, $args);
 	}
 	
+	/**
+	 * Outputs checkboxes for cross-posting
+	 * @uses Social::to_tag()
+	 */
 	public function end_of_form() {
-		// @TODO This needs to output the "Also post to links"
+		$id = 'post_to_service';
+		$label_base = array(
+			'for' => $id,
+			'id' => 'post_to'
+		);
+
+		$checkbox = Social::to_tag('input', false, array(
+			'type' => 'checkbox',
+			'name' => $id,
+			'id' => $id,
+			'value' => 1
+		));
+		
+		
+		if ($this->is_logged_in) {
+			if (current_user_can('manage_options')) {
+				$text = sprintf(__('Also post to %s', Social::$i18n), '<span></span>');
+				$post_to = Social::to_tag('label', $checkbox . ' ' . $text, $label_base, array('style' => 'display:none;'));
+			}
+			else {
+				$post_to = '';
+				foreach (Social::$services as $key => $service) {
+					if (count($service->accounts())) {
+						$text = sprintf(__('Also post to %s'), $service->title());
+						$post_to .= Social::to_tag('label', $checkbox . ' ' . $text, $label_base);
+					}
+				}
+			}
+			
+			echo $post_to;
+		}
 	}
 
 	/**
