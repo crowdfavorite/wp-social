@@ -173,7 +173,7 @@
 	top: 4px;
 	width: 70px;
 }
-#social .form-submit input,
+#social #submit,
 #social .social-input-row .social-input {
 	/* Bypasses vertical alignment issues.
 	only effects social-input-row inputs */
@@ -201,7 +201,7 @@
 	height: 83px;
 }
 
-#social .form-submit input {
+#social #submit {
 	background: #e9e9e9 url(sprite-y-24.png) 0 0 no-repeat;
 	border: 1px solid #ccc;
 	-moz-border-radius: 4px; /* FF1+ */
@@ -226,7 +226,7 @@
 	padding: 4px 13px;
 	text-shadow: #fff 0 1px 0;
 }
-#social .form-submit input:active {
+#social #submit:active {
 	background: #dedede url(sprite-y-24.png) 0 -100px no-repeat;
 }
 /**
@@ -235,7 +235,7 @@
  * @affected Firefox
  * @valid no
  */
-#social .form-submit input::-moz-focus-inner {
+#social #submit::-moz-focus-inner {
 	border: 0;
 	margin: 0;
 	padding: 0;

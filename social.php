@@ -1737,22 +1737,7 @@ final class Social_Comment_Form {
 		add_action('comment_form_defaults', array($this, 'configure_args'));
 		add_action('comment_form', array($this, 'end_of_form'));
 		add_filter('comment_form_logged_in', array($this, 'logged_in_as'));
-		add_filter('comment_id_fields', array($this, 'comment_id_fields'));
-	}
-	
-	public function comment_id_fields($html) {
-		$hidden = array('type' => 'hidden');
-		$html .= Social::to_tag('input', false, $hidden, array(
-			'id' => 'use_twitter_reply',
-			'name' => 'use_twitter_reply',
-			'value' => 0
-		));
-		$html .= Social::to_tag('input', false, $hidden, array(
-			'id' => 'in_reply_to_status_id',
-			'name' => 'in_reply_to_status_id',
-			'value' => ''
-		));
-		return $html;
+		add_filter('comment_id_fields', array($this, 'comment_id_fields'), 10, 3);
 	}
 	
 	public function to_field_group($label, $id, $tag, $text, $attr1 = array(), $attr2 = array(), $help_text = '') {
@@ -1795,6 +1780,26 @@ final class Social_Comment_Form {
 		return $this->to_field_group($label, $id, 'textarea', $value, $maybe_req);
 	}
 	
+	public function comment_id_fields($result, $id, $replytoid) {
+		$html = $this->get_also_post_to_controls();
+
+		$html .= $result;
+
+		$hidden = array('type' => 'hidden');
+		$html .= Social::to_tag('input', false, $hidden, array(
+			'id' => 'use_twitter_reply',
+			'name' => 'use_twitter_reply',
+			'value' => 0
+		));
+		$html .= Social::to_tag('input', false, $hidden, array(
+			'id' => 'in_reply_to_status_id',
+			'name' => 'in_reply_to_status_id',
+			'value' => ''
+		));
+		
+		return $html;
+	}
+	
 	public function configure_args($default_args) {
 		$commenter = wp_get_current_commenter();
 		$req = get_option( 'require_name_email' );
@@ -1829,7 +1834,7 @@ final class Social_Comment_Form {
 	 * Outputs checkboxes for cross-posting
 	 * @uses Social::to_tag()
 	 */
-	public function end_of_form() {
+	public function get_also_post_to_controls() {
 		$id = 'post_to_service';
 		$label_base = array(
 			'for' => $id,
@@ -1859,7 +1864,7 @@ final class Social_Comment_Form {
 				}
 			}
 			
-			echo $post_to;
+			return $post_to;
 		}
 	}
 
