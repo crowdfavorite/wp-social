@@ -1695,10 +1695,16 @@ final class Social {
 class Social_Comment_Form {
 	protected static $instances = array();
 	protected function __construct($post_id, $args = array()) {
+		global $post;
+
 		$this->post_id = $post_id;
 		$this->args = $args;
 		$this->is_logged_in = is_user_logged_in();
 		$this->current_user = wp_get_current_user();
+
+		if ($post === null) {
+			$post = get_post($this->post_id);
+		}
 	}
 	
 	/**
@@ -1735,14 +1741,9 @@ class Social_Comment_Form {
 	 * Calls comment_form() with filters attached. Also does some regex replacement for
 	 * areas of comment form that cannot be filtered.
 	 * @uses comment_form()
-	 * @param  int  $post_id
 	 * @return string
 	 */
-	public function get_comment_form($post_id = null) {
-		global $post;
-		if ($post === null and $post_id !== null) {
-			$post = get_post($post_id);
-		}
+	public function get_comment_form() {
 		ob_start();
 		try
 		{
