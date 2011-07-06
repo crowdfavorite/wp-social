@@ -191,7 +191,11 @@
 }
 
 #social #respond {
+	/* Override TwentyEleven theme
+	Remove grey background */
+	background: transparent;
 	margin-bottom: 30px;
+	width: auto;
 }
 #social #respond input.social-input {
 	width: 314px;
@@ -200,22 +204,25 @@
 	height: 83px;
 }
 
-#social #submit {
+/* Specificity of this selector is dialed in to
+override submit styles in TwentyEleven theme */
+#social input#submit {
 	background: #e9e9e9 url(sprite-y-24.png) 0 0 no-repeat;
 	border: 1px solid #ccc;
 	-moz-border-radius: 4px; /* FF1+ */
 	-webkit-border-radius: 4px; /* Saf3+, Chrome */
 	-khtml-border-radius: 4px; /* Konqueror */
 	border-radius: 4px; /* Standard. IE9 */
-	/**
-	 * @bugfix border-radius background bleed
-	 * @see http://tumble.sneak.co.nz/post/928998513/fixing-the-background-bleed
-	 */
-	-webkit-background-clip: padding-box;
+	/* Workaround for TwentyEleven theme
+	Remove box shadow */
+	-moz-box-shadow: none; /* FF3.5+ */
+	-webkit-box-shadow: none; /* Saf3+, Chrome */
+	box-shadow: none; /* Standard. Opera 10.5, IE9 */
 	color: #0867ab;
 	cursor: pointer;
 	font: bold 14px/13px Helvetica, Arial, sans-serif;
 	height: 24px;
+	margin: 0;
 	/**
 	 * @bugfix input width issue
 	 * @affected IE7
@@ -223,10 +230,16 @@
 	 */
 	overflow: visible;
 	padding: 4px 13px;
+	/* Override TwentyEleven theme styles
+	Remove left offset */
+	position: static;
 	text-shadow: #fff 0 1px 0;
 }
-#social #submit:active {
+/* Specificity of this selector is dialed in to
+override submit styles in TwentyEleven theme */
+#social input#submit:active {
 	background: #dedede url(sprite-y-24.png) 0 -100px no-repeat;
+	color: #0867ab;
 }
 /**
  * @bugfix invisible hidden element
@@ -288,6 +301,9 @@
 }
 .logged-in #social #respond .form-submit,
 .logged-in #social .social-input-row {
+	/* Override TwentyEleven theme
+	remove float:right */
+	float: none;
 	padding-left: 50px;
 }
 
