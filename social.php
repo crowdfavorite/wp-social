@@ -227,7 +227,7 @@ final class Social {
 	 */
 	public function init() {
 		$url = plugins_url('', SOCIAL_FILE);
-		Social::$plugins_url = apply_filters('social_plugins_url', $url);
+		Social::$plugins_url = trailingslashit(apply_filters('social_plugins_url', $url));
 
 		$global_services = get_option(Social::$prefix.'accounts');
 		$services = get_user_meta(get_current_user_id(), Social::$prefix.'accounts', true);
@@ -261,15 +261,13 @@ final class Social {
 				add_action('admin_notices', array($this, 'display_deauthed'));
 			}
 			
-			$url = trailingslashit(Social::$plugins_url);
-			wp_enqueue_style('social_admin', $url.'assets/admin.css', array(), Social::$version, 'screen');
-			wp_enqueue_script('social_admin', $url.'assets/social.js', array('jquery'), Social::$version, true);
-
+			wp_enqueue_style('social_admin', Social::$plugins_url.'assets/admin.css', array(), Social::$version, 'screen');
+			wp_enqueue_script('social_admin', Social::$plugins_url.'assets/social.js', array('jquery'), Social::$version, true);
 		}
 		else {
-			wp_enqueue_style('social', $url.'assets/comments-new.css', array(), Social::$version, 'screen');
+			wp_enqueue_style('social', Social::$plugins_url.'assets/comments-new.css', array(), Social::$version, 'screen');
 			wp_enqueue_script('jquery');
-			wp_enqueue_script('social', $url.'assets/social.js', array('jquery'), Social::$version, true);
+			wp_enqueue_script('social', Social::$plugins_url.'assets/social.js', array('jquery'), Social::$version, true);
 		}
 
 		if (version_compare(PHP_VERSION, '5.2.1', '<')) {
@@ -451,7 +449,7 @@ final class Social {
 		else if (!empty($_GET[Social::$prefix.'action'])) {
 			switch ($_GET[Social::$prefix.'action']) {
 				case 'reload_form':
-					$form = Social_Comment_Form::as_html();
+					$form = Social_Comment_Form::as_html(array(), $_GET['post_id'], false);
 					echo json_encode(array(
 						'result' => 'success',
 						'html' => $form,
@@ -1726,7 +1724,7 @@ class Social_Comment_Form {
 			$post_id = get_the_ID();
 		}
 		$ins = self::get_instance($post_id, $args);
-		$comment_form = $ins->get_comment_form();
+		$comment_form = $ins->get_comment_form($post_id);
 		if (!$echo) {
 			return $comment_form;
 		}
@@ -1737,8 +1735,14 @@ class Social_Comment_Form {
 	 * Calls comment_form() with filters attached. Also does some regex replacement for
 	 * areas of comment form that cannot be filtered.
 	 * @uses comment_form()
+	 * @param  int  $post_id
+	 * @return string
 	 */
-	public function get_comment_form() {
+	public function get_comment_form($post_id = null) {
+		global $post;
+		if ($post === null and $post_id !== null) {
+			$post = get_post($post_id);
+		}
 		ob_start();
 		try
 		{
