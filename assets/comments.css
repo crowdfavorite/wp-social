@@ -87,6 +87,10 @@
 /** @section Sign-in and forms
  -------------------------------------------------- */
 
+#social #commentform {
+	overflow: hidden;
+}
+
 /* Threaded respond form */
 #social .social-commentlist #respond {
 	margin: 6px 0;
@@ -407,10 +411,12 @@ override submit styles in TwentyEleven theme */
 	position: absolute;
 	top: 2px;
 }
-#social .social-comment #cancel-comment-reply-link {
+#social #cancel-comment-reply-link {
+	display: inline;
 	font-family: Helvetica, Arial, sans-serif;
-	margin: 3px 10px;
 	font-size: 12px;
+	margin: 3px 10px;
+	position: static;
 	text-transform: none;
 }
 
