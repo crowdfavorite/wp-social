@@ -451,7 +451,7 @@ final class Social {
 		else if (!empty($_GET[Social::$prefix.'action'])) {
 			switch ($_GET[Social::$prefix.'action']) {
 				case 'reload_form':
-					$form = Social_Comment_Form::as_html(array(), $_GET['post_id'], false);
+					$form = Social_Comment_Form::as_html();
 					echo json_encode(array(
 						'result' => 'success',
 						'html' => $form,
@@ -475,42 +475,35 @@ final class Social {
 				$data = str_replace(array("\r\n", "\r"), "\n", $data);
 			}
 			$data = json_decode($data);
+			$account = (object) array(
+				'keys' => $data->keys,
+				'user' => $data->user
+			);
 
-			$title = 'authorized';
-			if ($data->declined) {
-				$title = 'Declined';
+			// Add the account to the service.
+			if (defined('IS_PROFILE_PAGE')) {
+				$service = $this->service($data->service)->account($account);
 			}
 			else {
-				$account = (object) array(
-					'keys' => $data->keys,
-					'user' => $data->user
-				);
+				$service = $this->service($data->service, null, true)->account($account);
+			}
 
-				// Add the account to the service.
-				if (defined('IS_PROFILE_PAGE')) {
-					$service = $this->service($data->service)->account($account);
-				}
-				else {
-					$service = $this->service($data->service, null, true)->account($account);
-				}
+			// Do we need to create a user?
+			if (!$service->loaded()) {
+				$service->create_user($account);
+			}
 
-				// Do we need to create a user?
-				if (!$service->loaded()) {
-					$service->create_user($account);
-				}
+			// Save the services
+			$service->save($account);
 
-				// Save the services
-				$service->save($account);
+			// Remove the service from the errors?
+			$deauthed = get_option(Social::$prefix.'deauthed');
+			if (isset($deauthed[$service->service][$account->user->id])) {
+				unset($deauthed[$service->service][$account->user->id]);
+				update_option(Social::$prefix.'deauthed', $deauthed);
 
-				// Remove the service from the errors?
-				$deauthed = get_option(Social::$prefix.'deauthed');
-				if (isset($deauthed[$service->service][$account->user->id])) {
-					unset($deauthed[$service->service][$account->user->id]);
-					update_option(Social::$prefix.'deauthed', $deauthed);
-
-					// Remove from the global broadcast content as well.
-					$this->remove_from_xmlrpc($service->service, $account->user->id);
-				}
+				// Remove from the global broadcast content as well.
+				$this->remove_from_xmlrpc($service->service, $account->user->id);
 			}
 ?>
 <html>
@@ -1726,11 +1719,7 @@ final class Social_Comment_Form {
 	/**
 	 * Factory method with immediate render to HTML.
 	 * Also a facade for filtering WP's comment_form function.
-	 *
 	 * @static
-	 * @param  array  $args
-	 * @param  int    $post_id
-	 * @param  bool   $echo
 	 * @return string
 	 */
 	public static function as_html($args = array(), $post_id = null, $echo = true) {
@@ -1738,38 +1727,49 @@ final class Social_Comment_Form {
 			$post_id = get_the_ID();
 		}
 		$ins = self::get_instance($post_id, $args);
-		$ins->attach_hooks($post_id);
-
+		$comment_form = $ins->get_comment_form();
 		if (!$echo) {
-			ob_start();
-			try
-			{
-				comment_form($ins->args, $ins->post_id);
-			}
-			catch (Exception $e)
-			{
-				ob_end_clean();
-				throw $e;
-			}
-
-			return ob_get_clean();
+			return $comment_form;
 		}
-		else {
-			comment_form($ins->args, $ins->post_id);
-		}
+		echo $comment_form;
 	}
 	
-	public function attach_hooks($post_id) {
-		global $post;
-		if ($post === null and $post_id !== null) {
-			$post = get_post($post_id);
+	/**
+	 * Calls comment_form() with filters attached. Also does some regex replacement for
+	 * areas of comment form that cannot be filtered.
+	 * @uses comment_form()
+	 */
+	public function get_comment_form() {
+		ob_start();
+		try
+		{
+			$this->attach_hooks();
+			comment_form($this->args, $this->post_id);
+			$this->remove_hooks();
 		}
-		// add_action('comment_form_before', array($this, 'before'));
+		catch (Exception $e)
+		{
+			ob_end_clean();
+			throw $e;
+		}
+
+		$comment_form = ob_get_clean();
+		
+		return preg_replace('/<h3 id="reply-title">(.+)<\/h3>/', '<h3 id="reply-title"><span>$1</span></h3>', $comment_form);
+	}
+	
+	public function attach_hooks() {
 		add_action('comment_form_top', array($this, 'top'));
 		add_action('comment_form_defaults', array($this, 'configure_args'));
-		add_action('comment_form', array($this, 'end_of_form'));
 		add_filter('comment_form_logged_in', array($this, 'logged_in_as'));
 		add_filter('comment_id_fields', array($this, 'comment_id_fields'), 10, 3);
+	}
+	
+	public function remove_hooks() {
+		remove_action('comment_form_top', array($this, 'top'));
+		remove_action('comment_form_defaults', array($this, 'configure_args'));
+		remove_filter('comment_form_logged_in', array($this, 'logged_in_as'));
+		remove_filter('comment_id_fields', array($this, 'comment_id_fields'), 10, 3);
 	}
 	
 	public function to_field_group($label, $id, $tag, $text, $attr1 = array(), $attr2 = array(), $help_text = '') {
@@ -1844,8 +1844,8 @@ final class Social_Comment_Form {
 		
 		$args = array(
 			'label_submit' => __('Post It', Social::$i18n),
-			'title_reply' => '<span>'.__('Profile', Social::$i18n).'</span>',
-			'title_reply_to' => '<span>'.__('Post a Reply to %s', Social::$i18n).'</span>',
+			'title_reply' => __('Profile', Social::$i18n),
+			'title_reply_to' => __('Post a Reply to %s', Social::$i18n),
 			'comment_notes_after' => '',
 			'comment_notes_before' => '',
 			'fields' => $fields,
@@ -1854,7 +1854,7 @@ final class Social_Comment_Form {
 		
 		if ($this->is_logged_in) {
 			$override = array(
-				'title_reply' => '<span>'.__('Post a Comment', Social::$i18n).'</span>'
+				'title_reply' => __('Post a Comment', Social::$i18n)
 			);
 			$args = array_merge($args, $override);
 		}
