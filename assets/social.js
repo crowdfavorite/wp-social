@@ -29,6 +29,8 @@
 						$parent.find('#loading').fadeIn();
 						$.get($parent.find('#reload_url').val(), {}, function(response){
 							if (response.result == 'success') {
+								// Add logged-in body class since we're not going to be refreshing the page.
+								$('body').addClass('logged-in');
 								$parent.html(response.html);
 								$('#primary').find('#social_login').parent().html(response.disconnect_url);
 							}
