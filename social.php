@@ -475,35 +475,42 @@ final class Social {
 				$data = str_replace(array("\r\n", "\r"), "\n", $data);
 			}
 			$data = json_decode($data);
-			$account = (object) array(
-				'keys' => $data->keys,
-				'user' => $data->user
-			);
 
-			// Add the account to the service.
-			if (defined('IS_PROFILE_PAGE')) {
-				$service = $this->service($data->service)->account($account);
+			$title = 'authorized';
+			if ($data->declined) {
+				$title = 'Declined';
 			}
 			else {
-				$service = $this->service($data->service, null, true)->account($account);
-			}
+				$account = (object) array(
+					'keys' => $data->keys,
+					'user' => $data->user
+				);
 
-			// Do we need to create a user?
-			if (!$service->loaded()) {
-				$service->create_user($account);
-			}
+				// Add the account to the service.
+				if (defined('IS_PROFILE_PAGE')) {
+					$service = $this->service($data->service)->account($account);
+				}
+				else {
+					$service = $this->service($data->service, null, true)->account($account);
+				}
 
-			// Save the services
-			$service->save($account);
+				// Do we need to create a user?
+				if (!$service->loaded()) {
+					$service->create_user($account);
+				}
 
-			// Remove the service from the errors?
-			$deauthed = get_option(Social::$prefix.'deauthed');
-			if (isset($deauthed[$service->service][$account->user->id])) {
-				unset($deauthed[$service->service][$account->user->id]);
-				update_option(Social::$prefix.'deauthed', $deauthed);
+				// Save the services
+				$service->save($account);
 
-				// Remove from the global broadcast content as well.
-				$this->remove_from_xmlrpc($service->service, $account->user->id);
+				// Remove the service from the errors?
+				$deauthed = get_option(Social::$prefix.'deauthed');
+				if (isset($deauthed[$service->service][$account->user->id])) {
+					unset($deauthed[$service->service][$account->user->id]);
+					update_option(Social::$prefix.'deauthed', $deauthed);
+
+					// Remove from the global broadcast content as well.
+					$this->remove_from_xmlrpc($service->service, $account->user->id);
+				}
 			}
 ?>
 <html>
