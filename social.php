@@ -1791,7 +1791,10 @@ class Social_Comment_Form {
 		);
 		$input = Social::to_tag($tag, $text, $input_defaults, $attr);
 		
-		$help = Social::to_tag('small', $help_text, array('class' => 'social-help'));
+		$help = '';
+		if ($help_text) {
+			$help = Social::to_tag('small', $help_text, array('class' => 'social-help'));
+		}
 		
 		return Social::to_tag('p', $label . $input . $help, array(
 			'class' => 'social-input-row social-input-row-'.$id
