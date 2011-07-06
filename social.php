@@ -1695,29 +1695,40 @@ final class Social {
  * @uses Social
  */
 final class Social_Comment_Form {
-	protected static $ins;
-	protected function __construct() {}
-	
-	/**
-	 * Singleton factory method
-	 */
-	public static function get_instance() {
-		if (!self::$ins) {
-			self::$ins = new Social_Comment_Form();
-		}
-		return self::$ins;
+	protected static $instances = array();
+	protected function __construct($post_id, $args = array()) {
+		$this->post_id = $post_id;
+		$this->args = $args;
+		$this->is_logged_in = is_user_logged_in();
+		$this->current_user = wp_get_current_user();
 	}
 	
 	/**
-	 * Instantiates singleton and renders the comment form.
-	 * Facade for filtering WP's comment_form function.
+	 * Factory method
+	 * @static
+	 * @return object instance of Social_Comment_Form
+	 */
+	public static function get_instance($post_id, $args = array()) {
+		$_class = 'Social_Comment_Form';
+		if (!(self::$instances[$post_id] instanceof $_class)) {
+			self::$instances[$post_id] = new $_class($post_id, $args);
+		}
+		return self::$instances[$post_id];
+	}
+	
+	/**
+	 * Factory method with immediate render to HTML.
+	 * Also a facade for filtering WP's comment_form function.
 	 * @static
 	 * @return string
 	 */
 	public static function as_html($args = array(), $post_id = null) {
-		$ins = self::get_instance();
+		if (!$post_id) {
+			$post_id = get_the_ID();
+		}
+		$ins = self::get_instance($post_id, $args);
 		$ins->attach_hooks();
-		comment_form($args, $post_id);
+		comment_form($ins->args, $ins->post_id);
 	}
 	
 	public function attach_hooks() {
@@ -1804,7 +1815,7 @@ final class Social_Comment_Form {
 			'comment_field' => $this->to_textarea_group(__('Comment', Social::$i18n ), 'comment', '', true, 'textarea')
 		);
 		
-		if (is_user_logged_in()) {
+		if ($this->is_logged_in) {
 			$override = array(
 				'title_reply' => '<span>'.__('Post a Comment', Social::$i18n).'</span>'
 			);
@@ -1825,7 +1836,7 @@ final class Social_Comment_Form {
 	?>
 		<div class="social-heading">
 			<?php
-			if (is_user_logged_in()) {
+			if ($this->is_logged_in) {
 				$tab = __('Post a Comment', Social::$i18n);
 			}
 			else {
@@ -1838,7 +1849,7 @@ final class Social_Comment_Form {
 	}
 	
 	public function top() {
-	if (!is_user_logged_in()): ?>
+	if (!$this->is_logged_in): ?>
 		<div class="social-sign-in-links social-clearfix">
 			<?php foreach (Social::$services as $key => $service): ?>
 			<a class="social-<?php echo $key; ?> social-imr social-login comments" href="<?php echo Social_Helper::authorize_url($key); ?>" id="<?php echo $key; ?>_signin"><?php printf(__('Sign in with %s', Social::$i18n), $service->title()); ?></a>
@@ -1853,7 +1864,7 @@ final class Social_Comment_Form {
 
 	public function logged_in_as() {
 		$html = '<div class="social-identity">';
-		$html .= get_avatar(get_current_user_id(), 40);
+		$html .= get_avatar($this->current_user->ID, 40);
 		if (current_user_can('manage_options')) {
 			$html .= '<p class="social-input-row">'.$this->get_logged_in_management_controls().' <small class="social-psst">('.wp_loginout(null, false).')</small></p>';
 		}
@@ -1903,7 +1914,7 @@ final class Social_Comment_Form {
 		else {
 			global $post;
 			$html .= '<input type="hidden" name="'.Social::$prefix.'post_account" value="" />';
-			$user = wp_get_current_user();
+			$user = $this->current_user;
 			$html .= sprintf(__('Logged in as <a href="%1$s">%2$s</a>. <a href="%3$s" title="Log out of this account">Log out?</a>', Social::$i18n), admin_url('profile.php'), $user->display_name, wp_logout_url(apply_filters('the_permalink', get_permalink($post->ID))));
 		}
 		return $html;
