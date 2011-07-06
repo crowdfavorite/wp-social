@@ -1850,7 +1850,7 @@ class Social_Comment_Form {
 		
 		$fields = array(
 			'author' => $this->to_input_group(__( 'Name', Social::$i18n ), 'author', $commenter['comment_author'], $req),
-			'email' => $this->to_input_group(__( 'Email', Social::$i18n ), 'email', $commenter['comment_author_email'], $req, __('We&rsquo;ll keep this private', Social::$i18n)),
+			'email' => $this->to_input_group(__( 'Email', Social::$i18n ), 'email', $commenter['comment_author_email'], $req, __('Not published', Social::$i18n)),
 			'url' => $this->to_input_group(__( 'Website', Social::$i18n ), 'url', $commenter['comment_author_url'])
 		);
 		
