@@ -22,7 +22,8 @@
 
 					if (!$this.hasClass('comments')) {
 						window.location.reload();
-					} else {
+					}
+					else {
 						var $parent = $this.closest('.social-post');
 						$parent.find('form').hide();
 						$parent.find('#loading').fadeIn();
@@ -30,7 +31,8 @@
 							if (response.result == 'success') {
 								$parent.html(response.html);
 								$('#primary').find('#social_login').parent().html(response.disconnect_url);
-							} else {
+							}
+							else {
 								$parent.find('#loading').hide();
 								$parent.find('form').fadeIn();
 							}

@@ -1694,7 +1694,7 @@ final class Social {
  * Just a singleton for filter methods to live under.
  * @uses Social
  */
-final class Social_Comment_Form {
+class Social_Comment_Form {
 	protected static $instances = array();
 	protected function __construct($post_id, $args = array()) {
 		$this->post_id = $post_id;
