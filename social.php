@@ -1601,24 +1601,6 @@ final class Social {
 			}
 		}
 	}
-	
-	/**
-	 * Loads the comment form.
-	 *
-	 * @static
-	 * @return string
-	 */
-	public static function comment_form() {
-		try {
-			include SOCIAL_PATH.'comment-form.php';
-		}
-		catch (Exception $e) {
-			ob_end_clean();
-			throw $e;
-		}
-	
-		return ob_get_clean();
-	}
 
 	/**
 	 * Merges the user and global accounts together.

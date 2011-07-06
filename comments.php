@@ -14,8 +14,7 @@
 			<?php else: ?>
 			<?php
 			Social_Comment_Form::as_html();
-			//Social::comment_form();
-			 ?>
+			?>
 			<?php endif; ?>
 		<?php else: ?>
 		<?php do_action('comment_form_comments_closed'); ?>
