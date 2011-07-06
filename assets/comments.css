@@ -182,6 +182,7 @@ Remove float from para wrapping submit button. */
 
 #social .social-input-row .social-label {
 	color: #333;
+	cursor: pointer;
 	font-size: 14px;
 	display: block;
 	left: 7px;
@@ -216,6 +217,7 @@ Remove float from para wrapping submit button. */
 }
 #social #respond textarea.social-input {
 	height: 83px;
+	max-width: 464px;
 }
 
 /* Specificity of this selector is dialed in to
