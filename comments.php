@@ -4,7 +4,7 @@
 	<?php else: ?>
 	<div class="social-post">
 		<div id="loading" style="display:none">
-			<input type="hidden" id="reload_url" value="<?php echo esc_url(site_url('?'.Social::$prefix.'action=reload_form&redirect_to='.get_permalink(get_the_ID()))); ?>" />
+			<input type="hidden" id="reload_url" value="<?php echo esc_url(site_url('?'.Social::$prefix.'action=reload_form&redirect_to='.get_permalink(get_the_ID()).'&post_id='.get_the_ID())); ?>" />
 			<?php _e('Logging In...', Social::$i18n); ?>
 		</div>
 		<?php if (comments_open()): ?>

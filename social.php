@@ -451,7 +451,7 @@ final class Social {
 		else if (!empty($_GET[Social::$prefix.'action'])) {
 			switch ($_GET[Social::$prefix.'action']) {
 				case 'reload_form':
-					$form = Social_Comment_Form::as_html();
+					$form = Social_Comment_Form::as_html(array(), $_GET['post_id'], false);
 					echo json_encode(array(
 						'result' => 'success',
 						'html' => $form,
@@ -1719,19 +1719,44 @@ final class Social_Comment_Form {
 	/**
 	 * Factory method with immediate render to HTML.
 	 * Also a facade for filtering WP's comment_form function.
+	 *
 	 * @static
+	 * @param  array  $args
+	 * @param  int    $post_id
+	 * @param  bool   $echo
 	 * @return string
 	 */
-	public static function as_html($args = array(), $post_id = null) {
+	public static function as_html($args = array(), $post_id = null, $echo = true) {
 		if (!$post_id) {
 			$post_id = get_the_ID();
 		}
 		$ins = self::get_instance($post_id, $args);
-		$ins->attach_hooks();
-		comment_form($ins->args, $ins->post_id);
+		$ins->attach_hooks($post_id);
+
+		if (!$echo) {
+			ob_start();
+			try
+			{
+				comment_form($ins->args, $ins->post_id);
+			}
+			catch (Exception $e)
+			{
+				ob_end_clean();
+				throw $e;
+			}
+
+			return ob_get_clean();
+		}
+		else {
+			comment_form($ins->args, $ins->post_id);
+		}
 	}
 	
-	public function attach_hooks() {
+	public function attach_hooks($post_id) {
+		global $post;
+		if ($post === null and $post_id !== null) {
+			$post = get_post($post_id);
+		}
 		// add_action('comment_form_before', array($this, 'before'));
 		add_action('comment_form_top', array($this, 'top'));
 		add_action('comment_form_defaults', array($this, 'configure_args'));
