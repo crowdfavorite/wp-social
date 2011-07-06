@@ -493,6 +493,11 @@ override submit styles in TwentyEleven theme */
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 12px;
 }
+#social a.comment-reply-link {
+	/* Override TwentyEleven theme
+	Remove background from reply links. */
+	background: transparent;
+}
 
 #social .social-actions {
 	margin-bottom: 8px;
