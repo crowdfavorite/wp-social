@@ -1718,7 +1718,6 @@ final class Social_Comment_Form {
 	
 	/**
 	 * Factory method with immediate render to HTML.
-	 * Also a facade for filtering WP's comment_form function.
 	 * @static
 	 * @return string
 	 */
@@ -1846,6 +1845,7 @@ final class Social_Comment_Form {
 			'label_submit' => __('Post It', Social::$i18n),
 			'title_reply' => __('Profile', Social::$i18n),
 			'title_reply_to' => __('Post a Reply to %s', Social::$i18n),
+			'cancel_reply_link' => __('cancel', Social::$i18n),
 			'comment_notes_after' => '',
 			'comment_notes_before' => '',
 			'fields' => $fields,
