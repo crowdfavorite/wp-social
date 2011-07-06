@@ -326,8 +326,8 @@ final class Social {
 		}
 		else {
 			$upload_dir = wp_upload_dir();
-			if (is_writable($upload_dir['baseurl'])) {
-				$this->cron_lock_dir = $upload_dir['baseurl'];
+			if (is_writable($upload_dir['basedir'])) {
+				$this->cron_lock_dir = $upload_dir['basedir'];
 			}
 			else if ($_GET['page'] == 'social.php') {
 				add_action('admin_notices', array($this, 'display_cron_lock_write_error'));
@@ -395,7 +395,12 @@ final class Social {
 	 */
 	public function display_cron_lock_write_error() {
 		$upload_dir = wp_upload_dir();
-		$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', Social::$i18n), SOCIAL_PATH, $upload_dir['basedir']);
+		if (isset($upload_dir['basedir'])) {
+			$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', Social::$i18n), SOCIAL_PATH, $upload_dir['basedir']);
+		}
+		else {
+			$message = sprintf(__('Social requires that %s is writable for CRON jobs.', Social::$i18n), SOCIAL_PATH);
+		}
 		echo '<div class="error"><p>'.$message.'</p></div>';
 	}
 
