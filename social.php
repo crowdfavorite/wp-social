@@ -261,15 +261,15 @@ final class Social {
 				add_action('admin_notices', array($this, 'display_deauthed'));
 			}
 			
-
-			wp_enqueue_style('social_admin', Social::$plugins_url.'assets/admin.css', array(), Social::$version, 'screen');
-			wp_enqueue_script('social_admin', Social::$plugins_url.'assets/social.js', array('jquery'), Social::$version, true);
+			$url = trailingslashit(Social::$plugins_url);
+			wp_enqueue_style('social_admin', $url.'assets/admin.css', array(), Social::$version, 'screen');
+			wp_enqueue_script('social_admin', $url.'assets/social.js', array('jquery'), Social::$version, true);
 
 		}
 		else {
-			wp_enqueue_style('social', Social::$plugins_url.'assets/comments-new.css', array(), Social::$version, 'screen');
+			wp_enqueue_style('social', $url.'assets/comments-new.css', array(), Social::$version, 'screen');
 			wp_enqueue_script('jquery');
-			wp_enqueue_script('social', Social::$plugins_url.'assets/social.js', array('jquery'), Social::$version, true);
+			wp_enqueue_script('social', $url.'assets/social.js', array('jquery'), Social::$version, true);
 		}
 
 		if (version_compare(PHP_VERSION, '5.2.1', '<')) {
@@ -1980,7 +1980,6 @@ class Social_Comment_Form {
 			}
 			$html .= '
 			</select>';
-		// Logged into WordPress, but not other services
 		}
 		else {
 			global $post;
