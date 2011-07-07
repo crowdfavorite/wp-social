@@ -478,6 +478,7 @@ override submit styles in TwentyEleven theme */
 #social .social-children {
 	margin: 0;
 	padding: 0;
+	zoom: 1;
 }
 #social .social-children li {
 	list-style: none;
@@ -521,17 +522,17 @@ override submit styles in TwentyEleven theme */
 }
 #social .social-comment-meta {
 	background: url('sprite-y-24-icons.png') no-repeat;
-	display: block;
 	line-height: 16px;
+	padding-right: 20px;
 	position: absolute;
 	right: 0;
 	top: 2px;
 	white-space: nowrap;
 }
 #social .social-comment-meta .social-posted-from a,
-#social .social-comment-meta .social-posted-from{
-	float: right;
-	display: block;
+#social .social-comment-meta .social-posted-from {
+	position: absolute;
+	right: 0;
 	width: 16px;
 	height: 16px;
 	margin-left: 5px;
