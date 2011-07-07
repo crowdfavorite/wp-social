@@ -274,6 +274,12 @@ override submit styles in TwentyEleven theme */
 	background: url(social.png) 0 -150px no-repeat;
 	display: block;
 	padding-left: 21px;
+	/**
+	 * @bugfix hasLayout fix
+	 * @affected	IE6
+	 * Keeps background from showing up twice.
+	 */
+	zoom: 1;
 }
 #social .social-facebook-icon {
     background-position: 0 -250px;
