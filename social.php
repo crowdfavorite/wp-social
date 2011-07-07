@@ -1248,8 +1248,6 @@ final class Social {
 ?>
 <li class="social-comment social-clearfix social-<?php echo $comment_type; ?>" id="li-comment-<?php comment_ID(); ?>">
 	<div class="social-comment-inner social-clearfix" id="comment-<?php comment_ID(); ?>">
-		
-		
 		<div class="social-comment-header">
 			<div class="social-comment-author vcard">
 				<?php switch ($comment_type) : 
@@ -1285,8 +1283,9 @@ final class Social {
 			<?php endif; ?>
 			<?php comment_text(); ?>
 		</div>
-		<div class="social-actions">
+		<div class="social-actions entry-meta">
 			<?php comment_reply_link(array_merge($args, array('depth' => $depth, 'max_depth' => $args['max_depth']))); ?>
+			<?php edit_comment_link(__('Edit', Social::$i18n), ' &middot; <span class="comment-edit-link">', '</span>'); ?>
 		</div><!-- .reply -->
 	
 	</div><!-- #comment-##  -->
