@@ -1285,7 +1285,7 @@ final class Social {
 		</div>
 		<div class="social-actions entry-meta">
 			<?php comment_reply_link(array_merge($args, array('depth' => $depth, 'max_depth' => $args['max_depth']))); ?>
-			<?php edit_comment_link(__('Edit', Social::$i18n), ' &middot; <span class="comment-edit-link">', '</span>'); ?>
+			<?php edit_comment_link(__('Edit', Social::$i18n), '<span class="comment-edit-link"> &middot; ', '</span>'); ?>
 		</div><!-- .reply -->
 	
 	</div><!-- #comment-##  -->
