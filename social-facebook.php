@@ -144,10 +144,11 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 				if (count($response->data)) {
 					$results = array();
 					foreach ($response->data as $result) {
-						if (!in_array($result->id, array_values($post_comments))) {
-							$post_comments[] = $result->id;
-							$results[] = $result;
+						if (in_array($result->id, array_values($post_comments)) or in_array($result->id, array_values($broadcasted_ids))) {
+							continue;
 						}
+						$post_comments[] = $result->id;
+						$results[] = $result;
 					}
 				}
 			}
@@ -175,10 +176,11 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 
 							if (count($response->data)) {
 								foreach ($response->data as $comment) {
-									if (!in_array($comment->id, array_values($post_comments))) {
-										$post_comments[] = $comment->id;
-										$results[] = $comment;
+									if (in_array($comment->id, array_values($post_comments)) or in_array($comment->id, array_values($broadcasted_ids))) {
+										continue;
 									}
+									$post_comments[] = $comment->id;
+									$results[] = $comment;
 								}
 							}
 						}

@@ -223,18 +223,20 @@ twttr.anywhere(function(twitter) {
 						$tweets = $this->request($account, 'statuses/retweets/'.$broadcasted_ids[$account->user->id]);
 						if (count($tweets->response)) {
 							foreach ($tweets->response as $tweet) {
+								if (in_array($tweet->id, array_values($post_comments)) or in_array($tweet->id, array_values($broadcasted_ids))) {
+									continue;
+								}
+
 								if ($tweet->in_reply_to_status_id == $broadcasted_ids[$account->user->id]) {
-									if (!in_array($tweet->id, array_values($post_comments))) {
-										$post_comments[] = $tweet->id;
-										$results[$tweet->id] = (object) array(
-											'id' => $tweet->id,
-											'from_user_id' => $tweet->user->id,
-											'from_user' => $tweet->user->screen_name,
-											'text' => $tweet->text,
-											'created_at' => $tweet->created_at,
-											'profile_image_url' => $tweet->user->profile_image_url,
-										);
-									}
+									$post_comments[] = $tweet->id;
+									$results[$tweet->id] = (object) array(
+										'id' => $tweet->id,
+										'from_user_id' => $tweet->user->id,
+										'from_user' => $tweet->user->screen_name,
+										'text' => $tweet->text,
+										'created_at' => $tweet->created_at,
+										'profile_image_url' => $tweet->user->profile_image_url,
+									);
 								}
 							}
 						}
@@ -245,19 +247,21 @@ twttr.anywhere(function(twitter) {
 						));
 						if (count($tweets->response)) {
 							foreach ($tweets->response as $tweet) {
+								if (in_array($tweet->id, array_values($post_comments)) or in_array($tweet->id, array_values($broadcasted_ids))) {
+									continue;
+								}
+
 								if ($tweet->in_reply_to_status_id == $broadcasted_ids[$account->user->id]) {
-									if (!in_array($tweet->id, array_values($post_comments))) {
-										if (!isset($results[$tweet->id])) {
-											$post_comments[] = $tweet->id;
-											$results[$tweet->id] = (object) array(
-												'id' => $tweet->id,
-												'from_user_id' => $tweet->user->id,
-												'from_user' => $tweet->user->screen_name,
-												'text' => $tweet->text,
-												'created_at' => $tweet->created_at,
-												'profile_image_url' => $tweet->user->profile_image_url,
-											);
-										}
+									if (!isset($results[$tweet->id])) {
+										$post_comments[] = $tweet->id;
+										$results[$tweet->id] = (object) array(
+											'id' => $tweet->id,
+											'from_user_id' => $tweet->user->id,
+											'from_user' => $tweet->user->screen_name,
+											'text' => $tweet->text,
+											'created_at' => $tweet->created_at,
+											'profile_image_url' => $tweet->user->profile_image_url,
+										);
 									}
 								}
 							}
@@ -275,11 +279,13 @@ twttr.anywhere(function(twitter) {
 
 			if (count($response->results)) {
 				foreach ($response->results as $result) {
-					if (!in_array($result->id, array_values($post_comments))) {
-						if (!isset($results[$result->id])) {
-							$post_comments[] = $result->id;
-							$results[$result->id] = $result;
-						}
+					if (in_array($result->id, array_values($post_comments)) or in_array($result->id, array_values($broadcasted_ids))) {
+						continue;
+					}
+					
+					if (!isset($results[$result->id])) {
+						$post_comments[] = $result->id;
+						$results[$result->id] = $result;
 					}
 				}
 			}
