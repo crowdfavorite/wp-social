@@ -1953,20 +1953,29 @@ class Social_Comment_Form {
 
 	public function get_logged_in_management_controls() {
 		$html = '';
+		$accounts = array();
 		if (count(Social::$combined_services)) {
+			foreach (Social::$combined_services as $key => $service) {
+				$_accounts = Social::$services[$key]->accounts();
+				if (isset(Social::$global_services[$key])) {
+					foreach (Social::$global_services[$key]->accounts() as $id => $account) {
+						$_accounts[$id] = $account;
+					}
+				}
+
+				if (count($_accounts)) {
+					$accounts[$key] = $_accounts;
+				}
+			}
+		}
+		if (count($accounts)) {
 			$html .= '
 			<select class="social-select" id="post_accounts" name="'.Social::$prefix.'post_account">
 				<option value="">'.__('WordPress Account', Social::$i18n).'</option>';
-			foreach (Social::$combined_services as $key => $service) {
-				$accounts = Social::$services[$key]->accounts();
-				if (isset(Social::$global_services[$key])) {
-					foreach (Social::$global_services[$key]->accounts() as $id => $account) {
-						$accounts[$id] = $account;
-					}
-				}
-				if (count($accounts)) {
+			foreach ($accounts as $key => $_accounts) {
+				if (count($_accounts)) {
 					$html .= '<optgroup label="'.__(ucfirst($key), Social::$i18n).'">';
-					foreach ($accounts as $account) {
+					foreach ($_accounts as $account) {
 						$html .= '<option value="'.$account->user->id.'" rel="'.$service->profile_avatar($account).'">'.$service->profile_name($account).'</option>';
 					}
 					$html .= '</optgroup>';
@@ -1976,10 +1985,9 @@ class Social_Comment_Form {
 			</select>';
 		}
 		else {
-			global $post;
 			$html .= '<input type="hidden" name="'.Social::$prefix.'post_account" value="" />';
 			$user = $this->current_user;
-			$html .= sprintf(__('Logged in as <a href="%1$s">%2$s</a>. <a href="%3$s" title="Log out of this account">Log out?</a>', Social::$i18n), admin_url('profile.php'), $user->display_name, wp_logout_url(apply_filters('the_permalink', get_permalink($post->ID))));
+			$html .= sprintf(__('Logged in as <a href="%1$s">%2$s</a>.', Social::$i18n), admin_url('profile.php'), $user->display_name);
 		}
 		return $html;
 	}

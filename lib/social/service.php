@@ -73,6 +73,7 @@ abstract class Social_Service {
 		}
 
 		$this->accounts[$account->user->id] = $account;
+		error_log(print_r($this->accounts, true));
 		return $this;
 	}
 
