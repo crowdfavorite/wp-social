@@ -1973,6 +1973,7 @@ class Social_Comment_Form {
 			<select class="social-select" id="post_accounts" name="'.Social::$prefix.'post_account">
 				<option value="">'.__('WordPress Account', Social::$i18n).'</option>';
 			foreach ($accounts as $key => $_accounts) {
+				$service = Social::$combined_services[$key];
 				if (count($_accounts)) {
 					$html .= '<optgroup label="'.__(ucfirst($key), Social::$i18n).'">';
 					foreach ($_accounts as $account) {
