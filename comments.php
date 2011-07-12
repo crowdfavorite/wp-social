@@ -1,4 +1,7 @@
 <div id="social">
+<?php
+ob_start();
+?>
 	<?php if (post_password_required()): ?>
 	<p class="nopassword"><?php _e('This post is password protected. Enter the password to view any comments.', Social::$i18n); ?></p>
 	<?php else: ?>
@@ -21,7 +24,11 @@
 		<p class="nocomments"><?php _e('Comments are closed.', Social::$i18n); ?></p>
 		<?php endif; ?>
 	</div>
+<?php
+$form = ob_get_clean();
 
+ob_start();
+?>
 	<div id="social-tabs-comments">
 		<?php if (have_comments()): ?>
 		<?php
@@ -72,4 +79,15 @@
 	</div>
 	<!-- #Comments Tabs -->
 	<?php endif; ?>
+<?php
+$comments = ob_get_clean();
+
+$order = apply_filters('social_comment_block_order', array('form', 'comments'));
+
+foreach ($order as $block) {
+	if (isset($$block)) {
+		echo $$block;
+	}
+}
+?>
 </div>

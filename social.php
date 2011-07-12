@@ -1037,6 +1037,9 @@ final class Social {
 											$response = $service->status_update($account, $content);
 											if (!$service->deauthed($response, $account)) {
 												$ids[$key]["{$account->user->id}"] = $response->response->id;
+												// pass response to anyone else who wants it
+												do_action(Social::$prefix.'broadcast_response', $response);
+												do_action(Social::$prefix.$key.'_broadcast_response', $response);
 											}
 											else {
 												if ($response === false or ($response == 'deauthed')) {
@@ -1436,6 +1439,10 @@ final class Social {
 			fwrite($fp, time());
 		}
 		else {
+
+// TODO - here we want to check how old the lock is, unlock if past expiration
+// no logging needed here
+
 			$cron_lock_errors = get_option(Social::$prefix.'cron_lock_errors', array());
 			if (!isset($cron_lock_errors[$cron])) {
 				$cron_lock_errors[$cron] = true;
@@ -2020,7 +2027,9 @@ add_action('init', array($social, 'request_handler'), 2);
 add_action('do_meta_boxes', array($social, 'do_meta_boxes'));
 add_action('save_post', array($social, 'set_broadcast_meta_data'), 10, 2);
 add_action('comment_post', array($social, 'comment_post'));
-add_action('social_aggregate_comments', array($social, 'aggregate_comments'));
+add_action('social_aggregate_comments_core', array($social, 'aggregate_comments_core'));
+add_action('social_cron_15_core', array($social, 'cron_15_core'));
+add_action('social_cron_60_core', array($social, 'cron_60_core'));
 add_action('publish_post', array($social, 'publish_post'));
 add_action('show_user_profile', array($social, 'show_user_profile'));
 

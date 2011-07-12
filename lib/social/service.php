@@ -167,6 +167,7 @@ abstract class Social_Service {
 	public function format_content($post, $format) {
 		// Filter the format
 		$format = apply_filters(Social::$prefix.'broadcast_format', $format);
+		$format = apply_filters(Social::$prefix.$this->service.'_broadcast_format', $format);
 
 		$_format = explode(' ', $format);
 		$available = $this->max_broadcast_length() - count($format);
@@ -174,7 +175,9 @@ abstract class Social_Service {
 			$content = '';
 			switch ($token) {
 				case '{url}':
-					$content = get_permalink($post->ID);
+					$url = apply_filters(Social::$prefix.'broadcast_permalink', get_permalink($post->ID), $post);
+					$url = apply_filters(Social::$prefix.$this->service.'_broadcast_permalink', $url, $post);
+					$content = $url;
 				break;
 				case '{title}':
 					$content = $post->post_title;
@@ -199,6 +202,7 @@ abstract class Social_Service {
 
 			// Filter the content
 			$content = apply_filters(Social::$prefix.'format_content', $content, $post, $format);
+			$content = apply_filters(Social::$prefix.$this->service.'_format_content', $content, $post, $format);
 
 			foreach ($_format as $haystack) {
 				if (strpos($haystack, $token) !== false) {
