@@ -508,12 +508,20 @@ final class Social {
                     exit;
                 break;
 				case 'reload_form':
-					$form = Social_Comment_Form::as_html(array(), $_GET['post_id'], false);
-					echo json_encode(array(
-						'result' => 'success',
-						'html' => $form,
-						'disconnect_url' => wp_loginout('', false)
-					));
+                    if (!is_user_logged_in()) {
+                        echo json_encode(array(
+                            'result' => 'error',
+                            'html' => 'not logged in',
+                        ));
+                    }
+                    else {
+                        $form = Social_Comment_Form::as_html(array(), $_GET['post_id'], false);
+                        echo json_encode(array(
+                            'result' => 'success',
+                            'html' => $form,
+                            'disconnect_url' => wp_loginout('', false)
+                        ));
+                    }
 					exit;
 				break;
                 case 'cron_15':

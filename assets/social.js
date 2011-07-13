@@ -12,8 +12,8 @@
 		var child = null;
 		var polling = null;
 		$('.social-login').click(function(e){
-			e.preventDefault();
-
+            e.preventDefault();
+            
 			var $this = $(this);
 			child = window.open($(this).attr('href'), "ServiceAssociate", 'width=700,height=400');
 			polling = setInterval(function(){
@@ -25,18 +25,12 @@
 					}
 					else {
 						var $parent = $this.closest('.social-post');
-						$parent.find('form').hide();
-						$parent.find('#loading').fadeIn();
 						$.get($parent.find('#reload_url').val(), {}, function(response){
 							if (response.result == 'success') {
 								// Add logged-in body class since we're not going to be refreshing the page.
 								$('body').addClass('logged-in');
 								$parent.html(response.html);
 								$('#primary').find('#social_login').parent().html(response.disconnect_url);
-							}
-							else {
-								$parent.find('#loading').hide();
-								$parent.find('form').fadeIn();
 							}
 						}, 'json');
 					}
