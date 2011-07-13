@@ -135,6 +135,8 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 		}
 
 		// Search by URL
+        $urls = apply_filters(Social::$prefix.'search_urls', $urls);
+        $urls = apply_filters(Social::$prefix.$this->service.'_search_urls', $urls);
 		foreach ($urls as $url) {
 			$url = 'https://graph.facebook.com/search?type=post&q='.$url;
 			$request = wp_remote_get($url);

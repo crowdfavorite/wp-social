@@ -272,6 +272,8 @@ twttr.anywhere(function(twitter) {
 		}
 
 		// Search by URL
+        $urls = apply_filters(Social::$prefix.'search_urls', $urls);
+        $urls = apply_filters(Social::$prefix.$this->service.'_search_urls', $urls);
 		$url = 'http://search.twitter.com/search.json?q='.implode('+OR+', $urls);
 		$request = wp_remote_get($url);
 		if (!is_wp_error($request)) {
