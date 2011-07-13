@@ -981,6 +981,22 @@ final class Social {
 	}
 
 	/**
+	 * Attempts to rebroadcast posts.
+	 *
+	 * @return void
+	 */
+	public function retry_broadcast() {
+		// Find posts that require a rebroadcast
+		$retry_ids = get_option(Social::$prefix.'retry_broadcast');
+		if ($retry_ids !== false) {
+			foreach ($retry_ids as $id) {
+				$post = get_post($id);
+				$this->broadcast($post);
+			}
+		}
+	}
+
+	/**
 	 * Broadcast the post to Twitter and/or Facebook.
 	 *
 	 * @param  object  $post
@@ -1479,15 +1495,6 @@ final class Social {
 	 */
 	public function cron_15_core() {
 		if ($this->cron_lock('cron_15')) {
-			// Find posts that require a rebroadcast
-			$retry_ids = get_option(Social::$prefix.'retry_broadcast');
-			if ($retry_ids !== false) {
-				foreach ($retry_ids as $id) {
-					$post = get_post($id);
-					$this->broadcast($post);
-				}
-			}
-
 			do_action(Social::$prefix.'cron_15');
 		}
 		$this->cron_unlock('cron_15');
@@ -2030,6 +2037,7 @@ add_action('comment_post', array($social, 'comment_post'));
 add_action('social_aggregate_comments_core', array($social, 'aggregate_comments_core'));
 add_action('social_cron_15_core', array($social, 'cron_15_core'));
 add_action('social_cron_60_core', array($social, 'cron_60_core'));
+add_action('social_cron_15', array($social, 'retry_broadcast'));
 add_action('publish_post', array($social, 'publish_post'));
 add_action('show_user_profile', array($social, 'show_user_profile'));
 
