@@ -1010,10 +1010,18 @@ final class Social {
 		// Find posts that require a rebroadcast
 		$retry_ids = get_option(Social::$prefix.'retry_broadcast');
 		if ($retry_ids !== false) {
-			foreach ($retry_ids as $id) {
+			foreach ($retry_ids as $id => $attempts) {
 				$post = get_post($id);
-				$this->broadcast($post);
+                if ($attempts < 3) {
+				    $this->broadcast($post);
+                    ++$retry_ids[$id];
+                }
+                else if ($attempts === 3) {
+                    unset($retry_ids[$id]);
+                }
 			}
+
+            update_option(Social::$prefix.'retry_broadcast', $retry_ids);
 		}
 	}
 
@@ -1117,7 +1125,9 @@ final class Social {
 			        update_post_meta($post->ID, Social::$prefix.'broadcast_error', 'true');
 
 			        $retry_broadcast = get_option(Social::$prefix.'retry_broadcast');
-			        $retry_broadcast[] = $post->ID;
+                    if (!isset($retry_broadcast[$post->ID])) {
+                        $retry_broadcast[$post->ID] = 0;
+                    }
 			        update_option(Social::$prefix.'retry_broadcast', $retry_broadcast);
 		        }
 		        else {
