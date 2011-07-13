@@ -1017,6 +1017,14 @@ final class Social {
                     ++$retry_ids[$id];
                 }
                 else if ($attempts === 3) {
+                    $author = get_userdata($post->post_author);
+
+                    $message  = 'Hello,'."\n\n";
+                    $message .= wordwrap('Social has tried to broadcast the blog post "'.$post->post_title.'" three
+                    times and has failed all three times.', 60)."\n\n";
+
+                    wp_mail($author->user_email, get_bloginfo('name').': Failed to broadcast post with Social.', $message);
+
                     unset($retry_ids[$id]);
                 }
 			}
