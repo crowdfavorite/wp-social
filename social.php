@@ -310,9 +310,6 @@ final class Social {
 		}
 
 		// Schedule the CRON?
-		if (wp_next_scheduled(Social::$prefix.'aggregate_comments_core') === false) {
-			wp_schedule_event(time() + 3600, 'hourly', Social::$prefix.'aggregate_comments_core');
-		}
 		if (wp_next_scheduled(Social::$prefix.'cron_15_core') === false) {
 			wp_schedule_event(time() + 900, 'every15min', Social::$prefix.'cron_15_core');
 		}
@@ -463,11 +460,21 @@ final class Social {
 					exit;
 				break;
 				case 'aggregate_comments':
+                    if (!wp_verify_nonce($_GET['_wpnonce'], 'aggregate_comments')) {
+                        wp_die('Oops, please try again.');
+                    }
+
 					if ($this->cron_lock('aggregate_comments')) {
 						$this->aggregate_comments();
 						do_action(Social::$prefix.'aggregate_comments');
 					}
 					$this->cron_unlock('aggregate_comments');
+				break;
+                case 'retry_broadcast':
+                    if (!wp_verify_nonce($_GET['_wpnonce'], 'retry_broadcast')) {
+                        wp_die('Oops, please try again.');
+                    }
+                    $this->retry_broadcast();
 				break;
 			}
 		}
@@ -985,6 +992,20 @@ final class Social {
 	 *
 	 * @return void
 	 */
+	public function retry_broadcast_core() {
+		$url = wp_nonce_url(site_url(Social::$prefix.'action=retry_broadcast'), 'retry_broadcast');
+		wp_remote_get($url, array(
+			'timeout' => 0.01,
+			'blocking' => false,
+			'sslverify' => apply_filters('https_local_ssl_verify', true)
+		));
+	}
+
+	/**
+	 * Attempts to rebroadcast posts.
+	 *
+	 * @return void
+	 */
 	public function retry_broadcast() {
 		// Find posts that require a rebroadcast
 		$retry_ids = get_option(Social::$prefix.'retry_broadcast');
@@ -1487,7 +1508,12 @@ final class Social {
 	 * Handles the file locking for aggregate_comments.
 	 */
 	public function aggregate_comments_core() {
-		wp_remote_post(site_url(Social::$prefix.'action=aggregate_comments'), array('timeout' => 0.01, 'blocking' => false, 'sslverify' => apply_filters('https_local_ssl_verify', true)));
+		$url = wp_nonce_url(site_url(Social::$prefix.'action=aggregate_comments'), 'aggregate_comments');
+		wp_remote_get($url, array(
+            'timeout' => 0.01,
+            'blocking' => false,
+            'sslverify' => apply_filters('https_local_ssl_verify', true)
+        ));
 	}
 
 	/**
@@ -2034,10 +2060,10 @@ add_action('init', array($social, 'request_handler'), 2);
 add_action('do_meta_boxes', array($social, 'do_meta_boxes'));
 add_action('save_post', array($social, 'set_broadcast_meta_data'), 10, 2);
 add_action('comment_post', array($social, 'comment_post'));
-add_action('social_aggregate_comments_core', array($social, 'aggregate_comments_core'));
 add_action('social_cron_15_core', array($social, 'cron_15_core'));
 add_action('social_cron_60_core', array($social, 'cron_60_core'));
-add_action('social_cron_15', array($social, 'retry_broadcast'));
+add_action('social_cron_15', array($social, 'retry_broadcast_core'));
+add_action('social_cron_60', array($social, 'aggregate_comments_core'));
 add_action('publish_post', array($social, 'publish_post'));
 add_action('show_user_profile', array($social, 'show_user_profile'));
 
