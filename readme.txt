@@ -107,16 +107,17 @@ guarantee that Tweets will be aggregated if any other URL shortening service is 
 
 = What CRON jobs are built into Social? =
 
-Currently Social contains 3 CRON jobs:
+Currently Social contains 2 CRON jobs:
 
-1. `social_aggregate_comments`
-2. `social_cron_15`
-3. `social_cron_60`
+1. `cron_15`
+2. `cron_60`
 
-= How can I manually call Social's CRON jobs? =
+= How can I override Social's internal CRON service with system CRON jobs? =
 
-Simple, just make a request to `http://example.com/?social_cron={key}` where "{key}" is the name of the CRON you would
-like to call.
+If you want to run system CRON jobs and disable Social's built in CRON jobs then do the following:
+
+1. Go to Social's settings page.
+2. 
 
 = How can I hook into a CRON for extra functionality? =
 

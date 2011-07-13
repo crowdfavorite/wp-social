@@ -143,7 +143,7 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 			if (!is_wp_error($request)) {
 				$response = json_decode($request['body']);
 
-				if (count($response->data)) {
+				if (is_array($response->data) and count($response->data)) {
 					$results = array();
 					foreach ($response->data as $result) {
 						if (in_array($result->id, array_values($post_comments)) or in_array($result->id, array_values($broadcasted_ids))) {
@@ -176,7 +176,7 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 						if (!is_wp_error($request)) {
 							$response = json_decode($request['body']);
 
-							if (count($response->data)) {
+							if (is_array($response->data) and count($response->data)) {
 								foreach ($response->data as $comment) {
 									if (in_array($comment->id, array_values($post_comments)) or in_array($comment->id, array_values($broadcasted_ids))) {
 										continue;

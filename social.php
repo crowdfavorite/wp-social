@@ -71,6 +71,7 @@ final class Social {
 		'installed_version' => false,
 		'broadcast_format' => '{title}: {content} {url}',
 		'twitter_anywhere_api_key' => '',
+        'system_cron_api_key' => '',
 	);
 	
 	/**
@@ -293,6 +294,9 @@ final class Social {
 					case 'installed_version':
 						$value = Social::$version;
 					break;
+                    case 'system_cron_api_key':
+                        $value = wp_generate_password(16, false);
+                    break;
 					default:
 						$value = $default;
 					break;
@@ -310,12 +314,14 @@ final class Social {
 		}
 
 		// Schedule the CRON?
-		if (wp_next_scheduled(Social::$prefix.'cron_15_core') === false) {
-			wp_schedule_event(time() + 900, 'every15min', Social::$prefix.'cron_15_core');
-		}
-		if (wp_next_scheduled(Social::$prefix.'cron_60_core') === false) {
-			wp_schedule_event(time() + 3600, 'hourly', Social::$prefix.'cron_60_core');
-		}
+        if (get_option(Social::$prefix.'system_crons', '0') == '0') {
+            if (wp_next_scheduled(Social::$prefix.'cron_15_core') === false) {
+                wp_schedule_event(time() + 900, 'every15min', Social::$prefix.'cron_15_core');
+            }
+            if (wp_next_scheduled(Social::$prefix.'cron_60_core') === false) {
+                wp_schedule_event(time() + 3600, 'hourly', Social::$prefix.'cron_60_core');
+            }
+        }
 
 		// CRON Lock Location
 		if (is_writable(SOCIAL_PATH)) {
@@ -406,12 +412,29 @@ final class Social {
 	 */
 	public function request_handler() {
 		if (isset($_GET[Social::$prefix.'cron'])) {
-			$schedule = wp_get_schedule($_GET[Social::$prefix.'cron']);
-			$timestamp = wp_next_scheduled($_GET[Social::$prefix.'cron']);
-			if (!$schedule !== false and $timestamp !== false) {
-				wp_reschedule_event(time(), $schedule, $_GET[Social::$prefix.'cron']);
-				spawn_cron();
-			}
+            $api_key_verified = false;
+            if (isset($_GET['api_key'])) {
+                if ($_GET['api_key'] == Social::option('system_cron_api_key')) {
+                    $api_key_verified = true;
+                }
+            }
+
+            if (!$api_key_verified and !wp_verify_nonce($_GET['_wpnonce'])) {
+                wp_die('Oops, please try again.');
+            }
+
+            if (get_option(Social::$prefix.'system_crons', '0') == '0') {
+                $schedule = wp_get_schedule($_GET[Social::$prefix.'cron']);
+                $timestamp = wp_next_scheduled($_GET[Social::$prefix.'cron']);
+                if (!$schedule !== false and $timestamp !== false) {
+                    wp_reschedule_event(time(), $schedule, $_GET[Social::$prefix.'cron']);
+                    spawn_cron();
+                }
+            }
+            else {
+                $method = $_GET[Social::$prefix.'cron'].'_core';
+                $this->$method();
+            }
 		}
 		else if (!empty($_POST[Social::$prefix.'action'])) {
 			if (!wp_verify_nonce($_POST['_wpnonce'])) {
@@ -443,12 +466,31 @@ final class Social {
 						update_option(Social::$prefix.'twitter_anywhere_api_key', $_POST[Social::$prefix.'twitter_anywhere_api_key']);
 					}
 
+                    // System CRON
+                    if (isset($_POST[Social::$prefix.'system_crons'])) {
+                        update_option(Social::$prefix.'system_crons', $_POST[Social::$prefix.'system_crons']);
+
+                        // Unschedule the CRONs
+                        if (($timestamp = wp_next_scheduled(Social::$prefix.'cron_15_core')) !== false) {
+                            wp_unschedule_event($timestamp, Social::$prefix.'cron_15_core');
+                        }
+                        if (($timestamp = wp_next_scheduled(Social::$prefix.'cron_60_core')) !== false) {
+                            wp_unschedule_event($timestamp, Social::$prefix.'cron_60_core');
+                        }
+                    }
+
 					wp_redirect(Social_Helper::settings_url(array('saved' => 'true')));
 					exit;
 				break;
 			}
 		}
 		else if (!empty($_GET[Social::$prefix.'action'])) {
+            $api_key_verified = false;
+            if (isset($_GET['api_key'])) {
+                if ($_GET['api_key'] == Social::option('system_cron_api_key')) {
+                    $api_key_verified = true;
+                }
+            }
 			switch ($_GET[Social::$prefix.'action']) {
 				case 'reload_form':
 					$form = Social_Comment_Form::as_html(array(), $_GET['post_id'], false);
@@ -459,19 +501,35 @@ final class Social {
 					));
 					exit;
 				break;
-				case 'aggregate_comments':
-                    if (!wp_verify_nonce($_GET['_wpnonce'], 'aggregate_comments')) {
+                case 'cron_15':
+                    if (!$api_key_verified and !wp_verify_nonce($_GET['_wpnonce'])) {
                         wp_die('Oops, please try again.');
                     }
 
-					if ($this->cron_lock('aggregate_comments')) {
-						$this->aggregate_comments();
-						do_action(Social::$prefix.'aggregate_comments');
-					}
-					$this->cron_unlock('aggregate_comments');
+                    if ($this->cron_lock('cron_15')) {
+                        do_action(Social::$prefix.'cron_15');
+                    }
+                    $this->cron_unlock('cron_15');
+                break;
+                case 'cron_60':
+                    if (!$api_key_verified and !wp_verify_nonce($_GET['_wpnonce'])) {
+                        wp_die('Oops, please try again.');
+                    }
+
+                    if ($this->cron_lock('cron_60')) {
+                        do_action(Social::$prefix.'cron_60');
+                    }
+                    $this->cron_unlock('cron_15');
+                break;
+				case 'aggregate_comments':
+                    if (!$api_key_verified) {
+                        wp_die('Oops, please try again.');
+                    }
+
+                    do_action(Social::$prefix.'aggregate_comments');
 				break;
                 case 'retry_broadcast':
-                    if (!wp_verify_nonce($_GET['_wpnonce'], 'retry_broadcast')) {
+                    if (!$api_key_verified and !wp_verify_nonce($_GET['_wpnonce'])) {
                         wp_die('Oops, please try again.');
                     }
                     $this->retry_broadcast();
@@ -674,6 +732,7 @@ final class Social {
 	 * Displays the option form for the WP-Admin user.
 	 */
 	public function admin_options_form() {
+        $system_crons = get_option(Social::$prefix.'system_crons', '0');
 ?>
 <form id="setup" method="post" action="<?php echo admin_url(); ?>">
 <?php wp_nonce_field(); ?>
@@ -752,6 +811,28 @@ final class Social {
 	API key here. (How do I get an API key? <a href="http://dev.twitter.com/anywhere" target="_blank">Click Here</a>)</p>
 
 	<p><input type="text" class="text" name="<?php echo Social::$prefix.'twitter_anywhere_api_key'; ?>" id="<?php echo Social::$prefix.'twitter_anywhere_api_key'; ?>" style="width:400px" value="<?php echo Social::option('twitter_anywhere_api_key'); ?>" /></p>
+
+    <h3><?php _e('Disable Internal CRON Mechanism', Social::$i18n); ?></h3>
+	<p>If you disable this feature, Social's CRON jobs will not run until you setup the correct system CRON jobs.</p>
+
+    <p>
+        <label for="system_crons_yes">
+            <input type="radio" name="<?php echo Social::$prefix.'system_crons'; ?>" value="1" id="system_crons_yes" style="position:relative;top:-1px"<?php echo $system_crons == '1' ? ' checked="checked"' : ''; ?> />
+            Yes
+        </label>
+    </p>
+	<p>
+        <label for="system_crons_no">
+            <input type="radio" name="<?php echo Social::$prefix.'system_crons'; ?>" value="0" id="system_crons_no" style="position:relative;top:-1px"<?php echo $system_crons == '0' ? ' checked="checked"' : ''; ?> />
+            No
+        </label>
+    </p>
+
+    <?php if ($system_crons == '1'): ?>
+    <p>For your system CRON to run correctly, make sure it is pointing towards a URL that looks something like the
+    following:</p>
+    <p><?php echo site_url('?'.Social::$prefix.'cron=cron_15&api_key='.Social::option('system_cron_api_key')); ?></p>
+    <?php endif; ?>
 
 	<p class="submit" style="clear:both">
 		<input type="submit" name="submit" value="Save Settings" class="button-primary" />
@@ -832,21 +913,23 @@ final class Social {
 				if (!count($errors)) {
 					$broadcast_accounts = array();
 					foreach ($services as $key => $service) {
-						$accounts = $_POST[Social::$prefix.$key.'_accounts'];
-						$_accounts = array();
-						foreach ($accounts as $account) {
-							$account = explode('|', $account);
+                        if (isset($_POST[Social::$prefix.$key.'_accounts'])) {
+                            $accounts = $_POST[Social::$prefix.$key.'_accounts'];
+                            $_accounts = array();
+                            foreach ($accounts as $account) {
+                                $account = explode('|', $account);
 
-							$_accounts[] = array(
-								'id' => $account[0],
-								'global' => (isset($account[1]) ? true : false)
-							);
-						}
+                                $_accounts[] = array(
+                                    'id' => $account[0],
+                                    'global' => (isset($account[1]) ? true : false)
+                                );
+                            }
 
-						if (!empty($_accounts)) {
-							$broadcast_accounts[$key] = $_accounts;
-						}
-						update_post_meta($post_id, Social::$prefix.$key.'_content', $_POST[Social::$prefix.$key.'_content']);
+                            if (!empty($_accounts)) {
+                                $broadcast_accounts[$key] = $_accounts;
+                            }
+                            update_post_meta($post_id, Social::$prefix.$key.'_content', $_POST[Social::$prefix.$key.'_content']);
+                        }
 					}
 					update_post_meta($post_id, Social::$prefix.'broadcast_accounts', $broadcast_accounts);
 
@@ -993,7 +1076,7 @@ final class Social {
 	 * @return void
 	 */
 	public function retry_broadcast_core() {
-		$url = wp_nonce_url(site_url(Social::$prefix.'action=retry_broadcast'), 'retry_broadcast');
+		$url = str_replace('&amp;', '&', wp_nonce_url(site_url(Social::$prefix.'action=retry_broadcast')));
 		wp_remote_get($url, array(
 			'timeout' => 0.01,
 			'blocking' => false,
@@ -1515,7 +1598,7 @@ final class Social {
 	 * @return bool
 	 */
 	private function cron_unlock($cron) {
-		$file = trailingslashit($this->cron_lock_dir.$cron.'.txt');
+		$file = trailingslashit($this->cron_lock_dir).$cron.'.txt';
 		$fp = fopen($file, 'r+');
 		ftruncate($fp, 0);
 		flock($fp, LOCK_UN);
@@ -1526,7 +1609,14 @@ final class Social {
 	 * Handles the file locking for aggregate_comments.
 	 */
 	public function aggregate_comments_core() {
-		$url = wp_nonce_url(site_url(Social::$prefix.'action=aggregate_comments'), 'aggregate_comments');
+		do_action(Social::$prefix.'aggregate_comments');
+	}
+
+	/**
+	 * Handles the file locking for cron_15.
+	 */
+	public function cron_15_core() {
+        $url = str_replace('&amp;', '&', wp_nonce_url(site_url('?'.Social::$prefix.'action=cron_15')));
 		wp_remote_get($url, array(
             'timeout' => 0.01,
             'blocking' => false,
@@ -1535,23 +1625,15 @@ final class Social {
 	}
 
 	/**
-	 * Handles the file locking for cron_15.
-	 */
-	public function cron_15_core() {
-		if ($this->cron_lock('cron_15')) {
-			do_action(Social::$prefix.'cron_15');
-		}
-		$this->cron_unlock('cron_15');
-	}
-
-	/**
 	 * Handles the file locking for cron_60.
 	 */
 	public function cron_60_core() {
-		if ($this->cron_lock('cron_60')) {
-			do_action(Social::$prefix.'cron_60');
-		}
-		$this->cron_unlock('cron_60');
+        $url = str_replace('&amp;', '&', wp_nonce_url(site_url('?'.Social::$prefix.'action=cron_60')));
+		wp_remote_get($url, array(
+            'timeout' => 0.01,
+            'blocking' => false,
+            'sslverify' => apply_filters('https_local_ssl_verify', true)
+        ));
 	}
 
 	/**
@@ -1608,12 +1690,12 @@ final class Social {
 			else if ($timestamp >= 14400) {
 				$hours = 4;
 			}
-			else if ($timestamp >= 7200) {
+			else if ($timestamp >= 20) {
 				$hours = 2;
 			}
 
 			if (!isset($queued[$post->ID]) or $queued[$post->ID] < $hours) {
-				$queued[$post->ID] = (string) $hours;
+				$queued[$post->ID] = $hours;
 
 				$urls = array(
 					urlencode(site_url('?p='.$post->ID)),
@@ -1640,7 +1722,7 @@ final class Social {
 					foreach ($services as $key => $service) {
 						$results = $service->search_for_replies($post, $urls, (isset($broadcasted_ids[$key]) ? $broadcasted_ids[$key] : null));
 
-						// Results?
+                        // Results?
 						if (is_array($results)) {
 							$service->save_replies($post->ID, $results);
 						}
@@ -2082,6 +2164,7 @@ add_action('social_cron_15_core', array($social, 'cron_15_core'));
 add_action('social_cron_60_core', array($social, 'cron_60_core'));
 add_action('social_cron_15', array($social, 'retry_broadcast_core'));
 add_action('social_cron_60', array($social, 'aggregate_comments_core'));
+add_action('social_aggregate_comments', array($social, 'aggregate_comments'));
 add_action('publish_post', array($social, 'publish_post'));
 add_action('show_user_profile', array($social, 'show_user_profile'));
 

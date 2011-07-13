@@ -221,7 +221,7 @@ twttr.anywhere(function(twitter) {
 				foreach ($accounts['twitter'] as $account) {
 					if (isset($broadcasted_ids[$account->user->id])) {
 						$tweets = $this->request($account, 'statuses/retweets/'.$broadcasted_ids[$account->user->id]);
-						if (count($tweets->response)) {
+						if (is_array($tweets->response) and count($tweets->response)) {
 							foreach ($tweets->response as $tweet) {
 								if (in_array($tweet->id, array_values($post_comments)) or in_array($tweet->id, array_values($broadcasted_ids))) {
 									continue;
@@ -245,7 +245,7 @@ twttr.anywhere(function(twitter) {
 							'since_id' => $broadcasted_ids[$account->user->id],
 							'count' => 200
 						));
-						if (count($tweets->response)) {
+						if (is_array($tweets->response) and count($tweets->response)) {
 							foreach ($tweets->response as $tweet) {
 								if (in_array($tweet->id, array_values($post_comments)) or in_array($tweet->id, array_values($broadcasted_ids))) {
 									continue;
@@ -279,7 +279,7 @@ twttr.anywhere(function(twitter) {
 		if (!is_wp_error($request)) {
 			$response = json_decode($request['body']);
 
-			if (count($response->results)) {
+			if (is_array($response->results) and count($response->results)) {
 				foreach ($response->results as $result) {
 					if (in_array($result->id, array_values($post_comments)) or in_array($result->id, array_values($broadcasted_ids))) {
 						continue;
