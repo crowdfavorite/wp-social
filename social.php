@@ -373,7 +373,7 @@ final class Social {
 			else {
 				$url = admin_url('profile.php#social-networks');
 			}
-			$message = sprintf(__('To broadcast to Twitter or Facebook, please update your <a href="%s">Social settings</a>', Social::$i18n), $url);
+			$message = sprintf(__('To broadcast to Twitter or Facebook, please update your <a href="%s">Social settings</a>.', Social::$i18n), $url);
 			echo '<div class="error"><p>'.$message.'</p></div>';
 		}
 	}
