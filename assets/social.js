@@ -195,4 +195,11 @@
 		});
 	});
 
+    $('#social_regenerate_api_key').click(function(e){
+        e.preventDefault();
+        $.get($(this).attr('href'), {}, function(response) {
+            $('.social_api_key').html(response);
+        });
+    });
+
 })(jQuery);

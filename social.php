@@ -164,16 +164,21 @@ final class Social {
 	 * Sets and returns the option.
 	 *
 	 * @static
-	 * @param  string  $key    option key
-	 * @param  string  $value  option value
+	 * @param  string  $key     option key
+	 * @param  string  $value   option value
+     * @param  bool    $update  update system option?
 	 * @return array|void
 	 */
-	public function option($key, $value = null) {
+	public function option($key, $value = null, $update = false) {
 		if ($value === null) {
 			return (isset(Social::$options[$key]) ? Social::$options[$key] : null);
 		}
 
 		Social::$options[$key] = $value;
+
+        if ($update) {
+            update_option(Social::$prefix.$key, $value);
+        }
 	}
 
 	/**
@@ -492,6 +497,16 @@ final class Social {
                 }
             }
 			switch ($_GET[Social::$prefix.'action']) {
+                case 'regenerate_api_key':
+                    if (!wp_verify_nonce($_GET['_wpnonce'], 'regenerate_api_key')) {
+                        wp_die('Oops, please try again.');
+                    }
+
+                    $key = wp_generate_password(16, false);
+                    Social::option('system_cron_api_key', $key, true);
+                    echo $key;
+                    exit;
+                break;
 				case 'reload_form':
 					$form = Social_Comment_Form::as_html(array(), $_GET['post_id'], false);
 					echo json_encode(array(
@@ -829,9 +844,16 @@ final class Social {
     </p>
 
     <?php if ($system_crons == '1'): ?>
-    <p>For your system CRON to run correctly, make sure it is pointing towards a URL that looks something like the
+    <h4 style="margin-bottom:0">API Key</h4>
+    <p style="margin-top:0">This is the API key that your system CRON jobs will need to use:</p>
+    <p>
+        <strong class="<?php echo Social::$prefix.'api_key'; ?>"><?php echo Social::option('system_cron_api_key'); ?></strong><br />
+        <a href="<?php echo wp_nonce_url(admin_url('options-general.php?page=social.php&'.Social::$prefix.'action=regenerate_api_key'), 'regenerate_api_key'); ?>" rel="<?php echo Social::$prefix.'api_key'; ?>" id="<?php echo Social::$prefix.'regenerate_api_key'; ?>">Regenerate Key</a>
+    </p>
+    <h4 style="margin-bottom:0">Running System CRON</h4>
+    <p style="margin-top:0">For your system CRON to run correctly, make sure it is pointing towards a URL that looks something like the
     following:</p>
-    <p><?php echo site_url('?'.Social::$prefix.'cron=cron_15&api_key='.Social::option('system_cron_api_key')); ?></p>
+    <p><?php echo site_url('?'.Social::$prefix.'cron=cron_15&api_key=<span class="'.Social::$prefix.'api_key">'.Social::option('system_cron_api_key').'</span>'); ?></p>
     <?php endif; ?>
 
 	<p class="submit" style="clear:both">
