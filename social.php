@@ -1433,22 +1433,22 @@ final class Social {
 	private function cron_lock($cron) {
 		$locked = false;
 		$file = trailingslashit($this->cron_lock_dir).$cron.'.txt';
+
+		$timestamp = 0;
+		if (is_file($file)) {
+			$timestamp = file_get_contents($file);
+		}
+
 		$fp = fopen($file, 'w+');
 		if (flock($fp, LOCK_EX)) {
 			$locked = true;
 			fwrite($fp, time());
 		}
-		else {
-
-// TODO - here we want to check how old the lock is, unlock if past expiration
-// no logging needed here
-
-			$cron_lock_errors = get_option(Social::$prefix.'cron_lock_errors', array());
-			if (!isset($cron_lock_errors[$cron])) {
-				$cron_lock_errors[$cron] = true;
-				update_option(Social::$prefix.'cron_lock_errors', $cron_lock_errors);
-			}
+		else if (!empty($timestamp) and time() - $timestamp >= 3600) {
+			$locked = true;
+			$this->cron_unlock($cron);
 		}
+		
 		fclose($fp);
 		return $locked;
 	}
