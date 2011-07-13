@@ -2068,19 +2068,19 @@ class Social_Comment_Form {
 	 * Hook for 'comment_form_before' action.
 	 */
 	public function before() {
-	?>
+?>
 		<div class="social-heading">
 			<?php
-			if ($this->is_logged_in) {
-				$tab = __('Post a Comment', Social::$i18n);
-			}
-			else {
-				$tab = __('Profile', Social::$i18n);
-			}
+                if ($this->is_logged_in) {
+                    $tab = __('Post a Comment', Social::$i18n);
+                }
+                else {
+                    $tab = __('Profile', Social::$i18n);
+                }
 			?>
 			<h2 class="social-title social-tab-active"><span><?php echo $tab; ?></span></h2>
 		</div>
-	<?php
+<?php
 	}
 	
 	public function top() {

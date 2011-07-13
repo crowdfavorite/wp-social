@@ -10,17 +10,19 @@ ob_start();
 			<input type="hidden" id="reload_url" value="<?php echo esc_url(site_url('?'.Social::$prefix.'action=reload_form&redirect_to='.get_permalink(get_the_ID()).'&post_id='.get_the_ID())); ?>" />
 			<?php _e('Logging In...', Social::$i18n); ?>
 		</div>
-		<?php if (comments_open()): ?>
-			<?php if (get_option( 'comment_registration' ) && !is_user_logged_in() ): ?>
+		<?php
+            if (comments_open()):
+			    if (get_option('comment_registration') and !is_user_logged_in()):
+        ?>
 				<p class="must-log-in"><?php printf(__('You must be <a href="%s">logged in</a> to post a comment.'), wp_login_url(apply_filters('the_permalink', get_permalink(get_the_ID())))); ?></p>
-				<?php do_action('comment_form_must_log_in_after'); ?>
-			<?php else: ?>
-			<?php
-			Social_Comment_Form::as_html();
-			?>
-			<?php endif; ?>
-		<?php else: ?>
-		<?php do_action('comment_form_comments_closed'); ?>
+	    <?php
+                    do_action('comment_form_must_log_in_after');
+			    else:
+			        Social_Comment_Form::as_html();
+			    endif;
+            else:
+                do_action('comment_form_comments_closed');
+        ?>
 		<p class="nocomments"><?php _e('Comments are closed.', Social::$i18n); ?></p>
 		<?php endif; ?>
 	</div>
