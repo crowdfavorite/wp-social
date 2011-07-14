@@ -223,10 +223,15 @@ twttr.anywhere(function(twitter) {
 						$tweets = $this->request($account, 'statuses/retweets/'.$broadcasted_ids[$account->user->id]);
 						if (is_array($tweets->response) and count($tweets->response)) {
 							foreach ($tweets->response as $tweet) {
+                                $log_data = array(
+                                    'username' => $tweet->user->screen_name
+                                );
 								if (in_array($tweet->id, array_values($post_comments)) or in_array($tweet->id, array_values($broadcasted_ids))) {
+                                    Social_Aggregate_Log::instance($post->ID)->add($this->service, $tweet->id, 'retweet', true, $log_data);
 									continue;
 								}
 
+                                Social_Aggregate_Log::instance($post->ID)->add($this->service, $tweet->id, 'retweet', false, $log_data);
 								if ($tweet->in_reply_to_status_id == $broadcasted_ids[$account->user->id]) {
 									$post_comments[] = $tweet->id;
 									$results[$tweet->id] = (object) array(
@@ -247,10 +252,15 @@ twttr.anywhere(function(twitter) {
 						));
 						if (is_array($tweets->response) and count($tweets->response)) {
 							foreach ($tweets->response as $tweet) {
+                                $log_data = array(
+                                    'username' => $tweet->user->screen_name
+                                );
 								if (in_array($tweet->id, array_values($post_comments)) or in_array($tweet->id, array_values($broadcasted_ids))) {
+                                    Social_Aggregate_Log::instance($post->ID)->add($this->service, $tweet->id, 'reply', true, $log_data);
 									continue;
 								}
 
+                                Social_Aggregate_Log::instance($post->ID)->add($this->service, $tweet->id, 'reply', false, $log_data);
 								if ($tweet->in_reply_to_status_id == $broadcasted_ids[$account->user->id]) {
 									if (!isset($results[$tweet->id])) {
 										$post_comments[] = $tweet->id;
@@ -278,13 +288,17 @@ twttr.anywhere(function(twitter) {
 		$request = wp_remote_get($url);
 		if (!is_wp_error($request)) {
 			$response = json_decode($request['body']);
-
 			if (is_array($response->results) and count($response->results)) {
 				foreach ($response->results as $result) {
+                    $log_data = array(
+                        'username' => $result->from_user
+                    );
 					if (in_array($result->id, array_values($post_comments)) or in_array($result->id, array_values($broadcasted_ids))) {
+                        Social_Aggregate_Log::instance($post->ID)->add($this->service, $result->id, 'url', true, $log_data);
 						continue;
 					}
-					
+
+                    Social_Aggregate_Log::instance($post->ID)->add($this->service, $result->id, 'url', false, $log_data);
 					if (!isset($results[$result->id])) {
 						$post_comments[] = $result->id;
 						$results[$result->id] = $result;

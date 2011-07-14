@@ -557,6 +557,16 @@ final class Social {
                     }
                     $this->retry_broadcast();
 				break;
+                case 'run_aggregation':
+                    if (!wp_verify_nonce($_GET['_wpnonce'])) {
+                        wp_die('Oops, please try again.');
+                    }
+
+                    $this->run_aggregation($_GET['post_id']);
+
+                    echo Social_Aggregate_Log::logs($_GET['post_id']);
+                    exit;
+                break;
 			}
 		}
 		// Authorization complete?
@@ -691,13 +701,19 @@ final class Social {
      * Add Meta Boxes
      */
     public function do_meta_boxes() {
-		global $post;
+        global $post;
 
-		// Already broadcasted?
-		$broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted', true);
-		if (!Social::$update and $broadcasted != '1' and $post->post_status != 'publish') {
-			add_meta_box(Social::$prefix.'meta_broadcast', __('Social', Social::$i18n), array($this, 'add_meta_box'), 'post', 'side', 'core');
-		}
+        if (!Social::$update) {
+            $broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted', true);
+
+            if ($post->post_status != 'publish' and $broadcasted != '1') {
+                add_meta_box(Social::$prefix.'meta_broadcast', __('Social', Social::$i18n), array($this, 'add_meta_box'), 'post', 'side', 'core');
+            }
+
+            if ($post->post_status == 'publish' and $broadcasted == '1') {
+                add_meta_box(Social::$prefix.'meta_broadcast', __('Social Comment Aggregation', Social::$i18n), array($this, 'add_meta_log_box'), 'post', 'normal', 'core');
+            }
+        }
     }
 
 	/**
@@ -706,23 +722,48 @@ final class Social {
 	public function add_meta_box() {
 		global $post;
 
-		if (!Social::$update) {
-			$services = $this->services();
-			foreach ($services as $key => $service) {
-				if (count($service->accounts())) {
-					$notify = get_post_meta($post->ID, Social::$prefix.'notify_'.$key, true);
+        $services = $this->services();
+        foreach ($services as $key => $service) {
+            if (count($service->accounts())) {
+                $notify = get_post_meta($post->ID, Social::$prefix.'notify_'.$key, true);
 ?>
-<input type="hidden" name="<?php echo Social::$prefix.'notify[]'; ?>" value="<?php echo $key; ?>" />
-<div style="padding:10px 0">
-	<span class="service-label"><?php _e('Send post to '.$service->title().'?', Social::$i18n); ?></span>
-	<input type="radio" name="<?php echo Social::$prefix.'notify_'.$key; ?>" id="<?php echo Social::$prefix.'notify_'.$key.'_yes'; ?>" class="social-toggle" value="1" <?php echo checked('1', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$key.'_yes'; ?>" class="social-toggle-label"><?php _e('Yes', Social::$i18n); ?></label>
-	<input type="radio" name="<?php echo Social::$prefix.'notify_'.$key; ?>" id="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle" value="0" <?php echo checked('0', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle-label"><?php _e('No', Social::$i18n); ?></label>
+    <input type="hidden" name="<?php echo Social::$prefix.'notify[]'; ?>" value="<?php echo $key; ?>" />
+    <div style="padding:10px 0">
+        <span class="service-label"><?php _e('Send post to '.$service->title().'?', Social::$i18n); ?></span>
+        <input type="radio" name="<?php echo Social::$prefix.'notify_'.$key; ?>" id="<?php echo Social::$prefix.'notify_'.$key.'_yes'; ?>" class="social-toggle" value="1" <?php echo checked('1', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$key.'_yes'; ?>" class="social-toggle-label"><?php _e('Yes', Social::$i18n); ?></label>
+        <input type="radio" name="<?php echo Social::$prefix.'notify_'.$key; ?>" id="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle" value="0" <?php echo checked('0', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle-label"><?php _e('No', Social::$i18n); ?></label>
+    </div>
+<?php
+            }
+        }
+	}
+
+    /**
+     * Adds the aggregation log meta box.
+     *
+     * @return void
+     */
+    public function add_meta_log_box() {
+        global $post;
+
+        $broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted', true);
+        if (!Social::$update and $post->post_status == 'publish' and $broadcasted == '1') {
+?>
+<h4>Manual Aggregation</h4>
+<p>You can manually run the comment aggregation by clicking the button below.</p>
+<p class="submit" style="clear:both;float:none;padding:0;">
+    <a href="<?php echo wp_nonce_url(admin_url('?social_action=run_aggregation&post_id='.$post->ID)); ?>" id="run_aggregation" class="button-primary" style="float:left;margin-bottom:15px;">Aggregate Comments</a>
+    <img src="<?php echo admin_url('images/loading.gif'); ?>" style="float:left;position:relative;top:4px;left:5px;display:none;" id="run_aggregation_loader" />
+    <div style="clear:both"></div>
+</p>
+
+<h4>Aggregation Log</h4>
+<div id="aggregation_log">
+    <?php echo Social_Aggregate_Log::logs($post->ID); ?>
 </div>
 <?php
-				}
-			}
-		}
-	}
+        }
+    }
 
 	/**
      * Show the broadcast options if publishing.
@@ -1672,22 +1713,12 @@ final class Social {
 	public function aggregate_comments() {
 		global $wpdb;
 		// Load the ignored posts
+        $queued = get_option(Social::$prefix.'queued_for_aggregation', array());
 		$ignored = get_option(Social::$prefix.'ignored_posts_for_aggregation', array());
-		$queued = get_option(Social::$prefix.'queued_for_aggregation', array());
 
 		// Load all the posts
 		$sql = "
-			SELECT p.ID, p.post_author, p.post_date, p.guid, (
-			           SELECT b.meta_value
-			             FROM $wpdb->postmeta AS b
-			            WHERE b.meta_key = '".Social::$prefix."broadcasted_ids'
-			              AND b.post_id = p.ID
-			       ) AS broadcasted_ids, (
-			           SELECT a.meta_value
-			             FROM $wpdb->postmeta AS a
-			            WHERE a.meta_key = '".Social::$prefix."aggregated_ids'
-			              AND a.post_id = p.ID
-			       ) AS aggregated_ids
+			SELECT p.ID, p.post_author, p.post_date, p.guid
 			  FROM $wpdb->posts AS p
 			 WHERE p.post_status = 'publish'
 			   AND p.comment_status = 'open'
@@ -1699,77 +1730,101 @@ final class Social {
 		}
 		$posts = $wpdb->get_results($sql, OBJECT);
 
-		// Compile the search parameters
-		$broadcasted_ids = array();
 		foreach ($posts as $post) {
-			$timestamp = time() - strtotime($post->post_date);
+            $timestamp = time() - strtotime($post->post_date);
 
-			$hours = 0;
-			if ($timestamp >=  172800) {
-				$hours = 48;
-			}
-			else if ($timestamp >= 86400) {
-				$hours = 24;
-			}
-			else if ($timestamp >= 43200) {
-				$hours = 12;
-			}
-			else if ($timestamp >= 28800) {
-				$hours = 8;
-			}
-			else if ($timestamp >= 14400) {
-				$hours = 4;
-			}
-			else if ($timestamp >= 7200) {
-				$hours = 2;
-			}
+            $hours = 0;
+            if ($timestamp >=  172800) {
+                $hours = 48;
+            }
+            else if ($timestamp >= 86400) {
+                $hours = 24;
+            }
+            else if ($timestamp >= 43200) {
+                $hours = 12;
+            }
+            else if ($timestamp >= 28800) {
+                $hours = 8;
+            }
+            else if ($timestamp >= 14400) {
+                $hours = 4;
+            }
+            else if ($timestamp >= 20) {
+                $hours = 8;
+            }
 
-			if (!isset($queued[$post->ID]) or $queued[$post->ID] < $hours) {
-				$queued[$post->ID] = $hours;
+            if (!isset($queued[$post->ID]) or $queued[$post->ID] < $hours) {
+                $queued[$post->ID] = $hours;
 
-				$urls = array(
-					urlencode(site_url('?p='.$post->ID)),
-				);
+                $this->run_aggregation($post);
 
-				$permalink = urlencode(get_permalink($post->ID));
-				if ($urls[0] != $permalink) {
-					$urls[] = $permalink;
-				}
+                // Remove the post from the CRON.
+                if ($hours === 48) {
+                    unset($queued[$post->ID]);
+                    $ignored[] = $post->ID;
+                }
 
-				$broadcasted = maybe_unserialize($post->broadcasted_ids);
-				if (count($broadcasted)) {
-					foreach ($broadcasted as $service => $ids) {
-						if (!isset($broadcasted_ids[$service])) {
-							$broadcasted_ids[$service] = $ids;
-						}
-						else {
-							$broadcasted_ids[$service] = array_merge($broadcasted_ids[$service], $ids);
-						}
-					}
-
-					// Run search!
-					$services = $this->services();
-					foreach ($services as $key => $service) {
-						$results = $service->search_for_replies($post, $urls, (isset($broadcasted_ids[$key]) ? $broadcasted_ids[$key] : null));
-
-                        // Results?
-						if (is_array($results)) {
-							$service->save_replies($post->ID, $results);
-						}
-					}
-				}
-
-				// Remove the post from the CRON.
-				if ($hours === 48) {
-					unset($queued[$post->ID]);
-					$ignored[] = $post->ID;
-				}
-
-				update_option(Social::$prefix.'ignored_posts_for_aggregation', $ignored);
-				update_option(Social::$prefix.'queued_for_aggregation', $queued);
-			}
+                update_option(Social::$prefix.'ignored_posts_for_aggregation', $ignored);
+                update_option(Social::$prefix.'queued_for_aggregation', $queued);
+            }
 		}
 	}
+
+    /**
+     * Runs aggregation for a comment.
+     *
+     * @param  int|object  $post
+     * @return void
+     */
+    public function run_aggregation($post) {
+        if (!is_object($post)) {
+            $post = get_post($post);
+        }
+
+        $urls = array(
+            urlencode(site_url('?p='.$post->ID)),
+        );
+
+        $permalink = urlencode(get_permalink($post->ID));
+        if ($urls[0] != $permalink) {
+            $urls[] = $permalink;
+        }
+
+        $broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted_ids', true);
+        if (empty($broadcasted)) {
+            $broadcasted = array();
+        }
+        $post->broadcasted_ids = $broadcasted;
+
+        $aggregated = get_post_meta($post->ID, Social::$prefix.'aggregated_ids', true);
+        if (empty($aggregated)) {
+            $aggregated = array();
+        }
+        $post->aggregated_ids = $aggregated;
+        if (count($broadcasted)) {
+            $broadcasted_ids = array();
+            foreach ($broadcasted as $service => $ids) {
+                if (!isset($broadcasted_ids[$service])) {
+                    $broadcasted_ids[$service] = $ids;
+                }
+                else {
+                    $broadcasted_ids[$service] = array_merge($broadcasted_ids[$service], $ids);
+                }
+            }
+
+            // Run search!
+            $services = $this->services();
+            foreach ($services as $key => $service) {
+                $results = $service->search_for_replies($post, $urls, (isset($broadcasted_ids[$key]) ? $broadcasted_ids[$key] : null));
+
+                // Results?
+                if (is_array($results)) {
+                    $service->save_replies($post->ID, $results);
+                }
+            }
+            Social_Aggregate_Log::instance($post->ID)->save();
+        }
+    }
 
 	/**
 	 * Merges the user and global accounts together.
@@ -2163,6 +2218,165 @@ class Social_Comment_Form {
 		return $html;
 	}
 }
+
+/**
+ * Social Comment Aggregation Logger
+ */
+class Social_Aggregate_Log {
+
+    /**
+     * @var  array  logger instances
+     */
+    public static $instances = array();
+
+    /**
+     * Loads a post's instance.
+     *
+     * @static
+     * @param  int  $post_id
+     * @return Social_Aggregate_Log
+     */
+    public static function instance($post_id) {
+        if (!isset(self::$instances[$post_id])) {
+            self::$instances[$post_id] = new self($post_id);
+        }
+
+        return self::$instances[$post_id];
+    }
+
+    /**
+     * @var  int  timestamp
+     */
+    private $timestamp = 0;
+
+    /**
+     * @var  int  post ID
+     */
+    private $post_id = 0;
+
+    /**
+     * @var  array  post logs
+     */
+    private $logs = array();
+
+    /**
+     * Sets the post ID and loads the existing logs.
+     *
+     * @param  int  $post_id
+     */
+    public function __construct($post_id) {
+        $this->timestamp = time();
+        $this->post_id = $post_id;
+
+        $this->logs = Social_Aggregate_Log::logs($post_id, false);
+        $this->logs[$this->timestamp] = array();
+    }
+
+    /**
+     * Adds an item to the log.
+     *
+     * @param  string  $service  service key (twitter, facebook, etc.)
+     * @param  string  $id       object id
+     * @param  string  $type     type of response (reply, retweet, url)
+     * @param  bool    $ignored  comment ignored?
+     * @param  array   $data     extra data for output
+     * @return void
+     */
+    public function add($service, $id, $type, $ignored = false, array $data = array()) {
+        if (!isset($this->logs[$this->timestamp][$service])) {
+            $this->logs[$this->timestamp][$service] = array();
+        }
+
+        foreach ($this->logs[$this->timestamp][$service] as $item) {
+            if ($item['id'] === $id) {
+                // No need to add the same item multiple times.
+                return;
+            }
+        }
+
+        $this->logs[$this->timestamp][$service][] = array(
+            'id' => $id,
+            'type' => $type,
+            'ignored' => $ignored,
+            'data' => $data,
+        );
+    }
+
+    /**
+     * Saves the log.
+     *
+     * @return void
+     */
+    public function save() {
+        update_post_meta($this->post_id, Social::$prefix.'_aggregation_log', $this->logs);
+    }
+
+    /**
+     * Returns the logs for the post.
+     *
+     * @param  int   $post_id
+     * @param  bool  $echo
+     * @return array|string
+     */
+    public static function logs($post_id, $echo = true) {
+        $logs = get_post_meta($post_id, Social::$prefix.'_aggregation_log', true);
+        if (empty($logs)) {
+            $logs = array();
+        }
+
+        if (!$echo) {
+            return $logs;
+        }
+
+        $output = '';
+        if (empty($logs)) {
+            $output = '<p>There have been no comments aggregated yet.</p>';
+        }
+        else {
+            $i = 0;
+            $logs = array_reverse($logs, true);
+            foreach ($logs as $timestamp => $services) {
+                ++$i;
+                $output .= '<h5 id="log-'.$i.'">'.date('j F Y, g:i a', $timestamp).'</h5><ul id="log-'.$i.'-output" class="parent">';
+                foreach ($services as $service => $items) {
+                    $service = Social::$combined_services[$service];
+                    $output .= '<li>'.$service->title.':<ul>';
+                    foreach ($items as $item) {
+                        $username = '';
+                        if (isset($item['data']['username'])) {
+                            $username = $item['data']['username'];
+                        }
+
+                        $link = $service->status_url($username, $item['id']);
+                        $output .= '<li>';
+                        $output .= '<a href="'.$link.'" target="_blank">#'.$item['id'].'</a>';
+                        switch ($item['type']) {
+                            case 'reply':
+                                $output .= ' (Reply Search)';
+                            break;
+                            case 'url':
+                                $output .= ' (URL Search)';
+                            break;
+                            case 'retweet':
+                                $output .= ' (Retweet Search)';
+                            break;
+                        }
+
+                        if ($item['ignored'] == true) {
+                            $output .= ' (Ignored)';
+                        }
+                        $output .= '</li>';
+                    }
+                    $output .= '</ul></li>';
+                }
+                $output .= '</ul>';
+            }
+        }
+
+        return $output;
+    }
+
+} // End Social_Aggregate_Log
 
 $social_file = __FILE__;
 if (isset($mu_plugin)) {

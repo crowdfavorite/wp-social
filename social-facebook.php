@@ -147,8 +147,11 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 					$results = array();
 					foreach ($response->data as $result) {
 						if (in_array($result->id, array_values($post_comments)) or in_array($result->id, array_values($broadcasted_ids))) {
+                            Social_Aggregate_Log::instance($post->ID)->add($this->service, $result->id, 'url', true);
 							continue;
 						}
+
+                        Social_Aggregate_Log::instance($post->ID)->add($this->service, $result->id, 'url');
 						$post_comments[] = $result->id;
 						$results[] = $result;
 					}
@@ -179,8 +182,10 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 							if (is_array($response->data) and count($response->data)) {
 								foreach ($response->data as $comment) {
 									if (in_array($comment->id, array_values($post_comments)) or in_array($comment->id, array_values($broadcasted_ids))) {
+                                        Social_Aggregate_Log::instance($post->ID)->add($this->service, $comment->id, 'reply', true);
 										continue;
 									}
+                                    Social_Aggregate_Log::instance($post->ID)->add($this->service, $comment->id, 'reply');
 									$post_comments[] = $comment->id;
 									$results[] = $comment;
 								}

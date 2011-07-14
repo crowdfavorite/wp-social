@@ -155,3 +155,22 @@
 .social-facebook-icon.big i {
     background-position: -30px -82px;
 }
+
+#aggregation_log h5 {
+    border-top: 1px solid #eee;
+    padding: 10px 5px;
+    margin: 0;
+}
+#aggregation_log h5:hover {
+    background-color: #fff;
+    cursor: pointer;
+}
+#aggregation_log .parent {
+    padding: 5px;
+}
+#aggregation_log ul {
+    list-style: disc inside;
+}
+#aggregation_log ul ul {
+    padding-left: 15px;
+}
