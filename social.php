@@ -2341,31 +2341,41 @@ class Social_Aggregate_Log {
                 foreach ($services as $service => $items) {
                     $service = Social::$combined_services[$service];
                     $output .= '<li>'.$service->title.':<ul>';
+
+                    $_items = array();
                     foreach ($items as $item) {
-                        $username = '';
-                        if (isset($item['data']['username'])) {
-                            $username = $item['data']['username'];
+                        if (!isset($_items[$item['type']])) {
+                            $_items[$item['type']] = array();
                         }
+                        $_items[$item['type']][] = $item;
+                    }
+                    foreach ($_items as $type => $items) {
+                        foreach ($items as $item) {
+                            $username = '';
+                            if (isset($item['data']['username'])) {
+                                $username = $item['data']['username'];
+                            }
 
-                        $link = $service->status_url($username, $item['id']);
-                        $output .= '<li>';
-                        $output .= '<a href="'.$link.'" target="_blank">#'.$item['id'].'</a>';
-                        switch ($item['type']) {
-                            case 'reply':
-                                $output .= ' (Reply Search)';
-                            break;
-                            case 'url':
-                                $output .= ' (URL Search)';
-                            break;
-                            case 'retweet':
-                                $output .= ' (Retweet Search)';
-                            break;
-                        }
+                            $link = $service->status_url($username, $item['id']);
+                            $output .= '<li>';
+                            $output .= '<a href="'.$link.'" target="_blank">#'.$item['id'].'</a>';
+                            switch ($type) {
+                                case 'reply':
+                                    $output .= ' (Reply Search)';
+                                break;
+                                case 'url':
+                                    $output .= ' (URL Search)';
+                                break;
+                                case 'retweet':
+                                    $output .= ' (Retweet Search)';
+                                break;
+                            }
 
-                        if ($item['ignored'] == true) {
-                            $output .= ' (Ignored)';
+                            if ($item['ignored'] == true) {
+                                $output .= ' (Ignored)';
+                            }
+                            $output .= '</li>';
                         }
-                        $output .= '</li>';
                     }
                     $output .= '</ul></li>';
                 }
