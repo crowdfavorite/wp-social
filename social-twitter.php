@@ -287,6 +287,7 @@ twttr.anywhere(function(twitter) {
 		$url = 'http://search.twitter.com/search.json?q='.implode('+OR+', $urls);
 		$request = wp_remote_get($url);
 		if (!is_wp_error($request)) {
+            $request['body'] = $this->request_body($request['body']);
 			$response = json_decode($request['body']);
 			if (is_array($response->results) and count($response->results)) {
 				foreach ($response->results as $result) {
