@@ -255,7 +255,7 @@ final class Social {
 				}
 			}
 		}
-
+		
 		if (is_admin()) {
 			if (Social::$update) {
 				add_action('admin_notices', array($this, 'display_upgrade'));
@@ -266,14 +266,13 @@ final class Social {
 			if (count($deauthed)) {
 				add_action('admin_notices', array($this, 'display_deauthed'));
 			}
-			
 			wp_enqueue_style('social_admin', Social::$plugins_url.'assets/admin.css', array(), Social::$version, 'screen');
 			wp_enqueue_script('social_admin', Social::$plugins_url.'assets/social.js', array('jquery'), Social::$version, true);
 		}
 		else {
-			wp_enqueue_style('social', Social::$plugins_url.'assets/comments.css', array(), Social::$version, 'screen');
+			wp_enqueue_style('social_style_main', Social::$plugins_url.'assets/comments.css', array(), Social::$version, 'screen');
 			wp_enqueue_script('jquery');
-			wp_enqueue_script('social', Social::$plugins_url.'assets/social.js', array('jquery'), Social::$version, true);
+			wp_enqueue_script('social_script_main', Social::$plugins_url.'assets/social.js', array('jquery'), Social::$version, true);
 		}
 
 		if (version_compare(PHP_VERSION, '5.2.1', '<')) {
