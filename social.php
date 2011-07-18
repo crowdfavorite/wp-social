@@ -703,14 +703,18 @@ final class Social {
         global $post;
 
         if (!Social::$update) {
+            add_meta_box(Social::$prefix.'meta_broadcast', __('Social Broadcasting', Social::$i18n), array($this, 'add_meta_box'), 'post', 'side', 'core');
+
             $broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted', true);
-
-            if ($post->post_status != 'publish' and $broadcasted != '1') {
-                add_meta_box(Social::$prefix.'meta_broadcast', __('Social', Social::$i18n), array($this, 'add_meta_box'), 'post', 'side', 'core');
+            $show_log = false;
+            foreach ($broadcasted as $service) {
+                if ($service == '1') {
+                    $show_log = true;
+                    break;
+                }
             }
-
-            if ($post->post_status == 'publish' and $broadcasted == '1') {
-                add_meta_box(Social::$prefix.'meta_broadcast', __('Social Comment Aggregation', Social::$i18n), array($this, 'add_meta_log_box'), 'post', 'normal', 'core');
+            if ($post->post_status == 'publish' and $show_log) {
+                add_meta_box(Social::$prefix.'meta_aggregation_log', __('Social Comment Aggregation', Social::$i18n), array($this, 'add_meta_log_box'), 'post', 'normal', 'core');
             }
         }
     }
@@ -722,19 +726,57 @@ final class Social {
 		global $post;
 
         $services = $this->services();
+        $broadcasted_ids = get_post_meta($post->ID, Social::$prefix.'broadcasted_ids', true);
         foreach ($services as $key => $service) {
+            $accounts = $service->accounts();
             if (count($service->accounts())) {
                 $notify = get_post_meta($post->ID, Social::$prefix.'notify_'.$key, true);
 ?>
     <input type="hidden" name="<?php echo Social::$prefix.'notify[]'; ?>" value="<?php echo $key; ?>" />
     <div style="padding:10px 0">
-        <span class="service-label"><?php _e('Send post to '.$service->title().'?', Social::$i18n); ?></span>
+        <h4 style="margin-top:0"><?php _e('Send post to '.$service->title().'?', Social::$i18n); ?></h4>
         <input type="radio" name="<?php echo Social::$prefix.'notify_'.$key; ?>" id="<?php echo Social::$prefix.'notify_'.$key.'_yes'; ?>" class="social-toggle" value="1" <?php echo checked('1', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$key.'_yes'; ?>" class="social-toggle-label"><?php _e('Yes', Social::$i18n); ?></label>
         <input type="radio" name="<?php echo Social::$prefix.'notify_'.$key; ?>" id="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle" value="0" <?php echo checked('0', $notify, false); ?> /> <label for="<?php echo Social::$prefix.'notify_'.$key.'_no'; ?>" class="social-toggle-label"><?php _e('No', Social::$i18n); ?></label>
+        <?php
+            if (isset($broadcasted_ids[$key]) and count($broadcasted_ids[$key])) {
+                $accounts_output = '';
+                foreach ($broadcasted_ids[$key] as $user_id => $broadcast_id) {
+                    if (isset($accounts[$user_id])) {
+                        if (empty($accounts_output)) {
+                            $accounts_output = '<ul>';
+                        }
+
+                        $username = '';
+                        if (isset($accounts[$user_id]->user->screen_name)) {
+                            $username = $accounts[$user_id]->user->screen_name;
+                        }
+
+                        $accounts_output .= '<li style="clear:both">';
+                        $accounts_output .= '<img src="'.$service->profile_avatar($accounts[$user_id]).'" width="24" height="24" style="float:left;" />';
+			            $accounts_output .= '<span style="position:relative;top:5px;left:5px;">';
+                        $accounts_output .= $service->profile_name($accounts[$user_id]);
+                        $accounts_output .= ' <a href="'.$service->status_url($username, $broadcast_id).'" target="_blank">View</a>';
+                        $accounts_output .= '</span></li>';
+                    }
+                }
+
+                if (!empty($accounts_output)) {
+                    $accounts_output .= '</ul>';
+                    echo '<p>This post has already been broadcasted to the following accounts:</p>'.$accounts_output;
+                }
+            }
+        ?>
     </div>
 <?php
             }
         }
+?>
+    <h4 style="margin:10px 0 5px">Rebroadcast Post</h4>
+    <p style="margin:0">Would you like to rebroadcast this post?</p>
+    <p class="submit" style="padding:0">
+		<input type="submit" name="<?php echo Social::$prefix.'rebroadcast'; ?>" value="Rebroadcast Post" class="button-primary" />
+	</p>
+<?php
 	}
 
     /**
@@ -744,9 +786,6 @@ final class Social {
      */
     public function add_meta_log_box() {
         global $post;
-
-        $broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted', true);
-        if (!Social::$update and $post->post_status == 'publish' and $broadcasted == '1') {
 ?>
 <h4>Manual Aggregation</h4>
 <p>You can manually run the comment aggregation by clicking the button below.</p>
@@ -761,7 +800,6 @@ final class Social {
     <?php echo Social_Aggregate_Log::logs($post->ID); ?>
 </div>
 <?php
-        }
     }
 
 	/**
@@ -772,7 +810,7 @@ final class Social {
      * @return string|void
      */
     public function redirect_post_location($location, $post_id) {
-        if (isset($_POST['publish'])) {
+        if (isset($_POST['publish']) or isset($_POST[Social::$prefix.'rebroadcast'])) {
             $this->broadcast_options($post_id, $location);
         }
         return $location;
@@ -1093,7 +1131,7 @@ final class Social {
 <?php endforeach; ?>
 </table>
 <p class="step">
-	<input type="submit" value="<?php _e(($post->post_status == 'future' ? 'Schedule' : 'Publish'), Social::$i18n); ?>" class="button" />
+	<input type="submit" value="<?php _e(($post->post_status == 'future' ? 'Schedule' : (isset($_POST[Social::$prefix.'rebroadcast']) ? 'Broadcast' : 'Publish')), Social::$i18n); ?>" class="button" />
 	<a href="<?php echo get_edit_post_link($post_id, 'url'); ?>" class="button">Cancel</a>
 </p>
 </form>
@@ -1129,8 +1167,8 @@ final class Social {
 			if ($broadcast) {
 				$this->broadcast_meta_set = true;
 				$broadcasted = get_post_meta($post_id, Social::$prefix.'broadcasted', true);
-				if (empty($broadcasted) or $broadcasted != '1') {
-					update_post_meta($post_id, Social::$prefix.'broadcasted', '0');
+				if (empty($broadcasted) or !count($broadcasted)) {
+					update_post_meta($post_id, Social::$prefix.'broadcasted', array());
 
 					// Post needs to stay a draft for now.
 					$post->post_status = 'draft';
@@ -1196,106 +1234,110 @@ final class Social {
 			$post = get_post($post);
 		}
         $broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted', true);
-        if ($broadcasted == '0' or empty($broadcasted)) {
-	        $_broadcast_accounts = false;
-	        $broadcast_accounts = get_post_meta($post->ID, Social::$prefix.'broadcast_accounts', true);
-	        if (!empty($broadcast_accounts)) {
-		        $ids = array();
-		        $errored_accounts = false;
-		        $services = $this->services();
-				foreach ($services as $service_key => $service) {
-					$notify = get_post_meta($post->ID, Social::$prefix.'notify_'.$service_key, true);
+        if (empty($broacasted)) {
+            $broadcasted = array();
+        }
 
-					if ($notify == '1') {
-						$content = get_post_meta($post->ID, Social::$prefix.$service_key.'_content', true);
-						if (!empty($content)) {
-							foreach ($broadcast_accounts as $key => $accounts) {
-								if ($key == $service_key) {
-									foreach ($accounts as $account) {
-										$_account = $account;
-										$id = $account['id'];
-										if (isset($account['global']) and !empty($account['global'])) {
-											$global_accounts = Social::$global_services[$key]->accounts();
-											if (isset($global_accounts[$id])) {
-												$account = $global_accounts[$id];
-											}
-											else {
-												$account = false;
-											}
-										}
-										else {
-											$user_accounts = Social::$services[$key]->accounts();
-											if (!count($user_accounts)) {
-												$accounts = get_user_meta($post->post_author, Social::$prefix.'accounts', true);
-												if (isset($accounts[$key])) {
-													$user_accounts = $accounts[$key];
-												}
-											}
-											if (isset($user_accounts[$id])) {
-												$account = $user_accounts[$id];
-											}
-											else {
-												$account = false;
-											}
-										}
+        $_broadcast_accounts = false;
+        $broadcast_accounts = get_post_meta($post->ID, Social::$prefix.'broadcast_accounts', true);
+        if (!empty($broadcast_accounts)) {
+            $ids = array();
+            $errored_accounts = false;
+            $services = $this->services();
+            foreach ($services as $service_key => $service) {
+                $notify = get_post_meta($post->ID, Social::$prefix.'notify_'.$service_key, true);
 
-										if ($account !== false) {
-											$response = $service->status_update($account, $content);
-											if (!$service->deauthed($response, $account)) {
-												$ids[$key]["{$account->user->id}"] = $response->response->id;
-												// pass response to anyone else who wants it
-												do_action(Social::$prefix.'broadcast_response', $response);
-												do_action(Social::$prefix.$key.'_broadcast_response', $response);
-											}
-											else {
-												if ($response === false or ($response == 'deauthed')) {
-													$_broadcast_accounts[$key][] = $_account;
-												}
-												else {
-													$errored_accounts[$service->service][] = $account;
-												}
-											}
-										}
-										else {
-											$errored_accounts[$service->service][] = $account;
-										}
-									}
-								}
-							}
-						}
-					}
+                if ($notify == '1') {
+                    $content = get_post_meta($post->ID, Social::$prefix.$service_key.'_content', true);
+                    if (!empty($content)) {
+                        foreach ($broadcast_accounts as $key => $accounts) {
+                            if ($key == $service_key) {
+                                foreach ($accounts as $account) {
+                                    $_account = $account;
+                                    $id = $account['id'];
+                                    if (isset($account['global']) and !empty($account['global'])) {
+                                        $global_accounts = Social::$global_services[$key]->accounts();
+                                        if (isset($global_accounts[$id])) {
+                                            $account = $global_accounts[$id];
+                                        }
+                                        else {
+                                            $account = false;
+                                        }
+                                    }
+                                    else {
+                                        $user_accounts = Social::$services[$key]->accounts();
+                                        if (!count($user_accounts)) {
+                                            $accounts = get_user_meta($post->post_author, Social::$prefix.'accounts', true);
+                                            if (isset($accounts[$key])) {
+                                                $user_accounts = $accounts[$key];
+                                            }
+                                        }
+                                        if (isset($user_accounts[$id])) {
+                                            $account = $user_accounts[$id];
+                                        }
+                                        else {
+                                            $account = false;
+                                        }
+                                    }
 
-					if (!isset($_broadcast_accounts[$service_key])) {
-						delete_post_meta($post->ID, Social::$prefix.'notify_'.$service_key);
-						delete_post_meta($post->ID, Social::$prefix.$service_key.'_content');
-					}
-				}
-
-		        $broadcasted_ids = get_post_meta($post->ID, Social::$prefix.'broadcasted_ids', true);
-		        if (!empty($broadcasted_ids)) {
-		            $ids = array_merge_recursive($ids, $broadcasted_ids);
-		        }
-		        update_post_meta($post->ID, Social::$prefix.'broadcasted_ids', $ids);
-
-		        // Accounts errored?
-		        if ($errored_accounts !== false) {
-					$this->send_publish_error_notification($post, $errored_accounts);
-		        }
-		        if ($_broadcast_accounts !== false) {
-			        update_post_meta($post->ID, Social::$prefix.'broadcast_accounts', $_broadcast_accounts);
-			        update_post_meta($post->ID, Social::$prefix.'broadcast_error', 'true');
-
-			        $retry_broadcast = get_option(Social::$prefix.'retry_broadcast');
-                    if (!isset($retry_broadcast[$post->ID])) {
-                        $retry_broadcast[$post->ID] = 0;
+                                    if ($account !== false) {
+                                        $response = $service->status_update($account, $content);
+                                        if (!$service->deauthed($response, $account)) {
+                                            $ids[$key]["{$account->user->id}"] = $response->response->id;
+                                            // pass response to anyone else who wants it
+                                            do_action(Social::$prefix.'broadcast_response', $response);
+                                            do_action(Social::$prefix.$key.'_broadcast_response', $response);
+                                            
+                                            $broadcasted[$service_key] = '1';
+                                        }
+                                        else {
+                                            if ($response === false or ($response == 'deauthed')) {
+                                                $_broadcast_accounts[$key][] = $_account;
+                                            }
+                                            else {
+                                                $errored_accounts[$service->service][] = $account;
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        $errored_accounts[$service->service][] = $account;
+                                    }
+                                }
+                            }
+                        }
                     }
-			        update_option(Social::$prefix.'retry_broadcast', $retry_broadcast);
-		        }
-		        else {
-		            update_post_meta($post->ID, Social::$prefix.'broadcasted', '1');
-			        delete_post_meta($post->ID, Social::$prefix.'broadcast_accounts');
-		        }
-	        }
+                }
+
+                if (!isset($_broadcast_accounts[$service_key])) {
+                    delete_post_meta($post->ID, Social::$prefix.'notify_'.$service_key);
+                    delete_post_meta($post->ID, Social::$prefix.$service_key.'_content');
+                }
+            }
+
+            $broadcasted_ids = get_post_meta($post->ID, Social::$prefix.'broadcasted_ids', true);
+            if (!empty($broadcasted_ids)) {
+                $ids = array_merge_recursive($ids, $broadcasted_ids);
+            }
+            update_post_meta($post->ID, Social::$prefix.'broadcasted_ids', $ids);
+
+            // Accounts errored?
+            if ($errored_accounts !== false) {
+                $this->send_publish_error_notification($post, $errored_accounts);
+            }
+            if ($_broadcast_accounts !== false) {
+                update_post_meta($post->ID, Social::$prefix.'broadcast_accounts', $_broadcast_accounts);
+                update_post_meta($post->ID, Social::$prefix.'broadcast_error', 'true');
+
+                $retry_broadcast = get_option(Social::$prefix.'retry_broadcast');
+                if (!isset($retry_broadcast[$post->ID])) {
+                    $retry_broadcast[$post->ID] = 0;
+                }
+                update_option(Social::$prefix.'retry_broadcast', $retry_broadcast);
+            }
+            else {
+                update_post_meta($post->ID, Social::$prefix.'broadcasted', $broadcasted);
+                delete_post_meta($post->ID, Social::$prefix.'broadcast_accounts');
+            }
         }
 	}
 
@@ -2337,46 +2379,56 @@ class Social_Aggregate_Log {
             foreach ($logs as $timestamp => $services) {
                 ++$i;
                 $output .= '<h5 id="log-'.$i.'">'.date('j F Y, g:i a', $timestamp).'</h5><ul id="log-'.$i.'-output" class="parent">';
-                foreach ($services as $service => $items) {
-                    $service = Social::$combined_services[$service];
-                    $output .= '<li>'.$service->title.':<ul>';
+                if (count($services)) {
+                    foreach ($services as $service => $items) {
+                        $service = Social::$combined_services[$service];
+                        $output .= '<li>'.$service->title.':<ul>';
 
-                    $_items = array();
-                    foreach ($items as $item) {
-                        if (!isset($_items[$item['type']])) {
-                            $_items[$item['type']] = array();
+                        if (count($items)) {
+                            $_items = array();
+                            foreach ($items as $item) {
+                                if (!isset($_items[$item['type']])) {
+                                    $_items[$item['type']] = array();
+                                }
+                                $_items[$item['type']][] = $item;
+                            }
+                            foreach ($_items as $type => $items) {
+                                foreach ($items as $item) {
+                                    $username = '';
+                                    if (isset($item['data']['username'])) {
+                                        $username = $item['data']['username'];
+                                    }
+
+                                    $link = $service->status_url($username, $item['id']);
+                                    $output .= '<li>';
+                                    $output .= '<a href="'.$link.'" target="_blank">#'.$item['id'].'</a>';
+                                    switch ($type) {
+                                        case 'reply':
+                                            $output .= ' (Reply Search)';
+                                        break;
+                                        case 'url':
+                                            $output .= ' (URL Search)';
+                                        break;
+                                        case 'retweet':
+                                            $output .= ' (Retweet Search)';
+                                        break;
+                                    }
+
+                                    if ($item['ignored'] == true) {
+                                        $output .= ' (Ignored)';
+                                    }
+                                    $output .= '</li>';
+                                }
+                            }
                         }
-                        $_items[$item['type']][] = $item;
-                    }
-                    foreach ($_items as $type => $items) {
-                        foreach ($items as $item) {
-                            $username = '';
-                            if (isset($item['data']['username'])) {
-                                $username = $item['data']['username'];
-                            }
-
-                            $link = $service->status_url($username, $item['id']);
-                            $output .= '<li>';
-                            $output .= '<a href="'.$link.'" target="_blank">#'.$item['id'].'</a>';
-                            switch ($type) {
-                                case 'reply':
-                                    $output .= ' (Reply Search)';
-                                break;
-                                case 'url':
-                                    $output .= ' (URL Search)';
-                                break;
-                                case 'retweet':
-                                    $output .= ' (Retweet Search)';
-                                break;
-                            }
-
-                            if ($item['ignored'] == true) {
-                                $output .= ' (Ignored)';
-                            }
-                            $output .= '</li>';
+                        else {
+                            $output .= '<li style="list-style: none">No results found.</li>';
                         }
+                        $output .= '</ul></li>';
                     }
-                    $output .= '</ul></li>';
+                }
+                else {
+                    $output .= '<li style="list-style: none">No results found.</li>';
                 }
                 $output .= '</ul>';
             }
