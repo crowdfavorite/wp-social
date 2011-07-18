@@ -2424,7 +2424,14 @@ class Social_Aggregate_Log {
                                         $username = $item['data']['username'];
                                     }
 
-                                    $link = $service->status_url($username, $item['id']);
+                                    $id = $item['id'];
+                                    if (isset($item['data']['parent_id'])) {
+                                        $ids = explode('_', $item['id']);
+                                        $id = $item['data']['parent_id'].'_'.$ids[0];
+                                        $item['id'] = $id.'#'.$ids[1];
+                                    }
+
+                                    $link = $service->status_url($username, $id);
                                     $output .= '<li>';
                                     $output .= '<a href="'.$link.'" target="_blank">#'.$item['id'].'</a>';
                                     switch ($type) {
