@@ -423,9 +423,10 @@ twttr.anywhere(function(twitter) {
             }
             else {
                 $replies = array(
-                    array(
+                    (object) array(
                         'from_user_id' => $response->user->id,
                         'from_user' => $response->user->screen_name,
+                        'profile_image_url' => $response->user->profile_image_url,
                         'id' => $response->id,
                         'text' => $response->text,
                         'created_at' => $response->created_at,
