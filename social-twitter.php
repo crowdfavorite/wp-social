@@ -382,4 +382,65 @@ twttr.anywhere(function(twitter) {
 		return 'http://twitter.com/'.$username.'/status/'.$status_id;
 	}
 
+    /**
+     * Imports a tweet by URL.
+     *
+     * @param  int     $post_id
+     * @param  string  $url
+     * @return void
+     */
+    public function import_tweet($post_id, $url) {
+        $post = get_post($post_id);
+
+        $accounts = get_user_meta($post->post_author, Social::$prefix.'accounts', true);
+        if (isset(Social::$global_services['twitter'])) {
+            foreach (Social::$global_services['twitter']->accounts() as $account) {
+                if (!isset($accounts['twitter'][$account->user->id])) {
+                    $accounts['twitter'][$account->user->id] = $account;
+                }
+            }
+        }
+
+        $url = explode('/', $url);
+        $id = end($url);
+
+        $post_comments = get_post_meta($post->ID, Social::$prefix.'aggregated_replies', true);
+		if (empty($post_comments)) {
+			$post_comments = array();
+		}
+
+        $url = 'http://api.twitter.com/1/statuses/show.json?id='.$id;
+        $request = wp_remote_get($url);
+		if (!is_wp_error($request)) {
+            $logger = Social_Aggregate_Log::instance($post->ID);
+            $request['body'] = $this->request_body($request['body']);
+			$response = json_decode($request['body']);
+
+            if (in_array($id, $post_comments)) {
+                $logger->add($this->service, $response->id, 'Imported', true, array(
+                    'username' => $response->user->screen_name
+                ));
+            }
+            else {
+                $replies = array(
+                    array(
+                        'from_user_id' => $response->user->id,
+                        'from_user' => $response->user->screen_name,
+                        'id' => $response->id,
+                        'text' => $response->text,
+                        'created_at' => $response->created_at,
+                    )
+                );
+                $this->save_replies($post_id, $replies);
+                $logger->add($this->service, $response->id, 'Imported', false, array(
+                    'username' => $response->user->screen_name
+                ));
+
+                $post_comments[] = $response->id;
+                update_post_meta($post->ID, Social::$prefix.'aggregated_replies', $post_comments);
+            }
+            $logger->save();
+        }
+    }
+
 } // End Social_Twitter

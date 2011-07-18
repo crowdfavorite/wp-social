@@ -566,6 +566,19 @@ final class Social {
                     echo Social_Aggregate_Log::logs($_GET['post_id']);
                     exit;
                 break;
+                case 'import_from_url':
+                    if (!wp_verify_nonce($_GET['_wpnonce'])) {
+                        wp_die('Oops, please try again.');
+                    }
+
+                    $services = $this->services();
+                    if (isset($services['twitter']) and !empty($_GET['url'])) {
+                        $services['twitter']->import_tweet($_GET['post_id'], $_GET['url']);
+                    }
+
+                    echo Social_Aggregate_Log::logs($_GET['post_id']);
+                    exit;
+                break;
 			}
 		}
 		// Authorization complete?
@@ -770,14 +783,17 @@ final class Social {
 <?php
             }
         }
+
+        if ($post->post_status === 'publish') {
 ?>
-    <h4 style="margin:10px 0 5px">Rebroadcast Post</h4>
-    <p style="margin:0">Would you like to rebroadcast this post?</p>
+    <h4 style="margin:10px 0 5px">Broadcast Post</h4>
+    <p style="margin:0">Would you like to broadcast this post?</p>
     <p class="submit" style="padding:0">
-		<input type="submit" name="<?php echo Social::$prefix.'rebroadcast'; ?>" value="Rebroadcast Post" class="button-primary" />
+		<input type="submit" name="<?php echo Social::$prefix.'rebroadcast'; ?>" value="Broadcast Post" class="button" />
 	</p>
 <?php
-	}
+        }
+    }
 
     /**
      * Adds the aggregation log meta box.
@@ -787,10 +803,19 @@ final class Social {
     public function add_meta_log_box() {
         global $post;
 ?>
+<h4>Add by URL</h4>
+<p>Aggregation not pulling in a tweet? Paste the URL of the tweet here and Social will add the tweet as a comment.</p>
+<p>
+    <input type="text" name="source_url" />
+    <span class="submit" style="float:none">
+        <a href="<?php echo wp_nonce_url(admin_url('?social_action=import_from_url&post_id='.$post->ID)); ?>" id="import_from_url" class="button">Import Tweet</a>
+    </span>
+    <img src="<?php echo admin_url('images/loading.gif'); ?>" style="position:relative;top:4px;left:0;display:none" id="import_from_url_loader" />
+</p>
 <h4>Manual Aggregation</h4>
 <p>You can manually run the comment aggregation by clicking the button below.</p>
 <p class="submit" style="clear:both;float:none;padding:0;">
-    <a href="<?php echo wp_nonce_url(admin_url('?social_action=run_aggregation&post_id='.$post->ID)); ?>" id="run_aggregation" class="button-primary" style="float:left;margin-bottom:15px;">Aggregate Comments</a>
+    <a href="<?php echo wp_nonce_url(admin_url('?social_action=run_aggregation&post_id='.$post->ID)); ?>" id="run_aggregation" class="button" style="float:left;margin-bottom:15px;">Aggregate Comments</a>
     <img src="<?php echo admin_url('images/loading.gif'); ?>" style="float:left;position:relative;top:4px;left:5px;display:none;" id="run_aggregation_loader" />
     <div style="clear:both"></div>
 </p>
@@ -2306,7 +2331,7 @@ class Social_Aggregate_Log {
      * @param  int  $post_id
      */
     public function __construct($post_id) {
-        $this->timestamp = time();
+        $this->timestamp = current_time('timestamp', 1);
         $this->post_id = $post_id;
 
         $this->logs = Social_Aggregate_Log::logs($post_id, false);
@@ -2378,7 +2403,7 @@ class Social_Aggregate_Log {
             $logs = array_reverse($logs, true);
             foreach ($logs as $timestamp => $services) {
                 ++$i;
-                $output .= '<h5 id="log-'.$i.'">'.date('j F Y, g:i a', $timestamp).'</h5><ul id="log-'.$i.'-output" class="parent">';
+                $output .= '<h5 id="log-'.$i.'">'.date('j F Y, g:i a', $timestamp + (get_option('gmt_offset') * 3600)).'</h5><ul id="log-'.$i.'-output" class="parent">';
                 if (count($services)) {
                     foreach ($services as $service => $items) {
                         $service = Social::$combined_services[$service];
@@ -2412,10 +2437,13 @@ class Social_Aggregate_Log {
                                         case 'retweet':
                                             $output .= ' (Retweet Search)';
                                         break;
+                                        default:
+                                            $output .= ' ('.$type.')';
+                                        break;
                                     }
 
                                     if ($item['ignored'] == true) {
-                                        $output .= ' (Ignored)';
+                                        $output .= ' (Existing Comment)';
                                     }
                                     $output .= '</li>';
                                 }

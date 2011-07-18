@@ -180,6 +180,33 @@
             });
         }
 
+        var running_import = false;
+        $('#import_from_url').click(function(e){
+            e.preventDefault();
+
+            if (!running_import) {
+                running_import = true;
+
+                var $this = $(this);
+                $this.attr('disabled', 'disabled');
+                $('input[name=source_url]').attr('disabled', 'disabled');
+                $('#import_from_url_loader').show();
+
+                $.get($this.attr('href'), {
+                    url: $('input[name=source_url]').val()
+                }, function(response){
+                    running_import = false;
+                    $('#import_from_url_loader').hide();
+                    $this.removeAttr('disabled');
+                    $('input[name=source_url]').removeAttr('disabled').val('');
+
+                    $('#aggregation_log').hide().html(response).find('.parent').hide();
+                    $('#aggregation_log').find('.parent:first').show();
+                    $('#aggregation_log').fadeIn();
+                });
+            }
+        });
+
         var running_aggregation = false;
         $('#run_aggregation').click(function(e){
             e.preventDefault();
