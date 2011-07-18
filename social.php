@@ -806,7 +806,7 @@ final class Social {
 <h4>Add by URL</h4>
 <p>Aggregation not pulling in a tweet? Paste the URL of the tweet here and Social will add the tweet as a comment.</p>
 <p>
-    <input type="text" name="source_url" />
+    <input type="text" name="source_url" style="width:350px" />
     <span class="submit" style="float:none">
         <a href="<?php echo wp_nonce_url(admin_url('?social_action=import_from_url&post_id='.$post->ID)); ?>" id="import_from_url" class="button">Import Tweet</a>
     </span>
