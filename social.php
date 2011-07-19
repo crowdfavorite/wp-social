@@ -720,12 +720,14 @@ final class Social {
 
             $broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted', true);
             $show_log = false;
-            foreach ($broadcasted as $service) {
-                if ($service == '1') {
-                    $show_log = true;
-                    break;
-                }
-            }
+            if (is_array($broadcasted) && count($broadcasted)) {
+				foreach ($broadcasted as $service) {
+					if ($service == '1') {
+						$show_log = true;
+						break;
+					}
+				}
+			}
             if ($post->post_status == 'publish' and $show_log) {
                 add_meta_box(Social::$prefix.'meta_aggregation_log', __('Social Comment Aggregation', Social::$i18n), array($this, 'add_meta_log_box'), 'post', 'normal', 'core');
             }
