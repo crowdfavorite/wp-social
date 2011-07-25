@@ -809,6 +809,7 @@ final class Social {
 <?php
         }
 ?>
+    <p>Want to broadcast to more accounts? <a href="<?php echo admin_url('profile.php#social-networks'); ?>">Add Accounts</a></p>
 </div>
 <?php
     }
