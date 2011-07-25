@@ -800,10 +800,15 @@ final class Social {
                 }
             }
         }
+
+        if ($post->post_status == 'publish') {
 ?>
     <p class="submit" style="clear:both;padding:0;margin:20px 0 0">
         <input type="submit" name="<?php echo Social::$prefix.'broadcast'; ?>" value="Broadcast" />
     </p>
+<?php
+        }
+?>
 </div>
 <?php
     }
@@ -1031,17 +1036,7 @@ final class Social {
 		$errors = array();
 		if ($notify == '1') {
 			$services = $this->services();
-			
-			// Post shouldn't be published yet
-			$post = get_post($post_id);
-			if ($post->post_status == 'publish') {
-				$post->post_status = 'draft';
-				wp_update_post($post);
-			}
-
-            // Broadcasted IDs
             $broadcasted_ids = get_post_meta($post_id, Social::$prefix.'broadcasted_ids', true);
-
 			if (isset($_POST[Social::$prefix.'action'])) {
 				foreach ($services as $key => $service) {
 					if (empty($_POST[Social::$prefix.$key.'_content'])) {
@@ -1071,11 +1066,7 @@ final class Social {
                         }
 					}
 					update_post_meta($post_id, Social::$prefix.'broadcast_accounts', $broadcast_accounts);
-
-					if ($post->post_status == 'draft') {
-						$post->post_status = 'publish';
-						wp_update_post($post);
-					}
+                    $this->broadcast($post_id);
 					wp_redirect($location);
 					return;
 				}
@@ -1255,7 +1246,7 @@ final class Social {
 	 * @param  object  $post
 	 */
 	public function broadcast($post) {
-		if (is_int($post)) {
+		if (!is_object($post)) {
 			$post = get_post($post);
 		}
         $broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted', true);
@@ -1337,7 +1328,17 @@ final class Social {
 
             $broadcasted_ids = get_post_meta($post->ID, Social::$prefix.'broadcasted_ids', true);
             if (!empty($broadcasted_ids)) {
-                $ids = array_merge_recursive($ids, $broadcasted_ids);
+                foreach ($ids as $key => $_broadcasted) {
+                    if (!isset($broadcasted_ids[$key])) {
+                        $broadcasted_ids[$key] = array();
+                    }
+
+                    foreach ($_broadcasted as $user_id => $status_id) {
+                        if ($status_id !== null) {
+                            $broadcasted_ids[$key][$user_id] = $status_id;
+                        }
+                    }
+                }
             }
             update_post_meta($post->ID, Social::$prefix.'broadcasted_ids', $ids);
 
