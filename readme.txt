@@ -127,6 +127,14 @@ If you want to disable the @Anywhere functionality, simply remove the API key fr
 
 No, the proxy acts just like any Twitter or Facebook application. We've simply pass commands back and forth through this application so you don't have to set up your own.
 
+= How can I define a custom comments.php for Social? =
+
+In your theme's functions.php add the following line:
+
+    define('SOCIAL_COMMENTS_FILE', STYLESHEETPATH.'social-comments.php');
+
+Then you will need to create a social-comments.php with your custom markup in your theme's directory.
+
 == Screenshots ==
 
 1. Allow your visitors to leave a comment as their Facebook or Twitter identities

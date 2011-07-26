@@ -810,17 +810,6 @@ final class Social {
      */
     public function add_meta_log_box() {
         global $post;
-
-        $broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted', true);
-        $show_log = false;
-        if (is_array($broadcasted) && count($broadcasted)) {
-            foreach ($broadcasted as $service) {
-                if ($service == '1') {
-                    $show_log = true;
-                    break;
-                }
-            }
-        }
 ?>
 <h4 style="margin:20px 0 7px 0;"><?php _e('Add by URL', Social::$i18n); ?></h4>
 <p><?php _e('Want to add a tweet? Enter the URL of the tweet here and Social will add the tweet as a comment.', Social::$i18n); ?></p>
@@ -831,7 +820,6 @@ final class Social {
     </span>
     <img src="<?php echo admin_url('images/loading.gif'); ?>" style="position:relative;top:4px;left:0;display:none" id="import_from_url_loader" />
 </p>
-<?php if ($show_log) { ?>
 <h4 style="margin:20px 0 7px 0;"><?php _e('Manual Refresh', Social::$i18n); ?></h4>
 <p><?php _e('You can manually run the comment aggregation by clicking the button below.', Social::$i18n); ?></p>
 <p class="submit" style="clear:both;float:none;padding:0;">
@@ -845,7 +833,6 @@ final class Social {
     <?php echo Social_Aggregate_Log::logs($post->ID); ?>
 </div>
 <?php
-        }
     }
 
 	/**
@@ -1448,9 +1435,12 @@ final class Social {
 		}
 
 		require SOCIAL_PATH.'lib/social/walker/comment.php';
-		$file = trailingslashit(dirname(SOCIAL_FILE)).'comments.php';
-		return $file;
 
+        if (!defined('SOCIAL_COMMENTS_FILE')) {
+            define('SOCIAL_COMMENTS_FILE', trailingslashit(dirname(SOCIAL_FILE)).'comments.php');
+        }
+
+		return SOCIAL_COMMENTS_FILE;
 	}
 
 	/**
@@ -1870,29 +1860,28 @@ final class Social {
             $aggregated = array();
         }
         $post->aggregated_ids = $aggregated;
-        if (count($broadcasted)) {
-            $broadcasted_ids = array();
-            foreach ($broadcasted as $service => $ids) {
-                if (!isset($broadcasted_ids[$service])) {
-                    $broadcasted_ids[$service] = $ids;
-                }
-                else {
-                    $broadcasted_ids[$service] = array_merge($broadcasted_ids[$service], $ids);
-                }
+        
+        $broadcasted_ids = array();
+        foreach ($broadcasted as $service => $ids) {
+            if (!isset($broadcasted_ids[$service])) {
+                $broadcasted_ids[$service] = $ids;
             }
-
-            // Run search!
-            $services = $this->services();
-            foreach ($services as $key => $service) {
-                $results = $service->search_for_replies($post, $urls, (isset($broadcasted_ids[$key]) ? $broadcasted_ids[$key] : null));
-
-                // Results?
-                if (is_array($results)) {
-                    $service->save_replies($post->ID, $results);
-                }
+            else {
+                $broadcasted_ids[$service] = array_merge($broadcasted_ids[$service], $ids);
             }
-            Social_Aggregate_Log::instance($post->ID)->save();
         }
+
+        // Run search!
+        $services = $this->services();
+        foreach ($services as $key => $service) {
+            $results = $service->search_for_replies($post, $urls, (isset($broadcasted_ids[$key]) ? $broadcasted_ids[$key] : null));
+
+            // Results?
+            if (is_array($results)) {
+                $service->save_replies($post->ID, $results);
+            }
+        }
+        Social_Aggregate_Log::instance($post->ID)->save();
     }
 
 	/**
