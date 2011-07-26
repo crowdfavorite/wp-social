@@ -723,17 +723,7 @@ final class Social {
                 }
             }
 
-            $broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted', true);
-            $show_log = false;
-            if (is_array($broadcasted) && count($broadcasted)) {
-				foreach ($broadcasted as $service) {
-					if ($service == '1') {
-						$show_log = true;
-						break;
-					}
-				}
-			}
-            if ($post->post_status == 'publish' and $show_log) {
+            if ($post->post_status == 'publish') {
                 add_meta_box(Social::$prefix.'meta_aggregation_log', __('Social Comment Aggregation', Social::$i18n), array($this, 'add_meta_log_box'), 'post', 'normal', 'core');
             }
         }
@@ -821,6 +811,17 @@ final class Social {
      */
     public function add_meta_log_box() {
         global $post;
+
+        $broadcasted = get_post_meta($post->ID, Social::$prefix.'broadcasted', true);
+        $show_log = false;
+        if (is_array($broadcasted) && count($broadcasted)) {
+            foreach ($broadcasted as $service) {
+                if ($service == '1') {
+                    $show_log = true;
+                    break;
+                }
+            }
+        }
 ?>
 <h4>Add by URL</h4>
 <p>Aggregation not pulling in a tweet? Paste the URL of the tweet here and Social will add the tweet as a comment.</p>
@@ -831,6 +832,7 @@ final class Social {
     </span>
     <img src="<?php echo admin_url('images/loading.gif'); ?>" style="position:relative;top:4px;left:0;display:none" id="import_from_url_loader" />
 </p>
+<?php if ($show_log) { ?>
 <h4>Manual Aggregation</h4>
 <p>You can manually run the comment aggregation by clicking the button below.</p>
 <p class="submit" style="clear:both;float:none;padding:0;">
@@ -844,6 +846,7 @@ final class Social {
     <?php echo Social_Aggregate_Log::logs($post->ID); ?>
 </div>
 <?php
+        }
     }
 
 	/**
