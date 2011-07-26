@@ -793,14 +793,14 @@ final class Social {
 
         if ($post->post_status == 'publish') {
 ?>
-    <p class="submit" style="clear:both;padding:0;margin:20px 0 0">
-        <input type="submit" name="<?php echo Social::$prefix.'broadcast'; ?>" value="Broadcast" />
-    </p>
+	<p class="submit" style="clear:both;padding:0;margin:20px 0 0">
+		<input type="submit" name="<?php echo Social::$prefix.'broadcast'; ?>" value="Broadcast" />
+	</p>
 <?php
         }
 ?>
-    <p>Want to broadcast to more accounts? <a href="<?php echo admin_url('profile.php#social-networks'); ?>">Add Accounts</a></p>
 </div>
+<p style="margin: 0; font-size: 85%; text-align: right;"><a href="<?php echo admin_url('profile.php#social-networks'); ?>"><?php _e('My Accounts', Social::$i18n); ?></a></p>
 <?php
     }
 
@@ -823,25 +823,25 @@ final class Social {
             }
         }
 ?>
-<h4>Add by URL</h4>
-<p>Aggregation not pulling in a tweet? Paste the URL of the tweet here and Social will add the tweet as a comment.</p>
+<h4><?php _e('Add by URL', Social::$i18n); ?></h4>
+<p><?php _e('Want to add a tweet? Enter the URL of the tweet here and Social will add the tweet as a comment.', Social::$i18n); ?></p>
 <p>
     <input type="text" name="source_url" style="width:350px" />
     <span class="submit" style="float:none">
-        <a href="<?php echo wp_nonce_url(admin_url('?social_action=import_from_url&post_id='.$post->ID)); ?>" id="import_from_url" class="button">Import Tweet</a>
+        <a href="<?php echo wp_nonce_url(admin_url('?social_action=import_from_url&post_id='.$post->ID)); ?>" id="import_from_url" class="button"><?php _e('Import Tweet', Social::$i18n); ?></a>
     </span>
     <img src="<?php echo admin_url('images/loading.gif'); ?>" style="position:relative;top:4px;left:0;display:none" id="import_from_url_loader" />
 </p>
 <?php if ($show_log) { ?>
-<h4>Manual Aggregation</h4>
-<p>You can manually run the comment aggregation by clicking the button below.</p>
+<h4><?php _e('Manual Refresh', Social::$i18n); ?></h4>
+<p><?php _e('You can manually run the comment aggregation by clicking the button below.', Social::$i18n); ?></p>
 <p class="submit" style="clear:both;float:none;padding:0;">
-    <a href="<?php echo wp_nonce_url(admin_url('?social_action=run_aggregation&post_id='.$post->ID)); ?>" id="run_aggregation" class="button" style="float:left;margin-bottom:15px;">Aggregate Comments</a>
+    <a href="<?php echo wp_nonce_url(admin_url('?social_action=run_aggregation&post_id='.$post->ID)); ?>" id="run_aggregation" class="button" style="float:left;margin-bottom:15px;"><?php _e('Find Social Comments', Social::$i18n); ?></a>
     <img src="<?php echo admin_url('images/loading.gif'); ?>" style="float:left;position:relative;top:4px;left:5px;display:none;" id="run_aggregation_loader" />
     <div style="clear:both"></div>
 </p>
 
-<h4>Aggregation Log</h4>
+<h4><?php _e('Log', Social::$i18n); ?></h4>
 <div id="aggregation_log">
     <?php echo Social_Aggregate_Log::logs($post->ID); ?>
 </div>
