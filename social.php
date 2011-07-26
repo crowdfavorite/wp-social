@@ -724,7 +724,7 @@ final class Social {
             }
 
             if ($post->post_status == 'publish') {
-                add_meta_box(Social::$prefix.'meta_aggregation_log', __('Social Comment Aggregation', Social::$i18n), array($this, 'add_meta_log_box'), 'post', 'normal', 'core');
+                add_meta_box(Social::$prefix.'meta_aggregation_log', __('Social Comments', Social::$i18n), array($this, 'add_meta_log_box'), 'post', 'normal', 'core');
             }
         }
     }
