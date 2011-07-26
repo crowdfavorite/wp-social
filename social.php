@@ -1130,6 +1130,8 @@ final class Social {
 
 		$total_accounts = count($accounts);
 		$heading = sprintf(__('Publish to %s:', Social::$i18n), ($total_accounts == '1' ? 'this account' : 'these accounts'));
+
+        if ($total_accounts) {
 ?>
 <tr>
 	<th scope="row">
@@ -1149,7 +1151,8 @@ final class Social {
 	</td>
 </tr>
 <?php
-	}
+        }
+    }
 ?>
 </table>
 <p class="step">
