@@ -158,6 +158,9 @@
 
 #aggregation_log h5 {
     border-top: 1px solid #eee;
+	font-size: 1em;
+	font-weight: normal;
+	line-height: 0.9em;
     padding: 10px 5px;
     margin: 0;
 }
@@ -170,6 +173,7 @@
 }
 #aggregation_log ul {
     list-style: disc inside;
+	margin-left: 10px;
 }
 #aggregation_log ul ul {
     padding-left: 15px;

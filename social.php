@@ -738,7 +738,7 @@ final class Social {
         $services = $this->services();
         $broadcasted_ids = get_post_meta($post->ID, Social::$prefix.'broadcasted_ids', true);
 ?>
-<div style="padding:10px 0">
+<div style="padding:1px 0">
 <?php
         if ($post->post_status !== 'publish' or empty($broadcasted_ids)) {
 ?>
@@ -756,8 +756,7 @@ final class Social {
                     if (!$header_shown) {
                         $header_shown = true;
 ?>
-<p>This post has been broadcasted to the following accounts. You may broadcast to more accounts by clicking on the
-"Broadcast" button below.</p>
+<p>This post has been broadcasted to the following accounts. You may broadcast to more accounts by clicking on the "Broadcast" button below.</p>
 <input type="hidden" name="<?php echo Social::$prefix.'notify'; ?>" value="1" />
 <?php
                     }
@@ -766,7 +765,7 @@ final class Social {
                     foreach ($broadcasted_ids[$key] as $user_id => $broadcast_id) {
                         if (isset($accounts[$user_id])) {
                             if (empty($accounts_output)) {
-                                $accounts_output = '<h4>'.$service->title.'</h4><ul>';
+                                $accounts_output = '<h4 style="margin-bottom:7px;">'.$service->title.'</h4><ul style="margin:0 0 25px 0;">';
                             }
 
                             $username = '';
@@ -774,7 +773,7 @@ final class Social {
                                 $username = $accounts[$user_id]->user->screen_name;
                             }
 
-                            $accounts_output .= '<li style="clear:both">';
+                            $accounts_output .= '<li style="clear:both;">';
                             $accounts_output .= '<img src="'.$service->profile_avatar($accounts[$user_id]).'" width="24" height="24" style="float:left;" />';
                             $accounts_output .= '<span style="position:relative;top:5px;left:5px;">';
                             $accounts_output .= $service->profile_name($accounts[$user_id]);
@@ -793,7 +792,7 @@ final class Social {
 
         if ($post->post_status == 'publish') {
 ?>
-	<p class="submit" style="clear:both;padding:0;margin:20px 0 0">
+	<p class="submit" style="clear:both;padding:0;margin:20px 0 0;">
 		<input type="submit" name="<?php echo Social::$prefix.'broadcast'; ?>" value="Broadcast" />
 	</p>
 <?php
@@ -823,7 +822,7 @@ final class Social {
             }
         }
 ?>
-<h4><?php _e('Add by URL', Social::$i18n); ?></h4>
+<h4 style="margin:20px 0 7px 0;"><?php _e('Add by URL', Social::$i18n); ?></h4>
 <p><?php _e('Want to add a tweet? Enter the URL of the tweet here and Social will add the tweet as a comment.', Social::$i18n); ?></p>
 <p>
     <input type="text" name="source_url" style="width:350px" />
@@ -833,7 +832,7 @@ final class Social {
     <img src="<?php echo admin_url('images/loading.gif'); ?>" style="position:relative;top:4px;left:0;display:none" id="import_from_url_loader" />
 </p>
 <?php if ($show_log) { ?>
-<h4><?php _e('Manual Refresh', Social::$i18n); ?></h4>
+<h4 style="margin:20px 0 7px 0;"><?php _e('Manual Refresh', Social::$i18n); ?></h4>
 <p><?php _e('You can manually run the comment aggregation by clicking the button below.', Social::$i18n); ?></p>
 <p class="submit" style="clear:both;float:none;padding:0;">
     <a href="<?php echo wp_nonce_url(admin_url('?social_action=run_aggregation&post_id='.$post->ID)); ?>" id="run_aggregation" class="button" style="float:left;margin-bottom:15px;"><?php _e('Find Social Comments', Social::$i18n); ?></a>
@@ -841,7 +840,7 @@ final class Social {
     <div style="clear:both"></div>
 </p>
 
-<h4><?php _e('Log', Social::$i18n); ?></h4>
+<h4 style="margin:0 0 7px 0;"><?php _e('Log', Social::$i18n); ?></h4>
 <div id="aggregation_log">
     <?php echo Social_Aggregate_Log::logs($post->ID); ?>
 </div>
