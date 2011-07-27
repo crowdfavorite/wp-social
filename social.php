@@ -1232,7 +1232,7 @@ final class Social {
 	 * @return void
 	 */
 	public function retry_broadcast_core() {
-		$url = str_replace('&amp;', '&', wp_nonce_url(site_url(Social::$prefix.'action=retry_broadcast')));
+		$url = str_replace('&amp;', '&', wp_nonce_url(site_url('?'.Social::$prefix.'action=retry_broadcast')));
 		wp_remote_get($url, array(
 			'timeout' => 0.01,
 			'blocking' => false,
