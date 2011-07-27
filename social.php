@@ -72,6 +72,7 @@ final class Social {
 		'broadcast_format' => '{title}: {content} {url}',
 		'twitter_anywhere_api_key' => '',
         'system_cron_api_key' => '',
+        'system_crons' => '0'
 	);
 	
 	/**
@@ -450,7 +451,8 @@ final class Social {
                     $this->broadcast_options($_POST['post_ID'], $_POST['location']);
 				break;
 				case 'settings':
-					update_option(Social::$prefix.'broadcast_format', $_POST[Social::$prefix.'broadcast_format']);
+                    Social::option('broadcast_format', $_POST[Social::$prefix.'broadcast_format'], true);
+                    Social::option('debug', $_POST[Social::$prefix.'debug'], true);
 
 					// Store the XML-RPC accounts
 					if (isset($_POST[Social::$prefix.'xmlrpc_accounts'])) {
@@ -459,7 +461,7 @@ final class Social {
 							$account = explode('|', $account);
 							$accounts[$account[0]][] = $account[1];
 						}
-						update_option(Social::$prefix.'xmlrpc_accounts', $accounts);
+						Social::option('xmlrpc_accounts', $accounts, true);
 					}
 					else {
 						delete_option(Social::$prefix.'xmlrpc_accounts');
@@ -467,12 +469,12 @@ final class Social {
 
 					// Anywhere key
 					if (isset($_POST[Social::$prefix.'twitter_anywhere_api_key'])) {
-						update_option(Social::$prefix.'twitter_anywhere_api_key', $_POST[Social::$prefix.'twitter_anywhere_api_key']);
+                        Social::option('twitter_anywhere_api_key', $_POST[Social::$prefix.'twitter_anywhere_api_key'], true);
 					}
 
                     // System CRON
                     if (isset($_POST[Social::$prefix.'system_crons'])) {
-                        update_option(Social::$prefix.'system_crons', $_POST[Social::$prefix.'system_crons']);
+                        Social::option('system_crons', $_POST[Social::$prefix.'system_crons'], true);
 
                         // Unschedule the CRONs
                         if (($timestamp = wp_next_scheduled(Social::$prefix.'cron_15_core')) !== false) {
@@ -528,6 +530,10 @@ final class Social {
                         wp_die('Oops, please try again.');
                     }
 
+                    if (Social::option('debug') == '1') {
+                        $this->log('cron_15 called manually.');
+                    }
+
                     if ($this->cron_lock('cron_15')) {
                         do_action(Social::$prefix.'cron_15');
                     }
@@ -538,6 +544,10 @@ final class Social {
                         wp_die('Oops, please try again.');
                     }
 
+                    if (Social::option('debug') == '1') {
+                        $this->log('cron_60 called manually.');
+                    }
+
                     if ($this->cron_lock('cron_60')) {
                         do_action(Social::$prefix.'cron_60');
                     }
@@ -546,6 +556,10 @@ final class Social {
 				case 'aggregate_comments':
                     if (!$api_key_verified) {
                         wp_die('Oops, please try again.');
+                    }
+
+                    if (Social::option('debug') == '1') {
+                        $this->log('aggregate_comments called manually.');
                     }
 
                     do_action(Social::$prefix.'aggregate_comments');
@@ -561,6 +575,10 @@ final class Social {
                         wp_die('Oops, please try again.');
                     }
 
+                    if (Social::option('debug') == '1') {
+                        $this->log('run_aggregation called manually.');
+                    }
+
                     $this->run_aggregation($_GET['post_id']);
 
                     echo Social_Aggregate_Log::logs($_GET['post_id']);
@@ -569,6 +587,10 @@ final class Social {
                 case 'import_from_url':
                     if (!wp_verify_nonce($_GET['_wpnonce'])) {
                         wp_die('Oops, please try again.');
+                    }
+
+                    if (Social::option('debug') == '1') {
+                        $this->log('import_from_url called manually.');
                     }
 
                     $services = $this->services();
@@ -872,7 +894,6 @@ final class Social {
 	 * Displays the option form for the WP-Admin user.
 	 */
 	public function admin_options_form() {
-        $system_crons = get_option(Social::$prefix.'system_crons', '0');
 ?>
 <form id="setup" method="post" action="<?php echo admin_url(); ?>">
 <?php wp_nonce_field(); ?>
@@ -921,7 +942,7 @@ final class Social {
 			</th>
 		</tr>
 		<tr>
-			<th style="width:100px"><label for="<?php echo Social::$prefix.'broadcast_format'; ?>">Format</label></th>
+			<th style="width:100px"><label for="<?php echo Social::$prefix.'broadcast_format'; ?>"><?php _e('Format', Social::$i18n); ?></label></th>
 			<td><input type="text" class="text" name="<?php echo Social::$prefix.'broadcast_format'; ?>" id="<?php echo Social::$prefix.'broadcast_format'; ?>" style="width:400px" value="<?php echo Social::option('broadcast_format'); ?>" /></td>
 		</tr>
 	</table>
@@ -929,8 +950,7 @@ final class Social {
 	<?php if ($have_accounts): ?>
 	<div id="social_xmlrpc">
 		<h3><?php _e('XML-RPC/Email Broadcasting Accounts', Social::$i18n); ?></h3>
-		<p>These accounts will be the accounts that are automatically broadcasted to when you publish a blog post via
-		XML-RPC or email.</p>
+		<p><?php _e('These accounts will be the accounts that are automatically broadcasted to when you publish a blog post via XML-RPC or email.', Social::$i18n); ?></p>
 
 		<?php $accounts = get_option(Social::$prefix.'xmlrpc_accounts', array()); ?>
 		<?php foreach (Social::$global_services as $key => $service): ?>
@@ -947,39 +967,52 @@ final class Social {
 	<?php endif; ?>
 
 	<h3><?php _e('Twitter @Anywhere Settings', Social::$i18n); ?></h3>
-	<p>If you would like to utilize Twitter's @Anywhere hovercards for Twitter usernames, then enter your application's
-	API key here. (How do I get an API key? <a href="http://dev.twitter.com/anywhere" target="_blank">Click Here</a>)</p>
+	<p><?php _e('If you would like to utilize Twitter\'s @Anywhere hovercards for Twitter usernames, then enter your application\'s API key here. (How do I get an API key? <a href="http://dev.twitter.com/anywhere" target="_blank">Click Here</a>)', Social::$i18n); ?></p>
 
 	<p><input type="text" class="text" name="<?php echo Social::$prefix.'twitter_anywhere_api_key'; ?>" id="<?php echo Social::$prefix.'twitter_anywhere_api_key'; ?>" style="width:400px" value="<?php echo Social::option('twitter_anywhere_api_key'); ?>" /></p>
 
     <h3><?php _e('Disable Internal CRON Mechanism', Social::$i18n); ?></h3>
-	<p>If you disable this feature, Social's CRON jobs will not run until you setup the correct system CRON jobs.</p>
+	<p><?php _e('If you disable this feature, Social\'s CRON jobs will not run until you setup the correct system CRON jobs.', Social::$i18n); ?></p>
 
     <p>
         <label for="system_crons_yes">
-            <input type="radio" name="<?php echo Social::$prefix.'system_crons'; ?>" value="1" id="system_crons_yes" style="position:relative;top:-1px"<?php echo $system_crons == '1' ? ' checked="checked"' : ''; ?> />
-            Yes
+            <input type="radio" name="<?php echo Social::$prefix.'system_crons'; ?>" value="1" id="system_crons_yes" style="position:relative;top:-1px"<?php echo Social::option('system_crons') == '1' ? ' checked="checked"' : ''; ?> />
+            <?php _e('Yes', Social::$i18n); ?>
         </label>
     </p>
 	<p>
         <label for="system_crons_no">
-            <input type="radio" name="<?php echo Social::$prefix.'system_crons'; ?>" value="0" id="system_crons_no" style="position:relative;top:-1px"<?php echo $system_crons == '0' ? ' checked="checked"' : ''; ?> />
-            No
+            <input type="radio" name="<?php echo Social::$prefix.'system_crons'; ?>" value="0" id="system_crons_no" style="position:relative;top:-1px"<?php echo Social::option('system_crons') != '1' ? ' checked="checked"' : ''; ?> />
+            <?php _e('No', Social::$i18n); ?>
         </label>
     </p>
 
-    <?php if ($system_crons == '1'): ?>
-    <h4 style="margin-bottom:0">API Key</h4>
-    <p style="margin-top:0">This is the API key that your system CRON jobs will need to use:</p>
+    <?php if (Social::option('system_crons') == '1'): ?>
+    <h4 style="margin-bottom:0"><?php _e('API Key', Social::$i18n); ?></h4>
+    <p style="margin-top:0"><?php _e('This is the API key that your system CRON jobs will need to use:', Social::$i18n); ?></p>
     <p>
         <strong class="<?php echo Social::$prefix.'api_key'; ?>"><?php echo Social::option('system_cron_api_key'); ?></strong><br />
-        <a href="<?php echo wp_nonce_url(admin_url('options-general.php?page=social.php&'.Social::$prefix.'action=regenerate_api_key'), 'regenerate_api_key'); ?>" rel="<?php echo Social::$prefix.'api_key'; ?>" id="<?php echo Social::$prefix.'regenerate_api_key'; ?>">Regenerate Key</a>
+        <a href="<?php echo wp_nonce_url(admin_url('options-general.php?page=social.php&'.Social::$prefix.'action=regenerate_api_key'), 'regenerate_api_key'); ?>" rel="<?php echo Social::$prefix.'api_key'; ?>" id="<?php echo Social::$prefix.'regenerate_api_key'; ?>"><?php _e('Regenerate Key', Social::$i18n); ?></a>
     </p>
-    <h4 style="margin-bottom:0">Running System CRON</h4>
-    <p style="margin-top:0">For your system CRON to run correctly, make sure it is pointing towards a URL that looks something like the
-    following:</p>
+    <h4 style="margin-bottom:0"><?php _e('Running System CRON', Social::$i18n); ?></h4>
+    <p style="margin-top:0"><?php _e('For your system CRON to run correctly, make sure it is pointing towards a URL that looks something like the following:', Social::$i18n); ?></p>
     <p><?php echo site_url('?'.Social::$prefix.'cron=cron_15&api_key=<span class="'.Social::$prefix.'api_key">'.Social::option('system_cron_api_key').'</span>'); ?></p>
     <?php endif; ?>
+
+    <h4 style="margin-bottom:0"><?php _e('Debug Mode', Social::$i18n); ?></h4>
+    <p style="margin-top:0"><?php _e('If you enable this option Social may run slower, but you\'ll be able to see various informational items in your PHP error log.', Social::$i18n); ?></p>
+    <p>
+        <label for="debug_mode_yes">
+            <input type="radio" name="<?php echo Social::$prefix.'debug'; ?>" id="debug_mode_yes" value="1"<?php echo Social::option('debug') == '1' ? ' checked="checked"' : ''; ?> />
+            <?php _e('Yes', Social::$i18n); ?>
+        </label>
+    </p>
+    <p>
+        <label for="debug_mode_no">
+            <input type="radio" name="<?php echo Social::$prefix.'debug'; ?>" id="debug_mode_no" value="0"<?php echo Social::option('debug') != '1' ? ' checked="checked"' : ''; ?> />
+            <?php _e('No', Social::$i18n); ?>
+        </label>
+    </p>
 
 	<p class="submit" style="clear:both">
 		<input type="submit" name="submit" value="Save Settings" class="button-primary" />
@@ -1293,6 +1326,9 @@ final class Social {
                                 }
 
                                 if ($account !== false) {
+                                    if (Social::option('debug') == '1') {
+                                        $this->log('Broadcasting to '.$service->profile_name($account).' ('.$service->title.')...START.');
+                                    }
                                     $response = $service->status_update($account, $content);
                                     if (!$service->deauthed($response, $account)) {
                                         $ids[$key]["{$account->user->id}"] = $response->response->id;
@@ -1301,13 +1337,24 @@ final class Social {
                                         do_action(Social::$prefix.$key.'_broadcast_response', $response);
 
                                         $broadcasted[$service_key] = '1';
+
+                                        if (Social::option('debug') == '1') {
+                                            $this->log('Broadcasting to '.$service->profile_name($account).' ('.$service->title.')...COMPLETE.');
+                                        }
                                     }
                                     else {
                                         if ($response === false or ($response == 'deauthed')) {
                                             $_broadcast_accounts[$key][] = $_account;
+
+                                            if (Social::option('debug') == '1') {
+                                                $this->log('Broadcasting to '.$service->profile_name($account).' ('.$service->title.')...ERROR - DEAUTH PROBABLE.');
+                                            }
                                         }
                                         else {
                                             $errored_accounts[$service->service][] = $account;
+                                            if (Social::option('debug') == '1') {
+                                                $this->log('Broadcasting to '.$service->profile_name($account).' ('.$service->title.')...ERROR.');
+                                            }
                                         }
                                     }
                                 }
@@ -1725,6 +1772,11 @@ final class Social {
 		}
 		
 		fclose($fp);
+
+        if (Social::option('debug') == '1') {
+            $this->log('CRON '.$cron.' LOCK COMPLETE.');
+        }
+
 		return $locked;
 	}
 
@@ -1740,6 +1792,10 @@ final class Social {
 		ftruncate($fp, 0);
 		flock($fp, LOCK_UN);
 		fclose($fp);
+
+        if (Social::option('debug') == '1') {
+            $this->log('CRON '.$cron.' UNLOCK COMPLETE.');
+        }
 	}
 
 	/**
@@ -1753,6 +1809,10 @@ final class Social {
 	 * Handles the file locking for cron_15.
 	 */
 	public function cron_15_core() {
+        if (Social::option('debug') == '1') {
+            $this->log('cron_15_core initiated.');
+        }
+
         $url = str_replace('&amp;', '&', wp_nonce_url(site_url('?'.Social::$prefix.'action=cron_15')));
 		wp_remote_get($url, array(
             'timeout' => 0.01,
@@ -1765,6 +1825,10 @@ final class Social {
 	 * Handles the file locking for cron_60.
 	 */
 	public function cron_60_core() {
+        if (Social::option('debug') == '1') {
+            $this->log('cron_60_core initiated.');
+        }
+
         $url = str_replace('&amp;', '&', wp_nonce_url(site_url('?'.Social::$prefix.'action=cron_60')));
 		wp_remote_get($url, array(
             'timeout' => 0.01,
@@ -1778,6 +1842,11 @@ final class Social {
 	 */
 	public function aggregate_comments() {
 		global $wpdb;
+
+        if (Social::option('debug') == '1') {
+            $this->log('aggregate_comments initiated.');
+        }
+
 		// Load the ignored posts
         $queued = get_option(Social::$prefix.'queued_for_aggregation', array());
 		$ignored = get_option(Social::$prefix.'ignored_posts_for_aggregation', array());
@@ -1822,7 +1891,15 @@ final class Social {
             if (!isset($queued[$post->ID]) or $queued[$post->ID] < $hours) {
                 $queued[$post->ID] = $hours;
 
+                if (Social::option('debug') == '1') {
+                    $this->log('Aggregation for POST #'.$post->ID.'...START. ('.$hours.' hours)');
+                }
+
                 $this->run_aggregation($post);
+
+                if (Social::option('debug') == '1') {
+                    $this->log('Aggregation for POST #'.$post->ID.'...COMPLETE. ('.$hours.' hours)');
+                }
 
                 // Remove the post from the CRON.
                 if ($hours === 48) {
@@ -1834,6 +1911,10 @@ final class Social {
                 update_option(Social::$prefix.'queued_for_aggregation', $queued);
             }
 		}
+
+        if (Social::option('debug') == '1') {
+            $this->log('aggregate_comments complete.');
+        }
 	}
 
     /**
@@ -1962,6 +2043,17 @@ final class Social {
 			return '<'.$tag.' '.$attrs.' />';
 		}
 	}
+
+    /**
+     * Adds a message to the error log.
+     *
+     * @param  string  $message
+     * @return void
+     */
+    private function log($message) {
+        error_log('Social: '.$message);
+    }
+
 } // End Social
 
 /**
