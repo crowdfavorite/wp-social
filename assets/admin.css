@@ -156,25 +156,41 @@
     background-position: -30px -82px;
 }
 
+#aggregation_log {
+    border-bottom: 1px solid #dfdfdf;
+	margin-bottom: 15px;
+}
 #aggregation_log h5 {
-    border-top: 1px solid #eee;
+    border-top: 1px solid #dfdfdf;
 	font-size: 1em;
 	font-weight: normal;
 	line-height: 0.9em;
-    padding: 10px 5px;
+    padding: 8px 5px;
     margin: 0;
 }
 #aggregation_log h5:hover {
     background-color: #fff;
     cursor: pointer;
 }
-#aggregation_log .parent {
-    padding: 5px;
-}
 #aggregation_log ul {
+	color: #666;
+	font-size: 0.9em;
     list-style: disc inside;
-	margin-left: 10px;
+	margin: 0px 15px 5px 15px;
 }
-#aggregation_log ul ul {
-    padding-left: 15px;
+
+.social-meta-box {
+	padding: 8px 0;
+	
+}
+.social-meta-box h4 {
+	margin: 20px 0 8px 0;
+}
+.social-meta-box p,
+.social-meta-box ul {
+	margin: 0 6px 0 0 !important;
+}
+
+h4.mar-top-none {
+	margin-top: 0;
 }
