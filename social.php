@@ -1320,20 +1320,21 @@ final class Social {
             }
 
             $broadcasted_ids = get_post_meta($post->ID, Social::$prefix.'broadcasted_ids', true);
-            if (!empty($broadcasted_ids)) {
-                foreach ($ids as $key => $_broadcasted) {
-                    if (!isset($broadcasted_ids[$key])) {
-                        $broadcasted_ids[$key] = array();
-                    }
+            if (!is_array($broadcasted_ids)) {
+                $broadcasted_ids = array();
+            }
+            foreach ($ids as $key => $_broadcasted) {
+                if (!isset($broadcasted_ids[$key])) {
+                    $broadcasted_ids[$key] = array();
+                }
 
-                    foreach ($_broadcasted as $user_id => $status_id) {
-                        if ($status_id !== null) {
-                            $broadcasted_ids[$key][$user_id] = $status_id;
-                        }
+                foreach ($_broadcasted as $user_id => $status_id) {
+                    if ($status_id !== null) {
+                        $broadcasted_ids[$key][$user_id] = $status_id;
                     }
                 }
             }
-            update_post_meta($post->ID, Social::$prefix.'broadcasted_ids', $ids);
+            update_post_meta($post->ID, Social::$prefix.'broadcasted_ids', $broadcasted_ids);
 
             // Accounts errored?
             if ($errored_accounts !== false) {
