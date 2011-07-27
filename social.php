@@ -530,10 +530,6 @@ final class Social {
                         wp_die('Oops, please try again.');
                     }
 
-                    if (Social::option('debug') == '1') {
-                        $this->log('cron_15 called manually.');
-                    }
-
                     if ($this->cron_lock('cron_15')) {
                         do_action(Social::$prefix.'cron_15');
                     }
@@ -544,10 +540,6 @@ final class Social {
                         wp_die('Oops, please try again.');
                     }
 
-                    if (Social::option('debug') == '1') {
-                        $this->log('cron_60 called manually.');
-                    }
-
                     if ($this->cron_lock('cron_60')) {
                         do_action(Social::$prefix.'cron_60');
                     }
@@ -556,10 +548,6 @@ final class Social {
 				case 'aggregate_comments':
                     if (!$api_key_verified) {
                         wp_die('Oops, please try again.');
-                    }
-
-                    if (Social::option('debug') == '1') {
-                        $this->log('aggregate_comments called manually.');
                     }
 
                     do_action(Social::$prefix.'aggregate_comments');
