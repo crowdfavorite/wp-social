@@ -803,13 +803,13 @@ final class Social {
         if ($post->post_status == 'publish') {
 ?>
 	<p class="submit" style="clear:both;padding:0;margin:20px 0 0;">
-		<input type="submit" name="<?php echo Social::$prefix.'broadcast'; ?>" value="Broadcast" />
+		<input type="submit" name="<?php echo Social::$prefix.'broadcast'; ?>" value="<?php _e('Broadcast', Social::$i18n); ?>" />
+		<a href="<?php echo admin_url('profile.php#social-networks'); ?>" style="float: right; padding-top: 8px;"><?php _e('My Accounts', Social::$i18n); ?></a>
 	</p>
 <?php
         }
 ?>
 </div>
-<p style="margin: 0; font-size: 85%; text-align: right;"><a href="<?php echo admin_url('profile.php#social-networks'); ?>"><?php _e('My Accounts', Social::$i18n); ?></a></p>
 <?php
     }
 
