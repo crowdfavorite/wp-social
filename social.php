@@ -1872,8 +1872,8 @@ final class Social {
             else if ($timestamp >= 14400) {
                 $hours = 4;
             }
-            else if ($timestamp >= 20) {
-                $hours = 8;
+            else if ($timestamp >= 7200) {
+                $hours = 2;
             }
 
             if (!isset($queued[$post->ID]) or $queued[$post->ID] < $hours) {
