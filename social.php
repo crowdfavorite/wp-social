@@ -748,14 +748,16 @@ final class Social {
         $services = $this->services();
         $broadcasted_ids = get_post_meta($post->ID, Social::$prefix.'broadcasted_ids', true);
 ?>
-<div style="padding:1px 0">
+<div class="social-meta-box" style="padding-top:6px;">
 <?php
         if ($post->post_status !== 'publish' or empty($broadcasted_ids)) {
 ?>
-    <h4 style="margin:0"><?php _e('Broadcast Post', Social::$i18n); ?></h4>
-    <p style="margin-top:0">Would you like to broadcast this post?</p>
-    <input type="radio" name="<?php echo Social::$prefix.'notify'; ?>" id="<?php echo Social::$prefix.'notify_yes'; ?>" class="social-toggle" value="1" /> <label for="<?php echo Social::$prefix.'notify_yes'; ?>" class="social-toggle-label"><?php _e('Yes', Social::$i18n); ?></label>
-    <input type="radio" name="<?php echo Social::$prefix.'notify'; ?>" id="<?php echo Social::$prefix.'notify_no'; ?>" class="social-toggle" value="0" checked="checked" /> <label for="<?php echo Social::$prefix.'notify_no'; ?>" class="social-toggle-label"><?php _e('No', Social::$i18n); ?></label>
+    <h4 class="mar-top-none"><?php _e('Broadcast Post', Social::$i18n); ?></h4>
+    <p>Would you like to broadcast this post?</p>
+    <p>
+		<input type="radio" name="<?php echo Social::$prefix.'notify'; ?>" id="<?php echo Social::$prefix.'notify_yes'; ?>" class="social-toggle" value="1" /> <label for="<?php echo Social::$prefix.'notify_yes'; ?>" class="social-toggle-label"><?php _e('Yes', Social::$i18n); ?></label>
+    	<input type="radio" name="<?php echo Social::$prefix.'notify'; ?>" id="<?php echo Social::$prefix.'notify_no'; ?>" class="social-toggle" value="0" checked="checked" /> <label for="<?php echo Social::$prefix.'notify_no'; ?>" class="social-toggle-label"><?php _e('No', Social::$i18n); ?></label>
+	</p>
 <?php
         }
         else {
@@ -766,7 +768,7 @@ final class Social {
                     if (!$header_shown) {
                         $header_shown = true;
 ?>
-<p>This post has been broadcasted to the following accounts. You may broadcast to more accounts by clicking on the "Broadcast" button below.</p>
+<p class="mar-top-none">This post has been broadcasted to the following accounts. You may broadcast to more accounts by clicking on the "Broadcast" button below.</p>
 <input type="hidden" name="<?php echo Social::$prefix.'notify'; ?>" value="1" />
 <?php
                     }
@@ -775,7 +777,7 @@ final class Social {
                     foreach ($broadcasted_ids[$key] as $user_id => $broadcast_id) {
                         if (isset($accounts[$user_id])) {
                             if (empty($accounts_output)) {
-                                $accounts_output = '<h4 style="margin-bottom:7px;">'.$service->title.'</h4><ul style="margin:0 0 25px 0;">';
+                                $accounts_output = '<h4>'.$service->title.'</h4><ul style="margin:0 0 25px 0;">';
                             }
 
                             $username = '';

@@ -167,18 +167,15 @@
 }
 .social-meta-box-block h4,
 .social-meta-box-block p,
-.social-meta-box-block ul {
-	margin: 0 0 8px 0;
-}
-
+.social-meta-box-block ul,
 .social-meta-box h4,
 .social-meta-box p,
 .social-meta-box ul {
-	margin: 0 0 8px 0 !important;
+	margin: 0 0 8px 0;
 }
 
-h4.mar-top-none {
-	margin-top: 0;
+.mar-top-none {
+	margin-top: 0 !important;
 }
 
 
