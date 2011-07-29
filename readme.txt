@@ -131,7 +131,7 @@ No, the proxy acts just like any Twitter or Facebook application. We've simply p
 
 In your theme's functions.php add the following line:
 
-    define('SOCIAL_COMMENTS_FILE', STYLESHEETPATH.'social-comments.php');
+    define('SOCIAL_COMMENTS_FILE', STYLESHEETPATH.'/social-comments.php');
 
 Then you will need to create a social-comments.php with your custom markup in your theme's directory.
 
@@ -147,7 +147,7 @@ There are three constants that can be altered to your liking:
 To define custom JS/CSS in your theme's functions.php add the following line (Replace "SOCIAL_ADMIN_CSS" with one of the
 constants listed above):
 
-    define('SOCIAL_ADMIN_CSS', 'path/to/stylesheet.css');
+    define('SOCIAL_ADMIN_CSS', STYLESHEETPATH.'/path/to/stylesheet.css');
 
 To disable Social's JS/CSS in your theme's functions.php add the following line (Replace "SOCIAL_ADMIN_CSS" With one of
 the constants defined above):
