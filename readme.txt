@@ -135,6 +135,24 @@ In your theme's functions.php add the following line:
 
 Then you will need to create a social-comments.php with your custom markup in your theme's directory.
 
+= How can I define custom JS and/or CSS, or disable Social's JS/CSS? =
+
+There are three constants that can be altered to your liking:
+
+1. `SOCIAL_ADMIN_CSS` - CSS file for WP-Admin.
+2. `SOCIAL_COMMENTS_CSS` - CSS file for the comments form.
+3. `SOCIAL_JS` - JS file used on the comments form and WP-Admin
+
+To define custom JS/CSS in your theme's functions.php add the following line (Replace "SOCIAL_ADMIN_CSS" with one of the
+constants listed above):
+
+    define('SOCIAL_ADMIN_CSS', 'path/to/stylesheet.css');
+
+To disable Social's JS/CSS in your theme's functions.php add the following line (Replace "SOCIAL_ADMIN_CSS" With one of
+the constants defined above):
+
+    define('SOCIAL_ADMIN_CSS', false);
+
 == Screenshots ==
 
 1. Allow your visitors to leave a comment as their Facebook or Twitter identities

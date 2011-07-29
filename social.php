@@ -257,6 +257,18 @@ final class Social {
 			}
 		}
 		
+		if (!defined('SOCIAL_JS')) {
+			define('SOCIAL_JS', Social::$plugins_url.'assets/social.js');
+		}
+
+		if (!defined('SOCIAL_ADMIN_CSS')) {
+			define('SOCIAL_ADMIN_CSS', Social::$plugins_url.'assets/admin.css');
+		}
+
+		if (!defined('SOCIAL_COMMENTS_CSS')) {
+			define('SOCIAL_COMMENTS_CSS', Social::$plugins_url.'assets/comments.css');
+		}
+		
 		if (is_admin()) {
 			if (Social::$update) {
 				add_action('admin_notices', array($this, 'display_upgrade'));
@@ -267,13 +279,24 @@ final class Social {
 			if (count($deauthed)) {
 				add_action('admin_notices', array($this, 'display_deauthed'));
 			}
-			wp_enqueue_style('social_admin', Social::$plugins_url.'assets/admin.css', array(), Social::$version, 'screen');
-			wp_enqueue_script('social_admin', Social::$plugins_url.'assets/social.js', array('jquery'), Social::$version, true);
+
+			if (SOCIAL_ADMIN_CSS !== false) {
+				wp_enqueue_style('social_admin', Social::$plugins_url.'assets/admin.css', array(), Social::$version, 'screen');
+			}
+
+			if (SOCIAL_JS !== false) {
+				wp_enqueue_script('social_admin', SOCIAL_JS, array('jquery'), Social::$version, true);
+			}
 		}
 		else {
-			wp_enqueue_style('social_style_main', Social::$plugins_url.'assets/comments.css', array(), Social::$version, 'screen');
-			wp_enqueue_script('jquery');
-			wp_enqueue_script('social_script_main', Social::$plugins_url.'assets/social.js', array('jquery'), Social::$version, true);
+			if (SOCIAL_COMMENTS_CSS !== false) {
+				wp_enqueue_style('social_style_main', Social::$plugins_url.'assets/comments.css', array(), Social::$version, 'screen');
+			}
+
+			if (SOCIAL_JS !== false) {
+				wp_enqueue_script('jquery');
+				wp_enqueue_script('social_script_main', Social::$plugins_url.'assets/social.js', array('jquery'), Social::$version, true);
+			}
 		}
 
 		if (version_compare(PHP_VERSION, '5.2.1', '<')) {
@@ -2041,7 +2064,9 @@ final class Social {
      * @return void
      */
     private function log($message) {
-        error_log('Social: '.$message);
+	    $file = fopen(SOCIAL_PATH.'log.txt', 'a+');
+	    fwrite($file, '['.date('Y-m-d H:i:s').'] '.$message.PHP_EOL);
+	    fclose($file);
     }
 
 } // End Social
