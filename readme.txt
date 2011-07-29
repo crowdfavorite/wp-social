@@ -140,8 +140,9 @@ Then you will need to create a social-comments.php with your custom markup in yo
 There are three constants that can be altered to your liking:
 
 1. `SOCIAL_ADMIN_CSS` - CSS file for WP-Admin.
-2. `SOCIAL_COMMENTS_CSS` - CSS file for the comments form.
-3. `SOCIAL_JS` - JS file used on the comments form and WP-Admin
+2. `SOCIAL_ADMIN_JS` - JS file for WP-Admin.
+3. `SOCIAL_COMMENTS_CSS` - CSS file for the comments form.
+4. `SOCIAL_COMMENTS_JS` - JS file used on the comments form and WP-Admin
 
 To define custom JS/CSS in your theme's functions.php add the following line (Replace "SOCIAL_ADMIN_CSS" with one of the
 constants listed above):

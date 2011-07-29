@@ -257,8 +257,12 @@ final class Social {
 			}
 		}
 		
-		if (!defined('SOCIAL_JS')) {
-			define('SOCIAL_JS', Social::$plugins_url.'assets/social.js');
+		if (!defined('SOCIAL_COMMENTS_JS')) {
+			define('SOCIAL_COMMENTS_JS', Social::$plugins_url.'assets/social.js');
+		}
+
+		if (!defined('SOCIAL_ADMIN_JS')) {
+			define('SOCIAL_ADMIN_JS', Social::$plugins_url.'assets/admin.js');
 		}
 
 		if (!defined('SOCIAL_ADMIN_CSS')) {
@@ -284,19 +288,22 @@ final class Social {
 				wp_enqueue_style('social_admin', Social::$plugins_url.'assets/admin.css', array(), Social::$version, 'screen');
 			}
 
-			if (SOCIAL_JS !== false) {
-				wp_enqueue_script('social_admin', SOCIAL_JS, array('jquery'), Social::$version, true);
+			if (SOCIAL_ADMIN_JS !== false) {
+				wp_enqueue_script('social_admin', Social::$plugins_url.'assets/admin.js', array(), Social::$version, true);
 			}
 		}
 		else {
 			if (SOCIAL_COMMENTS_CSS !== false) {
-				wp_enqueue_style('social_style_main', Social::$plugins_url.'assets/comments.css', array(), Social::$version, 'screen');
+				wp_enqueue_style('social_comments', Social::$plugins_url.'assets/comments.css', array(), Social::$version, 'screen');
 			}
 
-			if (SOCIAL_JS !== false) {
+			if (SOCIAL_COMMENTS_JS !== false) {
 				wp_enqueue_script('jquery');
-				wp_enqueue_script('social_script_main', Social::$plugins_url.'assets/social.js', array('jquery'), Social::$version, true);
 			}
+		}
+
+		if (SOCIAL_COMMENTS_JS !== false) {
+			wp_enqueue_script('social_js', SOCIAL_COMMENTS_JS, array(), Social::$version, true);
 		}
 
 		if (version_compare(PHP_VERSION, '5.2.1', '<')) {
