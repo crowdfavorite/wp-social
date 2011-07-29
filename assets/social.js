@@ -200,9 +200,7 @@
                     $this.removeAttr('disabled');
                     $('input[name=source_url]').removeAttr('disabled').val('');
 
-                    $('#aggregation_log').hide().html(response).find('.parent').hide();
-                    $('#aggregation_log').find('.parent:first').show();
-                    $('#aggregation_log').fadeIn();
+                    $('#aggregation_log').hide().html(response).find('.parent:not(:first)').hide().end().fadeIn();
                 });
             }
         });
@@ -223,8 +221,7 @@
                     $('#run_aggregation_loader').hide();
                     $this.removeAttr('disabled');
 
-                    $('#aggregation_log').hide().html(response).find('.parent').hide();
-                    $('#aggregation_log').fadeIn();
+                    $('#aggregation_log').hide().html(response).find('.parent:not(:first)').hide().end().fadeIn();
                 });
             }
         });
