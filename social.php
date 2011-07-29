@@ -285,16 +285,16 @@ final class Social {
 			}
 
 			if (SOCIAL_ADMIN_CSS !== false) {
-				wp_enqueue_style('social_admin', Social::$plugins_url.'assets/admin.css', array(), Social::$version, 'screen');
+				wp_enqueue_style('social_admin', SOCIAL_ADMIN_CSS, array(), Social::$version, 'screen');
 			}
 
 			if (SOCIAL_ADMIN_JS !== false) {
-				wp_enqueue_script('social_admin', Social::$plugins_url.'assets/admin.js', array(), Social::$version, true);
+				wp_enqueue_script('social_admin', SOCIAL_ADMIN_JS, array(), Social::$version, true);
 			}
 		}
 		else {
 			if (SOCIAL_COMMENTS_CSS !== false) {
-				wp_enqueue_style('social_comments', Social::$plugins_url.'assets/comments.css', array(), Social::$version, 'screen');
+				wp_enqueue_style('social_comments', SOCIAL_COMMENTS_CSS, array(), Social::$version, 'screen');
 			}
 
 			if (SOCIAL_COMMENTS_JS !== false) {
