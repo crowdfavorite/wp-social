@@ -221,7 +221,7 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 				foreach ($accounts['twitter'] as $account) {
 					if (isset($broadcasted_ids[$account->user->id])) {
 						$tweets = $this->request($account, 'statuses/retweets/' . $broadcasted_ids[$account->user->id]);
-						if (is_array($tweets->response) and count($tweets->response)) {
+						if (isset($tweets->response) and is_array($tweets->response) and count($tweets->response)) {
 							foreach ($tweets->response as $tweet) {
 								$log_data = array(
 									'username' => $tweet->user->screen_name
@@ -249,10 +249,10 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 						}
 
 						$tweets = $this->request($account, 'statuses/mentions', array(
-						                                                             'since_id' => $broadcasted_ids[$account->user->id],
-						                                                             'count' => 200
-						                                                        ));
-						if (is_array($tweets->response) and count($tweets->response)) {
+							'since_id' => $broadcasted_ids[$account->user->id],
+							'count' => 200
+						));
+						if (isset($tweets->response) and is_array($tweets->response) and count($tweets->response)) {
 							foreach ($tweets->response as $tweet) {
 								$log_data = array(
 									'username' => $tweet->user->screen_name
@@ -293,7 +293,7 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 		if (!is_wp_error($request)) {
 			$request['body'] = $this->request_body($request['body']);
 			$response = json_decode($request['body']);
-			if (is_array($response->results) and count($response->results)) {
+			if (isset($response->results) and is_array($response->results) and count($response->results)) {
 				foreach ($response->results as $result) {
 					$log_data = array(
 						'username' => $result->from_user
