@@ -19,14 +19,14 @@ class Social_Walker_Comment extends Walker_Comment {
 
 		switch ($args['style']) {
 			case 'div':
-				break;
+			break;
 			case 'ol':
 				echo "<ol class='social-children'>\n";
-				break;
+			break;
 			default:
 			case 'ul':
 				echo "<ul class='social-children'>\n";
-				break;
+			break;
 		}
 	}
 
@@ -41,16 +41,16 @@ class Social_Walker_Comment extends Walker_Comment {
 	function end_lvl(&$output, $depth, $args) {
 		$GLOBALS['comment_depth'] = $depth + 1;
 
-		switch ($args['style'] ) {
+		switch ($args['style']) {
 			case 'div':
-				break;
+			break;
 			case 'ol':
 				echo "</ol>\n";
-				break;
+			break;
 			default:
 			case 'ul':
 				echo "</ul>\n";
-				break;
+			break;
 		}
 
 		echo "</li>\n";

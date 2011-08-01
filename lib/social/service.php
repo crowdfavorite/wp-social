@@ -39,7 +39,7 @@ abstract class Social_Service {
 			$this->user = get_userdata($user_id);
 
 			// Load the users account(s)
-			$accounts = get_user_meta($user_id, Social::$prefix.'accounts', true);
+			$accounts = get_user_meta($user_id, Social::$prefix . 'accounts', true);
 			if (!empty($accounts) and isset($accounts[$this->service])) {
 				$this->accounts = $accounts[$this->service];
 			}
@@ -107,17 +107,18 @@ abstract class Social_Service {
 	 */
 	public function disconnect($id) {
 		if (defined('IS_PROFILE_PAGE')) {
-			$accounts = get_user_meta($this->user->ID, Social::$prefix.'accounts', true);;
+			$accounts = get_user_meta($this->user->ID, Social::$prefix . 'accounts', true);
+			;
 			if (isset($accounts[$this->service][$id])) {
 				unset($accounts[$this->service][$id]);
-				update_user_meta($this->user->ID, Social::$prefix.'accounts', $accounts);
+				update_user_meta($this->user->ID, Social::$prefix . 'accounts', $accounts);
 			}
 		}
 		else {
-			$accounts = get_option(Social::$prefix.'accounts', array());
+			$accounts = get_option(Social::$prefix . 'accounts', array());
 			if (isset($accounts[$this->service][$id])) {
 				unset($accounts[$this->service][$id]);
-				update_option(Social::$prefix.'accounts', $accounts);
+				update_option(Social::$prefix . 'accounts', $accounts);
 			}
 		}
 	}
@@ -130,7 +131,7 @@ abstract class Social_Service {
 	 */
 	public function save($account = null) {
 		if (!is_admin() or defined('IS_PROFILE_PAGE')) {
-			$accounts = get_user_meta(get_current_user_id(), Social::$prefix.'accounts', true);
+			$accounts = get_user_meta(get_current_user_id(), Social::$prefix . 'accounts', true);
 			if ($account === null) {
 				$accounts[$this->service] = $this->accounts;
 			}
@@ -140,10 +141,10 @@ abstract class Social_Service {
 				}
 				$accounts[$this->service][$account->user->id] = $account;
 			}
-			update_user_meta(get_current_user_id(), Social::$prefix.'accounts', $accounts);
+			update_user_meta(get_current_user_id(), Social::$prefix . 'accounts', $accounts);
 		}
 		else {
-			$accounts = get_option(Social::$prefix.'accounts', array());
+			$accounts = get_option(Social::$prefix . 'accounts', array());
 			if ($account === null) {
 				$accounts[$this->service] = $this->accounts;
 			}
@@ -153,7 +154,7 @@ abstract class Social_Service {
 				}
 				$accounts[$this->service][$account->user->id] = $account;
 			}
-			update_option(Social::$prefix.'accounts', $accounts);
+			update_option(Social::$prefix . 'accounts', $accounts);
 		}
 	}
 
@@ -166,8 +167,8 @@ abstract class Social_Service {
 	 */
 	public function format_content($post, $format) {
 		// Filter the format
-		$format = apply_filters(Social::$prefix.'broadcast_format', $format);
-		$format = apply_filters(Social::$prefix.$this->service.'_broadcast_format', $format);
+		$format = apply_filters(Social::$prefix . 'broadcast_format', $format);
+		$format = apply_filters(Social::$prefix . $this->service . '_broadcast_format', $format);
 
 		$_format = explode(' ', $format);
 		$available = $this->max_broadcast_length() - count($format);
@@ -175,23 +176,23 @@ abstract class Social_Service {
 			$content = '';
 			switch ($token) {
 				case '{url}':
-					$url = apply_filters(Social::$prefix.'broadcast_permalink', get_permalink($post->ID), $post);
-					$url = apply_filters(Social::$prefix.$this->service.'_broadcast_permalink', $url, $post);
+					$url = apply_filters(Social::$prefix . 'broadcast_permalink', get_permalink($post->ID), $post);
+					$url = apply_filters(Social::$prefix . $this->service . '_broadcast_permalink', $url, $post);
 					$content = $url;
-				break;
+					break;
 				case '{title}':
 					$content = $post->post_title;
-				break;
+					break;
 				case '{content}':
 					$content = $post->post_content;
-				break;
+					break;
 				case '{author}':
 					$user = get_userdata($post->post_author);
 					$content = $user->display_name;
-				break;
+					break;
 				case '{date}':
 					$content = get_date_from_gmt($post->post_date_gmt);
-				break;
+					break;
 			}
 
 			if (in_array($token, array('{content}', '{date}', '{author}'))) {
@@ -201,8 +202,8 @@ abstract class Social_Service {
 			}
 
 			// Filter the content
-			$content = apply_filters(Social::$prefix.'format_content', $content, $post, $format);
-			$content = apply_filters(Social::$prefix.$this->service.'_format_content', $content, $post, $format);
+			$content = apply_filters(Social::$prefix . 'format_content', $content, $post, $format);
+			$content = apply_filters(Social::$prefix . $this->service . '_format_content', $content, $post, $format);
 
 			foreach ($_format as $haystack) {
 				if (strpos($haystack, $token) !== false) {
@@ -248,18 +249,18 @@ abstract class Social_Service {
 	 */
 	public function disconnect_url($account, $is_admin = false, $before = '', $after = '') {
 		$params = array(
-			Social::$prefix.'disconnect' => 'true',
+			Social::$prefix . 'disconnect' => 'true',
 			'id' => $account->user->id,
 			'service' => $this->service
 		);
 		if ($is_admin) {
 			$url = Social_Helper::settings_url($params);
-			$text = '<img src="'.Social::$plugins_url.'/assets/delete.png'.'" alt="'.__('Disconnect', Social::$i18n).'" />';
+			$text = '<img src="' . Social::$plugins_url . '/assets/delete.png' . '" alt="' . __('Disconnect', Social::$i18n) . '" />';
 		}
 		else {
 			$path = array();
 			foreach ($params as $key => $value) {
-				$path[] = $key.'='.urlencode($value);
+				$path[] = $key . '=' . urlencode($value);
 			}
 
 			$redirect_to = $_SERVER['REQUEST_URI'];
@@ -267,7 +268,7 @@ abstract class Social_Service {
 				$redirect_to = $_GET['redirect_to'];
 			}
 
-			$url = site_url('?'.implode('&', $path).'&redirect_to='.$redirect_to);
+			$url = site_url('?' . implode('&', $path) . '&redirect_to=' . $redirect_to);
 			$text = 'Disconnect';
 		}
 

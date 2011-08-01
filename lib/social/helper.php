@@ -19,20 +19,20 @@ abstract class Social_Helper {
 	 * @return mixed
 	 */
 	public static function request($service, $api, $public, $private, array $params = array(), $method = 'GET') {
-		$request = wp_remote_post(Social::$api_url.$service, array(
+		$request = wp_remote_post(Social::$api_url . $service, array(
 			'sslverify' => false,
 			'body' => array(
 				'api' => $api,
 				'method' => $method,
 				'public_key' => $public,
-				'hash' => sha1($public.$private),
+				'hash' => sha1($public . $private),
 				'params' => json_encode($params)
 			)
 		));
 
 		if (!is_wp_error($request)) {
 			$body = $request['body'];
-			$body = apply_filters(Social::$prefix.'request_body', $body);
+			$body = apply_filters(Social::$prefix . 'request_body', $body);
 			$body = json_decode($body);
 			return $body;
 		}
@@ -49,10 +49,10 @@ abstract class Social_Helper {
 	 */
 	public static function create_user($service, $username) {
 		// Make sure the user doesn't exist
-		$user = get_userdatabylogin($service.'_'.$username);
+		$user = get_userdatabylogin($service . '_' . $username);
 		if ($user === false) {
-			$id = wp_create_user($service.'_'.$username, wp_generate_password(20, false), self::create_email($service, $username));
-			update_user_meta($id, Social::$prefix.'commenter', '1');
+			$id = wp_create_user($service . '_' . $username, wp_generate_password(20, false), self::create_email($service, $username));
+			update_user_meta($id, Social::$prefix . 'commenter', '1');
 			update_user_option($id, 'show_admin_bar_front', 'false');
 		}
 		else {
@@ -81,9 +81,9 @@ abstract class Social_Helper {
 			$url = admin_url('profile.php#social-networks');
 		}
 		else {
-			$url = ($admin ? admin_url('options-general.php?page=social.php') : site_url('?authorized=true&p='.$_GET['p']));
+			$url = ($admin ? admin_url('options-general.php?page=social.php') : site_url('?authorized=true&p=' . $_GET['p']));
 		}
-		return Social::$api_url.$service.'/authorize?redirect_to='.urlencode($url);
+		return Social::$api_url . $service . '/authorize?redirect_to=' . urlencode($url);
 	}
 
 	/**
@@ -94,7 +94,7 @@ abstract class Social_Helper {
 	 * @return string
 	 */
 	private static function create_email($service, $alias) {
-		return $service.'.'.$alias.'@example.com';
+		return $service . '.' . $alias . '@example.com';
 	}
 
 	/**
@@ -113,12 +113,12 @@ abstract class Social_Helper {
 			$path = 'profile.php?';
 		}
 		else {
-			$path = 'options-general.php?page='.basename(SOCIAL_FILE).'&';
+			$path = 'options-general.php?page=' . basename(SOCIAL_FILE) . '&';
 		}
 
 		if ($params !== null) {
 			foreach ($params as $key => $value) {
-				$path .= $key.'='.urlencode($value).'&';
+				$path .= $key . '=' . urlencode($value) . '&';
 			}
 		}
 
