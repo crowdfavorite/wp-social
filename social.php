@@ -1237,8 +1237,7 @@ final class Social {
 		}
 
 		$total_accounts = count($accounts);
-		$heading = sprintf(__('Publish to %s:', Social::$i18n), ($total_accounts == '1' ? 'this account'
-				: 'these accounts'));
+		$heading = sprintf(__('Publish to %s:', Social::$i18n), ($total_accounts == '1' ? 'this account' : 'these accounts'));
 
 		if ($total_accounts) {
 ?>
@@ -1254,7 +1253,7 @@ final class Social {
 			<strong><?php echo $heading; ?></strong><br/>
 			<?php foreach ($accounts as $account): ?>
 			<label class="social-broadcastable" for="<?php echo $service->service . $account->user->id; ?>" style="cursor:pointer">
-				<input type="checkbox" name="<?php echo Social::$prefix . $service->service . '_accounts[]'; ?>" id="<?php echo $service->service . $account->user->id; ?>" value="<?php echo $account->user->id . (isset($account->global) ? '|true' : ''); ?>"<?php echo (!isset($broadcasted_ids[$service->service][$account->user->id]) ? ' checked="checked"' : ''); ?> />
+				<input type="checkbox" name="<?php echo Social::$prefix . $service->service . '_accounts[]'; ?>" id="<?php echo $service->service . $account->user->id; ?>" value="<?php echo $account->user->id . (isset($account->global) ? '|true' : ''); ?>"<?php echo (!isset($broadcasted_ids[$service->service]) or !isset($broadcasted_ids[$service->service][$account->user->id]) ? ' checked="checked"' : ''); ?> />
 				<img src="<?php echo $service->profile_avatar($account); ?>" width="24" height="24"/>
 				<span><?php echo $service->profile_name($account); ?></span>
 			</label>
