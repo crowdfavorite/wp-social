@@ -105,10 +105,6 @@ abstract class Social_Helper {
 	 * @return string
 	 */
 	public static function settings_url(array $params = null, $ignore = false) {
-		if (!defined('IS_PROFILE_PAGE')) {
-			define('IS_PROFILE_PAGE', false);
-		}
-
 		if (IS_PROFILE_PAGE and !$ignore) {
 			$path = 'profile.php?';
 		}

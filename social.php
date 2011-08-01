@@ -319,10 +319,15 @@ final class Social {
 
 				$url = str_replace('&amp;', '&', wp_nonce_url(site_url('?' . Social::$prefix . 'action=check_crons')));
 				wp_remote_get($url, array(
-										 'timeout' => 0.01,
-										 'blocking' => false,
-										 'sslverify' => apply_filters('https_local_ssl_verify', true)
-									));
+					'timeout' => 0.01,
+					'blocking' => false,
+					'sslverify' => apply_filters('https_local_ssl_verify', true)
+				));
+			}
+
+			// Fix for the helper
+			if (!defined('IS_PROFILE_PAGE')) {
+				define('IS_PROFILE_PAGE', false);
 			}
 		}
 		else {
