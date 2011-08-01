@@ -1617,7 +1617,11 @@ final class Social {
 		}
 
 		if ($image !== null) {
-			return "<img alt='{$alt}' src='{$image}' class='avatar avatar-{$size} photo {$comment->comment_type}' height='{$size}' width='{$size}' />";
+			$type = '';
+			if (is_object($comment)) {
+				$type = $comment->comment_type;
+			}
+			return "<img alt='{$alt}' src='{$image}' class='avatar avatar-{$size} photo {$type}' height='{$size}' width='{$size}' />";
 		}
 
 		return $avatar;
