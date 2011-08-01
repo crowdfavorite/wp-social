@@ -146,8 +146,9 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 				if (is_array($response->data) and count($response->data)) {
 					$results = array();
 					foreach ($response->data as $result) {
-						if (in_array($result->id, array_values($post_comments)) or in_array($result->id, array_values($broadcasted_ids))) {
-                            Social_Aggregate_Log::instance($post->ID)->add($this->service, $result->id, 'url', true);
+						if ((is_array($post_comments) and in_array($result->id, array_values($post_comments))) or
+							(is_array($broadcasted_ids) and in_array($result->id, array_values($broadcasted_ids)))) {
+							Social_Aggregate_Log::instance($post->ID)->add($this->service, $result->id, 'url', true);
 							continue;
 						}
 
@@ -181,8 +182,9 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 
 							if (is_array($response->data) and count($response->data)) {
 								foreach ($response->data as $comment) {
-									if (in_array($comment->id, array_values($post_comments)) or in_array($comment->id, array_values($broadcasted_ids))) {
-                                        Social_Aggregate_Log::instance($post->ID)->add($this->service, $comment->id, 'reply', true, array('parent_id' => $id[0]));
+									if ((is_array($post_comments) and in_array($comment->id, array_values($post_comments))) or
+										(is_array($broadcasted_ids) and in_array($comment->id, array_values($broadcasted_ids)))) {
+										Social_Aggregate_Log::instance($post->ID)->add($this->service, $comment->id, 'reply', true, array('parent_id' => $id[0]));
 										continue;
 									}
                                     Social_Aggregate_Log::instance($post->ID)->add($this->service, $comment->id, 'reply', false, array('parent_id' => $id[0]));

@@ -634,7 +634,7 @@ final class Social {
 			);
 
 			// Add the account to the service.
-			if (defined('IS_PROFILE_PAGE')) {
+			if (IS_PROFILE_PAGE) {
 				$service = $this->service($data->service)->account($account);
 			}
 			else {
@@ -755,7 +755,7 @@ final class Social {
     public function do_meta_boxes() {
         global $post;
 
-        if (!Social::$update) {
+        if (!Social::$update and $post !== null) {
             foreach ($this->services() as $service) {
                 if (count($service->accounts())) {
                     add_meta_box(Social::$prefix.'meta_broadcast', __('Social Broadcasting', Social::$i18n), array($this, 'add_meta_box'), 'post', 'side', 'core');
@@ -1081,6 +1081,7 @@ final class Social {
 	 */
 	public function broadcast_options($post_id, $location) {
 		$notify = get_post_meta($post_id, Social::$prefix.'notify', true);
+		$post = get_post($post_id);
 
 		$errors = array();
 		if ($notify == '1') {

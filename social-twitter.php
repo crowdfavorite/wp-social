@@ -226,8 +226,9 @@ twttr.anywhere(function(twitter) {
                                 $log_data = array(
                                     'username' => $tweet->user->screen_name
                                 );
-								if (in_array($tweet->id, array_values($post_comments)) or in_array($tweet->id, array_values($broadcasted_ids))) {
-                                    Social_Aggregate_Log::instance($post->ID)->add($this->service, $tweet->id, 'retweet', true, $log_data);
+								if ((is_array($post_comments) and in_array($tweet->id, array_values($post_comments))) or
+									(is_array($broadcasted_ids) and in_array($tweet->id, array_values($broadcasted_ids)))) {
+									Social_Aggregate_Log::instance($post->ID)->add($this->service, $tweet->id, 'retweet', true, $log_data);
 									continue;
 								}
 
@@ -255,8 +256,9 @@ twttr.anywhere(function(twitter) {
                                 $log_data = array(
                                     'username' => $tweet->user->screen_name
                                 );
-								if (in_array($tweet->id, array_values($post_comments)) or in_array($tweet->id, array_values($broadcasted_ids))) {
-                                    Social_Aggregate_Log::instance($post->ID)->add($this->service, $tweet->id, 'reply', true, $log_data);
+								if ((is_array($post_comments) and in_array($tweet->id, array_values($post_comments))) or
+									(is_array($broadcasted_ids) and in_array($tweet->id, array_values($broadcasted_ids)))) {
+									Social_Aggregate_Log::instance($post->ID)->add($this->service, $tweet->id, 'reply', true, $log_data);
 									continue;
 								}
 
@@ -294,7 +296,8 @@ twttr.anywhere(function(twitter) {
                     $log_data = array(
                         'username' => $result->from_user
                     );
-					if (in_array($result->id, array_values($post_comments)) or in_array($result->id, array_values($broadcasted_ids))) {
+					if ((is_array($post_comments) and in_array($result->id, array_values($post_comments))) or
+					    (is_array($broadcasted_ids) and in_array($result->id, array_values($broadcasted_ids)))) {
                         Social_Aggregate_Log::instance($post->ID)->add($this->service, $result->id, 'url', true, $log_data);
 						continue;
 					}
