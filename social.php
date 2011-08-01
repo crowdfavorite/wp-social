@@ -291,6 +291,39 @@ final class Social {
 			if (SOCIAL_ADMIN_JS !== false) {
 				wp_enqueue_script('social_admin', SOCIAL_ADMIN_JS, array(), Social::$version, true);
 			}
+
+			// CRON Lock Location
+			if (is_writable(SOCIAL_PATH)) {
+				$this->cron_lock_dir = SOCIAL_PATH;
+			}
+			else {
+				$upload_dir = wp_upload_dir();
+				if (is_writable($upload_dir['basedir'])) {
+					$this->cron_lock_dir = $upload_dir['basedir'];
+				}
+				else if ($_GET['page'] == 'social.php') {
+					add_action('admin_notices', array($this, 'display_cron_lock_write_error'));
+				}
+			}
+
+			// Schedule the CRON?
+			if (isset($_GET['page']) and $_GET['page'] == 'social.php') {
+				if (Social::option('system_crons') != '1') {
+					if (wp_next_scheduled(Social::$prefix.'cron_15_core') === false) {
+						wp_schedule_event(time() + 900, 'every15min', Social::$prefix.'cron_15_core');
+					}
+					if (wp_next_scheduled(Social::$prefix.'cron_60_core') === false) {
+						wp_schedule_event(time() + 3600, 'hourly', Social::$prefix.'cron_60_core');
+					}
+				}
+
+                $url = str_replace('&amp;', '&', wp_nonce_url(site_url('?'.Social::$prefix.'action=check_crons')));
+				wp_remote_get($url, array(
+					'timeout' => 0.01,
+					'blocking' => false,
+					'sslverify' => apply_filters('https_local_ssl_verify', true)
+				));
+			}
 		}
 		else {
 			if (SOCIAL_COMMENTS_CSS !== false) {
@@ -346,30 +379,6 @@ final class Social {
 			}
 
 			$this->option($key, $value);
-		}
-
-		// Schedule the CRON?
-        if (get_option(Social::$prefix.'system_crons', '0') == '0') {
-            if (wp_next_scheduled(Social::$prefix.'cron_15_core') === false) {
-                wp_schedule_event(time() + 900, 'every15min', Social::$prefix.'cron_15_core');
-            }
-            if (wp_next_scheduled(Social::$prefix.'cron_60_core') === false) {
-                wp_schedule_event(time() + 3600, 'hourly', Social::$prefix.'cron_60_core');
-            }
-        }
-
-		// CRON Lock Location
-		if (is_writable(SOCIAL_PATH)) {
-			$this->cron_lock_dir = SOCIAL_PATH;
-		}
-		else {
-			$upload_dir = wp_upload_dir();
-			if (is_writable($upload_dir['basedir'])) {
-				$this->cron_lock_dir = $upload_dir['basedir'];
-			}
-			else if ($_GET['page'] == 'social.php') {
-				add_action('admin_notices', array($this, 'display_cron_lock_write_error'));
-			}
 		}
 
 		// Register the Social services
@@ -619,6 +628,35 @@ final class Social {
                     echo Social_Aggregate_Log::logs($_GET['post_id']);
                     exit;
                 break;
+				case 'check_crons':
+					if (!wp_verify_nonce($_GET['_wpnonce'])) {
+                        wp_die('Oops, please try again.');
+                    }
+
+					$crons = _get_cron_array();
+					$cron_60 = false;
+					$cron_15 = false;
+					foreach ($crons as $timestamp => $_crons) {
+						foreach ($_crons as $key => $cron) {
+							if ($key == Social::$prefix.'cron_15_core') {
+								if ($cron_15) {
+									wp_unschedule_event($timestamp, Social::$prefix.'cron_15_core');
+								}
+								else {
+									$cron_15 = true;
+								}
+							}
+							else if ($key == Social::$prefix.'cron_60_core') {
+								if ($cron_60) {
+									wp_unschedule_event($timestamp, Social::$prefix.'cron_60_core');
+								}
+								else {
+									$cron_60 = true;
+								}
+							}
+						}
+					}
+				break;
 			}
 		}
 		// Authorization complete?
