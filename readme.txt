@@ -2,7 +2,7 @@
 Contributors: crowdfavorite
 Tags: comments, facebook, twitter
 Requires at least: 3.2
-Tested up to: 3.2
+Tested up to: 3.2.1
 Stable tag: 1.0
 
 Broadcast posts to Twitter and/or Facebook, pull in items from each as comments, and allow commenters to use their Twitter/Facebook identities.
