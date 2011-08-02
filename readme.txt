@@ -52,21 +52,45 @@ Many individuals use Facebook or Twitter as their primary identity(ies) on the w
 
 We recommend using CSS styles to selectively change the look and feel of your comments and comment form. The classes `social-comments-[no-comments|wordpress|twitter|facebook|pingbacks]` are available as as class names. More specific classes include:
 
+- `.social-comment-header `- contains the author information, avatar, and meta information
+- `.social-comment-inner` - a wrapper for the actual comment content, allowing more freedom with comment styling.
+- `.social-comment-body` - the container for the comment content.
+- `.social-comment-collapsed` - use this hook to create a more compact version of a comment.  hide comment text, shrink the size of the avatar, etc.
+- `.social-post-form` - where the comment form controls reside.  Use this hook to customize the look of form inputs and labels.
+- `#facebook_signin` - style the link that activates Facebook oAuthorization
+- `#twitter_signin` - style the link that activates Facebook oAuthorization
+- `.social-quiet` - a muted typography style, for subdued display of text
 
-- .social-comment-header - contains the author information, avatar, and meta information
-- .social-comment-inner - a wrapper for the actual comment content, allowing more freedom with comment styling.
-- .social-comment-body - the container for the comment content.
-- .social-comment-collapsed - use this hook to create a more compact version of a comment.  hide comment text, shrink the size of the avatar, etc.
-- .social-post-form - where the comment form controls reside.  Use this hook to customize the look of form inputs and labels.
-- #facebook_signin - style the link that activates Facebook oAuthorization
-- #twitter_signin - style the link that activates Facebook oAuthorization
-
-
-- Social Plugin Icons - The icons are currently 16x16 pixels, and reside in a vertical sprite with each icon at 100px intervals.  Adhering to these intervals will ensure that icon positions will not need to change
-- .social-quiet - a muted typography style, for subdued display of text
-
+The icons used for the plugin are currently 16x16 pixels, and reside in a vertical sprite with each icon at 100px intervals.  Adhering to these intervals will ensure that icon positions will not need to change
 
 Note: we do not recommend making changes to the included plugin files as they may be overwritten during an upgrade.
+
+= Can I define a custom comments.php for Social? =
+
+Yes, if you'd rather create more 'advanced' customizations beyond CSS tweaks simply add the following line to your theme's `functions.php` file:
+
+    define('SOCIAL_COMMENTS_FILE', STYLESHEETPATH.'/social-comments.php');
+
+Then you will need to create the `social-comments.php` file with your custom markup (perhaps copy it directly from the provided comments.php in the plugin) into your theme's directory. 
+
+= How can I define custom JS and/or CSS, or disable Social's JS/CSS? =
+
+There are three constants that can be altered to your liking:
+
+1. `SOCIAL_ADMIN_CSS` - CSS file for WP-Admin.
+2. `SOCIAL_ADMIN_JS` - JS file for WP-Admin.
+3. `SOCIAL_COMMENTS_CSS` - CSS file for the comments form.
+4. `SOCIAL_COMMENTS_JS` - JS file used on the comments form and WP-Admin
+
+To define custom JS/CSS in your theme's functions.php add the following line (Replace `SOCIAL_ADMIN_CSS` with one of the
+constants listed above):
+
+    define('SOCIAL_ADMIN_CSS', STYLESHEETPATH.'/path/to/stylesheet.css');
+
+To disable Social's JS/CSS in your theme's functions.php add the following line (Replace `SOCIAL_ADMIN_CSS` With one of
+the constants defined above):
+
+    define('SOCIAL_ADMIN_CSS', false);
 
 = Why are the tabs on my comment form not displaying correctly? =
 
@@ -106,7 +130,7 @@ If you want to run system CRON jobs and disable Social's built in CRON jobs then
 1. Go to Social's settings page.
 2. Disable Social's internal CRON mechanism by selecting "Yes" under "Disable Internal CRON Mechanism" and clicking on "Save Settings".
 3. Now you should have an API key that you'll find under "API Key" under "Disable Internal CRON Mechanism". Use this API key for the "api_key" parameter on the URL your system CRON fires.
-	- An example system CRON could run http://example.com/?social_cron=cron_15&api_key=your_api_key_here
+	- An example system CRON could run `http://example.com/?social_cron=cron_15&api_key=your_api_key_here`
 
 = How can I hook into a CRON for extra functionality? =
 
@@ -126,33 +150,6 @@ If you want to disable the @Anywhere functionality, simply remove the API key fr
 = Does the proxy application have access to my passwords now? =
 
 No, the proxy acts just like any Twitter or Facebook application. We've simply pass commands back and forth through this application so you don't have to set up your own.
-
-= How can I define a custom comments.php for Social? =
-
-In your theme's functions.php add the following line:
-
-    define('SOCIAL_COMMENTS_FILE', STYLESHEETPATH.'/social-comments.php');
-
-Then you will need to create a social-comments.php with your custom markup in your theme's directory.
-
-= How can I define custom JS and/or CSS, or disable Social's JS/CSS? =
-
-There are three constants that can be altered to your liking:
-
-1. `SOCIAL_ADMIN_CSS` - CSS file for WP-Admin.
-2. `SOCIAL_ADMIN_JS` - JS file for WP-Admin.
-3. `SOCIAL_COMMENTS_CSS` - CSS file for the comments form.
-4. `SOCIAL_COMMENTS_JS` - JS file used on the comments form and WP-Admin
-
-To define custom JS/CSS in your theme's functions.php add the following line (Replace "SOCIAL_ADMIN_CSS" with one of the
-constants listed above):
-
-    define('SOCIAL_ADMIN_CSS', STYLESHEETPATH.'/path/to/stylesheet.css');
-
-To disable Social's JS/CSS in your theme's functions.php add the following line (Replace "SOCIAL_ADMIN_CSS" With one of
-the constants defined above):
-
-    define('SOCIAL_ADMIN_CSS', false);
 
 == Screenshots ==
 
