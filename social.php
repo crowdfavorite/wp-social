@@ -1146,6 +1146,9 @@ final class Social {
 		if ($notify == '1') {
 			$services = $this->services();
 			$broadcasted_ids = get_post_meta($post_id, Social::$prefix . 'broadcasted_ids', true);
+			if (empty($broadcasted_ids)) {
+				$broadcasted_ids = array();
+			}
 			if (isset($_POST[Social::$prefix . 'action'])) {
 				foreach ($services as $key => $service) {
 					if (empty($_POST[Social::$prefix . $key . '_content'])) {
@@ -1185,7 +1188,7 @@ final class Social {
 <html xmlns="http://www.w3.org/1999/xhtml" <?php language_attributes(); ?>>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<title><?php __('Social Broadcasting Options', 'social'); ?></title>
+	<title><?php _e('Social Broadcasting Options', 'social'); ?></title>
 	<?php
 		wp_admin_css('install', true);
 		do_action('admin_print_styles');
@@ -1243,17 +1246,27 @@ final class Social {
 ?>
 	<tr>
 		<th scope="row">
-			<label
-				for="<?php echo $service->service . '_preview'; ?>"><?php _e($service->title(), Social::$i18n); ?></label><br/>
-		<span id="<?php echo $service->service . '_counter'; ?>"
-			  class="social-preview-counter"><?php echo $counter; ?></span>
+			<label for="<?php echo $service->service . '_preview'; ?>"><?php _e($service->title(), Social::$i18n); ?></label><br/>
+			<span id="<?php echo $service->service . '_counter'; ?>" class="social-preview-counter"><?php echo $counter; ?></span>
 		</th>
 		<td>
 			<textarea id="<?php echo $service->service . '_preview'; ?>" name="<?php echo Social::$prefix . $service->service . '_content'; ?>" class="social-preview-content" cols="40" rows="5"><?php echo ((isset($_POST[Social::$prefix . $service->service . '_content']) and !empty($_POST[Social::$prefix . $service->service . '_content'])) ? $_POST[Social::$prefix . $service->service . '_content'] : $content); ?></textarea><br/>
 			<strong><?php echo $heading; ?></strong><br/>
-			<?php foreach ($accounts as $account): ?>
+			<?php
+				foreach ($accounts as $account):
+					$checked = false;
+					if (!count($broadcasted_ids)) {
+						$checked = true;
+					}
+					else if (!isset($broadcasted_ids[$service->service])) {
+						$checked = true;
+					}
+					else if (!isset($broadcasted_ids[$service->service][$account->user->id])) {
+						$checked = true;
+					}
+			?>
 			<label class="social-broadcastable" for="<?php echo $service->service . $account->user->id; ?>" style="cursor:pointer">
-				<input type="checkbox" name="<?php echo Social::$prefix . $service->service . '_accounts[]'; ?>" id="<?php echo $service->service . $account->user->id; ?>" value="<?php echo $account->user->id . (isset($account->global) ? '|true' : ''); ?>"<?php echo (!isset($broadcasted_ids[$service->service]) or !isset($broadcasted_ids[$service->service][$account->user->id]) ? ' checked="checked"' : ''); ?> />
+				<input type="checkbox" name="<?php echo Social::$prefix . $service->service . '_accounts[]'; ?>" id="<?php echo $service->service . $account->user->id; ?>" value="<?php echo $account->user->id . (isset($account->global) ? '|true' : ''); ?>"<?php echo ($checked ? ' checked="checked"' : ''); ?> />
 				<img src="<?php echo $service->profile_avatar($account); ?>" width="24" height="24"/>
 				<span><?php echo $service->profile_name($account); ?></span>
 			</label>
@@ -1266,7 +1279,7 @@ final class Social {
 ?>
 </table>
 <p class="step">
-	<input type="submit" value="<?php _e(($post->post_status == 'future' ? 'Schedule' : (isset($_POST[Social::$prefix . 'rebroadcast']) ? 'Broadcast' : 'Publish')), Social::$i18n); ?>" class="button"/>
+	<input type="submit" value="<?php _e(($post->post_status == 'future' ? 'Schedule' : (isset($_POST[Social::$prefix.'broadcast']) ? 'Broadcast' : 'Publish')), Social::$i18n); ?>" class="button"/>
 	<a href="<?php echo get_edit_post_link($post_id, 'url'); ?>" class="button">Cancel</a>
 </p>
 </form>
