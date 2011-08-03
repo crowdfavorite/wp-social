@@ -9,7 +9,8 @@ Broadcast posts to Twitter and/or Facebook, pull in items from each as comments,
 
 == Description ==
 
-Social is a lightweight plugin that handles a lot of the heavy lifting of making your blog seamlessly integrate with social networking sites [Twitter](http://twitter.com/) and [Facebook](http://facebook.com/).
+
+Brought to you by [MailChimp](http://mailchimp.com/), Social is a lightweight plugin that handles a lot of the heavy lifting of making your blog seamlessly integrate with social networking sites [Twitter](http://twitter.com/) and [Facebook](http://facebook.com/).
 
 **Broadcast Published Posts**
 
@@ -47,6 +48,10 @@ Many individuals use Facebook or Twitter as their primary identity(ies) on the w
 6. Register for and add your [Twitter @anywhere API key](http://dev.twitter.com/anywhere) to the settings page to enable Twitter hovercards
 
 == Frequently Asked Questions ==
+
+= Who created this plugin? =
+
+Social was conceptualized and co-designed by the fine folks at [MailChimp](http://mailchimp.com "Email Marketing from MailChimp") led by [Aarron Walter](http://aarronwalter.com/). The application proxy is maintained and hosted by [MailChimp](http://mailchimp.com) and the plugin was co-designed and developed by [Crowd Favorite](http://crowdfavorite.com/ "Custom WordPress and web development").
 
 = How can I customize the comments form in my theme? =
 
