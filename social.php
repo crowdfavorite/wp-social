@@ -2,7 +2,7 @@
 /*
 Plugin Name: Social
 Plugin URI: http://mailchimp.com/
-Description: Broadcast newly published posts and pull in dicussions using integrations with Twitter and Facebook. Brought to you by MailChimp.
+Description: Broadcast newly published posts and pull in dicussions using integrations with Twitter and Facebook. Brought to you by <a href="http://mailchimp.com">MailChimp</a>.
 Version: 1.0
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com/
