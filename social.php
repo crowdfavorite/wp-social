@@ -311,11 +311,15 @@ final class Social {
 				if (Social::option('system_crons') != '1') {
 					if (wp_next_scheduled(Social::$prefix . 'cron_15_core') === false) {
 						wp_schedule_event(time() + 900, 'every15min', Social::$prefix . 'cron_15_core');
-						$this->log(basename(__FILE__).'.'.__LINE__.'.'.$_SERVER['REQUEST_URI'].'.scheduling CRON 15');
+						if (Social::option('debug') == '1') {
+							$this->log(basename(__FILE__).'.'.__LINE__.'.'.$_SERVER['REQUEST_URI'].'.scheduling CRON 15');
+						}
 					}
 					if (wp_next_scheduled(Social::$prefix . 'cron_60_core') === false) {
 						wp_schedule_event(time() + 3600, 'hourly', Social::$prefix . 'cron_60_core');
-						$this->log(basename(__FILE__).'.'.__LINE__.'.'.$_SERVER['REQUEST_URI'].'.scheduling CRON 60');
+						if (Social::option('debug') == '1') {
+							$this->log(basename(__FILE__).'.'.__LINE__.'.'.$_SERVER['REQUEST_URI'].'.scheduling CRON 60');
+						}
 					}
 				}
 
@@ -478,7 +482,9 @@ final class Social {
 				$schedule = wp_get_schedule($_GET[Social::$prefix . 'cron']);
 				$timestamp = wp_next_scheduled($_GET[Social::$prefix . 'cron']);
 				if (!$schedule !== false and $timestamp !== false) {
-					$this->log(basename(__FILE__).'.'.__LINE__.'.'.$_SERVER['REQUEST_URI'].'.rescheduling CRON '.$_GET[Social::$prefix . 'cron']);
+					if (Social::option('debug') == '1') {
+						$this->log(basename(__FILE__).'.'.__LINE__.'.'.$_SERVER['REQUEST_URI'].'.rescheduling CRON '.$_GET[Social::$prefix . 'cron']);
+					}
 					wp_reschedule_event(time(), $schedule, $_GET[Social::$prefix . 'cron']);
 					spawn_cron();
 				}
