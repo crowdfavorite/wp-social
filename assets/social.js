@@ -79,7 +79,10 @@
              * @param extraContent
              */
             function insertTwitterUsername($author, $textarea, extraContent) {
-                var username = '@' + $author.html() + ' ';
+                var username = $author.html() + ' ';
+	            if (username.substr(0, 1) != '@') {
+		            username = '@'+username;
+	            }
                 if (extraContent !== undefined) {
                     username += extraContent;
                 }

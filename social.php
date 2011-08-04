@@ -664,7 +664,7 @@ final class Social {
 				break;
 			}
 		}
-			// Authorization complete?
+		// Authorization complete?
 		else if (isset($_POST['data'])) {
 			$data = stripslashes($_POST['data']);
 			if (strpos($data, "\r") !== false) {
@@ -718,7 +718,7 @@ final class Social {
 	exit;
 		}
 		else if (isset($_GET[Social::$prefix . 'disconnect'])) {
-			if (defined('IS_PROFILE_PAGE')) {
+			if (IS_PROFILE_PAGE) {
 				$service = $this->service($_GET['service']);
 			}
 			else {
@@ -2200,7 +2200,7 @@ class Social_Comment_Form {
 	 */
 	public static function get_instance($post_id, $args = array()) {
 		$_class = 'Social_Comment_Form';
-		if (!(self::$instances[$post_id] instanceof $_class)) {
+		if (!isset(self::$instances[$post_id]) or !(self::$instances[$post_id] instanceof $_class)) {
 			self::$instances[$post_id] = new $_class($post_id, $args);
 		}
 		return self::$instances[$post_id];
@@ -2687,6 +2687,10 @@ class Social_Aggregate_Log {
 	}
 
 } // End Social_Aggregate_Log
+
+if (!defined('IS_PROFILE_PAGE')) {
+	define('IS_PROFILE_PAGE', false);
+}
 
 $social_file = __FILE__;
 if (isset($mu_plugin)) {

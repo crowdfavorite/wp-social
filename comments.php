@@ -61,10 +61,10 @@ ob_start();
 		?>
 		<ul class="social-nav social-clearfix">
 			<li class="social-all social-tab-main social-current-tab"><a href="#" rel="social-all"><span><?php comments_number(__('0 Replies', Social::$i18n), __('1 Reply', Social::$i18n), __('% Replies', Social::$i18n)); ?></span></a></li>
-			<li class="social-wordpress"><a href="#" rel="social-wordpress"><span><?php printf(_n('1 Comment', '%1$s Comments', $groups['wordpress'], Social::$i18n), $groups['wordpress']); ?></span></a></li>
-			<li class="social-twitter"><a href="#" rel="social-twitter"><span><?php printf(_n('1 Tweet', '%1$s Tweets', $groups['twitter'], Social::$i18n), (isset($groups['twitter']) ? $groups['twitter'] : 0)); ?></span></a></li>
-			<li class="social-facebook"><a href="#" rel="social-facebook"><span><?php printf(_n('1 Facebook', '%1$s Facebook', $groups['facebook'], Social::$i18n), (isset($groups['facebook']) ? $groups['facebook'] : 0)); ?></span></a></li>
-			<li class="social-pingback"><a href="#" rel="social-pingback"><span><?php printf(_n('1 Pingback', '%1$s Pingbacks', $groups['pingback'], Social::$i18n), (isset($groups['pingback']) ? $groups['pingback'] : 0)); ?></span></a></li>
+			<li class="social-wordpress"><a href="#" rel="social-wordpress"><span><?php printf(_n('1 Comment', '%1$s Comments', (isset($groups['wordpress']) ? $groups['wordpress'] : 0), Social::$i18n), (isset($groups['wordpress']) ? $groups['wordpress'] : 0)); ?></span></a></li>
+			<li class="social-twitter"><a href="#" rel="social-twitter"><span><?php printf(_n('1 Tweet', '%1$s Tweets', (isset($groups['twitter']) ? $groups['twitter'] : 0), Social::$i18n), (isset($groups['twitter']) ? $groups['twitter'] : 0)); ?></span></a></li>
+			<li class="social-facebook"><a href="#" rel="social-facebook"><span><?php printf(_n('1 Facebook', '%1$s Facebook', (isset($groups['facebook']) ? $groups['facebook'] : 0), Social::$i18n), (isset($groups['facebook']) ? $groups['facebook'] : 0)); ?></span></a></li>
+			<li class="social-pingback"><a href="#" rel="social-pingback"><span><?php printf(_n('1 Pingback', '%1$s Pingbacks', (isset($groups['pingback']) ? $groups['pingback'] : 0), Social::$i18n), (isset($groups['pingback']) ? $groups['pingback'] : 0)); ?></span></a></li>
 		</ul>
 
 		<!-- panel items -->
