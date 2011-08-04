@@ -26,7 +26,7 @@ abstract class Social_Helper {
 				'method' => $method,
 				'public_key' => $public,
 				'hash' => sha1($public . $private),
-				'params' => json_encode($params)
+				'params' => json_encode(stripslashes_deep($params))
 			)
 		));
 
