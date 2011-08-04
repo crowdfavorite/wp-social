@@ -1700,7 +1700,7 @@ final class Social {
 				</a>
 				<?php endif; ?>
 			</span>
-			<a href="<?php echo get_comment_link(get_comment_ID()); ?>" class="social-posted-when"><?php printf(__('%s ago', Social::$i18n), human_time_diff(strtotime($comment->comment_date))); ?></a>
+			<a href="<?php echo get_comment_link(get_comment_ID()); ?>" class="social-posted-when"><?php printf(__('%s ago', Social::$i18n), human_time_diff(strtotime($comment->comment_date_gmt))); ?></a>
 		</div>
 	</div>
 	<div class="social-comment-body">
