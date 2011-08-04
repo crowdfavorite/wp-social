@@ -214,6 +214,23 @@ final class Social {
 		wp_clear_scheduled_hook(Social::$prefix . 'aggregate_comments');
 	}
 
+	/**
+	 * Add Settings link to plugins - code from GD Star Ratings
+	 *
+	 * @param  array  $links
+	 * @param  string  $file
+	 * @return array
+	 */
+	public function add_settings_link($links, $file) {
+		static $this_plugin;
+		if (!$this_plugin) $this_plugin = plugin_basename(__FILE__);
+
+		if ($file == $this_plugin){
+			$settings_link = '<a href="'.admin_url('options-general.php?page=social.php').'">'.__("Settings", "photosmash-galleries").'</a>';
+			array_unshift($links, $settings_link);
+		}
+		return $links;
+	}
 
 	/**
 	 * Adds the 15 minute interval.
@@ -2746,5 +2763,6 @@ add_filter('get_avatar', array($social, 'get_avatar'), 10, 5);
 add_filter('register', array($social, 'register'));
 add_filter('loginout', array($social, 'loginout'));
 add_filter('cron_schedules', array($social, 'cron_schedules'));
+add_filter('plugin_action_links', array($social, 'add_settings_link'), 10, 2);
 
 } // End class_exists check
