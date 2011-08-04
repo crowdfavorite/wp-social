@@ -145,10 +145,10 @@ If you want to hook into a CRON for extra functionality for a service, all you h
 
 = How can I turn on and off Twitter's @Anywhere functionality? =
 
-To utilize Twitter's @Anywhere functionality you will need to have an @Anywhere API key. If you don't have an API key,
+To utilize Twitter's @Anywhere functionality (hovercards appearing on linked @usernames) you will need to have an @Anywhere application set up. If you don't have an application already created,
 visit http://dev.twitter.com/anywhere.
 
-Once you have an API key login to your WordPress installation and navigate to Settings -> Social -> Twitter @Anywhere Settings. Enter your API key in the text box and click on "Save Settings".
+Once you have an Consumer API key, login to your WordPress installation and navigate to Settings -> Social -> Twitter @Anywhere Settings. Enter your `Consumer key` in the input box and click on "Save Settings".
 
 If you want to disable the @Anywhere functionality, simply remove the API key from the Social settings page and click "Save Settings".
 

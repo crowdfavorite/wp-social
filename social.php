@@ -1045,11 +1045,11 @@ final class Social {
 		<?php endif; ?>
 
 		<h3><?php _e('Twitter @Anywhere Settings', Social::$i18n); ?></h3>
-		<p><?php _e('If you would like to utilize Twitter\'s @Anywhere hovercards for Twitter usernames, then enter your application\'s API key here. (How do I get an API key? <a href="http://dev.twitter.com/anywhere" target="_blank">Click Here</a>)', Social::$i18n); ?></p>
+		<p><?php _e('To enable Twitter\'s @Anywhere hovercards for linked Twitter usernames, enter your application\'s Consumer API key here. (<a href="http://dev.twitter.com/anywhere" target="_blank">Click here to get an API key</a>)', Social::$i18n); ?></p>
 		<p><input type="text" class="text" name="<?php echo Social::$prefix . 'twitter_anywhere_api_key'; ?>" id="<?php echo Social::$prefix . 'twitter_anywhere_api_key'; ?>" style="width:400px" value="<?php echo Social::option('twitter_anywhere_api_key'); ?>"/></p>
 
 		<h3><?php _e('Disable Internal CRON Mechanism', Social::$i18n); ?></h3>
-		<p><?php _e('If you disable this feature, Social\'s CRON jobs will not run until you setup the correct system CRON jobs.', Social::$i18n); ?></p>
+		<p><?php _e('If you disable this feature, Social\'s scheduled CRON jobs to fetch new tweets and Facebook posts will not run until you setup the correct system CRON jobs or fetch new items manually from each individual post screen.', Social::$i18n); ?></p>
 		<p>
 			<label for="system_crons_yes">
 				<input type="radio" name="<?php echo Social::$prefix . 'system_crons'; ?>" value="1" id="system_crons_yes" style="position:relative;top:-1px"<?php echo Social::option('system_crons') == '1' ? ' checked="checked"' : ''; ?> />
