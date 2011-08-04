@@ -495,20 +495,14 @@ final class Social {
 				wp_die('Oops, please try again.');
 			}
 
-			if (get_option(Social::$prefix . 'system_crons', '0') == '0') {
-				$schedule = wp_get_schedule($_GET[Social::$prefix . 'cron']);
-				$timestamp = wp_next_scheduled($_GET[Social::$prefix . 'cron']);
-				if (!$schedule !== false and $timestamp !== false) {
-					if (Social::option('debug') == '1') {
-						$this->log(basename(__FILE__).'.'.__LINE__.'.'.$_SERVER['REQUEST_URI'].'.rescheduling CRON '.$_GET[Social::$prefix . 'cron']);
-					}
-					wp_reschedule_event(time(), $schedule, $_GET[Social::$prefix . 'cron']);
-					spawn_cron();
+			$method = $_GET[Social::$prefix . 'cron'] . '_core';
+			if (method_exists($this, $method)) {
+				switch ($method) {
+					case 'cron_15':
+					case 'cron_60':
+						$this->$method();
+					break;
 				}
-			}
-			else {
-				$method = $_GET[Social::$prefix . 'cron'] . '_core';
-				$this->$method();
 			}
 		}
 		else if (!empty($_POST[Social::$prefix . 'action'])) {
