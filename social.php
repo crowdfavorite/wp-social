@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: Social
-Plugin URI:
-Description: Social (Includes Facebook and Twitter)
+Plugin URI: http://mailchimp.com/
+Description: Broadcast newly published posts and pull in dicussions using integrations with Twitter and Facebook. Brought to you by MailChimp, 
 Version: 1.0
 Author: Crowd Favorite
-Author URI: http://crowdfavorite.com
+Author URI: http://crowdfavorite.com/
 */
 
 if (!class_exists('Social')) { // try to avoid double-loading...
