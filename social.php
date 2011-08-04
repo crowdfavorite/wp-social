@@ -1151,7 +1151,7 @@ final class Social {
 			}
 			if (isset($_POST[Social::$prefix . 'action'])) {
 				foreach ($services as $key => $service) {
-					if (empty($_POST[Social::$prefix . $key . '_content'])) {
+					if (count($service->accounts()) and empty($_POST[Social::$prefix . $key . '_content'])) {
 						$errors[$key] = 'Please enter some content for ' . $service->title() . '.';
 					}
 				}
