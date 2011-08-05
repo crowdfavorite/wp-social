@@ -55,34 +55,31 @@
 	font-size: 12px;
 	color: #333;
 }
+
+.social-broadcastables {
+	border-top: 1px solid #ddd;
+}
+.social-broadcastables li {
+	margin-bottom: 0;
+}
 .social-broadcastable {
+	border-bottom: 1px solid #ddd;
 	display: block;
-	float: left;
-	width: 30%;
-	margin: 5px 5px 5px 0;
-	padding: 5px;
-	border-radius: 3px;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	-khtml-border-radius: 3px;
-	line-height: 16px;
+	height: 24px;
+	line-height: 24px;
+	padding: 5px 10px;
 }
 .social-broadcastable:hover {
-	background-color: #eee;
+	background: #eaf2f9;
 }
 .social-broadcastable img {
-	float: left;
-	margin-right: 5px;
+	margin: 0 10px;
 }
-.social-broadcastable input {
-	float: left;
-	margin: 7px 5px 0 0;
-	width: auto;
+.social-broadcastable input,
+.social-broadcastable img {
+	vertical-align: middle;
 }
-.social-broadcastable span {
-	position: relative;
-	top: 5px;
-}
+
 .social-settings-connect {
 	float: left;
 	margin-right: 30px;
@@ -103,9 +100,6 @@
 #social_xmlrpc {
 	clear: both;
 	margin-bottom: 15px;
-}
-#social_xmlrpc label {
-	width: 15%;
 }
 
 /**

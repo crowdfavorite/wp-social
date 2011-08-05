@@ -1045,24 +1045,23 @@ final class Social {
 			<tr>
 				<th><?php _e('When posting via XML-RPC or email, broadcast teasers to&hellip;', Social::$i18n); ?></th>
 				<td>
-					<div id="social_xmlrpc">
+					<ul id="social_xmlrpc" class="social-broadcastables">
 						<?php
 							$accounts = get_option(Social::$prefix . 'xmlrpc_accounts', array());
 							foreach (Social::$global_services as $key => $service):
 								foreach ($service->accounts() as $account):
 						?>
-						<label class="social-broadcastable" for="<?php echo $service->service . $account->user->id; ?>" style="cursor:pointer">
+						<li><label class="social-broadcastable" for="<?php echo $service->service . $account->user->id; ?>" style="cursor:pointer">
 							<input type="checkbox" name="<?php echo Social::$prefix . 'xmlrpc_accounts[]'; ?>" id="<?php echo $service->service . $account->user->id; ?>" value="<?php echo $key . '|' . $account->user->id; ?>"<?php echo ((isset($accounts[$key]) and in_array($account->user->id, array_values($accounts[$key]))) ? ' checked="checked"' : ''); ?> />
 							<img src="<?php echo $service->profile_avatar($account); ?>" width="24" height="24"/>
 							<span><?php echo $service->profile_name($account); ?></span>
-						</label>
+						</label></li>
 						<?php
 								endforeach;
 							endforeach;
 						?>
-						<div style="clear:both"></div>
+						</ul>
 						<p class="description"><?php _e('Select accounts above to have them auto-broadcast a teaser whenever you publish a post via XML-RPC or email. This only affects posts published remotely; if you&rsquo;re broadcasing from the post edit screen, you can ', Social::$i18n); ?></p>
-					</div>
 				</td>
 			</tr>
 			<?php endif ?>
