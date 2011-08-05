@@ -1,3 +1,10 @@
+/**
+ * Wrapping form
+ */
+.social-view {
+	max-width: 60em;
+}
+
 #social_proxy_keys {
 	margin-top: 10px;
 }
@@ -178,6 +185,39 @@
 	margin-top: 0 !important;
 }
 
+.social-kv {
+	margin-bottom: 10px;
+}
+.social-kv dt {
+	font-size: 11px;
+	font-weight: bold;
+	text-transform: uppercase;
+	margin-bottom: 5px;
+}
+.social-kv dd,
+.social-kv code {
+	font-size: 16px;
+}
+
+.social-callout {
+	background: #f5f5f5;
+	-moz-border-radius: 5px; /* FF1+ */
+	-webkit-border-radius: 5px; /* Saf3+, Chrome */
+	-khtml-border-radius: 5px; /* Konqueror */
+	border-radius: 5px; /* Standard. IE9 */
+	/**
+	 * @bugfix border-radius background bleed
+	 * @see http://tumble.sneak.co.nz/post/928998513/fixing-the-background-bleed
+	 */
+	-webkit-background-clip: padding-box;
+	border: 1px solid #ddd;
+	margin: 10px 0;
+	padding: 10px;
+}
+.social-title {
+	font: normal normal 16px/1.2 "HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,sans-serif;
+	margin: 0 0 10px;
+}
 
 #aggregation_log {
 	margin-bottom: 10px;

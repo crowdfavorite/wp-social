@@ -987,7 +987,7 @@ final class Social {
 	 */
 	public function admin_options_form() {
 ?>
-<form id="setup" method="post" action="<?php echo admin_url(); ?>">
+<form id="setup" class="social-view" method="post" action="<?php echo admin_url(); ?>">
 	<?php wp_nonce_field(); ?>
 	<input type="hidden" name="<?php echo Social::$prefix; ?>action" value="settings"/>
 	<?php if (isset($_GET['saved'])): ?>
@@ -1020,97 +1020,118 @@ final class Social {
 			<a href="<?php echo Social_Helper::authorize_url($key, true); ?>" id="<?php echo $key; ?>_signin" class="social-login"><span><?php _e('Sign In With ' . $service->title, Social::$i18n); ?></span></a>
 		</div>
 		<?php endforeach; ?>
-
-		<h3 style="clear:both;"><?php _e('Broadcasting Format', Social::$i18n); ?></h3>
-		<p><?php _e('Define how you would like your posts to be formatted when being broadcasted.'); ?></p>
+		
 		<table class="form-table">
 			<tr>
-				<th style="width:100px" colspan="2">
-					<strong><?php _e('Tokens:', Social::$i18n); ?></strong>
-					<ul style="margin:10px 0 0 15px;">
-						<?php foreach (Social::broadcast_tokens() as $token => $description): ?>
-						<li><span style="float:left;width:60px"><?php echo $token; ?></span> - <?php echo $description; ?></li>
-						<?php endforeach; ?>
-					</ul>
+				<th>
+					<label for="<?php echo Social::$prefix . 'broadcast_format'; ?>"><?php _e('Broadcast teaser format', Social::$i18n); ?></label>
 				</th>
+				<td>
+					<input type="text" class="regular-text" name="<?php echo Social::$prefix . 'broadcast_format'; ?>" id="<?php echo Social::$prefix . 'broadcast_format'; ?>" value="<?php echo Social::option('broadcast_format'); ?>"/>
+					<p class="description"><?php _e('How you would like posts to be formatted when broadcasting to Twitter or Facebook?'); ?></p>
+					
+					<div class="description">
+						<?php _e('Tokens:', Social::$i18n); ?>
+						<ul>
+							<?php foreach (Social::broadcast_tokens() as $token => $description): ?>
+							<li><b><?php echo $token; ?></b>: <?php echo $description; ?></li>
+							<?php endforeach; ?>
+						</ul>
+					</div>
+				</td>
+			</tr>
+			
+			<?php if ($have_accounts): ?>
+			<tr>
+				<th><?php _e('When posting via XML-RPC or email, broadcast teasers to&hellip;', Social::$i18n); ?></th>
+				<td>
+					<div id="social_xmlrpc">
+						<?php
+							$accounts = get_option(Social::$prefix . 'xmlrpc_accounts', array());
+							foreach (Social::$global_services as $key => $service):
+								foreach ($service->accounts() as $account):
+						?>
+						<label class="social-broadcastable" for="<?php echo $service->service . $account->user->id; ?>" style="cursor:pointer">
+							<input type="checkbox" name="<?php echo Social::$prefix . 'xmlrpc_accounts[]'; ?>" id="<?php echo $service->service . $account->user->id; ?>" value="<?php echo $key . '|' . $account->user->id; ?>"<?php echo ((isset($accounts[$key]) and in_array($account->user->id, array_values($accounts[$key]))) ? ' checked="checked"' : ''); ?> />
+							<img src="<?php echo $service->profile_avatar($account); ?>" width="24" height="24"/>
+							<span><?php echo $service->profile_name($account); ?></span>
+						</label>
+						<?php
+								endforeach;
+							endforeach;
+						?>
+						<div style="clear:both"></div>
+						<p class="description"><?php _e('Select accounts above to have them auto-broadcast a teaser whenever you publish a post via XML-RPC or email. This only affects posts published remotely; if you&rsquo;re broadcasing from the post edit screen, you can ', Social::$i18n); ?></p>
+					</div>
+				</td>
+			</tr>
+			<?php endif ?>
+			<tr>
+				<th><?php _e('Twitter @anywhere', Social::$i18n); ?></th>
+				<td>
+					<label for="<?php echo Social::$prefix . 'twitter_anywhere_api_key'; ?>"><?php _e('Consumer API Key', Social::$i18n); ?></label><br />
+					<input type="text" class="regular-text" name="<?php echo Social::$prefix . 'twitter_anywhere_api_key'; ?>" id="<?php echo Social::$prefix . 'twitter_anywhere_api_key'; ?>" value="<?php echo Social::option('twitter_anywhere_api_key'); ?>" />
+					<p class="description"><?php _e('To enable Twitter\'s @Anywhere hovercards for Twitter usernames, enter your application\'s Consumer API key here. (<a href="http://dev.twitter.com/anywhere" target="_blank">Click here to get an API key</a>)', Social::$i18n); ?></p>
+				</td>
 			</tr>
 			<tr>
-				<th style="width:100px"><label
-					for="<?php echo Social::$prefix . 'broadcast_format'; ?>"><?php _e('Format', Social::$i18n); ?></label>
+				<th>Fetch new comments&hellip;</th>
+				<td>
+					<ul>
+						<li>
+							<label for="system_crons_no">
+								<input type="radio" name="<?php echo Social::$prefix . 'system_crons'; ?>" value="0" id="system_crons_no" style="position:relative;top:-1px"<?php echo Social::option('system_crons') != '1' ? ' checked="checked"' : ''; ?> />
+								<?php _e('Manually', Social::$i18n); ?>
+								<span class="description"><?php _e('(easiest)', Social::$i18n); ?></span>
+							</label>
+						</li>
+						<li>
+							<label for="system_crons_yes">
+								<input type="radio" name="<?php echo Social::$prefix . 'system_crons'; ?>" value="1" id="system_crons_yes" style="position:relative;top:-1px"<?php echo Social::option('system_crons') == '1' ? ' checked="checked"' : ''; ?> />
+								<?php _e('Using a CRON job <span class="description">(advanced)</span>', Social::$i18n); ?>
+							</label>
+							
+							<?php if (Social::option('system_crons') == '1'): ?>
+							<div class="social-callout">
+								<h3 class="social-title"><?php _e('CRON Setup', Social::$i18n); ?></h3>
+								<dl class="social-kv">
+									<dt><?php _e('CRON API Key', Social::$i18n); ?> <small>(<a href="<?php echo wp_nonce_url(admin_url('options-general.php?page=social.php&' . Social::$prefix . 'action=regenerate_api_key'), 'regenerate_api_key'); ?>" rel="<?php echo Social::$prefix . 'api_key'; ?>" id="<?php echo Social::$prefix . 'regenerate_api_key'; ?>"><?php _e('regenerate', Social::$i18n); ?></a>)</small></dt>
+									<dd>
+										<code class="<?php echo Social::$prefix . 'api_key'; ?>"><?php echo Social::option('system_cron_api_key'); ?></code>
+									</dd>
+								</dl>
+								<p><?php _e('For your system CRON to run correctly, make sure it is pointing towards a URL that looks something like the following:', Social::$i18n); ?></p>
+								<code><?php echo site_url('?' . Social::$prefix . 'cron=cron_15&api_key=' . Social::option('system_cron_api_key')); ?></code>
+								<?php endif; ?>
+							</div>
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					<?php _e('Debug Mode', Social::$i18n); ?>
+					<span class="description"><?php _e('(nerds only)', Social::$i18n); ?></span>
 				</th>
-				<td><input type="text" class="text" name="<?php echo Social::$prefix . 'broadcast_format'; ?>" id="<?php echo Social::$prefix . 'broadcast_format'; ?>" style="width:400px" value="<?php echo Social::option('broadcast_format'); ?>"/></td>
+				<td>
+					<p style="margin-top:0"><?php _e('If you turn debug on, Social may run more slowly, but you&rsquo;ll see more information in your PHP error log. Not recommended for production environments.', Social::$i18n); ?></p>
+					<ul>
+						<li>
+							<label for="debug_mode_no">
+								<input type="radio" name="<?php echo Social::$prefix . 'debug'; ?>" id="debug_mode_no" value="0"<?php echo Social::option('debug') != '1' ? ' checked="checked"' : ''; ?> />
+								<?php _e('Off <span class="description">(recommended)</span>', Social::$i18n); ?>
+							</label>
+						</li>
+						<li>
+							<label for="debug_mode_yes">
+								<input type="radio" name="<?php echo Social::$prefix . 'debug'; ?>" id="debug_mode_yes" value="1"<?php echo Social::option('debug') == '1' ? ' checked="checked"' : ''; ?> />
+								<?php _e('On <span class="description">(for troubleshooting)</span>', Social::$i18n); ?>
+							</label>
+						</li>
+					</ul>
+				</td>
 			</tr>
 		</table>
-
-		<?php if ($have_accounts): ?>
-		<div id="social_xmlrpc">
-			<h3><?php _e('XML-RPC/Email Broadcasting Accounts', Social::$i18n); ?></h3>
-			<p><?php _e('These accounts will be the accounts that are automatically broadcasted to when you publish a blog post via XML-RPC or email.', Social::$i18n); ?></p>
-			<?php
-				$accounts = get_option(Social::$prefix . 'xmlrpc_accounts', array());
-				foreach (Social::$global_services as $key => $service):
-					foreach ($service->accounts() as $account):
-			?>
-			<label class="social-broadcastable" for="<?php echo $service->service . $account->user->id; ?>" style="cursor:pointer">
-				<input type="checkbox" name="<?php echo Social::$prefix . 'xmlrpc_accounts[]'; ?>" id="<?php echo $service->service . $account->user->id; ?>" value="<?php echo $key . '|' . $account->user->id; ?>"<?php echo ((isset($accounts[$key]) and in_array($account->user->id, array_values($accounts[$key]))) ? ' checked="checked"' : ''); ?> />
-				<img src="<?php echo $service->profile_avatar($account); ?>" width="24" height="24"/>
-				<span><?php echo $service->profile_name($account); ?></span>
-			</label>
-			<?php
-					endforeach;
-				endforeach;
-			?>
-			<div style="clear:both"></div>
-		</div>
-		<?php endif; ?>
-
-		<h3><?php _e('Twitter @Anywhere Settings', Social::$i18n); ?></h3>
-		<p><?php _e('To enable Twitter\'s @Anywhere hovercards for linked Twitter usernames, enter your application\'s Consumer API key here. (<a href="http://dev.twitter.com/anywhere" target="_blank">Click here to get an API key</a>)', Social::$i18n); ?></p>
-		<p><input type="text" class="text" name="<?php echo Social::$prefix . 'twitter_anywhere_api_key'; ?>" id="<?php echo Social::$prefix . 'twitter_anywhere_api_key'; ?>" style="width:400px" value="<?php echo Social::option('twitter_anywhere_api_key'); ?>"/></p>
-
-		<h3><?php _e('Disable Internal CRON Mechanism', Social::$i18n); ?></h3>
-		<p><?php _e('If you disable this feature, Social\'s scheduled CRON jobs to fetch new tweets and Facebook posts will not run until you setup the correct system CRON jobs or fetch new items manually from each individual post screen.', Social::$i18n); ?></p>
-		<p>
-			<label for="system_crons_yes">
-				<input type="radio" name="<?php echo Social::$prefix . 'system_crons'; ?>" value="1" id="system_crons_yes" style="position:relative;top:-1px"<?php echo Social::option('system_crons') == '1' ? ' checked="checked"' : ''; ?> />
-				<?php _e('Yes', Social::$i18n); ?>
-			</label>
-		</p>
-
-		<p>
-			<label for="system_crons_no">
-				<input type="radio" name="<?php echo Social::$prefix . 'system_crons'; ?>" value="0" id="system_crons_no" style="position:relative;top:-1px"<?php echo Social::option('system_crons') != '1' ? ' checked="checked"' : ''; ?> />
-				<?php _e('No', Social::$i18n); ?>
-			</label>
-		</p>
-
-		<?php if (Social::option('system_crons') == '1'): ?>
-		<h4 style="margin-bottom:0"><?php _e('API Key', Social::$i18n); ?></h4>
-		<p style="margin-top:0"><?php _e('This is the API key that your system CRON jobs will need to use:', Social::$i18n); ?></p>
-		<p>
-			<strong class="<?php echo Social::$prefix . 'api_key'; ?>"><?php echo Social::option('system_cron_api_key'); ?></strong><br/>
-			<a href="<?php echo wp_nonce_url(admin_url('options-general.php?page=social.php&' . Social::$prefix . 'action=regenerate_api_key'), 'regenerate_api_key'); ?>" rel="<?php echo Social::$prefix . 'api_key'; ?>" id="<?php echo Social::$prefix . 'regenerate_api_key'; ?>"><?php _e('Regenerate Key', Social::$i18n); ?></a>
-		</p>
-		<h4 style="margin-bottom:0"><?php _e('Running System CRON', Social::$i18n); ?></h4>
-		<p style="margin-top:0"><?php _e('For your system CRON to run correctly, make sure it is pointing towards a URL that looks something like the following:', Social::$i18n); ?></p>
-		<p><?php echo site_url('?' . Social::$prefix . 'cron=cron_15&api_key=<span class="' . Social::$prefix . 'api_key">' . Social::option('system_cron_api_key') . '</span>'); ?></p>
-		<?php endif; ?>
-
-		<h4 style="margin-bottom:0"><?php _e('Debug Mode', Social::$i18n); ?></h4>
-		<p style="margin-top:0"><?php _e('If you enable this option Social may run slower, but you\'ll be able to see various informational items in your PHP error log.', Social::$i18n); ?></p>
-		<p>
-			<label for="debug_mode_yes">
-				<input type="radio" name="<?php echo Social::$prefix . 'debug'; ?>" id="debug_mode_yes" value="1"<?php echo Social::option('debug') == '1' ? ' checked="checked"' : ''; ?> />
-				<?php _e('Yes', Social::$i18n); ?>
-			</label>
-		</p>
-
-		<p>
-			<label for="debug_mode_no">
-				<input type="radio" name="<?php echo Social::$prefix . 'debug'; ?>" id="debug_mode_no" value="0"<?php echo Social::option('debug') != '1' ? ' checked="checked"' : ''; ?> />
-				<?php _e('No', Social::$i18n); ?>
-			</label>
-		</p>
 
 		<p class="submit" style="clear:both">
 			<input type="submit" name="submit" value="Save Settings" class="button-primary"/>
