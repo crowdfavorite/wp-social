@@ -1,5 +1,14 @@
 (function($) {
 	$(function(){
+		$('.social-collapsible').each(function () {
+			var $t = $(this);
+			$t.find('.social-title a').click(function (e) {
+				e.preventDefault();
+				$t.find('.social-content').slideToggle('fast');
+				$t.toggleClass('social-open');
+			});
+		});
+		
 		function counter($object, $counter, max) {
 			var content = $object.val();
 			if (content.length > max) {
