@@ -996,7 +996,10 @@ final class Social {
 	</div>
 	<?php endif; ?>
 	<div class="wrap" id="social_options_page">
-		<h2><?php _e('Social Options', Social::$i18n); ?></h2>
+		<div class="social-view-header cf-clearfix">
+			<h2><?php _e('Social', Social::$i18n); ?></h2>
+			<div class="social-view-subtitle"><?php printf(__('Compliments of <a class="social-mailchimp-link" href="%s">MailChimp</a>', Social::$i18n), 'http://mailchimp.com/'); ?></div>
+		</div>
 		<table class="form-table">
 			<tr>
 				<th><?php _e('Connect accounts', Social::$i18n); ?></th>

@@ -4,6 +4,29 @@
 .social-view {
 	max-width: 60em;
 }
+.social-view-header {
+	margin: 10px;
+}
+.social-view-header h2 {
+	border-bottom: 1px solid #ddd;
+	margin-bottom: 10px;
+}
+.social-view-subtitle {
+	color: #777;
+	font-style: italic;
+}
+.social-mailchimp-link {
+	background: url(mailchimp.gif) no-repeat;
+	display: inline-block;
+	height: 27px;
+	overflow: hidden;
+	text-indent: -999em;
+	*text-indent: 0;
+	font-size: 0;
+	line-height: 0;
+	vertical-align: middle;
+	width: 107px;
+}
 
 #social_proxy_keys {
 	margin-top: 10px;
