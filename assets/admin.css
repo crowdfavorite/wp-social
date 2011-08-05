@@ -56,14 +56,47 @@
 	color: #333;
 }
 
+.social-accounts {
+	margin: 10px 0;
+}
+.social-accounts ul {
+	border-top: 1px solid #e5e5e5;
+	font-size: 16px;
+}
+.social-accounts li {
+	border-bottom: 1px solid #e5e5e5;
+	height: 30px;
+	line-height: 30px;
+	margin: 0;
+	padding: 5px 5px 5px 30px;
+	position: relative;
+}
+.social-accounts a {
+	font-weight: bold;
+	text-decoration: none;
+}
+.social-accounts .social-twitter-icon,
+.social-accounts .social-facebook-icon,
+.social-accounts .disconnect {
+	position: absolute;
+	top: 11px;
+}
+.social-accounts .social-twitter-icon,
+.social-accounts .social-facebook-icon {
+	left: 5px;
+}
+.social-accounts .disconnect {
+	right: 5px;
+}
+
 .social-broadcastables {
-	border-top: 1px solid #ddd;
+	border-top: 1px solid #e5e5e5;
 }
 .social-broadcastables li {
 	margin-bottom: 0;
 }
 .social-broadcastable {
-	border-bottom: 1px solid #ddd;
+	border-bottom: 1px solid #e5e5e5;
 	display: block;
 	height: 24px;
 	line-height: 24px;
@@ -79,17 +112,12 @@
 .social-broadcastable img {
 	vertical-align: middle;
 }
-
-.social-settings-connect {
-	float: left;
-	margin-right: 30px;
-}
 .social-login span {
 	display: none;
 }
 .social-login {
-	display: block;
-	margin-bottom: 15px;
+	display: inline-block;
+	margin: 2px;
 	width: 150px;
 	height: 22px;
 }
@@ -193,8 +221,8 @@
 	font-size: 16px;
 }
 
-.social-callout {
-	background: #f5f5f5;
+.social-callout,
+.social-note {
 	-moz-border-radius: 5px; /* FF1+ */
 	-webkit-border-radius: 5px; /* Saf3+, Chrome */
 	-khtml-border-radius: 5px; /* Konqueror */
@@ -204,9 +232,16 @@
 	 * @see http://tumble.sneak.co.nz/post/928998513/fixing-the-background-bleed
 	 */
 	-webkit-background-clip: padding-box;
-	border: 1px solid #ddd;
 	margin: 10px 0;
 	padding: 10px;
+}
+.social-callout {
+	background: #f5f5f5;
+	border: 1px solid #ddd;
+}
+.social-note {
+	background: #fff;
+	border: 1px solid #e5db6c;
 }
 .social-title {
 	font: normal normal 16px/1.2 "HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,sans-serif;
