@@ -52,7 +52,15 @@ abstract class Social_Helper {
 		$user = get_userdatabylogin($service . '_' . $username);
 		if ($user === false) {
 			$id = wp_create_user($service . '_' . $username, wp_generate_password(20, false), self::create_email($service, $username));
-			update_user_meta($id, Social::$prefix . 'commenter', '1');
+
+			$role = 'subscriber';
+			if (get_option('users_can_register') == '1') {
+				$role = get_option('default_role');
+			}
+
+			$user = new WP_User($id);
+			$user->set_role($role);
+
 			update_user_option($id, 'show_admin_bar_front', 'false');
 		}
 		else {
