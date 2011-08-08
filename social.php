@@ -1791,7 +1791,7 @@ final class Social {
 		if (!empty($services)) {
 			$account_id = $_POST[Social::$prefix . 'post_account'];
 
-			$url = get_comment_link($comment_ID);
+			$url = wp_get_shortlink($commentdata['comment_post_ID']).'#comment-'.$comment_ID;
 			$url_length = strlen($url) + 1;
 			$comment_length = strlen($comment_content);
 			$combined_length = $url_length + $comment_length;
