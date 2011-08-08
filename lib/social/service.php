@@ -175,7 +175,7 @@ abstract class Social_Service {
 			$content = '';
 			switch ($token) {
 				case '{url}':
-					$url = apply_filters(Social::$prefix . 'broadcast_permalink', site_url('?p='.$post->ID), $post);
+					$url = apply_filters(Social::$prefix . 'broadcast_permalink', wp_get_shortlink($post->ID), $post);
 					$url = apply_filters(Social::$prefix . $this->service . '_broadcast_permalink', $url, $post);
 					$content = $url;
 					break;

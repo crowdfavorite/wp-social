@@ -2091,7 +2091,7 @@ final class Social {
 		}
 
 		$urls = array(
-			urlencode(site_url('?p=' . $post->ID)),
+			urlencode(wp_get_shortlink($post->ID)),
 		);
 
 		$permalink = urlencode(get_permalink($post->ID));
