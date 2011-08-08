@@ -596,8 +596,8 @@ final class Social {
 
 					if ($this->cron_lock('cron_15')) {
 						do_action(Social::$prefix . 'cron_15');
+						$this->cron_unlock('cron_15');
 					}
-					$this->cron_unlock('cron_15');
 				break;
 				case 'cron_60':
 					if (!$api_key_verified and !wp_verify_nonce($_GET['_wpnonce'])) {
@@ -606,8 +606,8 @@ final class Social {
 
 					if ($this->cron_lock('cron_60')) {
 						do_action(Social::$prefix . 'cron_60');
+						$this->cron_unlock('cron_15');
 					}
-					$this->cron_unlock('cron_15');
 				break;
 				case 'aggregate_comments':
 					if (!$api_key_verified) {
