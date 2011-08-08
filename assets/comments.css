@@ -420,6 +420,10 @@ override submit styles in TwentyEleven theme */
 	 */
 	width: 100%;
 }
+/* Callout post-author name */
+#social .bypostauthor .social-fn {
+	font-weight: bold;
+}
 
 #social .social-identity {
 	margin-top: 10px;
