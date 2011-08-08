@@ -1022,7 +1022,7 @@ final class Social {
 								<span class="disconnect">'.$disconnect.'</span>
 							</li>';
 						endforeach;
-						$service_buttons .= '<a href="'.Social_Helper::authorize_url($key, true).'" id="'.$key.'_signin" class="social-login"><span>'.__('Sign in with ' . $service->title, Social::$i18n).'</span></a>';
+						$service_buttons .= '<a href="'.Social_Helper::authorize_url($key, true).'" id="'.$key.'_signin" class="social-login" target="_blank"><span>'.__('Sign in with ' . $service->title, Social::$i18n).'</span></a>';
 					endforeach;
 					?>
 					<p><?php _e('Before blog authors can broadcast to social networks you need to connect some accounts:', Social::$i18n); ?></p>
@@ -1185,8 +1185,7 @@ final class Social {
 		<span class="social-<?php echo $key; ?>-icon big"><i></i><?php echo $output; ?></span>
 		<?php endforeach; ?>
 
-		<a href="<?php echo Social_Helper::authorize_url($key, true); ?>" id="<?php echo $key; ?>_signin"
-		   class="social-login"><span><?php _e('Sign In With ' . $service->title, Social::$i18n); ?></span></a>
+		<a href="<?php echo Social_Helper::authorize_url($key, true); ?>" id="<?php echo $key; ?>_signin" class="social-login" target="_blank"><span><?php _e('Sign In With ' . $service->title, Social::$i18n); ?></span></a>
 	</div>
 	<?php endforeach; ?>
 	<div style="clear:both"></div>
@@ -2489,7 +2488,7 @@ class Social_Comment_Form {
 ?>
 <div class="social-sign-in-links social-clearfix">
 	<?php foreach (Social::$services as $key => $service): ?>
-	<a class="social-<?php echo $key; ?> social-imr social-login comments" href="<?php echo Social_Helper::authorize_url($key); ?>" id="<?php echo $key; ?>_signin"><?php printf(__('Sign in with %s', Social::$i18n), $service->title()); ?></a>
+	<a class="social-<?php echo $key; ?> social-imr social-login comments" href="<?php echo Social_Helper::authorize_url($key); ?>" id="<?php echo $key; ?>_signin" target="_blank"><?php printf(__('Sign in with %s', Social::$i18n), $service->title()); ?></a>
 	<?php endforeach; ?>
 </div>
 <div class="social-divider">
