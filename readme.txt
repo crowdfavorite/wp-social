@@ -65,6 +65,7 @@ We recommend using CSS styles to selectively change the look and feel of your co
 - `#facebook_signin` - style the link that activates Facebook oAuthorization
 - `#twitter_signin` - style the link that activates Facebook oAuthorization
 - `.social-quiet` - a muted typography style, for subdued display of text
+- `.bypostauthor` - a class added to the comment thread to style comments from the author of the post
 
 The icons used for the plugin are currently 16x16 pixels, and reside in a vertical sprite with each icon at 100px intervals.  Adhering to these intervals will ensure that icon positions will not need to change
 
