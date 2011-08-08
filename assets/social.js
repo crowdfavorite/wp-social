@@ -1,3 +1,21 @@
+var $window = null;
+function reloadSocialHTML() {
+	if (!$window.hasClass('comments')) {
+		window.location.reload();
+	}
+	else {
+		var $parent = $window.closest('.social-post');
+		jQuery.get($parent.find('#reload_url').val(), {}, function(response){
+			if (response.result == 'success') {
+				// Add logged-in body class since we're not going to be refreshing the page.
+				jQuery('body').addClass('logged-in');
+				$parent.html(response.html);
+				jQuery('#primary').find('#social_login').parent().html(response.disconnect_url);
+			}
+		}, 'json');
+	}
+}
+
 (function($) {
     /*
      * Append social-js class to html element. This allows us to prevent JS FOUC
@@ -8,34 +26,12 @@
     var c = document.getElementsByTagName('html')[0];
     c.className += ' social-js';
 
-    $(function(){
-        var child = null;
-        var polling = null;
+	$(function(){
         $('.social-login').click(function(e){
             e.preventDefault();
 
-            var $this = $(this);
-            child = window.open($(this).attr('href'), "ServiceAssociate", 'width=700,height=400');
-            polling = setInterval(function(){
-                if (child && child.closed) {
-                    clearInterval(polling);
-
-                    if (!$this.hasClass('comments')) {
-                        window.location.reload();
-                    }
-                    else {
-                        var $parent = $this.closest('.social-post');
-                        $.get($parent.find('#reload_url').val(), {}, function(response){
-                            if (response.result == 'success') {
-                                // Add logged-in body class since we're not going to be refreshing the page.
-                                $('body').addClass('logged-in');
-                                $parent.html(response.html);
-                                $('#primary').find('#social_login').parent().html(response.disconnect_url);
-                            }
-                        }, 'json');
-                    }
-                }
-            }, 100);
+            $window = $(this);
+            window.open($(this).attr('href'), "ServiceAssociate", 'width=700,height=400');
         });
 
 	    $('.social_deauth').click(function(e){

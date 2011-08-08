@@ -730,6 +730,7 @@ final class Social {
 </head>
 <script type="text/javascript">
 	jQuery(function() {
+		window.opener.reloadSocialHTML();
 		window.close();
 	});
 </script>

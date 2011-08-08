@@ -66,6 +66,10 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 			$account = $this->account($account);
 		}
 
+		if (!isset($account->user->username)) {
+			$account->user->username = $account->user->name.'.'.$account->user->id;
+		}
+
 		return Social_Helper::create_user('facebook', $account->user->username);
 	}
 
