@@ -2509,7 +2509,7 @@ class Social_Comment_Form {
 				if (count($service->accounts())) {
 					$account = reset($service->accounts());
 					$html .= '<p class="social-input-row">
-						          <span class="social-' . $key . '-icon">' . $service->profile_name($account) . '.<small class="social-psst">(' . $service->disconnect_url($account) . ')</small></span>
+						          <span class="social-' . $key . '-icon">' . $service->profile_name($account) . '. <small class="social-psst">(' . $service->disconnect_url($account) . ')</small></span>
 					          </p>
 					          <input type="hidden" name="' . Social::$prefix . 'post_account" value="' . $account->user->id . '" />';
 				}
