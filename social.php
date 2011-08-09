@@ -1111,7 +1111,7 @@ final class Social {
 										<input type="radio" name="<?php echo Social::$prefix . 'system_crons'; ?>" value="1" id="system_crons_yes" style="position:relative;top:-1px"<?php echo Social::option('system_crons') == '1' ? ' checked="checked"' : ''; ?> />
 										<?php _e('Using a custom CRON job <span class="description">(advanced)</span>', Social::$i18n); ?>
 									</label>
-									<p class="description"><?php _e('If you select this option, new tweets and Facebook posts will not be fetched unless you set up a system CRON job or fetch new items manually from the post edit screen.', Social::$i18n); ?></p>
+									<p class="description"><?php _e('If you select this option, new tweets and Facebook posts will not be fetched unless you set up a system CRON job or fetch new items manually from the post edit screen. More help is also available in&nbsp;<code>readme.txt</code>.', Social::$i18n); ?></p>
 									<?php if (Social::option('system_crons') == '1'): ?>
 									<div class="social-callout">
 										<h3 class="social-title"><?php _e('CRON Setup', Social::$i18n); ?></h3>
