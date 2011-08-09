@@ -153,12 +153,12 @@
 .social-collapsible {
 	margin: 20px 0;
 }
-.social-collapsible .social-title {
+.social-collapsible > .social-title {
 	background: url(e5e5e5.gif) repeat-x 0 center;
 	font-size: 14px;
 	margin: 0 10px 20px;
 }
-.social-collapsible .social-title a {
+.social-collapsible > .social-title a {
 	background: #fff url(toggle.gif) no-repeat 0 0;
 	display: -moz-inline-box; /* FF2 */
 	display: inline-block; /* Standard. IE8+, Saf, FF3+ */
@@ -172,6 +172,9 @@
 }
 .social-collapsible.social-open .social-title a {
 	background-position: 0 -100px;
+}
+.social-collapsible.social-open .social-content {
+	display: block;
 }
 
 /**

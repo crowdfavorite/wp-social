@@ -1062,12 +1062,13 @@ final class Social {
 				<td>
 					<label for="<?php echo Social::$prefix . 'twitter_anywhere_api_key'; ?>"><?php _e('Consumer API Key', Social::$i18n); ?></label><br />
 					<input type="text" class="regular-text" name="<?php echo Social::$prefix . 'twitter_anywhere_api_key'; ?>" id="<?php echo Social::$prefix . 'twitter_anywhere_api_key'; ?>" value="<?php echo Social::option('twitter_anywhere_api_key'); ?>" />
-					<p class="description"><?php _e('To enable Twitter\'s @Anywhere hovercards for Twitter usernames, enter your application\'s Consumer API key here. (<a href="http://dev.twitter.com/anywhere" target="_blank">Click here to get an API key</a>)', Social::$i18n); ?></p>
+					<p class="description"><?php printf(__('To enable Twitter\'s @anywhere hovercards for Twitter usernames, enter your application\'s Consumer API key here. (<a href="%1$s" target="_blank">Click here to get an API key</a>)', Social::$i18n), 'https://dev.twitter.com/docs/anywhere'); ?></p>
 				</td>
 			</tr>
 		</table>
-		<div class="social-collapsible">
-			<h3 class="social-title"><a href="#social-advanced">Advanced Options</a></h3>
+		<?php $toggle = (Social::option('system_crons') == '1' || Social::option('debug') == '1') ? ' social-open' : ''; ?>
+		<div class="social-collapsible<?php echo $toggle; ?>">
+			<h3 class="social-title"><a href="#social-advanced"><?php _e('Advanced Options', Social::$i18n); ?></a></h3>
 			<div class="social-content">
 				<table id="social-advanced" class="form-table">
 					<?php if ($have_accounts): ?>
@@ -1090,7 +1091,7 @@ final class Social {
 									endforeach;
 								?>
 								</ul>
-								<p class="description"><?php _e('Select accounts above to have them auto-broadcast a teaser whenever you publish a post via XML-RPC or email. This only affects posts published remotely; if you&rsquo;re broadcasing from the post edit screen, you can ', Social::$i18n); ?></p>
+								<p class="description"><?php _e('Select accounts above to have them auto-broadcast a teaser whenever you publish a post via XML-RPC or email. This only affects posts published remotely; if you&rsquo;re publishing from the post edit screen, you can handle broadcasting settings from there.', Social::$i18n); ?></p>
 						</td>
 					</tr>
 					<?php endif ?>
@@ -1101,16 +1102,16 @@ final class Social {
 								<li>
 									<label for="system_crons_no">
 										<input type="radio" name="<?php echo Social::$prefix . 'system_crons'; ?>" value="0" id="system_crons_no" style="position:relative;top:-1px"<?php echo Social::option('system_crons') != '1' ? ' checked="checked"' : ''; ?> />
-										<?php _e('Manually', Social::$i18n); ?>
+										<?php _e('Automatically', Social::$i18n); ?>
 										<span class="description"><?php _e('(easiest)', Social::$i18n); ?></span>
 									</label>
 								</li>
 								<li>
 									<label for="system_crons_yes">
 										<input type="radio" name="<?php echo Social::$prefix . 'system_crons'; ?>" value="1" id="system_crons_yes" style="position:relative;top:-1px"<?php echo Social::option('system_crons') == '1' ? ' checked="checked"' : ''; ?> />
-										<?php _e('Using a CRON job <span class="description">(advanced)</span>', Social::$i18n); ?>
+										<?php _e('Using a custom CRON job <span class="description">(advanced)</span>', Social::$i18n); ?>
 									</label>
-
+									<p class="description"><?php _e('If you select this option, new tweets and Facebook posts will not be fetched unless you set up a system CRON job or fetch new items manually from the post edit screen.', Social::$i18n); ?></p>
 									<?php if (Social::option('system_crons') == '1'): ?>
 									<div class="social-callout">
 										<h3 class="social-title"><?php _e('CRON Setup', Social::$i18n); ?></h3>
