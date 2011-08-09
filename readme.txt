@@ -161,6 +161,12 @@ No, the proxy acts just like any Twitter or Facebook application. We've simply p
 
 1. Allow your visitors to leave a comment as their Facebook or Twitter identities
 
+2. Social settings screen to connect accounts, set up default broadcast settings and more
+
+3. Post edit screen settings: broadcast the post, manually import comments, view a log of imported items
+
+4. View of replies imported from Twitter as comments, @anywhere support 
+
 == Changelog ==
 
 = 1.0 =
