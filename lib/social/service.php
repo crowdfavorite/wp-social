@@ -254,7 +254,7 @@ abstract class Social_Service {
 		);
 		if ($is_admin) {
 			$url = Social_Helper::settings_url($params);
-			$text = '<img src="' . Social::$plugins_url . '/assets/delete.png' . '" alt="' . __('Disconnect', Social::$i18n) . '" />';
+			$text = '<span title="'.__('Disconnect', Social::$i18n).'" class="social-disconnect social-ir">' . __('Disconnect', Social::$i18n) . '</span>';
 		}
 		else {
 			$path = array();

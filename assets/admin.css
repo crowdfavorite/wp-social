@@ -4,6 +4,15 @@
 .social-view {
 	max-width: 60em;
 }
+
+/**
+ * Image replacement util
+ */
+.social-ir {
+	display: block;
+	text-indent: -999em;
+}
+
 .social-view-header {
 	margin: 10px;
 }
@@ -27,6 +36,15 @@
 	margin: 0 4px;
 	vertical-align: middle;
 	width: 111px;
+}
+
+.social-disconnect {
+	background: url(delete-sprite.png) 0 0 no-repeat;
+	height: 14px;
+	width: 14px;
+}
+.social-disconnect:hover {
+	background-position: 0 -100px;
 }
 
 #social_proxy_keys {
@@ -103,13 +121,14 @@
 .social-accounts .social-facebook-icon,
 .social-accounts .disconnect {
 	position: absolute;
-	top: 11px;
 }
 .social-accounts .social-twitter-icon,
 .social-accounts .social-facebook-icon {
+	top: 12px;
 	left: 5px;
 }
 .social-accounts .disconnect {
+	top: 11px;
 	right: 5px;
 }
 
