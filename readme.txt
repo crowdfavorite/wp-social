@@ -1,5 +1,5 @@
 === Social ===
-Contributors: crowdfavorite
+Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter
 Requires at least: 3.2
 Tested up to: 3.2.1
