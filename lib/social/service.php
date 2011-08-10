@@ -175,7 +175,11 @@ abstract class Social_Service {
 			$content = '';
 			switch ($token) {
 				case '{url}':
-					$url = apply_filters(Social::$prefix . 'broadcast_permalink', wp_get_shortlink($post->ID), $post);
+					$url = wp_get_shortlink($post->ID);
+					if (empty($url)) {
+						$url = home_url('?p='.$post->ID);
+					}
+					$url = apply_filters(Social::$prefix . 'broadcast_permalink', $url, $post);
 					$url = apply_filters(Social::$prefix . $this->service . '_broadcast_permalink', $url, $post);
 					$content = $url;
 					break;
@@ -183,7 +187,9 @@ abstract class Social_Service {
 					$content = $post->post_title;
 					break;
 				case '{content}':
-					$content = strip_tags($post->post_content);
+					$content = str_replace(PHP_EOL, '', strip_tags($post->post_content));
+					$content = str_replace("\n", '', $content);
+					$content = str_replace("\r", '', $content);
 					break;
 				case '{author}':
 					$user = get_userdata($post->post_author);
@@ -194,9 +200,12 @@ abstract class Social_Service {
 					break;
 			}
 
-			if (in_array($token, array('{content}', '{date}', '{author}'))) {
-				if (strlen($content) > $available) {
+			if (strlen($content) > $available) {
+				if (in_array($token, array('{date}', '{author}'))) {
 					$content = '';
+				}
+				else {
+					$content = substr($content, 0, ($available-3)).'...';
 				}
 			}
 

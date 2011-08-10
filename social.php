@@ -1171,25 +1171,39 @@ final class Social {
 	 */
 	public function show_user_profile($profileuser) {
 ?>
-	<h3 id="social-networks"><?php _e('Connect to Social Networks', Social::$i18n); ?></h3>
-	<p><?php _e('Before you can broadcast to your social networks, you will need to connect your account(s).', Social::$i18n); ?></p>
-	<?php foreach (Social::$services as $key => $service): ?>
-	<div class="social-settings-connect">
-		<?php
-			foreach ($service->accounts() as $account):
-				$profile_url = $service->profile_url($account);
-				$profile_name = $service->profile_name($account);
-				$url = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
-				$disconnect = $service->disconnect_url($account, true);
-				$output = sprintf(__('Connected to %s. %s', Social::$i18n), $url, $disconnect);
-		?>
-		<span class="social-<?php echo $key; ?>-icon big"><i></i><?php echo $output; ?></span>
-		<?php endforeach; ?>
+<h3 id="social-networks"><?php _e('Connect to Social Networks', Social::$i18n); ?></h3>
+	<p><?php _e('To broadcast to social networks, you&rsquo;ll need to connect an account or two.', Social::$i18n); ?></p>
+<?php
+$have_accounts = false;
+$items = $service_buttons = '';
+foreach (Social::$services as $key => $service):
+	foreach ($service->accounts() as $account):
+		$have_accounts = true;
+		$profile_url = $service->profile_url($account);
+		$profile_name = $service->profile_name($account);
+		$name = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
+		$disconnect = $service->disconnect_url($account, true);
+		$items .= '
+		<li>
+			<div class="social-'.$key.'-icon"><i></i></div>
+			<span class="name">'.$name.'</span>
+			<span class="disconnect">'.$disconnect.'</span>
+		</li>';
+	endforeach;
+	$service_buttons .= '<a href="'.Social_Helper::authorize_url($key, true).'" id="'.$key.'_signin" class="social-login" target="_blank"><span>'.__('Sign in with ' . $service->title, Social::$i18n).'</span></a>';
+endforeach;
+?>
 
-		<a href="<?php echo Social_Helper::authorize_url($key, true); ?>" id="<?php echo $key; ?>_signin" class="social-login" target="_blank"><span><?php _e('Sign In With ' . $service->title, Social::$i18n); ?></span></a>
-	</div>
-	<?php endforeach; ?>
-	<div style="clear:both"></div>
+<div><?php echo $service_buttons; ?></div>
+
+<?php if ($items): ?>
+<div class="social-accounts">
+	<b><?php _e('Connected accounts:', Social::$i18n); ?></b>
+	<ul>
+		<?php echo $items; ?>
+	</ul>
+</div>
+<?php endif ?>
 <?php
 	}
 
