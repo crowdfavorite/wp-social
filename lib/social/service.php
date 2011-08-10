@@ -187,7 +187,7 @@ abstract class Social_Service {
 					$content = $post->post_title;
 					break;
 				case '{content}':
-					$content = strip_tags($post->post_content);
+					$content = str_replace(PHP_EOL, '', strip_tags($post->post_content));
 					$content = str_replace("\n", '', $content);
 					$content = str_replace("\r", '', $content);
 					break;
