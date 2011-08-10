@@ -183,7 +183,7 @@ abstract class Social_Service {
 					$content = $post->post_title;
 					break;
 				case '{content}':
-					$content = $post->post_content;
+					$content = strip_tags($post->post_content);
 					break;
 				case '{author}':
 					$user = get_userdata($post->post_author);
