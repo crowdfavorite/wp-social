@@ -1,5 +1,5 @@
 === Social ===
-Contributors: crowdfavorite
+Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter
 Requires at least: 3.2
 Tested up to: 3.2.1
@@ -8,7 +8,6 @@ Stable tag: 1.0
 Broadcast posts to Twitter and/or Facebook, pull in items from each as comments, and allow commenters to use their Twitter/Facebook identities.
 
 == Description ==
-
 
 Brought to you by [MailChimp](http://mailchimp.com/), [Social](http://mailchimp.com/social-plugin-for-wordpress/) is a lightweight plugin that handles a lot of the heavy lifting of making your blog seamlessly integrate with social networking sites [Twitter](http://twitter.com/) and [Facebook](http://facebook.com/).
 
