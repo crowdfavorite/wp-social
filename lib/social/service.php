@@ -169,8 +169,15 @@ abstract class Social_Service {
 		$format = apply_filters(Social::$prefix . 'broadcast_format', $format);
 		$format = apply_filters(Social::$prefix . $this->service . '_broadcast_format', $format);
 
+
+		$_format = $format;
+		$available = $this->max_broadcast_length();
+		foreach (Social::broadcast_tokens() as $token => $description) {
+			$_format = str_replace($token, '', $_format);
+		}
+		$available = $available - strlen($_format);
+
 		$_format = explode(' ', $format);
-		$available = $this->max_broadcast_length() - count($format);
 		foreach (Social::broadcast_tokens() as $token => $description) {
 			$content = '';
 			switch ($token) {
