@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Social
-Plugin URI: http://mailchimp.com/
+Plugin URI: http://mailchimp.com/social-plugin-for-wordpress/
 Description: Broadcast newly published posts and pull in dicussions using integrations with Twitter and Facebook. Brought to you by <a href="http://mailchimp.com">MailChimp</a>.
 Version: 1.0
 Author: Crowd Favorite

@@ -10,7 +10,7 @@ Broadcast posts to Twitter and/or Facebook, pull in items from each as comments,
 == Description ==
 
 
-Brought to you by [MailChimp](http://mailchimp.com/), Social is a lightweight plugin that handles a lot of the heavy lifting of making your blog seamlessly integrate with social networking sites [Twitter](http://twitter.com/) and [Facebook](http://facebook.com/).
+Brought to you by [MailChimp](http://mailchimp.com/), [Social](http://mailchimp.com/social-plugin-for-wordpress/) is a lightweight plugin that handles a lot of the heavy lifting of making your blog seamlessly integrate with social networking sites [Twitter](http://twitter.com/) and [Facebook](http://facebook.com/).
 
 **Broadcast Published Posts**
 
