@@ -4,7 +4,7 @@ function reloadSocialHTML() {
 		window.location.reload();
 	}
 	else {
-		var $parent = $window.closest('.social-post');
+		var $parent = jQuery('.social-post');
 		jQuery.get($parent.find('#reload_url').val(), {}, function(response){
 			if (response.result == 'success') {
 				// Add logged-in body class since we're not going to be refreshing the page.
