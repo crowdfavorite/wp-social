@@ -263,7 +263,7 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 								}
 
 								Social_Aggregate_Log::instance($post->ID)->add($this->service, $tweet->id, 'reply', false, $log_data);
-								if ($tweet->in_reply_to_status_id != $broadcasted_ids[$account->user->id]) {
+								if ($tweet->in_reply_to_status_id == $broadcasted_ids[$account->user->id]) {
 									if (!isset($results[$tweet->id])) {
 										$post_comments[] = $tweet->id;
 										$results[$tweet->id] = (object)array(
