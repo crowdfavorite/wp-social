@@ -2036,10 +2036,13 @@ endforeach;
 		$sql = "
 			SELECT p.ID, p.post_author, p.post_date, p.guid
 			  FROM $wpdb->posts AS p
+			  JOIN $wpdb->postmeta AS pm
+			    ON p.ID = pm.post_id
 			 WHERE p.post_status = 'publish'
 			   AND p.comment_status = 'open'
 			   AND p.post_type = 'post'
 			   AND p.post_parent = '0'
+			   AND pm.meta_key = 'social_broadcasted_ids'
 		";
 		if (is_array($ignored) and count($ignored)) {
 			$sql .= "AND p.ID NOT IN (" . implode(',', $ignored) . ")";
