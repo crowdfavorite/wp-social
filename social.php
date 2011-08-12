@@ -964,7 +964,8 @@ final class Social {
 	 * @return string|void
 	 */
 	public function redirect_post_location($location, $post_id) {
-		if (isset($_POST[Social::$prefix . 'notify']) or isset($_POST[Social::$prefix . 'broadcast'])) {
+		global $post;
+		if ((isset($_POST[Social::$prefix . 'notify']) and $post->post_status != 'publish') or isset($_POST[Social::$prefix . 'broadcast'])) {
 			$this->broadcast_options($post_id, $location);
 		}
 		return $location;
