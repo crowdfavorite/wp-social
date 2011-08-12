@@ -337,18 +337,35 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 					'screen_name' => $reply->from_user,
 				)
 			);
-			$comment_id = wp_insert_comment(array(
+			$commentdata = array(
 				'comment_post_ID' => $post_id,
 				'comment_type' => $this->service,
 				'comment_author' => $reply->from_user,
 				'comment_author_email' => $this->service . '.' . $reply->id . '@example.com',
 				'comment_author_url' => $this->profile_url($account),
 				'comment_content' => $reply->text,
-				'comment_date' => gmdate('Y-m-d H:i:s', strtotime($reply->created_at)),
-			));
+				'comment_date' => gmdate('Y-m-d H:i:s', strtotime($reply->created_at) + current_time('timestamp')),
+				'comment_date_gmt' => gmdate('Y-m-d H:i:s', strtotime($reply->created_at)),
+				'comment_author_IP' => $_SERVER['SERVER_ADDR'],
+				'comment_agent' => 'Social Aggregator'
+			);
+			$commentdata['comment_approved'] = wp_allow_comment($commentdata);
+			$comment_id = wp_insert_comment($commentdata);
 			update_comment_meta($comment_id, Social::$prefix . 'account_id', $reply->from_user_id);
 			update_comment_meta($comment_id, Social::$prefix . 'profile_image_url', $reply->profile_image_url);
 			update_comment_meta($comment_id, Social::$prefix . 'status_id', $reply->id);
+
+			if ('spam' !== $commentdata['comment_approved']) { // If it's spam save it silently for later crunching
+				if ('0' == $commentdata['comment_approved']) {
+					wp_notify_moderator($comment_id);
+				}
+
+				$post = &get_post($commentdata['comment_post_ID']); // Don't notify if it's your own comment
+
+				if (get_option('comments_notify') and $commentdata['comment_approved'] and (!isset($commentdata['user_id']) or $post->post_author != $commentdata['user_id'])) {
+					wp_notify_postauthor($comment_id, isset($commentdata['comment_type'] ) ? $commentdata['comment_type'] : '');
+				}
+			}
 		}
 	}
 

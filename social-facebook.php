@@ -5,6 +5,7 @@
  * @package Social
  */
 add_filter(Social::$prefix . 'register_service', array('Social_Facebook', 'register_service'));
+add_filter(Social::$prefix . 'authorize_url', array('Social_Facebook', 'authorize_url'), 10, 2);
 
 final class Social_Facebook extends Social_Service implements Social_IService {
 
@@ -21,6 +22,22 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 		);
 
 		return $services;
+	}
+
+	/**
+	 * Filters the authorize URL.
+	 *
+	 * @static
+	 * @param  string  $service
+	 * @param  string  $url
+	 * @return string
+	 */
+	public static function authorize_url($service, $url) {
+		if ($service == 'facebook') {
+			$url .= '&req_perms=publish_stream,read_stream';
+		}
+
+		return $url;
 	}
 
 	/**
@@ -91,6 +108,9 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 	 * @return string
 	 */
 	public function profile_url($account) {
+		if (!isset($account->user->link)) {
+			return 'http://facebook.com/profile.php?id='.$account->user->id;
+		}
 		return $account->user->link;
 	}
 
@@ -142,24 +162,26 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 		$urls = apply_filters(Social::$prefix . 'search_urls', $urls);
 		$urls = apply_filters(Social::$prefix . $this->service . '_search_urls', $urls);
 		foreach ($urls as $url) {
-			$url = 'https://graph.facebook.com/search?type=post&q=' . $url;
-			$request = wp_remote_get($url);
-			if (!is_wp_error($request)) {
-				$response = json_decode($request['body']);
+			if (!empty($url)) {
+				$url = 'https://graph.facebook.com/search?type=post&q=' . $url;
+				$request = wp_remote_get($url);
+				if (!is_wp_error($request)) {
+					$response = json_decode($request['body']);
 
-				if (isset($response->data) and is_array($response->data) and count($response->data)) {
-					$results = array();
-					foreach ($response->data as $result) {
-						if ((is_array($post_comments) and in_array($result->id, array_values($post_comments))) or
-						    (is_array($broadcasted_ids) and in_array($result->id, array_values($broadcasted_ids)))
-						) {
-							Social_Aggregate_Log::instance($post->ID)->add($this->service, $result->id, 'url', true);
-							continue;
+					if (isset($response->data) and is_array($response->data) and count($response->data)) {
+						$results = array();
+						foreach ($response->data as $result) {
+							if ((is_array($post_comments) and in_array($result->id, array_values($post_comments))) or
+								(is_array($broadcasted_ids) and in_array($result->id, array_values($broadcasted_ids)))
+							) {
+								Social_Aggregate_Log::instance($post->ID)->add($this->service, $result->id, 'url', true);
+								continue;
+							}
+
+							Social_Aggregate_Log::instance($post->ID)->add($this->service, $result->id, 'url');
+							$post_comments[] = $result->id;
+							$results[] = $result;
 						}
-
-						Social_Aggregate_Log::instance($post->ID)->add($this->service, $result->id, 'url');
-						$post_comments[] = $result->id;
-						$results[] = $result;
 					}
 				}
 			}
@@ -180,23 +202,19 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 				foreach ($accounts['facebook'] as $account) {
 					if (isset($broadcasted_ids[$account->user->id])) {
 						$id = explode('_', $broadcasted_ids[$account->user->id]);
-						$url = 'https://graph.facebook.com/' . $id[1] . '/comments';
-						$request = wp_remote_get($url);
-						if (!is_wp_error($request)) {
-							$response = json_decode($request['body']);
-
-							if (isset($response->data) and is_array($response->data) and count($response->data)) {
-								foreach ($response->data as $comment) {
-									if ((is_array($post_comments) and in_array($comment->id, array_values($post_comments))) or
-									    (is_array($broadcasted_ids) and in_array($comment->id, array_values($broadcasted_ids)))
-									) {
-										Social_Aggregate_Log::instance($post->ID)->add($this->service, $comment->id, 'reply', true, array('parent_id' => $id[0]));
-										continue;
-									}
-									Social_Aggregate_Log::instance($post->ID)->add($this->service, $comment->id, 'reply', false, array('parent_id' => $id[0]));
-									$post_comments[] = $comment->id;
-									$results[] = $comment;
+						$response = $this->request($account, $id[1].'/comments')->response;
+						if (isset($response->data) and is_array($response->data) and count($response->data)) {
+							foreach ($response->data as $comment) {
+								if ((is_array($post_comments) and in_array($comment->id, array_values($post_comments))) or
+									(is_array($broadcasted_ids) and in_array($comment->id, array_values($broadcasted_ids)))
+								) {
+									Social_Aggregate_Log::instance($post->ID)->add($this->service, $comment->id, 'reply', true, array('parent_id' => $id[0]));
+									continue;
 								}
+								Social_Aggregate_Log::instance($post->ID)->add($this->service, $comment->id, 'reply', false, array('parent_id' => $id[0]));
+								$comment->status_id = $broadcasted_ids[$account->user->id];
+								$post_comments[] = $comment->id;
+								$results[] = $comment;
 							}
 						}
 					}
@@ -230,18 +248,35 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 					'user' => $response
 				);
 
-				$comment_id = wp_insert_comment(array(
+				$commentdata = array(
 					'comment_post_ID' => $post_id,
 					'comment_type' => $this->service,
 					'comment_author' => $reply->from->name,
 					'comment_author_email' => $this->service . '.' . $reply->id . '@example.com',
 					'comment_author_url' => $this->profile_url($account),
 					'comment_content' => $reply->message,
-					'comment_date' => gmdate('Y-m-d H:i:s', strtotime($reply->created_time)),
-				));
+					'comment_date' => gmdate('Y-m-d H:i:s', strtotime($reply->created_time) + current_time('timestamp')),
+					'comment_date_gmt' => gmdate('Y-m-d H:i:s', strtotime($reply->created_time)),
+					'comment_author_IP' => $_SERVER['SERVER_ADDR'],
+					'comment_agent' => 'Social Aggregator'
+				);
+				$commentdata['comment_approved'] = wp_allow_comment($commentdata);
+				$comment_id = wp_insert_comment($commentdata);
 				update_comment_meta($comment_id, Social::$prefix . 'account_id', $reply->from->id);
 				update_comment_meta($comment_id, Social::$prefix . 'profile_image_url', 'http://graph.facebook.com/' . $reply->from->id . '/picture');
-				update_comment_meta($comment_id, Social::$prefix . 'status_id', $reply->id);
+				update_comment_meta($comment_id, Social::$prefix . 'status_id', $reply->status_id);
+
+				if ('spam' !== $commentdata['comment_approved']) { // If it's spam save it silently for later crunching
+					if ('0' == $commentdata['comment_approved']) {
+						wp_notify_moderator($comment_id);
+					}
+
+					$post = &get_post($commentdata['comment_post_ID']); // Don't notify if it's your own comment
+
+					if (get_option('comments_notify') and $commentdata['comment_approved'] and (!isset($commentdata['user_id']) or $post->post_author != $commentdata['user_id'])) {
+						wp_notify_postauthor($comment_id, isset($commentdata['comment_type'] ) ? $commentdata['comment_type'] : '');
+					}
+				}
 			}
 		}
 	}

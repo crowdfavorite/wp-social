@@ -240,8 +240,12 @@ final class Social {
 	 */
 	public function cron_schedules($schedules) {
 		$schedules['every15min'] = array(
-			'interval' => 900,
+			'interval' => 15, // TODO Change back to 900
 			'display' => 'Every 15 minutes'
+		);
+		$schedules['socialhourly'] = array(
+			'interval' => 60, // TODO Change back to 900
+			'display' => 'Every 60 minutes'
 		);
 		return $schedules;
 	}
@@ -250,6 +254,37 @@ final class Social {
 	 * Initializes the plugin.
 	 */
 	public function init() {
+		// Load the settings
+		$options = apply_filters(Social::$prefix . 'options', $this->options());
+		foreach ($options as $key => $default) {
+			$value = get_option(Social::$prefix . $key, $default);
+			if (empty($value)) {
+				switch ($key) {
+					case 'install_date':
+						$value = time();
+						break;
+					case 'installed_version':
+						$value = Social::$version;
+						break;
+					case 'system_cron_api_key':
+						$value = wp_generate_password(16, false);
+						break;
+					default:
+						$value = $default;
+						break;
+				}
+
+				update_option(Social::$prefix . $key, $value);
+			}
+
+			if ($key == 'installed_version' and (int)$value < (int)Social::$version) {
+				// Need to run an upgrade
+				Social::$upgrade = true;
+			}
+
+			$this->option($key, $value);
+		}
+		
 		$url = plugins_url('', SOCIAL_FILE);
 		Social::$plugins_url = trailingslashit(apply_filters('social_plugins_url', $url));
 
@@ -309,33 +344,19 @@ final class Social {
 				wp_enqueue_script('social_admin', SOCIAL_ADMIN_JS, array(), Social::$version, true);
 			}
 
-			// CRON Lock Location
-			if (is_writable(SOCIAL_PATH)) {
-				$this->cron_lock_dir = SOCIAL_PATH;
-			}
-			else {
-				$upload_dir = wp_upload_dir();
-				if (is_writable($upload_dir['basedir'])) {
-					$this->cron_lock_dir = $upload_dir['basedir'];
-				}
-				else if ($_GET['page'] == 'social.php') {
-					add_action('admin_notices', array($this, 'display_cron_lock_write_error'));
-				}
-			}
-
 			// Schedule the CRON?
 			if (isset($_GET['page']) and $_GET['page'] == 'social.php') {
 				if (Social::option('system_crons') != '1') {
 					if (wp_next_scheduled(Social::$prefix . 'cron_15_core') === false) {
-						wp_schedule_event(time() + 900, 'every15min', Social::$prefix . 'cron_15_core');
+						wp_schedule_event(time() + 15, 'every15min', Social::$prefix . 'cron_15_core'); // TODO change back to 900
 						if (Social::option('debug') == '1') {
-							$this->log(basename(__FILE__).'.'.__LINE__.'.'.$_SERVER['REQUEST_URI'].'.scheduling CRON 15');
+							$this->log(basename(__FILE__).'.'.__LINE__.'.'.$_SERVER['REQUEST_URI'].' scheduling CRON 15');
 						}
 					}
 					if (wp_next_scheduled(Social::$prefix . 'cron_60_core') === false) {
-						wp_schedule_event(time() + 3600, 'hourly', Social::$prefix . 'cron_60_core');
+						wp_schedule_event(time() + 60, 'socialhourly', Social::$prefix . 'cron_60_core'); // TODO change back to 3600
 						if (Social::option('debug') == '1') {
-							$this->log(basename(__FILE__).'.'.__LINE__.'.'.$_SERVER['REQUEST_URI'].'.scheduling CRON 60');
+							$this->log(basename(__FILE__).'.'.__LINE__.'.'.$_SERVER['REQUEST_URI'].' scheduling CRON 60');
 						}
 					}
 				}
@@ -378,37 +399,6 @@ final class Social {
 		require SOCIAL_PATH . 'social-facebook.php';
 		require SOCIAL_PATH . 'social-twitter.php';
 
-		// Load the settings
-		$options = apply_filters(Social::$prefix . 'options', $this->options());
-		foreach ($options as $key => $default) {
-			$value = get_option(Social::$prefix . $key, $default);
-			if (empty($value)) {
-				switch ($key) {
-					case 'install_date':
-						$value = time();
-						break;
-					case 'installed_version':
-						$value = Social::$version;
-						break;
-					case 'system_cron_api_key':
-						$value = wp_generate_password(16, false);
-						break;
-					default:
-						$value = $default;
-						break;
-				}
-
-				update_option(Social::$prefix . $key, $value);
-			}
-
-			if ($key == 'installed_version' and (int)$value < (int)Social::$version) {
-				// Need to run an upgrade
-				Social::$upgrade = true;
-			}
-
-			$this->option($key, $value);
-		}
-
 		// Register the Social services
 		Social::$services = apply_filters(Social::$prefix . 'register_service', Social::$services);
 		Social::$global_services = apply_filters(Social::$prefix . 'register_service', Social::$global_services);
@@ -435,6 +425,20 @@ final class Social {
 
 		// Cache the global and user accounts.
 		$this->services();
+
+		// CRON Lock Location
+		if (is_writable(SOCIAL_PATH)) {
+			$this->cron_lock_dir = SOCIAL_PATH;
+		}
+		else {
+			$upload_dir = wp_upload_dir();
+			if (is_writable($upload_dir['basedir'])) {
+				$this->cron_lock_dir = $upload_dir['basedir'];
+			}
+			else if ($_GET['page'] == 'social.php') {
+				add_action('admin_notices', array($this, 'display_cron_lock_write_error'));
+			}
+		}
 	}
 
 	/**
@@ -495,11 +499,11 @@ final class Social {
 				wp_die('Oops, please try again.');
 			}
 
-			$method = $_GET[Social::$prefix . 'cron'] . '_core';
+			$method = $_GET[Social::$prefix . 'cron'].'_core';
 			if (method_exists($this, $method)) {
 				switch ($method) {
-					case 'cron_15':
-					case 'cron_60':
+					case 'cron_15_core':
+					case 'cron_60_core':
 						$this->$method();
 					break;
 				}
@@ -594,9 +598,9 @@ final class Social {
 						wp_die('Oops, please try again.');
 					}
 
-					if ($this->cron_lock('cron_15')) {
+					if ($this->cron_lock('cron_15_core')) {
 						do_action(Social::$prefix . 'cron_15');
-						$this->cron_unlock('cron_15');
+						$this->cron_unlock('cron_15_core');
 					}
 				break;
 				case 'cron_60':
@@ -604,9 +608,9 @@ final class Social {
 						wp_die('Oops, please try again.');
 					}
 
-					if ($this->cron_lock('cron_60')) {
+					if ($this->cron_lock('cron_60_core')) {
 						do_action(Social::$prefix . 'cron_60');
-						$this->cron_unlock('cron_15');
+						$this->cron_unlock('cron_60_core');
 					}
 				break;
 				case 'aggregate_comments':
@@ -1806,7 +1810,11 @@ endforeach;
 		if (!empty($services)) {
 			$account_id = $_POST[Social::$prefix . 'post_account'];
 
-			$url = wp_get_shortlink($commentdata['comment_post_ID']).'#comment-'.$comment_ID;
+			$url = wp_get_shortlink($commentdata['comment_post_ID']);
+			if (empty($url)) {
+				$url = home_url('?p='.$commentdata['comment_post_ID']);
+			}
+			$url .= '#comment-'.$comment_ID;
 			$url_length = strlen($url) + 1;
 			$comment_length = strlen($comment_content);
 			$combined_length = $url_length + $comment_length;
@@ -2061,8 +2069,8 @@ endforeach;
 			else if ($timestamp >= 14400) {
 				$hours = 4;
 			}
-			else if ($timestamp >= 7200) {
-				$hours = 2;
+			else if ($timestamp >= 2) {
+				$hours = 26;
 			}
 
 			if (!isset($queued[$post->ID]) or $queued[$post->ID] < $hours) {
@@ -2139,8 +2147,7 @@ endforeach;
 		// Run search!
 		$services = $this->services();
 		foreach ($services as $key => $service) {
-			$results = $service->search_for_replies($post, $urls, (isset($broadcasted_ids[$key])
-					? $broadcasted_ids[$key] : null));
+			$results = $service->search_for_replies($post, $urls, (isset($broadcasted_ids[$key]) ? $broadcasted_ids[$key] : null));
 
 			// Results?
 			if (is_array($results)) {
