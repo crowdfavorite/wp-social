@@ -234,17 +234,15 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 								}
 
 								Social_Aggregate_Log::instance($post->ID)->add($this->service, $tweet->id, 'retweet', false, $log_data);
-								if ($tweet->in_reply_to_status_id == $broadcasted_ids[$account->user->id]) {
-									$post_comments[] = $tweet->id;
-									$results[$tweet->id] = (object)array(
-										'id' => $tweet->id,
-										'from_user_id' => $tweet->user->id,
-										'from_user' => $tweet->user->screen_name,
-										'text' => $tweet->text,
-										'created_at' => $tweet->created_at,
-										'profile_image_url' => $tweet->user->profile_image_url,
-									);
-								}
+								$post_comments[] = $tweet->id;
+								$results[$tweet->id] = (object)array(
+									'id' => $tweet->id,
+									'from_user_id' => $tweet->user->id,
+									'from_user' => $tweet->user->screen_name,
+									'text' => $tweet->text,
+									'created_at' => $tweet->created_at,
+									'profile_image_url' => $tweet->user->profile_image_url,
+								);
 							}
 						}
 
