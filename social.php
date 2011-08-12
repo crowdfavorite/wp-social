@@ -240,12 +240,8 @@ final class Social {
 	 */
 	public function cron_schedules($schedules) {
 		$schedules['every15min'] = array(
-			'interval' => 15, // TODO Change back to 900
+			'interval' => 900,
 			'display' => 'Every 15 minutes'
-		);
-		$schedules['socialhourly'] = array(
-			'interval' => 60, // TODO Change back to 900
-			'display' => 'Every 60 minutes'
 		);
 		return $schedules;
 	}
@@ -348,13 +344,13 @@ final class Social {
 			if (isset($_GET['page']) and $_GET['page'] == 'social.php') {
 				if (Social::option('system_crons') != '1') {
 					if (wp_next_scheduled(Social::$prefix . 'cron_15_core') === false) {
-						wp_schedule_event(time() + 15, 'every15min', Social::$prefix . 'cron_15_core'); // TODO change back to 900
+						wp_schedule_event(time() + 900, 'every15min', Social::$prefix . 'cron_15_core');
 						if (Social::option('debug') == '1') {
 							$this->log(basename(__FILE__).'.'.__LINE__.'.'.$_SERVER['REQUEST_URI'].' scheduling CRON 15');
 						}
 					}
 					if (wp_next_scheduled(Social::$prefix . 'cron_60_core') === false) {
-						wp_schedule_event(time() + 60, 'socialhourly', Social::$prefix . 'cron_60_core'); // TODO change back to 3600
+						wp_schedule_event(time() + 3600, 'hourly', Social::$prefix . 'cron_60_core');
 						if (Social::option('debug') == '1') {
 							$this->log(basename(__FILE__).'.'.__LINE__.'.'.$_SERVER['REQUEST_URI'].' scheduling CRON 60');
 						}
@@ -2069,8 +2065,8 @@ endforeach;
 			else if ($timestamp >= 14400) {
 				$hours = 4;
 			}
-			else if ($timestamp >= 2) {
-				$hours = 26;
+			else if ($timestamp >= 7200) {
+				$hours = 2;
 			}
 
 			if (!isset($queued[$post->ID]) or $queued[$post->ID] < $hours) {
