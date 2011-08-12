@@ -264,7 +264,7 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 				$comment_id = wp_insert_comment($commentdata);
 				update_comment_meta($comment_id, Social::$prefix . 'account_id', $reply->from->id);
 				update_comment_meta($comment_id, Social::$prefix . 'profile_image_url', 'http://graph.facebook.com/' . $reply->from->id . '/picture');
-				update_comment_meta($comment_id, Social::$prefix . 'status_id', $reply->status_id);
+				update_comment_meta($comment_id, Social::$prefix . 'status_id', (isset($reply->status_id) ? $reply->status_id : $reply->id));
 
 				if ('spam' !== $commentdata['comment_approved']) { // If it's spam save it silently for later crunching
 					if ('0' == $commentdata['comment_approved']) {
