@@ -2112,8 +2112,12 @@ endforeach;
 			$post = get_post($post);
 		}
 
+		$url = wp_get_shortlink($post->ID);
+		if (empty($url)) {
+			$url = home_url('?p='.$post->ID);
+		}
 		$urls = array(
-			urlencode(wp_get_shortlink($post->ID)),
+			urlencode($url),
 		);
 
 		$permalink = urlencode(get_permalink($post->ID));

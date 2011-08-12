@@ -344,7 +344,7 @@ final class Social_Twitter extends Social_Service implements Social_IService {
 				'comment_author_email' => $this->service . '.' . $reply->id . '@example.com',
 				'comment_author_url' => $this->profile_url($account),
 				'comment_content' => $reply->text,
-				'comment_date' => gmdate('Y-m-d H:i:s', strtotime($reply->created_at) + current_time('timestamp')),
+				'comment_date' => gmdate('Y-m-d H:i:s', strtotime($reply->created_at)),
 				'comment_date_gmt' => gmdate('Y-m-d H:i:s', strtotime($reply->created_at)),
 				'comment_author_IP' => $_SERVER['SERVER_ADDR'],
 				'comment_agent' => 'Social Aggregator'

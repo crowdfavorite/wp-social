@@ -255,7 +255,7 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 					'comment_author_email' => $this->service . '.' . $reply->id . '@example.com',
 					'comment_author_url' => $this->profile_url($account),
 					'comment_content' => $reply->message,
-					'comment_date' => gmdate('Y-m-d H:i:s', strtotime($reply->created_time) + current_time('timestamp')),
+					'comment_date' => gmdate('Y-m-d H:i:s', strtotime($reply->created_time)),
 					'comment_date_gmt' => gmdate('Y-m-d H:i:s', strtotime($reply->created_time)),
 					'comment_author_IP' => $_SERVER['SERVER_ADDR'],
 					'comment_agent' => 'Social Aggregator'
