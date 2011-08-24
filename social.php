@@ -18,27 +18,27 @@ if (!class_exists('Social')) { // try to avoid double-loading...
 final class Social {
 
 	/**
-	 * @var string $api_url URL of the API
+	 * @var  string  $api_url  URL of the API
 	 */
 	public static $api_url = 'https://sopresto.mailchimp.com/';
 
 	/**
-	 * @var string $version version number
+	 * @var  string  $version  version number
 	 */
 	public static $version = '1.0.1';
 
 	/**
-	 * @var string $i18n internationalization key
+	 * @var  string  $i18n  internationalization key
 	 */
 	public static $i18n = 'social';
 
 	/**
-	 * @var Social_Log $log logger
+	 * @var  Social_Log  $log  logger
 	 */
 	public static $log = null;
 
 	/**
-	 * @var array default options
+	 * @var  array  default options
 	 */
 	protected static $options = array(
 		'debug' => false,
@@ -121,12 +121,12 @@ final class Social {
 	 * @return void
 	 */
 	public static function activated_plugin($plugin) {
-		if ($plugin == 'social/social.php') {
+		if ($plugin == plugin_basename(SOCIAL_FILE)) {
 			// Activate Twitter and Facebook
-			$plugins = array (
+			$plugins = get_option('social_activated_plugins', array(
 				'social/social-facebook.php',
 				'social/social-twitter.php'
-			);
+			));
 			foreach ($plugins as $plugin) {
 				$plugin = plugin_basename($plugin);
 
@@ -138,7 +138,7 @@ final class Social {
 				}
 
 				$network_wide = false;
-				if (isset($_GET['networkwide']) and !empty($_GET['networkwider'])) {
+				if (isset($_GET['networkwide']) and !empty($_GET['networkwide'])) {
 					$network_wide = true;
 				}
 
@@ -150,7 +150,8 @@ final class Social {
 				}
 
 				if (!in_array($plugin, $current)) {
-					include_once(WP_PLUGIN_DIR.'/'.$plugin);
+					do_action('activate_plugin', $plugin, $network_wide);
+					do_action('activate_'.$plugin, $network_wide);
 
 					if ($network_wide) {
 						$current[$plugin] = time();
@@ -160,8 +161,58 @@ final class Social {
 						sort($current);
 						update_option('active_plugins', $current);
 					}
+
+					do_action('activated_plugin', $plugin, $network_wide);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Activates a plugin on Social.
+	 *
+	 * @param  string  $file  plugin file
+	 * @return void
+	 */
+	public function activate_plugin($file) {
+		$file = plugin_basename($file);
+
+		$key = 'social_activated_plugins';
+		if (is_multisite()) {
+			$key .= '_network';
+		}
+
+		$current = get_option($key, array());
+		if (!in_array($file, $current)) {
+			$current[] = $file;
+			update_option($key, $current);
+		}
+	}
+
+	/**
+	 * Deactivates a plugin from Social.
+	 *
+	 * @param  string  $file  plugin file
+	 * @return void
+	 */
+	public function deactivate_plugin($file) {
+		$file = plugin_basename($file);
+
+		$key = 'social_activated_plugins';
+		if (is_multisite()) {
+			$key .= '_network';
+		}
+
+		$current = get_option($key, array());
+		if (in_array($file, $current)) {
+			$_current = array();
+			foreach ($current as $plugin) {
+				if ($plugin != $file) {
+					$_current[] = $file;
+				}
+			}
+
+			update_option($key, $_current);
 		}
 	}
 
@@ -525,25 +576,23 @@ final class Social {
 } // End Social
 
 $social_file = __FILE__;
-if (isset($mu_plugin)) {
-	$social_file = $mu_plugin;
-}
 if (isset($network_plugin)) {
 	$social_file = $network_plugin;
+	$social_path = dirname($social_file);
 }
 if (isset($plugin)) {
 	$social_file = $plugin;
+	$social_path = dirname(__FILE__);
 }
 
 define('SOCIAL_FILE', $social_file);
-define('SOCIAL_PATH', dirname(__FILE__).'/');
+define('SOCIAL_PATH', $social_path.'/');
 
 // Register Social's autoloading
 spl_autoload_register(array('Social', 'auto_load'));
 
 // Activation Hook
 register_activation_hook(SOCIAL_FILE, array('Social', 'install'));
-register_deactivation_hook(SOCIAL_FILE, array('Social', 'deactivate'));
 add_action('activated_plugin', array('Social', 'activated_plugin'));
 
 $social = Social::instance();
