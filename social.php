@@ -330,7 +330,9 @@ final class Social {
 	 * @return void
 	 */
 	public function request_handler() {
-		Social_Request::instance()->execute();
+		if (isset($_GET['social_controller']) or isset($_POST['social_controller'])) {
+			Social_Request::instance()->execute();
+		}
 	}
 
 	/**
