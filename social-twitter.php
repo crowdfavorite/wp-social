@@ -7,7 +7,7 @@ Version: 1.0
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com/
 */
-if (!class_exists('Social_Facebook')) {
+if (!class_exists('Social_Twitter')) {
 
 final class Social_Twitter {
 
