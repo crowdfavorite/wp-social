@@ -136,11 +136,9 @@ final class Social_Request {
 			$client_ip = $_SERVER['REMOTE_ADDR'];
 		}
 
-		// Start the request object.
-		$request = new Social_Request();
-
 		$params = array();
-		foreach ($_GET as $key => $value) {
+		$request = '_'.$method;
+		foreach ($$request as $key => $value) {
 			if (strpos($key, 'social_') !== false) {
 				if ($key == 'social_controller') {
 					$params['controller'] = $value;
@@ -151,52 +149,44 @@ final class Social_Request {
 				else {
 					$params[$key] = $value;
 				}
-				unset($_GET[$key]);
-			}
-		}
-		foreach ($_POST as $key => $value) {
-			if (strpos($key, 'social_') !== false) {
-				if ($key == 'social_controller') {
-					$params['controller'] = $value;
-				}
-				else if ($key == 'social_action') {
-					$params['action'] = $value;
-				}
-				else {
-					$params[$key] = $value;
-				}
-				unset($_POST[$key]);
+				unset($$request[$key]);
 			}
 		}
 
 		if (isset($params['controller'])) {
-			$request->controller($params['controller']);
+			$this->controller($params['controller']);
 			unset($params['controller']);
 		}
 
 		if (isset($params['action'])) {
-			$request->action($params['action']);
+			$this->action($params['action']);
 			unset($params['action']);
 		}
 
-		$request->query($_GET)
+		if (count($params)) {
+			foreach ($params as $key => $value) {
+				$this->param($key, $value);
+			}
+		}
+
+		$this->query($_GET)
 			->post($_POST);
 
 		if (isset($method)) {
-			$request->method($method);
+			$this->method($method);
 		}
 
 		if (isset($requested_with)) {
 			// Apply the requested with variable
-			$request->requested_with($requested_with);
+			$this->requested_with($requested_with);
 		}
 
 		if (isset($user_agent)) {
-			$request->user_agent($user_agent);
+			$this->user_agent($user_agent);
 		}
 
 		if (isset($client_ip)) {
-			$request->client_ip($client_ip);
+			$this->client_ip($client_ip);
 		}
 	}
 
@@ -209,21 +199,22 @@ final class Social_Request {
 	public function execute() {
 		require 'controller.php';
 		$controller = apply_filters('social_controller', 'controller/'.$this->controller());
-		if (file_exists($controller)) {
+		if (file_exists($controller.'.php')) {
 			require $controller;
 
 			$controller = 'Social_Controller_'.$this->controller();
 			$controller = new $controller($this);
 
-			if (method_exists($controller, $this->action())) {
-				$controller->{$this->action()}();
+			$action = 'action_'.$this->action();
+			if (method_exists($controller, $action)) {
+				$controller->{$action}();
 			}
 			else {
 				throw new Exception(sprintf(__('Invalid action %s called on controller %s.', Social::$i18n), $this->action(), $this->controller()));
 			}
 		}
 		else {
-			throw new Exception(sprintf(__('Invalid controller %s.', Social::$i18n), $this->controller()));
+			throw new Exception(sprintf(__('Controller %s does not exist.', Social::$i18n), 'Social_Controller_'.$this->controller()));
 		}
 	}
 

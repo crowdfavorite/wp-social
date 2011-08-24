@@ -75,6 +75,32 @@ final class Social {
 	}
 
 	/**
+	 * Handles the auto loading of classes.
+	 *
+	 * @static
+	 * @param  string  $class
+	 * @return bool
+	 */
+	public static function auto_load($class) {
+		if (substr($class, 0, 7) == 'Social_') {
+			try {
+				$file = SOCIAL_PATH.'lib/'.str_replace('_', '/', strtolower($class)).'.php';
+				$file = apply_filters('social_auto_load_file', $file, $class);
+				if (file_exists($file)) {
+					require $file;
+
+					return true;
+				}
+
+				return false;
+			}
+			catch (Exception $e) {
+				Social::log(sprintf(__('Failed to auto load class %s.', Social::$i18n), $class));
+			}
+		}
+	}
+
+	/**
 	 * Runs basic installation checks to make sure Social can run.
 	 *
 	 * @static
@@ -84,6 +110,58 @@ final class Social {
 		if (version_compare(PHP_VERSION, '5.2.4', '<')) {
 			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
 			wp_die(__("Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i18n));
+		}
+	}
+
+	/**
+	 * Activates Facebook and Twitter
+	 *
+	 * @static
+	 * @param  string  $plugin  plugin path
+	 * @return void
+	 */
+	public static function activated_plugin($plugin) {
+		if ($plugin == 'social/social.php') {
+			// Activate Twitter and Facebook
+			$plugins = array (
+				'social/social-facebook.php',
+				'social/social-twitter.php'
+			);
+			foreach ($plugins as $plugin) {
+				$plugin = plugin_basename($plugin);
+
+				$valid = validate_plugin($plugin);
+				if (is_wp_error($valid)) {
+					// Skip plugin, something is broken.
+					error_log($valid->get_error_message());
+					return;
+				}
+
+				$network_wide = false;
+				if (isset($_GET['networkwide']) and !empty($_GET['networkwider'])) {
+					$network_wide = true;
+				}
+
+				if (is_multisite() and ($network_wide or is_network_only_plugin($plugin))) {
+					$network_wide = true;
+					$current = get_site_option('active_sitewide_plugins', array());
+				} else {
+					$current = get_option('active_plugins', array());
+				}
+
+				if (!in_array($plugin, $current)) {
+					include_once(WP_PLUGIN_DIR.'/'.$plugin);
+
+					if ($network_wide) {
+						$current[$plugin] = time();
+						update_site_option('active_sitewide_plugins', $current);
+					} else {
+						$current[] = $plugin;
+						sort($current);
+						update_option('active_plugins', $current);
+					}
+				}
+			}
 		}
 	}
 
@@ -115,6 +193,17 @@ final class Social {
 	}
 
 	/**
+	 * Add a message to the log.
+	 *
+	 * @static
+	 * @param  string  $message  message to add to the log
+	 * @return void
+	 */
+	public static function log($message) {
+		Social::$log->write($message);
+	}
+
+	/**
 	 * @var  wpdb  $wpdb  wpdb object
 	 */
 	public $wpdb = null;
@@ -125,6 +214,28 @@ final class Social {
 	public function __construct() {
 		global $wpdb;
 		$this->wpdb = $wpdb;
+
+		// Set the logger
+		Social::$log = Social_Log::factory();
+
+		// Register services
+		$services = apply_filters('social_register_service', array());
+		if (is_array($services) and count($services)) {
+			// TODO query for accounts here
+			$accounts = array();
+
+			foreach ($services as $service) {
+				if (!isset(Social::$services[$service])) {
+					$service_accounts = array();
+					if (isset($accounts[$service])) {
+						$service_accounts = $accounts[$service];
+					}
+
+					$class = 'Social_Service_'.$service;
+					Social::$services[$service] = new $class($service_accounts);
+				}
+			}
+		}
 	}
 
 	/**
@@ -160,20 +271,6 @@ final class Social {
 				$this->upgrade($value);
 			}
 		}
-
-		require 'lib/social/log.php';
-		Social::$log = Social_Log::instance();
-
-		// Register services
-		require 'lib/social/service/twitter.php';
-		require 'lib/social/service/facebook.php';
-		$services = $this->services_to_load();
-		foreach ($services as $service) {
-			if (!isset(Social::$services[$service])) {
-				$class = 'Social_Service_'.$key;
-				Social::$services[$service] = new $class;
-			}
-		}
 	}
 
 	/**
@@ -182,7 +279,6 @@ final class Social {
 	 * @return void
 	 */
 	public function request_handler() {
-		require 'lib/social/request.php';
 		Social_Request::instance()->execute();
 	}
 
@@ -269,6 +365,27 @@ final class Social {
 		// TODO Social::broadcast()
 	}
 
+	public function set_broadcasted_meta($post_id, $service, $broadcasted_id, array $broadcasted_accounts) {
+		$post_id = (int) $post_id;
+
+		if (is_string($service)) {
+			$service = $this->service($service);
+		}
+
+		if ($service === false) {
+			// Do nothing if an invaid service or account ID was passed in.
+			Social::log(sprintf(__('Failed to set broadcasted meta; invalid service key %s.', Social::$i18n), $service));
+			return;
+		}
+
+		//foreach ($broadcasted_accounts as $)
+
+		// TODO Set post meta
+		// - broadcasted_id
+		// - broadcasted_accounts
+		//
+	}
+
 	/**
 	 *
 	 * 
@@ -331,7 +448,7 @@ final class Social {
 		}
 		else {
 			$link = explode('>'.__('Log in'), $link);
-			$link = $link[0].' id="'.Social::$prefix.'login">'.__('Log in').$link[1];
+			$link = $link[0].' id="social_login">'.__('Log in').$link[1];
 		}
 
 		return $link;
@@ -344,6 +461,7 @@ final class Social {
 	 * @return void
 	 */
 	private function upgrade($installed_version) {
+		// TODO Talk to Alex about upgrade process
 		if (version_compare($installed_version, Social::$version, '<')) {
 			// 1.0.2
 			// Find old social_notify and update to _social_notify.
@@ -404,15 +522,6 @@ final class Social {
 		}
 	}
 
-	/**
-	 * Returns a list of services to load.
-	 *
-	 * @return array
-	 */
-	private function services_to_load() {
-		return apply_filters('social_services_to_load', array());
-	}
-
 } // End Social
 
 $social_file = __FILE__;
@@ -427,13 +536,17 @@ if (isset($plugin)) {
 }
 
 define('SOCIAL_FILE', $social_file);
-define('SOCIAL_PATH', dirname($social_file).'/');
+define('SOCIAL_PATH', dirname(__FILE__).'/');
 
-$social = Social::instance();
+// Register Social's autoloading
+spl_autoload_register(array('Social', 'auto_load'));
 
 // Activation Hook
-register_activation_hook(SOCIAL_FILE, array($social, 'install'));
-register_deactivation_hook(SOCIAL_FILE, array($social, 'deactivate'));
+register_activation_hook(SOCIAL_FILE, array('Social', 'install'));
+register_deactivation_hook(SOCIAL_FILE, array('Social', 'deactivate'));
+add_action('activated_plugin', array('Social', 'activated_plugin'));
+
+$social = Social::instance();
 
 // General Actions
 add_action('init', array($social, 'init'), 1);
@@ -462,5 +575,8 @@ add_filter('register', array($social, 'register'));
 add_filter('loginout', array($social, 'loginout'));
 add_filter('cron_schedules', array($social, 'cron_schedules'));
 add_filter('plugin_action_links', array($social, 'add_settings_link'), 10, 2);
+
+// Service filters
+add_filter('social_auto_load_class', array($social, 'auto_load_class'));
 
 } // End class_exists check

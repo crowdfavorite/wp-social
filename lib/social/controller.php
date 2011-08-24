@@ -12,12 +12,18 @@ abstract class Social_Controller {
 	protected $request;
 
 	/**
+	 * @var  Social
+	 */
+	protected $social;
+
+	/**
 	 * Passes in the request object.
 	 *
 	 * @param  Social_Request  $request
 	 */
 	public function __construct(Social_Request $request) {
 		$this->request = $request;
+		$this->social = Social::instance();
 	}
 
 } // End Social_Controller

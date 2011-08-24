@@ -7,46 +7,32 @@
 final class Social_Log {
 
 	/**
-	 * @var Social_Log $instance singleton instance
-	 */
-	public static $instance = null;
-
-	/**
 	 * Returns the instance of Social_Log.
 	 *
 	 * @static
+	 * @param  string  $file  file to log to
 	 * @return Social_Log
 	 */
-	public static function instance() {
-		if (self::$instance === null) {
-			self::$instance = new self;
+	public static function factory($file = null) {
+		if ($file == null) {
+			$file = SOCIAL_PATH.'log.txt';
+			// TODO Talk to Alex about using PHP's default error_log or use error_log's destination parameter.
 		}
-
-		return self::$instance;
+		return new Social_Log;
 	}
 
-	public function add() {
+	/**
+	 * Adds a message to the error log.
+	 *
+	 * @param  string  $message  message to be logged
+	 * @return void
+	 */
+	public function write($message) {
 		if (!Social::option('debug')) {
 			return;
 		}
 
-		// TODO Social_Log::add()
-	}
-
-	public function delete() {
-		// TODO Social_Log::delete()
-	}
-
-	public function delete_all() {
-		// TODO Social_Log::delete_all()
-	}
-
-	public function find() {
-		// TODO Social_Log::find()
-	}
-
-	public function find_all() {
-		// TODO Social_Log::find_all()
+		error_log($message);
 	}
 
 } // End Social_Log
