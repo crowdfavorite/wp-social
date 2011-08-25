@@ -202,6 +202,7 @@ final class Social_Request {
 		if (file_exists($controller.'.php')) {
 			require $controller;
 
+// TODO - do we need a try/catch here? can bad data get into $this->_controller?
 			$controller = 'Social_Controller_'.$this->controller();
 			$controller = new $controller($this);
 

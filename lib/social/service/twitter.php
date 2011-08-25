@@ -28,3 +28,5 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	}
 
 } // End Social_Service_Twitter
+
+// TODO - where to we tell Social how to post to twitter and process returns from requests?

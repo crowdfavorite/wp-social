@@ -107,6 +107,7 @@ final class Social {
 	 * @return void
 	 */
 	public static function install() {
+// TODO - this method name indicates it will be doing install work, but it's really an install check
 		if (version_compare(PHP_VERSION, '5.2.4', '<')) {
 			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
 			wp_die(__("Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i18n));
@@ -121,6 +122,7 @@ final class Social {
 	 * @return void
 	 */
 	public static function activated_plugin($plugin) {
+// TODO - we need to talk about this - we want to avoid activation hooks wherever possible
 		if ($plugin == plugin_basename(SOCIAL_FILE)) {
 			// Activate Twitter and Facebook
 			$plugins = get_option('social_activated_plugins', array(
@@ -174,6 +176,7 @@ final class Social {
 	 * @param  string  $file  plugin file
 	 * @return void
 	 */
+// TODO - why do we need this? Can we avoid storing data about these and instead let the presence of the PHP code for the plugin be the indicator?
 	public function activate_plugin($file) {
 		$file = plugin_basename($file);
 
@@ -195,6 +198,7 @@ final class Social {
 	 * @param  string  $file  plugin file
 	 * @return void
 	 */
+// TODO - why do we need this? Can we avoid storing data about these and instead let the presence of the PHP code for the plugin be the indicator?
 	public function deactivate_plugin($file) {
 		$file = plugin_basename($file);
 
@@ -228,13 +232,16 @@ final class Social {
 	 */
 	public static function option($key, $value = null, $update = false) {
 		if ($value === null) {
+// TODO - there are already filters inside the get/set_option methods, do we need our own?
 			$value = get_option('social_'.$key);
+// TODO - is this where we are applying our defaults?
 			$value = apply_filters('social_get_option', $value, $key);
 			Social::$options[$key] = $value;
 
 			return $value;
 		}
 
+// TODO - there are already filters inside the get/set_option methods, do we need our own?
 		$value = apply_filters('social_set_option', $value, $key);
 		Social::$options[$key] = $value;
 		if ($update) {
@@ -270,6 +277,7 @@ final class Social {
 		Social::$log = Social_Log::factory();
 
 		// Register services
+// TODO - have all plugins, themes, etc. been loaded yet? Move to init()?
 		$services = apply_filters('social_register_service', array());
 		if (is_array($services) and count($services)) {
 			// TODO query for accounts here
@@ -466,9 +474,11 @@ final class Social {
 	 */
 	public function add_settings_link($links, $file) {
 		static $this_plugin;
-		if (!$this_plugin) $this_plugin = plugin_basename(__FILE__);
+		if (!$this_plugin) {
+			$this_plugin = plugin_basename(__FILE__);
+		}
 
-		if ($file == $this_plugin){
+		if ($file == $this_plugin) {
 			$settings_link = '<a href="'.esc_url(admin_url('options-general.php?page=social.php')).'">'.__("Settings", "photosmash-galleries").'</a>';
 			array_unshift($links, $settings_link);
 		}
@@ -481,6 +491,7 @@ final class Social {
 	 * @param  string  $link
 	 * @return string
 	 */
+// TODO - I assume this is attached to an action/filter - we should indicate this here with the function
 	public function register($link) {
 		if (is_user_logged_in()) {
 			// TODO Logic to hide the register link for social-based users.
@@ -500,6 +511,7 @@ final class Social {
 			// TODO Logic to display the disconnect link for social-based users.
 		}
 		else {
+// TODO - by not providing an i18n key it will use WP default, I think this is fine here but want to make sure it's intentional
 			$link = explode('>'.__('Log in'), $link);
 			$link = $link[0].' id="social_login">'.__('Log in').$link[1];
 		}
@@ -519,7 +531,12 @@ final class Social {
 			// 1.0.2
 			// Find old social_notify and update to _social_notify.
 			$meta_keys = array();
-			$results = $this->wpdb->get_results("SELECT post_id, meta_key, meta_value FROM {$this->wpdb->postmeta} WHERE meta_key LIKE 'social_%' GROUP BY meta_key");
+			$results = $this->wpdb->get_results("
+				SELECT post_id, meta_key, meta_value 
+				FROM {$this->wpdb->postmeta} 
+				WHERE meta_key LIKE 'social_%' 
+				GROUP BY meta_key
+			");
 			foreach ($results as $result) {
 				if (!isset($meta_keys[$result->meta_key])) {
 					$meta_keys[$result->meta_key] = $result->meta_key;
@@ -537,7 +554,12 @@ final class Social {
 
 			if (count($meta_keys)) {
 				foreach ($meta_keys as $key) {
-					$this->wpdb->query("UPDATE {$this->wpdb->postmeta} SET meta_key = '_$key' WHERE meta_key = '$key'");
+// TODO - we need to be more explicit here, what is there is a social_* key from another plugin?
+					$this->wpdb->query("
+						UPDATE {$this->wpdb->postmeta} 
+						SET meta_key = '_$key' 
+						WHERE meta_key = '$key'
+					");
 				}
 			}
 
@@ -558,9 +580,15 @@ final class Social {
 						$ids[] = $user->ID;
 					}
 				}
+// TODO - escape with array_map, I think there's a wpdb function that will do this
 				$ids = implode(',', $ids);
 
-				$results = $this->wpdb->get_results("SELECT user_id, meta_value FROM {$this->wpdb->usermeta} WHERE meta_key = 'social_accounts' AND user_id NOT IN ($ids)");
+				$results = $this->wpdb->get_results("
+					SELECT user_id, meta_value 
+					FROM {$this->wpdb->usermeta} 
+					WHERE meta_key = 'social_accounts' 
+					AND user_id NOT IN ($ids)
+				");
 				foreach ($results as $result) {
 					$accounts = maybe_unserialize($result->meta_value);
 					if (is_array($accounts) and isset($accounts['facebook'])) {

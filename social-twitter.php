@@ -17,6 +17,7 @@ final class Social_Twitter {
 	 * @static
 	 * @return void
 	 */
+// TODO - talk through this
 	public static function activation_hook() {
 		if (!class_exists('Social')) {
 			deactivate_plugins(SOCIAL_TWITTER_FILE); // Deactivate ourself
@@ -65,6 +66,8 @@ final class Social_Twitter {
 
 } // End Social_Twitter
 
+// TODO - should this be in if/else checks?
+// Add support for mu-plugins
 $social_twitter_file = __FILE__;
 if (isset($network_plugin)) {
 	$social_twitter_file = $network_plugin;

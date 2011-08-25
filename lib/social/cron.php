@@ -70,6 +70,7 @@ final class Social_CRON {
 		else {
 			$message = sprintf(__('Social requires that %s is writable for CRON jobs.', Social::$i18n), SOCIAL_PATH);
 		}
+// TODO - esc_html()
 		echo '<div class="error"><p>'.$message.'</p></div>';
 	}
 
@@ -118,6 +119,7 @@ final class Social_CRON {
 
 		fclose($fp);
 
+// TODO - move the debug check into log
 		if (Social::option('debug') == '1') {
 			$this->log('CRON '.$cron.' LOCK COMPLETE.');
 		}
