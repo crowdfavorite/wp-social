@@ -542,6 +542,7 @@ final class Social {
 					$meta_keys[$result->meta_key] = $result->meta_key;
 				}
 
+// TODO - move this cleanup to the getter/setter for aggregation logs
 				if ($result->meta_key == 'social_aggregation_log') {
 					$value = maybe_unserialize($result->meta_value);
 					$new_value = array(
