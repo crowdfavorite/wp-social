@@ -510,13 +510,22 @@ final class Social {
 			// 1.0.2
 			// Find old social_notify and update to _social_notify.
 			$meta_keys = array(
+				'social_aggregated_replies',
+				'social_broadcast_error',
+				'social_broadcast_accounts',
 				'social_broadcasted_ids',
-				'social_aggregation_log'
+				'social_aggregation_log',
+				'social_twitter_content',
+				'social_notify_twitter',
+				'social_facebook_content',
+				'social_notify_facebook',
+				'social_broadcasted',
+				'social_notify'
 			);
 			if (count($meta_keys)) {
 				foreach ($meta_keys as $key) {
 					$this->wpdb->query("
-						UPDATE {$this->wpdb->postmeta} 
+						UPDATE $wpdb->postmeta
 						   SET meta_key = '_$key'
 						 WHERE meta_key = '$key'
 					");
@@ -540,14 +549,13 @@ final class Social {
 						$ids[] = $user->ID;
 					}
 				}
-// TODO - escape with array_map, I think there's a wpdb function that will do this
 				$ids = implode(',', $ids);
 
-				$results = $this->wpdb->get_results("
+				$results = $wpdb->get_results("
 					SELECT user_id, meta_value 
-					FROM {$this->wpdb->usermeta} 
-					WHERE meta_key = 'social_accounts' 
-					AND user_id NOT IN ($ids)
+					  FROM {$this->wpdb->usermeta}
+					 WHERE meta_key = 'social_accounts'
+					   AND user_id NOT IN ($ids)
 				");
 				foreach ($results as $result) {
 					$accounts = maybe_unserialize($result->meta_value);
