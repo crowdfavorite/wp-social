@@ -466,10 +466,10 @@ final class Social {
 	/**
 	 * Hides the Site Admin link for social-based users.
 	 *
+	 * @filter register
 	 * @param  string  $link
 	 * @return string
 	 */
-// TODO - I assume this is attached to an action/filter - we should indicate this here with the function
 	public function register($link) {
 		if (is_user_logged_in()) {
 			// TODO Logic to hide the register link for social-based users.
@@ -481,6 +481,7 @@ final class Social {
 	/**
 	 * Show the disconnect link for social-based users.
 	 *
+	 * @filter loginout
 	 * @param  string  $link
 	 * @return string
 	 */
@@ -489,7 +490,6 @@ final class Social {
 			// TODO Logic to display the disconnect link for social-based users.
 		}
 		else {
-// TODO - by not providing an i18n key it will use WP default, I think this is fine here but want to make sure it's intentional
 			$link = explode('>'.__('Log in'), $link);
 			$link = $link[0].' id="social_login">'.__('Log in').$link[1];
 		}
@@ -553,7 +553,7 @@ final class Social {
 
 				$results = $wpdb->get_results("
 					SELECT user_id, meta_value 
-					  FROM {$this->wpdb->usermeta}
+					  FROM $wpdb->usermeta
 					 WHERE meta_key = 'social_accounts'
 					   AND user_id NOT IN ($ids)
 				");
@@ -574,14 +574,16 @@ final class Social {
 } // End Social
 
 $social_file = __FILE__;
-if (isset($network_plugin)) {
-	$social_file = $network_plugin;
-	$social_path = dirname($social_file);
-}
 if (isset($plugin)) {
 	$social_file = $plugin;
-	$social_path = dirname(__FILE__);
 }
+else if (isset($mu_plugin)) {
+	$social_file = $mu_plugin;
+}
+else if (isset($network_plugin)) {
+	$social_file = $network_plugin;
+}
+$social_path = dirname($social_file);
 
 define('SOCIAL_FILE', $social_file);
 define('SOCIAL_PATH', $social_path.'/');

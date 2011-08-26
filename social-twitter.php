@@ -66,15 +66,17 @@ final class Social_Twitter {
 
 } // End Social_Twitter
 
-// TODO - should this be in if/else checks?
-// Add support for mu-plugins
 $social_twitter_file = __FILE__;
-if (isset($network_plugin)) {
-	$social_twitter_file = $network_plugin;
-}
 if (isset($plugin)) {
 	$social_twitter_file = $plugin;
 }
+else if (isset($mu_plugin)) {
+	$social_twitter_file = $mu_plugin;
+}
+else if (isset($network_plugin)) {
+	$social_twitter_file = $network_plugin;
+}
+
 define('SOCIAL_TWITTER_FILE', $social_twitter_file);
 
 // Activation
