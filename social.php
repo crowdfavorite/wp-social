@@ -101,20 +101,6 @@ final class Social {
 	}
 
 	/**
-	 * Runs basic installation checks to make sure Social can run.
-	 *
-	 * @static
-	 * @return void
-	 */
-	public static function install() {
-// TODO - this method name indicates it will be doing install work, but it's really an install check
-		if (version_compare(PHP_VERSION, '5.2.4', '<')) {
-			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
-			wp_die(__("Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i18n));
-		}
-	}
-
-	/**
 	 * Activates Facebook and Twitter
 	 *
 	 * @static
@@ -303,6 +289,11 @@ final class Social {
 	 * @return void
 	 */
 	public function init() {
+		if (version_compare(PHP_VERSION, '5.2.4', '<')) {
+			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
+			wp_die(__("Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i18n));
+		}
+		
 		// Load options
 		foreach (Social::$options as $key => $default) {
 			$value = Social::option($key);
@@ -623,7 +614,6 @@ define('SOCIAL_PATH', $social_path.'/');
 spl_autoload_register(array('Social', 'auto_load'));
 
 // Activation Hook
-register_activation_hook(SOCIAL_FILE, array('Social', 'install'));
 add_action('activated_plugin', array('Social', 'activated_plugin'));
 
 $social = Social::instance();
