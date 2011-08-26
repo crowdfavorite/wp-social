@@ -98,6 +98,8 @@ final class Social {
 				Social::log(sprintf(__('Failed to auto load class %s.', Social::$i18n), $class));
 			}
 		}
+
+		return true;
 	}
 
 	/**
@@ -108,7 +110,6 @@ final class Social {
 	 * @return void
 	 */
 	public static function activated_plugin($plugin) {
-// TODO - we need to talk about this - we want to avoid activation hooks wherever possible
 		if ($plugin == plugin_basename(SOCIAL_FILE)) {
 			// Activate Twitter and Facebook
 			$plugins = get_option('social_activated_plugins', array(
@@ -218,17 +219,12 @@ final class Social {
 	 */
 	public static function option($key, $value = null, $update = false) {
 		if ($value === null) {
-// TODO - there are already filters inside the get/set_option methods, do we need our own?
 			$value = get_option('social_'.$key);
-// TODO - is this where we are applying our defaults?
-			$value = apply_filters('social_get_option', $value, $key);
 			Social::$options[$key] = $value;
 
 			return $value;
 		}
 
-// TODO - there are already filters inside the get/set_option methods, do we need our own?
-		$value = apply_filters('social_set_option', $value, $key);
 		Social::$options[$key] = $value;
 		if ($update) {
 			update_option('social_'.$key, $value);
@@ -253,17 +249,20 @@ final class Social {
 	public $wpdb = null;
 
 	/**
-	 * Sets the WordPress DB instance.
+	 * Initializes Social.
+	 *
+	 * @return void
 	 */
-	public function __construct() {
-		global $wpdb;
-		$this->wpdb = $wpdb;
+	public function init() {
+		if (version_compare(PHP_VERSION, '5.2.4', '<')) {
+			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
+			wp_die(__("Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i18n));
+		}
 
 		// Set the logger
 		Social::$log = Social_Log::factory();
 
 		// Register services
-// TODO - have all plugins, themes, etc. been loaded yet? Move to init()?
 		$services = apply_filters('social_register_service', array());
 		if (is_array($services) and count($services)) {
 			// TODO query for accounts here
@@ -280,18 +279,6 @@ final class Social {
 					Social::$services[$service] = new $class($service_accounts);
 				}
 			}
-		}
-	}
-
-	/**
-	 * Initializes Social.
-	 *
-	 * @return void
-	 */
-	public function init() {
-		if (version_compare(PHP_VERSION, '5.2.4', '<')) {
-			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
-			wp_die(__("Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i18n));
 		}
 		
 		// Load options
