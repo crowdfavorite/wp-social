@@ -66,12 +66,16 @@ final class Social_Facebook {
 } // End Social_Facebook
 
 $social_facebook_file = __FILE__;
-if (isset($network_plugin)) {
-	$social_facebook_file = $network_plugin;
-}
 if (isset($plugin)) {
 	$social_facebook_file = $plugin;
 }
+else if (isset($mu_plugin)) {
+	$social_facebook_file = $mu_plugin;
+}
+else if (isset($network_plugin)) {
+	$social_facebook_file = $network_plugin;
+}
+
 define('SOCIAL_FACEBOOK_FILE', $social_facebook_file);
 
 // Activation

@@ -98,6 +98,8 @@ final class Social {
 				Social::log(sprintf(__('Failed to auto load class %s.', Social::$i18n), $class));
 			}
 		}
+
+		return true;
 	}
 
 	/**
@@ -108,7 +110,6 @@ final class Social {
 	 * @return void
 	 */
 	public static function activated_plugin($plugin) {
-// TODO - we need to talk about this - we want to avoid activation hooks wherever possible
 		if ($plugin == plugin_basename(SOCIAL_FILE)) {
 			// Activate Twitter and Facebook
 			$plugins = get_option('social_activated_plugins', array(
@@ -218,17 +219,12 @@ final class Social {
 	 */
 	public static function option($key, $value = null, $update = false) {
 		if ($value === null) {
-// TODO - there are already filters inside the get/set_option methods, do we need our own?
 			$value = get_option('social_'.$key);
-// TODO - is this where we are applying our defaults?
-			$value = apply_filters('social_get_option', $value, $key);
 			Social::$options[$key] = $value;
 
 			return $value;
 		}
 
-// TODO - there are already filters inside the get/set_option methods, do we need our own?
-		$value = apply_filters('social_set_option', $value, $key);
 		Social::$options[$key] = $value;
 		if ($update) {
 			update_option('social_'.$key, $value);
@@ -253,17 +249,20 @@ final class Social {
 	public $wpdb = null;
 
 	/**
-	 * Sets the WordPress DB instance.
+	 * Initializes Social.
+	 *
+	 * @return void
 	 */
-	public function __construct() {
-		global $wpdb;
-		$this->wpdb = $wpdb;
+	public function init() {
+		if (version_compare(PHP_VERSION, '5.2.4', '<')) {
+			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
+			wp_die(__("Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i18n));
+		}
 
 		// Set the logger
 		Social::$log = Social_Log::factory();
 
 		// Register services
-// TODO - have all plugins, themes, etc. been loaded yet? Move to init()?
 		$services = apply_filters('social_register_service', array());
 		if (is_array($services) and count($services)) {
 			// TODO query for accounts here
@@ -280,18 +279,6 @@ final class Social {
 					Social::$services[$service] = new $class($service_accounts);
 				}
 			}
-		}
-	}
-
-	/**
-	 * Initializes Social.
-	 *
-	 * @return void
-	 */
-	public function init() {
-		if (version_compare(PHP_VERSION, '5.2.4', '<')) {
-			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
-			wp_die(__("Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i18n));
 		}
 		
 		// Load options
@@ -479,10 +466,10 @@ final class Social {
 	/**
 	 * Hides the Site Admin link for social-based users.
 	 *
+	 * @filter register
 	 * @param  string  $link
 	 * @return string
 	 */
-// TODO - I assume this is attached to an action/filter - we should indicate this here with the function
 	public function register($link) {
 		if (is_user_logged_in()) {
 			// TODO Logic to hide the register link for social-based users.
@@ -494,6 +481,7 @@ final class Social {
 	/**
 	 * Show the disconnect link for social-based users.
 	 *
+	 * @filter loginout
 	 * @param  string  $link
 	 * @return string
 	 */
@@ -502,7 +490,6 @@ final class Social {
 			// TODO Logic to display the disconnect link for social-based users.
 		}
 		else {
-// TODO - by not providing an i18n key it will use WP default, I think this is fine here but want to make sure it's intentional
 			$link = explode('>'.__('Log in'), $link);
 			$link = $link[0].' id="social_login">'.__('Log in').$link[1];
 		}
@@ -517,40 +504,30 @@ final class Social {
 	 * @return void
 	 */
 	private function upgrade($installed_version) {
-		// TODO Talk to Alex about upgrade process
 		if (version_compare($installed_version, Social::$version, '<')) {
+			global $wpdb;
+
 			// 1.0.2
 			// Find old social_notify and update to _social_notify.
-			$meta_keys = array();
-			$results = $this->wpdb->get_results("
-				SELECT post_id, meta_key, meta_value 
-				FROM {$this->wpdb->postmeta} 
-				WHERE meta_key LIKE 'social_%' 
-				GROUP BY meta_key
-			");
-			foreach ($results as $result) {
-				if (!isset($meta_keys[$result->meta_key])) {
-					$meta_keys[$result->meta_key] = $result->meta_key;
-				}
-
-// TODO - move this cleanup to the getter/setter for aggregation logs
-				if ($result->meta_key == 'social_aggregation_log') {
-					$value = maybe_unserialize($result->meta_value);
-					$new_value = array(
-						'manual' => false,
-						'items' => $value
-					);
-					update_post_meta($result->post_id, 'social_aggregation_log', $new_value);
-				}
-			}
-
+			$meta_keys = array(
+				'social_aggregated_replies',
+				'social_broadcast_error',
+				'social_broadcast_accounts',
+				'social_broadcasted_ids',
+				'social_aggregation_log',
+				'social_twitter_content',
+				'social_notify_twitter',
+				'social_facebook_content',
+				'social_notify_facebook',
+				'social_broadcasted',
+				'social_notify'
+			);
 			if (count($meta_keys)) {
 				foreach ($meta_keys as $key) {
-// TODO - we need to be more explicit here, what is there is a social_* key from another plugin?
 					$this->wpdb->query("
-						UPDATE {$this->wpdb->postmeta} 
-						SET meta_key = '_$key' 
-						WHERE meta_key = '$key'
+						UPDATE $wpdb->postmeta
+						   SET meta_key = '_$key'
+						 WHERE meta_key = '$key'
 					");
 				}
 			}
@@ -572,14 +549,13 @@ final class Social {
 						$ids[] = $user->ID;
 					}
 				}
-// TODO - escape with array_map, I think there's a wpdb function that will do this
 				$ids = implode(',', $ids);
 
-				$results = $this->wpdb->get_results("
+				$results = $wpdb->get_results("
 					SELECT user_id, meta_value 
-					FROM {$this->wpdb->usermeta} 
-					WHERE meta_key = 'social_accounts' 
-					AND user_id NOT IN ($ids)
+					  FROM $wpdb->usermeta
+					 WHERE meta_key = 'social_accounts'
+					   AND user_id NOT IN ($ids)
 				");
 				foreach ($results as $result) {
 					$accounts = maybe_unserialize($result->meta_value);
@@ -598,14 +574,16 @@ final class Social {
 } // End Social
 
 $social_file = __FILE__;
-if (isset($network_plugin)) {
-	$social_file = $network_plugin;
-	$social_path = dirname($social_file);
-}
 if (isset($plugin)) {
 	$social_file = $plugin;
-	$social_path = dirname(__FILE__);
 }
+else if (isset($mu_plugin)) {
+	$social_file = $mu_plugin;
+}
+else if (isset($network_plugin)) {
+	$social_file = $network_plugin;
+}
+$social_path = dirname($social_file);
 
 define('SOCIAL_FILE', $social_file);
 define('SOCIAL_PATH', $social_path.'/');
