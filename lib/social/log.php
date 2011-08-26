@@ -16,7 +16,6 @@ final class Social_Log {
 	public static function factory($file = null) {
 		if ($file == null) {
 			$file = SOCIAL_PATH.'log.txt';
-			// TODO Talk to Alex about using PHP's default error_log or use error_log's destination parameter.
 		}
 		return new Social_Log;
 	}
