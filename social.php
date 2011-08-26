@@ -504,40 +504,21 @@ final class Social {
 	 * @return void
 	 */
 	private function upgrade($installed_version) {
-		// TODO Talk to Alex about upgrade process
 		if (version_compare($installed_version, Social::$version, '<')) {
+			global $wpdb;
+
 			// 1.0.2
 			// Find old social_notify and update to _social_notify.
-			$meta_keys = array();
-			$results = $this->wpdb->get_results("
-				SELECT post_id, meta_key, meta_value 
-				FROM {$this->wpdb->postmeta} 
-				WHERE meta_key LIKE 'social_%' 
-				GROUP BY meta_key
-			");
-			foreach ($results as $result) {
-				if (!isset($meta_keys[$result->meta_key])) {
-					$meta_keys[$result->meta_key] = $result->meta_key;
-				}
-
-// TODO - move this cleanup to the getter/setter for aggregation logs
-				if ($result->meta_key == 'social_aggregation_log') {
-					$value = maybe_unserialize($result->meta_value);
-					$new_value = array(
-						'manual' => false,
-						'items' => $value
-					);
-					update_post_meta($result->post_id, 'social_aggregation_log', $new_value);
-				}
-			}
-
+			$meta_keys = array(
+				'social_broadcasted_ids',
+				'social_aggregation_log'
+			);
 			if (count($meta_keys)) {
 				foreach ($meta_keys as $key) {
-// TODO - we need to be more explicit here, what is there is a social_* key from another plugin?
 					$this->wpdb->query("
 						UPDATE {$this->wpdb->postmeta} 
-						SET meta_key = '_$key' 
-						WHERE meta_key = '$key'
+						   SET meta_key = '_$key'
+						 WHERE meta_key = '$key'
 					");
 				}
 			}
