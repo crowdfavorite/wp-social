@@ -8,7 +8,7 @@ abstract class Social_Service {
 	/**
 	 * @var  string  service key
 	 */
-	public static $key = '';
+	protected $_key = '';
 
 	/**
 	 * @var  array  collection of account objects
@@ -22,6 +22,33 @@ abstract class Social_Service {
 	 */
 	public function __construct(array $accounts = array()) {
 		$this->accounts($accounts);
+	}
+
+	/**
+	 * Gets the title for the service.
+	 *
+	 * @return string
+	 */
+	public function title() {
+		return ucwords(str_replace('_', ' ', $this->_key));
+	}
+
+	/**
+	 * Builds the authorize URL for the service.
+	 *
+	 * @return string
+	 */
+	public function authorize_url() {
+		global $post;
+
+		if (defined('IS_PROFILE_PAGE')) {
+			$url = admin_url('profile.php#social-networks');
+		}
+		else {
+			$url = (is_admin() ? admin_url('options-general.php?page=social.php') : site_url('?authorized=true&p='.$post->ID));
+		}
+
+		return apply_filters('social_authorize_url', Social::$api_url.$this->_key.'/authorize?redirect_to='.urlencode($url), $this->_key);
 	}
 
 	/**

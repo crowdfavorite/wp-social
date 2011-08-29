@@ -41,7 +41,7 @@ final class Social_View {
 			$this->set_file($file);
 		}
 
-		if (!empty($this->data)) {
+		if (empty($this->_data)) {
 			$this->_data = $data;
 		}
 	}

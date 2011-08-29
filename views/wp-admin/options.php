@@ -15,7 +15,46 @@
 		<tr>
 			<th><?php _e('Connect accounts', Social::$i18n); ?></th>
 			<td nowrap="nowrap">
+				<?php
+					$have_accounts = false;
+					$items = $service_buttons = '';
+					foreach ($services as $key => $service) {
+						foreach ($service->accounts() as $account) {
+							$have_accounts = true;
 
+							$profile_url = esc_url($account->url());
+							$profile_name = esc_html($account->name());
+							$disconnect = '';
+
+							$name = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
+
+							$items .= '
+								<li>
+									<div class="social-'.$key.'-icon"><i></i></div>
+									<span class="name">'.$name.'</span>
+									<span class="disconnect">'.$disconnect.'</span>
+								</li>
+							';
+						}
+
+						$service_buttons .= '<a href="'.esc_url($service->authorize_url()).'" id="'.$key.'_signin" class="social-login" target="_blank"><span>'.sprintf(__('Sign in with %s.', Social::$i18n), $service->title()).'</span></a>';
+					}
+
+					echo '<p>'.__('Before blog authors can broadcast to social networks you need to connect some accounts:', Social::$i18n).'</p>'
+					   . '<div>'.$service_buttons.'</div>'
+					   . '<p class="description"><strong>'.__('Connected accounts will be accessible by every blog author.', Social::$i18n).'</strong></p>';
+
+					if (!empty($items)) {
+						echo '
+							<div class="social-accounts">
+								<strong>'.__('Connected accounts:', Social::$i18n).'</strong>
+								<ul>
+									'.$items.'
+								</ul>
+							</div>
+						';
+					}
+				?>
 			</td>
 		</tr>
 		<tr>

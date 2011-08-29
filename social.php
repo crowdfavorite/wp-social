@@ -18,22 +18,22 @@ if (!class_exists('Social')) { // try to avoid double-loading...
 final class Social {
 
 	/**
-	 * @var  string  $api_url  URL of the API
+	 * @var  string  URL of the API
 	 */
 	public static $api_url = 'https://sopresto.mailchimp.com/';
 
 	/**
-	 * @var  string  $version  version number
+	 * @var  string  version number
 	 */
 	public static $version = '1.0.1';
 
 	/**
-	 * @var  string  $i18n  internationalization key
+	 * @var  string  internationalization key
 	 */
 	public static $i18n = 'social';
 
 	/**
-	 * @var  Social_Log  $log  logger
+	 * @var  Social_Log  logger
 	 */
 	public static $log = null;
 
@@ -51,14 +51,9 @@ final class Social {
 	);
 
 	/**
-	 * @var  Social  $instance  instance of Social
+	 * @var  Social  instance of Social
 	 */
 	public static $instance = null;
-
-	/**
-	 * @var  array  $services  connected services
-	 */
-	public static $services = array();
 
 	/**
 	 * Loads the instance of Social.
@@ -100,61 +95,6 @@ final class Social {
 		}
 
 		return true;
-	}
-
-	/**
-	 * Activates Facebook and Twitter
-	 *
-	 * @static
-	 * @param  string  $plugin  plugin path
-	 * @return void
-	 */
-	public static function activated_plugin($plugin) {
-		if ($plugin == plugin_basename(SOCIAL_FILE)) {
-			// Activate Twitter and Facebook
-			$plugins = get_option('social_activated_plugins', array(
-				'social/social-facebook.php',
-				'social/social-twitter.php'
-			));
-			foreach ($plugins as $plugin) {
-				$plugin = plugin_basename($plugin);
-
-				$valid = validate_plugin($plugin);
-				if (is_wp_error($valid)) {
-					// Skip plugin, something is broken.
-					error_log($valid->get_error_message());
-					return;
-				}
-
-				$network_wide = false;
-				if (isset($_GET['networkwide']) and !empty($_GET['networkwide'])) {
-					$network_wide = true;
-				}
-
-				if (is_multisite() and ($network_wide or is_network_only_plugin($plugin))) {
-					$network_wide = true;
-					$current = get_site_option('active_sitewide_plugins', array());
-				} else {
-					$current = get_option('active_plugins', array());
-				}
-
-				if (!in_array($plugin, $current)) {
-					do_action('activate_plugin', $plugin, $network_wide);
-					do_action('activate_'.$plugin, $network_wide);
-
-					if ($network_wide) {
-						$current[$plugin] = time();
-						update_site_option('active_sitewide_plugins', $current);
-					} else {
-						$current[] = $plugin;
-						sort($current);
-						update_option('active_plugins', $current);
-					}
-
-					do_action('activated_plugin', $plugin, $network_wide);
-				}
-			}
-		}
 	}
 
 	/**
@@ -211,6 +151,16 @@ final class Social {
 	}
 
 	/**
+	 * @var  array  connected services
+	 */
+	private $_services = array();
+
+	/**
+	 * @var  bool  social enabled?
+	 */
+	private $_enabled = false;
+
+	/**
 	 * Initializes Social.
 	 *
 	 * @return void
@@ -227,18 +177,38 @@ final class Social {
 		// Register services
 		$services = apply_filters('social_register_service', array());
 		if (is_array($services) and count($services)) {
-			// TODO query for accounts here
-			$accounts = array();
+			$accounts = get_option('social_accounts', array());
+			$personal_accounts = get_user_meta(get_current_user_id(), 'social_accounts', true);
+			if (is_array($personal_accounts)) {
+				foreach ($personal_accounts as $key => $_accounts) {
+					if (count($_accounts)) {
+						if (!isset($accounts[$key])) {
+							$accounts[$key] = $_accounts;
+						}
+						else {
+							foreach ($_accounts as $account) {
+								if (!isset($accounts[$key][$account->user->id])) {
+									$accounts[$key][$account->user->id] = $account;
+								}
+								else {
+									$accounts[$key][$account->user->id]->personal = 1;
+								}
+							}
+						}
+					}
+				}
+			}
 
 			foreach ($services as $service) {
-				if (!isset(Social::$services[$service])) {
+				if (!isset($this->_services[$service])) {
 					$service_accounts = array();
 					if (isset($accounts[$service])) {
+						$this->_enabled = true; // Flag social as enabled, we have at least one account.
 						$service_accounts = $accounts[$service];
 					}
 
 					$class = 'Social_Service_'.$service;
-					Social::$services[$service] = new $class($service_accounts);
+					$this->_services[$service] = new $class($service_accounts);
 				}
 			}
 		}
@@ -290,6 +260,11 @@ final class Social {
 		}
 
 		if (is_admin()) {
+			// Enabled?
+			if (!$this->_enabled) {
+				add_action('admin_notices', array($this, 'display_disabled'));
+			}
+
 			// JS/CSS
 			if (SOCIAL_ADMIN_CSS !== false) {
 				wp_enqueue_style('social_admin', SOCIAL_ADMIN_CSS, array(), Social::$version, 'screen');
@@ -313,56 +288,6 @@ final class Social {
 		// JS/CSS
 		if (SOCIAL_COMMENTS_JS !== false) {
 			wp_enqueue_script('social_js', SOCIAL_COMMENTS_JS, array(), Social::$version, true);
-		}
-	}
-
-	/**
-	 * Activates a plugin on Social.
-	 *
-	 * @param  string  $file  plugin file
-	 * @return void
-	 */
-// TODO - why do we need this? Can we avoid storing data about these and instead let the presence of the PHP code for the plugin be the indicator?
-	public function activate_plugin($file) {
-		$file = plugin_basename($file);
-
-		$key = 'social_activated_plugins';
-		if (is_multisite()) {
-			$key .= '_network';
-		}
-
-		$current = get_option($key, array());
-		if (!in_array($file, $current)) {
-			$current[] = $file;
-			update_option($key, $current);
-		}
-	}
-
-	/**
-	 * Deactivates a plugin from Social.
-	 *
-	 * @param  string  $file  plugin file
-	 * @return void
-	 */
-// TODO - why do we need this? Can we avoid storing data about these and instead let the presence of the PHP code for the plugin be the indicator?
-	public function deactivate_plugin($file) {
-		$file = plugin_basename($file);
-
-		$key = 'social_activated_plugins';
-		if (is_multisite()) {
-			$key .= '_network';
-		}
-
-		$current = get_option($key, array());
-		if (in_array($file, $current)) {
-			$_current = array();
-			foreach ($current as $plugin) {
-				if ($plugin != $file) {
-					$_current[] = $file;
-				}
-			}
-
-			update_option($key, $_current);
 		}
 	}
 
@@ -412,7 +337,35 @@ final class Social {
 	 * @return void
 	 */
 	public function admin_options_form() {
-		echo Social_View::factory('wp-admin/options');
+		echo Social_View::factory('wp-admin/options', array(
+			'services' => $this->services(),
+		));
+	}
+
+	/**
+	 * Returns an array of all of the services.
+	 *
+	 * @return array
+	 */
+	public function services() {
+		return $this->_services;
+	}
+
+	/**
+	 * Returns a service by access key.
+	 *
+	 * [!!] If an invalid key is provided an exception will be thrown.
+	 *
+	 * @throws Exception
+	 * @param  stirng  $key  service key
+	 * @return Social_Service_Facebook|Social_Service_Twitter|mixed
+	 */
+	public function service($key) {
+		if (!isset($this->_services[$key])) {
+			throw new Exception(sprintf(__('%s is not registered to Social.', Social::$i18n), $key));
+		}
+
+		return $this->_services[$key];
 	}
 
 	/**
@@ -627,6 +580,19 @@ final class Social {
 		}
 	}
 
+	/**
+	 * Displays the upgrade message.
+	 *
+	 * @action admin_notices
+	 */
+	public function display_disabled() {
+		if (current_user_can('manage_options') || current_user_can('publish_posts')) {
+			$url = Social_Helper::settings_url();
+			$message = sprintf(__('Social will not run until you update your <a href="%s">settings</a>.', Social::$i18n), esc_url($url));
+			echo '<div class="error"><p>'.$message.'</p></div>';
+		}
+	}
+
 } // End Social
 
 $social_file = __FILE__;
@@ -646,9 +612,6 @@ define('SOCIAL_PATH', $social_path.'/');
 
 // Register Social's autoloading
 spl_autoload_register(array('Social', 'auto_load'));
-
-// Activation Hook
-add_action('activated_plugin', array('Social', 'activated_plugin'));
 
 $social = Social::instance();
 
@@ -682,5 +645,9 @@ add_filter('plugin_action_links', array($social, 'add_settings_link'), 10, 2);
 
 // Service filters
 add_filter('social_auto_load_class', array($social, 'auto_load_class'));
+
+// Require Facebook and Twitter by default.
+require SOCIAL_PATH.'social-twitter.php';
+require SOCIAL_PATH.'social-facebook.php';
 
 } // End class_exists check
