@@ -331,7 +331,7 @@ final class Social {
 			__('Social Options', Social::$i18n),
 			__('Social', Social::$i18n),
 			'manage_options',
-			basename(__FILE__),
+			basename(SOCIAL_FILE),
 			array($this, 'admin_options_form')
 		);
 	}
@@ -348,6 +348,10 @@ final class Social {
 			'display' => 'Every 15 minutes'
 		);
 		return $schedules;
+	}
+
+	public function admin_options_form() {
+
 	}
 
 	/**
