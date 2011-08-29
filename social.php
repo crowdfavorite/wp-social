@@ -158,53 +158,20 @@ final class Social {
 	}
 
 	/**
-	 * Activates a plugin on Social.
+	 * Returns the broadcast format tokens.
 	 *
-	 * @param  string  $file  plugin file
-	 * @return void
+	 * @static
+	 * @return array
 	 */
-// TODO - why do we need this? Can we avoid storing data about these and instead let the presence of the PHP code for the plugin be the indicator?
-	public function activate_plugin($file) {
-		$file = plugin_basename($file);
-
-		$key = 'social_activated_plugins';
-		if (is_multisite()) {
-			$key .= '_network';
-		}
-
-		$current = get_option($key, array());
-		if (!in_array($file, $current)) {
-			$current[] = $file;
-			update_option($key, $current);
-		}
-	}
-
-	/**
-	 * Deactivates a plugin from Social.
-	 *
-	 * @param  string  $file  plugin file
-	 * @return void
-	 */
-// TODO - why do we need this? Can we avoid storing data about these and instead let the presence of the PHP code for the plugin be the indicator?
-	public function deactivate_plugin($file) {
-		$file = plugin_basename($file);
-
-		$key = 'social_activated_plugins';
-		if (is_multisite()) {
-			$key .= '_network';
-		}
-
-		$current = get_option($key, array());
-		if (in_array($file, $current)) {
-			$_current = array();
-			foreach ($current as $plugin) {
-				if ($plugin != $file) {
-					$_current[] = $file;
-				}
-			}
-
-			update_option($key, $_current);
-		}
+	public static function broadcast_tokens() {
+		$defaults = array(
+			'{url}' => __('Blog post\'s permalink'),
+			'{title}' => __('Blog post\'s title'),
+			'{content}' => __('Blog post\'s content'),
+			'{date}' => __('Blog post\'s date'),
+			'{author}' => __('Blog post\'s author'),
+		);
+		return apply_filters('social_broadcast_tokens', $defaults);
 	}
 
 	/**
@@ -242,11 +209,6 @@ final class Social {
 	public static function log($message) {
 		Social::$log->write($message);
 	}
-
-	/**
-	 * @var  wpdb  $wpdb  wpdb object
-	 */
-	public $wpdb = null;
 
 	/**
 	 * Initializes Social.
@@ -308,6 +270,100 @@ final class Social {
 				$this->upgrade($value);
 			}
 		}
+
+		// JS/CSS
+		if (!defined('SOCIAL_COMMENTS_JS')) {
+			define('SOCIAL_COMMENTS_JS', plugins_url('assets/social.js', SOCIAL_FILE));
+		}
+
+		if (!defined('SOCIAL_ADMIN_JS')) {
+			define('SOCIAL_ADMIN_JS', plugins_url('assets/admin.js', SOCIAL_FILE));
+		}
+		$admin = SOCIAL_ADMIN_JS;
+
+		if (!defined('SOCIAL_ADMIN_CSS')) {
+			define('SOCIAL_ADMIN_CSS', plugins_url('assets/admin.css', SOCIAL_FILE));
+		}
+
+		if (!defined('SOCIAL_COMMENTS_CSS')) {
+			define('SOCIAL_COMMENTS_CSS', plugins_url('assets/comments.css', SOCIAL_FILE));
+		}
+
+		if (is_admin()) {
+			// JS/CSS
+			if (SOCIAL_ADMIN_CSS !== false) {
+				wp_enqueue_style('social_admin', SOCIAL_ADMIN_CSS, array(), Social::$version, 'screen');
+			}
+
+			if (SOCIAL_ADMIN_JS !== false) {
+				wp_enqueue_script('social_admin', SOCIAL_ADMIN_JS, array(), Social::$version, true);
+			}
+		}
+		else {
+			// JS/CSS
+			if (SOCIAL_COMMENTS_CSS !== false) {
+				wp_enqueue_style('social_comments', SOCIAL_COMMENTS_CSS, array(), Social::$version, 'screen');
+			}
+
+			if (SOCIAL_COMMENTS_JS !== false) {
+				wp_enqueue_script('jquery');
+			}
+		}
+
+		// JS/CSS
+		if (SOCIAL_COMMENTS_JS !== false) {
+			wp_enqueue_script('social_js', SOCIAL_COMMENTS_JS, array(), Social::$version, true);
+		}
+	}
+
+	/**
+	 * Activates a plugin on Social.
+	 *
+	 * @param  string  $file  plugin file
+	 * @return void
+	 */
+// TODO - why do we need this? Can we avoid storing data about these and instead let the presence of the PHP code for the plugin be the indicator?
+	public function activate_plugin($file) {
+		$file = plugin_basename($file);
+
+		$key = 'social_activated_plugins';
+		if (is_multisite()) {
+			$key .= '_network';
+		}
+
+		$current = get_option($key, array());
+		if (!in_array($file, $current)) {
+			$current[] = $file;
+			update_option($key, $current);
+		}
+	}
+
+	/**
+	 * Deactivates a plugin from Social.
+	 *
+	 * @param  string  $file  plugin file
+	 * @return void
+	 */
+// TODO - why do we need this? Can we avoid storing data about these and instead let the presence of the PHP code for the plugin be the indicator?
+	public function deactivate_plugin($file) {
+		$file = plugin_basename($file);
+
+		$key = 'social_activated_plugins';
+		if (is_multisite()) {
+			$key .= '_network';
+		}
+
+		$current = get_option($key, array());
+		if (in_array($file, $current)) {
+			$_current = array();
+			foreach ($current as $plugin) {
+				if ($plugin != $file) {
+					$_current[] = $file;
+				}
+			}
+
+			update_option($key, $_current);
+		}
 	}
 
 	/**
@@ -350,8 +406,13 @@ final class Social {
 		return $schedules;
 	}
 
+	/**
+	 * Displays the admin options form.
+	 *
+	 * @return void
+	 */
 	public function admin_options_form() {
-
+		echo Social_View::factory('wp-admin/options');
 	}
 
 	/**
@@ -436,15 +497,6 @@ final class Social {
 	 */
 	public function aggregate_comments() {
 		// TODO Social::aggregate_comments()
-	}
-
-	/**
-	 * Displays the admin options form.
-	 *
-	 * @return void
-	 */
-	public function admin_options_form() {
-		// TODO Social::admin_options_form()
 	}
 
 	/**

@@ -47,6 +47,15 @@ final class Social_View {
 	}
 
 	/**
+	 * Calls render() when the object is echoed.
+	 *
+	 * @return string
+	 */
+	public function __toString() {
+		return $this->render();
+	}
+
+	/**
 	 * Sets view data.
 	 *
 	 * @param  string  $key
