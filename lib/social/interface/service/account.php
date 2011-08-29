@@ -6,6 +6,22 @@
 interface Social_Interface_Service_Account {
 
 	/**
+	 * Returns whether the account is public or not.
+	 *
+	 * @abstract
+	 * @return bool
+	 */
+	function is_personal();
+
+	/**
+	 * Returns whether the account is global or not.
+	 *
+	 * @abstract
+	 * @return bool
+	 */
+	function is_global();
+
+	/**
 	 * Gets the ID of the account.
 	 *
 	 * @abstract
@@ -36,5 +52,13 @@ interface Social_Interface_Service_Account {
 	 * @return string
 	 */
 	function avatar();
+
+	/**
+	 * Gets the username of the account.
+	 *
+	 * @abstract
+	 * @return string
+	 */
+	function username();
 
 } // End Social_Interface_Service_Account

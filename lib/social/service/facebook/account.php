@@ -12,7 +12,7 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 * @return string
 	 */
 	public function id() {
-
+		return $this->_user->id;
 	}
 
 	/**
@@ -22,7 +22,7 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 * @return string
 	 */
 	public function name() {
-
+		return $this->_user->name;
 	}
 
 	/**
@@ -40,7 +40,21 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 * @return string
 	 */
 	public function avatar() {
-		// TODO: Implement avatar() method.
+		return 'http://graph.facebook.com/'.$this->_user->id.'/picture';
 	}
+
+	/**
+	 * Gets the username of the account.
+	 *
+	 * @return string
+	 */
+	public function username() {
+		if (!isset($this->_user->username)) {
+			$this->_user->username = $this->_user->name.'.'.$this->_user->id;
+		}
+
+		return $this->_user->username;
+	}
+
 
 } // End Social_Service_Facebook_Account

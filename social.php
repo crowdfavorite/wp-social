@@ -188,10 +188,10 @@ final class Social {
 						else {
 							foreach ($_accounts as $account) {
 								if (!isset($accounts[$key][$account->user->id])) {
-									$accounts[$key][$account->user->id] = $account;
+									$accounts[$key][$account->id()] = $account;
 								}
 								else {
-									$accounts[$key][$account->user->id]->personal = 1;
+									$accounts[$key][$account->id()]->personal = true;
 								}
 							}
 						}
@@ -617,7 +617,7 @@ $social = Social::instance();
 
 // General Actions
 add_action('init', array($social, 'init'), 1);
-add_action('request_handler', array($social, 'request_handler'), 2);
+add_action('init', array($social, 'request_handler'), 2);
 add_action('do_meta_boxes', array($social, 'do_meta_boxes'));
 add_action('save_post', array($social, 'set_broadcast_meta_data'), 10, 2);
 add_action('comment_post', array($social, 'comment_post'));

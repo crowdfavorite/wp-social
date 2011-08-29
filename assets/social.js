@@ -1,5 +1,7 @@
 var $window = null;
+var $auth_window = null;
 function reloadSocialHTML() {
+	$auth_window.close();
 	if (!$window.hasClass('comments')) {
 		window.location.reload();
 	}
@@ -9,10 +11,21 @@ function reloadSocialHTML() {
 			if (response.result == 'success') {
 				// Add logged-in body class since we're not going to be refreshing the page.
 				jQuery('body').addClass('logged-in');
-				$parent.html(response.html);
+
+				var $cancel = jQuery('#cancel-comment-reply-link');
+				var $parent = $cancel.closest('li');
+				$cancel.click();
+				jQuery('#respond').replaceWith(response.html);
+				$parent.find('.comment-reply-link').click();
+
 				jQuery('#primary').find('#social_login').parent().html(response.disconnect_url);
 			}
 		}, 'json');
+
+		// Fix for the missing reply link
+		jQuery('#cancel-comment-reply-link').live('click', function(){
+			jQuery('.comment-reply-link').show();
+		});
 	}
 }
 
@@ -31,7 +44,7 @@ function reloadSocialHTML() {
             e.preventDefault();
 
             $window = $(this);
-            window.open($(this).attr('href'), "ServiceAssociate", 'width=700,height=400');
+            $auth_window = window.open($(this).attr('href'), "ServiceAssociate", 'width=700,height=400');
         });
 
 	    $('.social_deauth').click(function(e){

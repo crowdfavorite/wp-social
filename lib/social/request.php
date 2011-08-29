@@ -137,9 +137,10 @@ final class Social_Request {
 		}
 
 		$params = array();
-		$request = '_'.$method;
-		foreach ($$request as $key => $value) {
-			if (strpos($key, 'social_') !== false) {
+		foreach (array_merge($_POST, $_GET) as $key => $value) {
+			if (strpos($key, 'social_') !== false or
+			   ($method == 'POST' and $key == 'data')) // Hack for the Sopresto API. Would like to get this named to "social_data".
+			{
 				if ($key == 'social_controller') {
 					$params['controller'] = $value;
 				}
@@ -149,7 +150,13 @@ final class Social_Request {
 				else {
 					$params[$key] = $value;
 				}
-				unset($$request[$key]);
+
+				if ($method == 'POST') {
+					unset($_POST[$key]);
+				}
+				else {
+					unset($_GET[$key]);
+				}
 			}
 		}
 
@@ -198,9 +205,9 @@ final class Social_Request {
 	 */
 	public function execute() {
 		require 'controller.php';
-		$controller = apply_filters('social_controller', 'controller/'.$this->controller());
+		$controller = apply_filters('social_controller', SOCIAL_PATH.'lib/social/controller/'.$this->controller());
 		if (file_exists($controller.'.php')) {
-			require $controller;
+			require $controller.'.php';
 
 			$controller = 'Social_Controller_'.$this->controller();
 			$controller = new $controller($this);
@@ -260,7 +267,7 @@ final class Social_Request {
 			$key = 'social_'.$key;
 		}
 		if ($value === null) {
-			return $this->_params[$key];
+			return (isset($this->_params[$key]) ? $this->_params[$key] : null);
 		}
 		$this->_params[$key] = $value;
 		return $this;

@@ -96,15 +96,19 @@
 						<ul id="social_xmlrpc" class="social-broadcastables">
 							<?php
 								$accounts = get_option('social_xmlrpc_accounts', array());
-								foreach (Social::$global_services as $key => $service):
+								foreach ($services as $key => $service):
 									foreach ($service->accounts() as $account):
+										if ($account->is_global()):
 							?>
-							<li><label class="social-broadcastable" for="<?php echo esc_attr($service->service.$account->user->id); ?>" style="cursor:pointer">
-								<input type="checkbox" name="<?php echo 'social_xmlrpc_accounts[]'; ?>" id="<?php echo esc_attr($service->service.$account->user->id); ?>" value="<?php echo esc_attr($key.'|'.$account->user->id); ?>"<?php echo ((isset($accounts[$key]) and in_array($account->user->id, array_values($accounts[$key]))) ? ' checked="checked"' : ''); ?> />
-								<img src="<?php echo esc_attr($service->profile_avatar($account)); ?>" width="24" height="24" />
-								<span><?php echo esc_html($service->profile_name($account)); ?></span>
-							</label></li>
+							<li>
+								<label class="social-broadcastable" for="<?php echo esc_attr($key.$account->id()); ?>" style="cursor:pointer">
+									<input type="checkbox" name="<?php echo 'social_xmlrpc_accounts[]'; ?>" id="<?php echo esc_attr($key.$account->id()); ?>" value="<?php echo esc_attr($key.'|'.$account->id()); ?>"<?php echo ((isset($accounts[$key]) and in_array($account->id(), array_values($accounts[$key]))) ? ' checked="checked"' : ''); ?> />
+									<img src="<?php echo esc_attr($account->avatar()); ?>" width="24" height="24" />
+									<span><?php echo esc_html($account->name()); ?></span>
+								</label>
+							</li>
 							<?php
+										endif;
 									endforeach;
 								endforeach;
 							?>

@@ -12,7 +12,7 @@ final class Social_Service_Twitter_Account extends Social_Service_Account implem
 	 * @return string
 	 */
 	public function id() {
-
+		return $this->_user->id;
 	}
 
 	/**
@@ -22,7 +22,7 @@ final class Social_Service_Twitter_Account extends Social_Service_Account implem
 	 * @return string
 	 */
 	public function name() {
-
+		return $this->_user->name;
 	}
 
 	/**
@@ -40,7 +40,17 @@ final class Social_Service_Twitter_Account extends Social_Service_Account implem
 	 * @return string
 	 */
 	public function avatar() {
-		// TODO: Implement avatar() method.
+		return $this->_user->profile_image_url;
 	}
+
+	/**
+	 * Gets the username of the account.
+	 *
+	 * @return string
+	 */
+	public function username() {
+		return $this->_user->screen_name;
+	}
+
 
 } // End Social_Service_Twitter_Account
