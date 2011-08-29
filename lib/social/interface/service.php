@@ -7,22 +7,27 @@
 interface Social_Interface_Service {
 
 	/**
-	 * Method that is caught by the social_services_to_load filter. Use this to
-	 * register your service with Social.
-	 *
-	 * @static
-	 * @abstract
-	 * @param  array  $services
-	 * @return array
-	 */
-	static function register_service(array $services);
-
-	/**
 	 * Use the construct to load all of the accounts for this service.
 	 *
 	 * @abstract
 	 */
 	function __construct();
+
+	/**
+	 * Gets the title for the service.
+	 *
+	 * @abstract
+	 * @return string
+	 */
+	function title();
+
+	/**
+	 * Builds the authorize URL for the service.
+	 *
+	 * @abstract
+	 * @return string
+	 */
+	function authorize_url();
 
 	/**
 	 * Method to get or set all accounts associated with the service.

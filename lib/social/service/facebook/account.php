@@ -3,30 +3,40 @@
  * @package Social
  * @subpackge services
  */
-final class Social_Service_Facebook_Account implements Social_Interface_Service_Account {
+final class Social_Service_Facebook_Account extends Social_Service_Account implements Social_Interface_Service_Account {
 
 	/**
+	 * Gets the ID of the account.
+	 *
+	 * @abstract
 	 * @return string
 	 */
 	public function id() {
-		// TODO: Implement id() method.
+
 	}
 
 	/**
+	 * Gets the name of the account.
+	 *
+	 * @abstract
 	 * @return string
 	 */
 	public function name() {
-		// TODO: Implement name() method.
+
 	}
 
 	/**
+	 * Gets the URL of the account.
+	 *
 	 * @return string
 	 */
-	public function link() {
-		// TODO: Implement link() method.
+	public function url() {
+		return 'http://facebook.com/profile.php?id='.$this->_user->id;
 	}
 
 	/**
+	 * Gets the avatar of the account.
+	 *
 	 * @return string
 	 */
 	public function avatar() {
