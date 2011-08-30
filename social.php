@@ -161,6 +161,11 @@ final class Social {
 	private $_enabled = false;
 
 	/**
+	 * @var  string  CRON lock directory.
+	 */
+	private $_cron_lock_dir = null;
+
+	/**
 	 * Initializes Social.
 	 *
 	 * @return void
@@ -249,7 +254,6 @@ final class Social {
 		if (!defined('SOCIAL_ADMIN_JS')) {
 			define('SOCIAL_ADMIN_JS', plugins_url('assets/admin.js', SOCIAL_FILE));
 		}
-		$admin = SOCIAL_ADMIN_JS;
 
 		if (!defined('SOCIAL_ADMIN_CSS')) {
 			define('SOCIAL_ADMIN_CSS', plugins_url('assets/admin.css', SOCIAL_FILE));
@@ -260,12 +264,8 @@ final class Social {
 		}
 
 		if (is_admin()) {
-			// Enabled?
-			if (!$this->_enabled) {
-				add_action('admin_notices', array($this, 'display_disabled'));
-			}
-
 			// JS/CSS
+			// TODO move these to load-* action. Talk to Matt.
 			if (SOCIAL_ADMIN_CSS !== false) {
 				wp_enqueue_style('social_admin', SOCIAL_ADMIN_CSS, array(), Social::$version, 'screen');
 			}
@@ -287,7 +287,18 @@ final class Social {
 
 		// JS/CSS
 		if (SOCIAL_COMMENTS_JS !== false) {
-			wp_enqueue_script('social_js', SOCIAL_COMMENTS_JS, array(), Social::$version, true);
+			wp_enqueue_script('social_js', SOCIAL_COMMENTS_JS, array('jquery'), Social::$version, true);
+		}
+
+		// Set CRON lock directory.
+		if (is_writeable(SOCIAL_PATH)) {
+			$this->_cron_lock_dir = SOCIAL_PATH;
+		}
+		else {
+			$upload_dir = wp_upload_dir();
+			if (is_writeable($upload_dir['basedir'])) {
+				$this->_cron_lock_dir = $upload_dir['basedir'];
+			}
 		}
 	}
 
@@ -357,7 +368,7 @@ final class Social {
 	 * [!!] If an invalid key is provided an exception will be thrown.
 	 *
 	 * @throws Exception
-	 * @param  stirng  $key  service key
+	 * @param  string  $key  service key
 	 * @return Social_Service_Facebook|Social_Service_Twitter|mixed
 	 */
 	public function service($key) {
@@ -450,6 +461,10 @@ final class Social {
 	 */
 	public function aggregate_comments() {
 		// TODO Social::aggregate_comments()
+		// Rename to run_queue?
+		// Hit the queue
+		// Pass post ID through action to service (twitter/facebook)
+		// Service handles aggregation
 	}
 
 	/**
@@ -581,15 +596,32 @@ final class Social {
 	}
 
 	/**
-	 * Displays the upgrade message.
+	 * Handles the display of different messages for admin notices.
 	 *
 	 * @action admin_notices
 	 */
-	public function display_disabled() {
-		if (current_user_can('manage_options') || current_user_can('publish_posts')) {
-			$url = Social_Helper::settings_url();
-			$message = sprintf(__('Social will not run until you update your <a href="%s">settings</a>.', Social::$i18n), esc_url($url));
-			echo '<div class="error"><p>'.$message.'</p></div>';
+	public function admin_notices() {
+		if (!$this->_enabled) {
+			if (current_user_can('manage_options') || current_user_can('publish_posts')) {
+				$url = Social_Helper::settings_url();
+				$message = sprintf(__('Social will not run until you update your <a href="%s">settings</a>.', Social::$i18n), esc_url($url));
+				echo '<div class="error"><p>'.$message.'</p></div>';
+			}
+		}
+
+		if (isset($_GET['page']) and $_GET['page'] == basename(SOCIAL_FILE)) {
+			// CRON Lock
+			if ($this->_cron_lock_dir === null) {
+				$upload_dir = wp_upload_dir();
+				if (isset($upload_dir['basedir'])) {
+					$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', Social::$i18n), SOCIAL_PATH, $upload_dir['basedir']);
+				}
+				else {
+					$message = sprintf(__('Social requires that %s is writable for CRON jobs.', Social::$i18n), SOCIAL_PATH);
+				}
+
+				echo '<div class="error"><p>'.esc_html($message).'</p></div>';
+			}
 		}
 	}
 
@@ -629,6 +661,7 @@ add_action('social_aggregate_comments', array($social, 'aggregate_comments'));
 add_action('publish_post', array($social, 'publish_post'));
 add_action('show_user_profile', array($social, 'show_user_profile'));
 add_action('transition_post_status', array($social, 'transition_post_status'), 10, 3);
+add_action('admin_notices', array($social, 'admin_notices'));
 
 // Admin Actions
 add_action('admin_menu', array($social, 'admin_menu'));
