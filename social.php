@@ -428,7 +428,7 @@ final class Social {
 	}
 
 	/**
-	 *
+	 * Runs the aggregation loop.
 	 * 
 	 * @return void
 	 */
