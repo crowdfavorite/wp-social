@@ -12,4 +12,8 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 */
 	protected $_key = 'facebook';
 
+	public function aggregate() {
+
+	}
+
 } // End Social_Service_Facebook

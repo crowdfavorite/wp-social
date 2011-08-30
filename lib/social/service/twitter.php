@@ -15,4 +15,8 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 */
 	protected $_key = 'twitter';
 
+	public function aggregate() {
+
+	}
+
 } // End Social_Service_Twitter
