@@ -15,8 +15,24 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 */
 	protected $_key = 'twitter';
 
-	public function aggregate() {
+	/**
+	 * Broadcasts the message to the specified account. Returns the broadcasted ID.
+	 *
+	 * @param  Social_Service_Account  $account  account to broadcast to
+	 * @param  string  $message  message to broadcast
+	 * @return int
+	 */
+	public function broadcast($account, $message) {
+		// TODO: Implement broadcast() method.
+	}
 
+	/**
+	 * Aggregates to-be WordPress comments from the service.
+	 *
+	 * @return array
+	 */
+	public function aggregate() {
+		// TODO: Implement aggregate() method.
 	}
 
 } // End Social_Service_Twitter
