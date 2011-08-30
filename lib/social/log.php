@@ -31,7 +31,7 @@ final class Social_Log {
 			return;
 		}
 
-		error_log($message);
+		error_log('[SOCIAL] '.$message);
 	}
 
 } // End Social_Log
