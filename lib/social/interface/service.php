@@ -39,6 +39,16 @@ interface Social_Interface_Service {
 	function accounts(array $accounts = null);
 
 	/**
+	 * Broadcasts the message to the specified account. Returns the broadcasted ID.
+	 *
+	 * @abstract
+	 * @param  Social_Service_Account  $account  account to broadcast to
+	 * @param  string  $message  message to broadcast
+	 * @return int
+	 */
+	function broadcast($account, $message);
+
+	/**
 	 * Aggregates to-be WordPress comments from the service.
 	 *
 	 * @abstract

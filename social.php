@@ -428,7 +428,7 @@ final class Social {
 	}
 
 	/**
-	 *
+	 * Runs the aggregation loop.
 	 * 
 	 * @return void
 	 */
@@ -443,8 +443,66 @@ final class Social {
 					$this->request(site_url('?social_controller=aggregate&social_action=run&social_post_id='.$id.'&social_timestamp='));
 				}
 				else {
-					$queue->remove($data->timestamp, $id)->save();
+					$queue->remove($id, $data->timestamp)->save();
 				}
+			}
+		}
+	}
+
+	/**
+	 * Broadcasts a post to the services.
+	 *
+	 * @param  int  $post_id  post id
+	 * @return void
+	 */
+	public function broadcast($post_id) {
+		// Load content to broadcast (accounts, broadcast message, etc)
+
+		// Loop through accounts
+		// $broadcasted_id = $service->broadcast($account, $message)
+
+		// Store broadcasted_ids
+
+		// Add to the aggregation queue.
+		Social_Queue::factory()->add($post_id)->save();
+	}
+
+	/**
+	 * Show the broadcast options if publishing.
+	 *
+	 * @param  string  $location  default post-publish location
+	 * @param  int     $post_id   post ID
+	 * @return string|void
+	 */
+	public function redirect_post_location($location, $post_id) {
+		if ((isset($_POST['_social_notify']) and $_POST['_social_notify'] == '1') and
+		    (isset($_POST['visibility']) and $_POST['visibility'] !== 'private')) {
+			update_post_meta($post_id, '_social_notify', '1');
+			if (isset($_POST['publish']) or isset($_POST['_social_broadcast'])) {
+				$this->broadcast_options($post_id, $location);
+			}
+		}
+		else {
+			delete_post_meta($post_id, '_social_notify');
+		}
+		return $location;
+	}
+
+	/**
+	 * Removes post meta if the post is going to private.
+	 *
+	 * @param  string  $old
+	 * @param  string  $new
+	 * @param  object  $post
+	 * @return void
+	 */
+	public function transition_post_status($old, $new, $post) {
+		if ($new == 'private') {
+			delete_post_meta($post->ID, '_social_notify');
+			delete_post_meta($post->ID, '_social_broadcast_accounts');
+
+			foreach ($this->services() as $key => $service) {
+				delete_post_meta($post->ID, '_social_'.$key.'_content');
 			}
 		}
 	}
@@ -607,6 +665,15 @@ final class Social {
 		}
 	}
 
+	/**
+	 * Handles displaying the admin assets.
+	 *
+	 * @action load-profile.php
+	 * @action load-post.php
+	 * @action load-post-new.php
+	 * @action load-settings_page_social
+	 * @return void
+	 */
 	public function admin_resources() {
 		if (!defined('SOCIAL_ADMIN_JS')) {
 			define('SOCIAL_ADMIN_JS', plugins_url('assets/admin.js', SOCIAL_FILE));
@@ -680,6 +747,7 @@ add_action('load-post-new.php', array($social, 'admin_resources'));
 add_action('load-post.php', array($social, 'admin_resources'));
 add_action('load-profile.php', array($social, 'admin_resources'));
 add_action('load-settings_page_social', array($social, 'admin_resources'));
+add_action('transition_post_status', array($social, 'transition_post_status'), 10, 3);
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));
@@ -692,6 +760,7 @@ add_action('admin_menu', array($social, 'admin_menu'));
 // Filters
 add_filter('cron_schedules', array($social, 'cron_schedules'));
 add_filter('plugin_action_links', array($social, 'add_settings_link'), 10, 2);
+add_filter('redirect_post_location', array($social, 'redirect_post_location'), 10, 2);
 
 // Service filters
 add_filter('social_auto_load_class', array($social, 'auto_load_class'));
