@@ -38,4 +38,12 @@ interface Social_Interface_Service {
 	 */
 	function accounts(array $accounts = null);
 
+	/**
+	 * Aggregates to-be WordPress comments from the service.
+	 *
+	 * @abstract
+	 * @return array
+	 */
+	function aggregate();
+
 } // End Social_Interface_Service

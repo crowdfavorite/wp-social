@@ -38,6 +38,11 @@ final class Social {
 	public static $log = null;
 
 	/**
+	 * @var  string  CRON lock directory.
+	 */
+	public static $cron_lock_dir = null;
+
+	/**
 	 * @var  array  default options
 	 */
 	protected static $options = array(
@@ -122,7 +127,7 @@ final class Social {
 	 * @param  string  $key     option key
 	 * @param  mixed   $value   option value
 	 * @param  bool    $update  update option?
-	 * @return bool
+	 * @return bool|mixed
 	 */
 	public static function option($key, $value = null, $update = false) {
 		if ($value === null) {
@@ -249,7 +254,6 @@ final class Social {
 		if (!defined('SOCIAL_ADMIN_JS')) {
 			define('SOCIAL_ADMIN_JS', plugins_url('assets/admin.js', SOCIAL_FILE));
 		}
-		$admin = SOCIAL_ADMIN_JS;
 
 		if (!defined('SOCIAL_ADMIN_CSS')) {
 			define('SOCIAL_ADMIN_CSS', plugins_url('assets/admin.css', SOCIAL_FILE));
@@ -260,12 +264,8 @@ final class Social {
 		}
 
 		if (is_admin()) {
-			// Enabled?
-			if (!$this->_enabled) {
-				add_action('admin_notices', array($this, 'display_disabled'));
-			}
-
 			// JS/CSS
+			// TODO move these to load-* action. Talk to Matt.
 			if (SOCIAL_ADMIN_CSS !== false) {
 				wp_enqueue_style('social_admin', SOCIAL_ADMIN_CSS, array(), Social::$version, 'screen');
 			}
@@ -287,7 +287,38 @@ final class Social {
 
 		// JS/CSS
 		if (SOCIAL_COMMENTS_JS !== false) {
-			wp_enqueue_script('social_js', SOCIAL_COMMENTS_JS, array(), Social::$version, true);
+			wp_enqueue_script('social_js', SOCIAL_COMMENTS_JS, array('jquery'), Social::$version, true);
+		}
+
+		// Set CRON lock directory.
+		if (is_writeable(SOCIAL_PATH)) {
+			Social::$cron_lock_dir = SOCIAL_PATH;
+		}
+		else {
+			$upload_dir = wp_upload_dir();
+			if (is_writeable($upload_dir['basedir'])) {
+				Social::$cron_lock_dir = $upload_dir['basedir'];
+			}
+		}
+	}
+
+	/**
+	 * Handles admin-specific operations during init.
+	 *
+	 * @return void
+	 */
+	public function admin_init() {
+		// Schedule CRONs
+		if (isset($_GET['page']) and $_GET['page'] == basename(SOCIAL_FILE) and $this->option('system_crons') != '1') {
+			if (wp_next_scheduled('social_cron_15_core') === false) {
+				wp_schedule_event(time() + 900, 'every15min', 'social_cron_15_core');
+			}
+
+			if (wp_next_scheduled('social_cron_60_core') === false) {
+				wp_schedule_event(time() + 900, 'hourly', 'social_cron_60_core');
+			}
+
+			$this->request(admin_url('?social_controller=cron&social_action=check_crons'));
 		}
 	}
 
@@ -357,7 +388,7 @@ final class Social {
 	 * [!!] If an invalid key is provided an exception will be thrown.
 	 *
 	 * @throws Exception
-	 * @param  stirng  $key  service key
+	 * @param  string  $key  service key
 	 * @return Social_Service_Facebook|Social_Service_Twitter|mixed
 	 */
 	public function service($key) {
@@ -369,59 +400,13 @@ final class Social {
 	}
 
 	/**
-	 * Handles the logic to determine what meta boxes to display.
-	 *
-	 * @return void
+	 * @param $post_id
+	 * @param $service
+	 * @param $broadcasted_id
+	 * @param array $broadcasted_accounts
+	 * @return
 	 */
-	public function do_meta_boxes() {
-		// TODO Social::do_meta_boxes()
-	}
-
-	/**
-	 *
-	 *
-	 * @return void
-	 */
-	public function save_post() {
-		// TODO Social::save_post()
-	}
-
-	/**
-	 *
-	 *
-	 * @return void
-	 */
-	public function publish_post() {
-		// TODO Social::publish_post()
-	}
-
-	/**
-	 *
-	 *
-	 * @return void
-	 */
-	public function comment_post() {
-		// TODO Social::comment_post()
-	}
-
-	/**
-	 *
-	 *
-	 * @return void
-	 */
-	public function transition_post_status() {
-		// TODO Social::transition_post_status()
-	}
-
-	/**
-	 *
-	 *
-	 * @return void
-	 */
-	public function broadcast() {
-		// TODO Social::broadcast()
-	}
-
+	// TODO Finish building out this method for Twitter Tools
 	public function set_broadcasted_meta($post_id, $service, $broadcasted_id, array $broadcasted_accounts) {
 		$post_id = (int) $post_id;
 
@@ -444,12 +429,43 @@ final class Social {
 	}
 
 	/**
+	 * Sends a request to initialize CRON 15.
+	 *
+	 * @return void
+	 */
+	public function cron_15_init() {
+		$this->request(site_url('?social_controller=cron&social_action=cron_15'));
+	}
+
+	/**
+	 * Sends a request to initialize CRON 60.
+	 *
+	 * @return void
+	 */
+	public function cron_60_init() {
+		$this->request(site_url('?social_controller=cron&social_action=cron_60'));
+	}
+
+	/**
 	 *
 	 * 
 	 * @return void
 	 */
-	public function aggregate_comments() {
-		// TODO Social::aggregate_comments()
+	public function run_aggregation() {
+		$queue = Social_Queue::factory();
+
+		foreach ($queue->runable() as $timestamp => $posts) {
+			foreach ($posts as $id => $data) {
+				$post = get_post($id);
+				if ($post !== null) {
+					$queue->add($id, $data->interval)->save();
+					$this->request(site_url('?social_controller=aggregate&social_action=run&social_post_id='.$id.'&social_timestamp='));
+				}
+				else {
+					$queue->remove($data->timestamp, $id)->save();
+				}
+			}
+		}
 	}
 
 	/**
@@ -581,15 +597,55 @@ final class Social {
 	}
 
 	/**
-	 * Displays the upgrade message.
+	 * Handles the display of different messages for admin notices.
 	 *
 	 * @action admin_notices
 	 */
-	public function display_disabled() {
-		if (current_user_can('manage_options') || current_user_can('publish_posts')) {
-			$url = Social_Helper::settings_url();
-			$message = sprintf(__('Social will not run until you update your <a href="%s">settings</a>.', Social::$i18n), esc_url($url));
-			echo '<div class="error"><p>'.$message.'</p></div>';
+	public function admin_notices() {
+		if (!$this->_enabled) {
+			if (current_user_can('manage_options') || current_user_can('publish_posts')) {
+				$url = Social_Helper::settings_url();
+				$message = sprintf(__('Social will not run until you update your <a href="%s">settings</a>.', Social::$i18n), esc_url($url));
+				echo '<div class="error"><p>'.$message.'</p></div>';
+			}
+		}
+
+		if (isset($_GET['page']) and $_GET['page'] == basename(SOCIAL_FILE)) {
+			// CRON Lock
+			if (Social::$cron_lock_dir === null) {
+				$upload_dir = wp_upload_dir();
+				if (isset($upload_dir['basedir'])) {
+					$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', Social::$i18n), SOCIAL_PATH, $upload_dir['basedir']);
+				}
+				else {
+					$message = sprintf(__('Social requires that %s is writable for CRON jobs.', Social::$i18n), SOCIAL_PATH);
+				}
+
+				echo '<div class="error"><p>'.esc_html($message).'</p></div>';
+			}
+		}
+	}
+
+	/**
+	 * Handles the remote timeout requests for Social.
+	 *
+	 * @param  string  $url   url to request
+	 * @param  bool    $post  set to true to do a wp_remote_post
+	 * @return void
+	 */
+	private function request($url, $post = false) {
+		$url = str_replace('&amp;', '&', wp_nonce_url($url));
+		$data = array(
+			'timeout' => 0.01,
+			'blocking' => false,
+			'sslverify' => apply_filters('https_local_ssl_verify', true),
+		);
+
+		if ($post) {
+			wp_remote_post($url, $data);
+		}
+		else {
+			wp_remote_get($url, $data);
 		}
 	}
 
@@ -618,28 +674,19 @@ $social = Social::instance();
 // General Actions
 add_action('init', array($social, 'init'), 1);
 add_action('init', array($social, 'request_handler'), 2);
-add_action('do_meta_boxes', array($social, 'do_meta_boxes'));
-add_action('save_post', array($social, 'set_broadcast_meta_data'), 10, 2);
+add_action('admin_init', array($social, 'admin_init'), 1);
 add_action('comment_post', array($social, 'comment_post'));
-add_action('social_cron_15_core', array($social, 'cron_15_core'));
-add_action('social_cron_60_core', array($social, 'cron_60_core'));
-add_action('social_cron_15', array($social, 'retry_broadcast_core'));
-add_action('social_cron_60', array($social, 'aggregate_comments_core'));
-add_action('social_aggregate_comments', array($social, 'aggregate_comments'));
-add_action('publish_post', array($social, 'publish_post'));
-add_action('show_user_profile', array($social, 'show_user_profile'));
-add_action('transition_post_status', array($social, 'transition_post_status'), 10, 3);
+add_action('admin_notices', array($social, 'admin_notices'));
+
+// CRON Actions
+add_action('social_cron_15_init', array($social, 'cron_15_init'));
+add_action('social_cron_60_init', array($social, 'cron_60_init'));
+add_action('social_cron_15', array($social, 'run_aggregation'));
 
 // Admin Actions
 add_action('admin_menu', array($social, 'admin_menu'));
 
 // Filters
-add_filter('redirect_post_location', array($social, 'redirect_post_location'), 10, 2);
-add_filter('comments_template', array($social, 'comments_template'));
-add_filter('get_avatar_comment_types', array($social, 'get_avatar_comment_types'));
-add_filter('get_avatar', array($social, 'get_avatar'), 10, 5);
-add_filter('register', array($social, 'register'));
-add_filter('loginout', array($social, 'loginout'));
 add_filter('cron_schedules', array($social, 'cron_schedules'));
 add_filter('plugin_action_links', array($social, 'add_settings_link'), 10, 2);
 
