@@ -607,6 +607,15 @@ final class Social {
 		}
 	}
 
+	/**
+	 * Handles displaying the admin assets.
+	 *
+	 * @action load-profile.php
+	 * @action load-post.php
+	 * @action load-post-new.php
+	 * @action load-settings_page_social
+	 * @return void
+	 */
 	public function admin_resources() {
 		if (!defined('SOCIAL_ADMIN_JS')) {
 			define('SOCIAL_ADMIN_JS', plugins_url('assets/admin.js', SOCIAL_FILE));
