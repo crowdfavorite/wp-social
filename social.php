@@ -251,30 +251,11 @@ final class Social {
 			define('SOCIAL_COMMENTS_JS', plugins_url('assets/social.js', SOCIAL_FILE));
 		}
 
-		if (!defined('SOCIAL_ADMIN_JS')) {
-			define('SOCIAL_ADMIN_JS', plugins_url('assets/admin.js', SOCIAL_FILE));
-		}
-
-		if (!defined('SOCIAL_ADMIN_CSS')) {
-			define('SOCIAL_ADMIN_CSS', plugins_url('assets/admin.css', SOCIAL_FILE));
-		}
-
-		if (!defined('SOCIAL_COMMENTS_CSS')) {
-			define('SOCIAL_COMMENTS_CSS', plugins_url('assets/comments.css', SOCIAL_FILE));
-		}
-
-		if (is_admin()) {
-			// JS/CSS
-			// TODO move these to load-* action. Talk to Matt.
-			if (SOCIAL_ADMIN_CSS !== false) {
-				wp_enqueue_style('social_admin', SOCIAL_ADMIN_CSS, array(), Social::$version, 'screen');
+		if (!is_admin()) {
+			if (!defined('SOCIAL_COMMENTS_CSS')) {
+				define('SOCIAL_COMMENTS_CSS', plugins_url('assets/comments.css', SOCIAL_FILE));
 			}
 
-			if (SOCIAL_ADMIN_JS !== false) {
-				wp_enqueue_script('social_admin', SOCIAL_ADMIN_JS, array(), Social::$version, true);
-			}
-		}
-		else {
 			// JS/CSS
 			if (SOCIAL_COMMENTS_CSS !== false) {
 				wp_enqueue_style('social_comments', SOCIAL_COMMENTS_CSS, array(), Social::$version, 'screen');
@@ -626,6 +607,24 @@ final class Social {
 		}
 	}
 
+	public function admin_resources() {
+		if (!defined('SOCIAL_ADMIN_JS')) {
+			define('SOCIAL_ADMIN_JS', plugins_url('assets/admin.js', SOCIAL_FILE));
+		}
+
+		if (!defined('SOCIAL_ADMIN_CSS')) {
+			define('SOCIAL_ADMIN_CSS', plugins_url('assets/admin.css', SOCIAL_FILE));
+		}
+
+		if (SOCIAL_ADMIN_CSS !== false) {
+			wp_enqueue_style('social_admin', SOCIAL_ADMIN_CSS, array(), Social::$version, 'screen');
+		}
+
+		if (SOCIAL_ADMIN_JS !== false) {
+			wp_enqueue_script('social_admin', SOCIAL_ADMIN_JS, array(), Social::$version, true);
+		}
+	}
+
 	/**
 	 * Handles the remote timeout requests for Social.
 	 *
@@ -677,6 +676,10 @@ add_action('init', array($social, 'request_handler'), 2);
 add_action('admin_init', array($social, 'admin_init'), 1);
 add_action('comment_post', array($social, 'comment_post'));
 add_action('admin_notices', array($social, 'admin_notices'));
+add_action('load-post-new.php', array($social, 'admin_resources'));
+add_action('load-post.php', array($social, 'admin_resources'));
+add_action('load-profile.php', array($social, 'admin_resources'));
+add_action('load-settings_page_social', array($social, 'admin_resources'));
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));
