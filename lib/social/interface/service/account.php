@@ -6,20 +6,29 @@
 interface Social_Interface_Service_Account {
 
 	/**
+	 * Returns an array object of the account.
+	 *
+	 * @return object
+	 */
+	function as_array();
+
+	/**
 	 * Returns whether the account is public or not.
 	 *
 	 * @abstract
-	 * @return bool
+	 * @param  bool|null  $personal
+	 * @return Social_Service_Account|bool
 	 */
-	function is_personal();
+	function personal($personal = null);
 
 	/**
-	 * Returns whether the account is global or not.
+	 * Returns whether the account is universal or not.
 	 *
 	 * @abstract
-	 * @return bool
+	 * @param  bool|null  $universal
+	 * @return Socail_Service_Account|bool
 	 */
-	function is_global();
+	function universal($universal = null);
 
 	/**
 	 * Gets the ID of the account.

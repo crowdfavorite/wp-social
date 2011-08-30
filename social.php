@@ -183,27 +183,6 @@ final class Social {
 		$services = apply_filters('social_register_service', array());
 		if (is_array($services) and count($services)) {
 			$accounts = get_option('social_accounts', array());
-			$personal_accounts = get_user_meta(get_current_user_id(), 'social_accounts', true);
-			if (is_array($personal_accounts)) {
-				foreach ($personal_accounts as $key => $_accounts) {
-					if (count($_accounts)) {
-						if (!isset($accounts[$key])) {
-							$accounts[$key] = $_accounts;
-						}
-						else {
-							foreach ($_accounts as $account) {
-								if (!isset($accounts[$key][$account->user->id])) {
-									$accounts[$key][$account->id()] = $account;
-								}
-								else {
-									$accounts[$key][$account->id()]->personal = true;
-								}
-							}
-						}
-					}
-				}
-			}
-
 			foreach ($services as $service) {
 				if (!isset($this->_services[$service])) {
 					$service_accounts = array();
@@ -214,6 +193,27 @@ final class Social {
 
 					$class = 'Social_Service_'.$service;
 					$this->_services[$service] = new $class($service_accounts);
+				}
+			}
+
+			$personal_accounts = get_user_meta(get_current_user_id(), 'social_accounts', true);
+			if (is_array($personal_accounts)) {
+				foreach ($personal_accounts as $key => $_accounts) {
+					if (count($_accounts)) {
+						if (!isset($accounts[$key])) {
+							$accounts[$key] = array();
+						}
+
+						$class = 'Social_Service_'.$key.'_Account';
+						foreach ($_accounts as $account) {
+							$account = new $class($account);
+							if (!$this->service($key)->account_exists($account->id())) {
+								$this->service($key)->account($account);
+							}
+
+							$this->service($key)->account($account->id())->personal(true);
+						}
+					}
 				}
 			}
 		}
@@ -341,17 +341,6 @@ final class Social {
 			'display' => 'Every 15 minutes'
 		);
 		return $schedules;
-	}
-
-	/**
-	 * Displays the admin options form.
-	 *
-	 * @return void
-	 */
-	public function admin_options_form() {
-		echo Social_View::factory('wp-admin/options', array(
-			'services' => $this->services(),
-		));
 	}
 
 	/**
@@ -693,6 +682,29 @@ final class Social {
 	}
 
 	/**
+	 * Displays the admin options form.
+	 *
+	 * @return void
+	 */
+	public function admin_options_form() {
+		echo Social_View::factory('wp-admin/options', array(
+			'services' => $this->services(),
+		));
+	}
+
+	/**
+	 * Shows the user's social network accounts.
+	 *
+	 * @param  object  $profileuser
+	 * @return void
+	 */
+	public function show_user_profile($profileuser) {
+		echo Social_View::factory('wp-admin/profile', array(
+			'services' => $this->services()
+		));
+	}
+
+	/**
 	 * Handles the remote timeout requests for Social.
 	 *
 	 * @param  string  $url   url to request
@@ -748,6 +760,7 @@ add_action('load-post.php', array($social, 'admin_resources'));
 add_action('load-profile.php', array($social, 'admin_resources'));
 add_action('load-settings_page_social', array($social, 'admin_resources'));
 add_action('transition_post_status', array($social, 'transition_post_status'), 10, 3);
+add_action('show_user_profile', array($social, 'show_user_profile'));
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));

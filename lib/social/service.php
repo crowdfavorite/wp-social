@@ -58,7 +58,7 @@ abstract class Social_Service {
 	 * Creates a WordPress user with the passed in account.
 	 *
 	 * @param  Social_Service_Account  $account
-	 * @return void
+	 * @return int
 	 */
 	public function create_user($account) {
 		$user = get_userdatabylogin($this->_key.'_'.$account->username());
@@ -107,8 +107,8 @@ abstract class Social_Service {
 		$accounts = array();
 		if (!is_admin() or defined('IS_PROFILE_PAGE')) {
 			foreach ($this->_accounts AS $account) {
-				if ($account->is_personal()) {
-					$accounts[] = $account;
+				if ($account->personal()) {
+					$accounts[$account->id()] = $account->as_array();
 				}
 			}
 
@@ -123,8 +123,8 @@ abstract class Social_Service {
 		}
 		else {
 			foreach ($this->_accounts AS $account) {
-				if ($account->is_global()) {
-					$accounts[$account->id()] = $account;
+				if ($account->universal()) {
+					$accounts[$account->id()] = $account->as_array();
 				}
 			}
 
@@ -177,7 +177,9 @@ abstract class Social_Service {
 			return $this->_accounts;
 		}
 
+		$class = 'Social_Service_'.$this->_key.'_Account';
 		foreach ($accounts as $account) {
+			$account = new $class($account);
 			if (!$this->account_exists($account->id())) {
 				$this->_accounts[$account->id()] = $account;
 			}

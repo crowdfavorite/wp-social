@@ -20,21 +20,23 @@
 					$items = $service_buttons = '';
 					foreach ($services as $key => $service) {
 						foreach ($service->accounts() as $account) {
-							$have_accounts = true;
+							if ($account->universal()) {
+								$have_accounts = true;
 
-							$profile_url = esc_url($account->url());
-							$profile_name = esc_html($account->name());
-							$disconnect = '';
+								$profile_url = esc_url($account->url());
+								$profile_name = esc_html($account->name());
+								$disconnect = '';
 
-							$name = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
+								$name = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
 
-							$items .= '
-								<li>
-									<div class="social-'.$key.'-icon"><i></i></div>
-									<span class="name">'.$name.'</span>
-									<span class="disconnect">'.$disconnect.'</span>
-								</li>
-							';
+								$items .= '
+									<li>
+										<div class="social-'.$key.'-icon"><i></i></div>
+										<span class="name">'.$name.'</span>
+										<span class="disconnect">'.$disconnect.'</span>
+									</li>
+								';
+							}
 						}
 
 						$service_buttons .= '<a href="'.esc_url($service->authorize_url()).'" id="'.$key.'_signin" class="social-login" target="_blank"><span>'.sprintf(__('Sign in with %s.', Social::$i18n), $service->title()).'</span></a>';
@@ -98,7 +100,7 @@
 								$accounts = get_option('social_xmlrpc_accounts', array());
 								foreach ($services as $key => $service):
 									foreach ($service->accounts() as $account):
-										if ($account->is_global()):
+										if ($account->universal()):
 							?>
 							<li>
 								<label class="social-broadcastable" for="<?php echo esc_attr($key.$account->id()); ?>" style="cursor:pointer">
