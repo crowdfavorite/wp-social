@@ -443,10 +443,28 @@ final class Social {
 					$this->request(site_url('?social_controller=aggregate&social_action=run&social_post_id='.$id.'&social_timestamp='));
 				}
 				else {
-					$queue->remove($data->timestamp, $id)->save();
+					$queue->remove($id, $data->timestamp)->save();
 				}
 			}
 		}
+	}
+
+	/**
+	 * Broadcasts a post to the services.
+	 *
+	 * @param  int  $post_id  post id
+	 * @return void
+	 */
+	public function broadcast($post_id) {
+		// Load content to broadcast (accounts, broadcast message, etc)
+
+		// Loop through accounts
+		// $broadcasted_id = $service->broadcast($account, $message)
+
+		// Store broadcasted_ids
+
+		// Add to the aggregation queue.
+		Social_Queue::factory()->add($post_id)->save();
 	}
 
 	/**
