@@ -166,6 +166,32 @@ final class Social {
 	private $_enabled = false;
 
 	/**
+	 * Returns an array of all of the services.
+	 *
+	 * @return array
+	 */
+	public function services() {
+		return $this->_services;
+	}
+
+	/**
+	 * Returns a service by access key.
+	 *
+	 * [!!] If an invalid key is provided an exception will be thrown.
+	 *
+	 * @throws Exception
+	 * @param  string  $key  service key
+	 * @return Social_Service_Facebook|Social_Service_Twitter|mixed
+	 */
+	public function service($key) {
+		if (!isset($this->_services[$key])) {
+			throw new Exception(sprintf(__('%s is not registered to Social.', Social::$i18n), $key));
+		}
+
+		return $this->_services[$key];
+	}
+
+	/**
 	 * Initializes Social.
 	 *
 	 * @return void
@@ -330,130 +356,185 @@ final class Social {
 	}
 
 	/**
-	 * Adds the 15 minute interval.
+	 * Add Settings link to plugins - code from GD Star Ratings
 	 *
-	 * @param  array  $schedules
+	 * @param  array  $links
+	 * @param  string  $file
 	 * @return array
 	 */
-	public function cron_schedules($schedules) {
-		$schedules['every15min'] = array(
-			'interval' => 900,
-			'display' => 'Every 15 minutes'
-		);
-		return $schedules;
-	}
-
-	/**
-	 * Returns an array of all of the services.
-	 *
-	 * @return array
-	 */
-	public function services() {
-		return $this->_services;
-	}
-
-	/**
-	 * Returns a service by access key.
-	 *
-	 * [!!] If an invalid key is provided an exception will be thrown.
-	 *
-	 * @throws Exception
-	 * @param  string  $key  service key
-	 * @return Social_Service_Facebook|Social_Service_Twitter|mixed
-	 */
-	public function service($key) {
-		if (!isset($this->_services[$key])) {
-			throw new Exception(sprintf(__('%s is not registered to Social.', Social::$i18n), $key));
+	public function add_settings_link($links, $file) {
+		static $this_plugin;
+		if (!$this_plugin) {
+			$this_plugin = plugin_basename(__FILE__);
 		}
 
-		return $this->_services[$key];
+		if ($file == $this_plugin) {
+			$settings_link = '<a href="'.esc_url(admin_url('options-general.php?page=social.php')).'">'.__("Settings", "photosmash-galleries").'</a>';
+			array_unshift($links, $settings_link);
+		}
+		return $links;
 	}
 
 	/**
-	 * @param $post_id
-	 * @param $service
-	 * @param $broadcasted_id
-	 * @param array $broadcasted_accounts
-	 * @return
+	 * Handles the display of different messages for admin notices.
+	 *
+	 * @action admin_notices
 	 */
-	// TODO Finish building out this method for Twitter Tools
-	public function set_broadcasted_meta($post_id, $service, $broadcasted_id, array $broadcasted_accounts) {
-		$post_id = (int) $post_id;
-
-		if (is_string($service)) {
-			$service = $this->service($service);
+	public function admin_notices() {
+		if (!$this->_enabled) {
+			if (current_user_can('manage_options') || current_user_can('publish_posts')) {
+				$url = Social_Helper::settings_url();
+				$message = sprintf(__('Social will not run until you update your <a href="%s">settings</a>.', Social::$i18n), esc_url($url));
+				echo '<div class="error"><p>'.$message.'</p></div>';
+			}
 		}
 
-		if ($service === false) {
-			// Do nothing if an invaid service or account ID was passed in.
-			Social::log(sprintf(__('Failed to set broadcasted meta; invalid service key %s.', Social::$i18n), $service));
-			return;
-		}
-
-		//foreach ($broadcasted_accounts as $)
-
-		// TODO Set post meta
-		// - broadcasted_id
-		// - broadcasted_accounts
-		//
-	}
-
-	/**
-	 * Sends a request to initialize CRON 15.
-	 *
-	 * @return void
-	 */
-	public function cron_15_init() {
-		$this->request(site_url('?social_controller=cron&social_action=cron_15'));
-	}
-
-	/**
-	 * Sends a request to initialize CRON 60.
-	 *
-	 * @return void
-	 */
-	public function cron_60_init() {
-		$this->request(site_url('?social_controller=cron&social_action=cron_60'));
-	}
-
-	/**
-	 * Runs the aggregation loop.
-	 * 
-	 * @return void
-	 */
-	public function run_aggregation() {
-		$queue = Social_Queue::factory();
-
-		foreach ($queue->runable() as $timestamp => $posts) {
-			foreach ($posts as $id => $data) {
-				$post = get_post($id);
-				if ($post !== null) {
-					$queue->add($id, $data->interval)->save();
-					$this->request(site_url('?social_controller=aggregate&social_action=run&social_post_id='.$id.'&social_timestamp='));
+		if (isset($_GET['page']) and $_GET['page'] == basename(SOCIAL_FILE)) {
+			// CRON Lock
+			if (Social::$cron_lock_dir === null) {
+				$upload_dir = wp_upload_dir();
+				if (isset($upload_dir['basedir'])) {
+					$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', Social::$i18n), SOCIAL_PATH, $upload_dir['basedir']);
 				}
 				else {
-					$queue->remove($id, $data->timestamp)->save();
+					$message = sprintf(__('Social requires that %s is writable for CRON jobs.', Social::$i18n), SOCIAL_PATH);
 				}
+
+				echo '<div class="error"><p>'.esc_html($message).'</p></div>';
 			}
 		}
 	}
 
 	/**
-	 * Broadcasts a post to the services.
+	 * Handles displaying the admin assets.
 	 *
-	 * @param  int  $post_id  post id
+	 * @action load-profile.php
+	 * @action load-post.php
+	 * @action load-post-new.php
+	 * @action load-settings_page_social
 	 * @return void
 	 */
-	public function broadcast($post_id) {
-		// Load content to broadcast (accounts, broadcast message, etc)
+	public function admin_resources() {
+		if (!defined('SOCIAL_ADMIN_JS')) {
+			define('SOCIAL_ADMIN_JS', plugins_url('assets/admin.js', SOCIAL_FILE));
+		}
 
-		// Loop through accounts
-		// $broadcasted_id = $service->broadcast($account, $message)
+		if (!defined('SOCIAL_ADMIN_CSS')) {
+			define('SOCIAL_ADMIN_CSS', plugins_url('assets/admin.css', SOCIAL_FILE));
+		}
 
-		// Store broadcasted_ids
+		if (SOCIAL_ADMIN_CSS !== false) {
+			wp_enqueue_style('social_admin', SOCIAL_ADMIN_CSS, array(), Social::$version, 'screen');
+		}
 
-		// Add to the aggregation queue.
-		Social_Queue::factory()->add($post_id)->save();
+		if (SOCIAL_ADMIN_JS !== false) {
+			wp_enqueue_script('social_admin', SOCIAL_ADMIN_JS, array(), Social::$version, true);
+		}
+	}
+
+	/**
+	 * Displays the admin options form.
+	 *
+	 * @return void
+	 */
+	public function admin_options_form() {
+		echo Social_View::factory('wp-admin/options', array(
+			'services' => $this->services(),
+		));
+	}
+
+	/**
+	 * Shows the user's social network accounts.
+	 *
+	 * @param  object  $profileuser
+	 * @return void
+	 */
+	public function show_user_profile($profileuser) {
+		echo Social_View::factory('wp-admin/profile', array(
+			'services' => $this->services()
+		));
+	}
+
+	/**
+	 * Add Meta Boxes
+	 *
+	 * @action do_meta_boxes
+	 * @return void
+	 */
+	public function do_meta_boxes() {
+		global $post;
+
+		if ($this->_enabled and $post !== null) {
+			foreach ($this->services() as $service) {
+				if (count($service->accounts())) {
+					add_meta_box('social_meta_broadcast', __('Social Broadcasting', Social::$i18n), array($this, 'add_meta_box'), 'post', 'side', 'high');
+					break;
+				}
+			}
+
+			if ($post->post_status == 'publish') {
+				add_meta_box('social_meta_aggregation_log', __('Social Comments', Social::$i18n), array($this, 'add_meta_box_log'), 'post', 'normal', 'core');
+			}
+		}
+	}
+
+	/**
+	 * Adds the broadcasting meta box.
+	 *
+	 * @return void
+	 */
+	public function add_meta_box() {
+		global $post;
+
+		$content = '';
+		if (!in_array($post->post_status, array('publish', 'future', 'pending'))) {
+			$notify = false;
+			if (get_post_meta($post->ID, '_social_notify', true) == '1') {
+				$notify = true;
+			}
+
+			$content = Social_View::factory('wp-admin/post/meta/broadcast/default', array(
+				'post' => $post,
+				'notify' => $notify,
+			));
+		}
+		else if (in_array($post->post_status, array('future', 'pending'))) {
+			$accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
+			$content = Social_View::factory('wp-admin/post/meta/broadcast/scheduled', array(
+				'post' => $post,
+				'service' => $this->services(),
+				'accounts' => $accounts
+			));
+		}
+		else if ($post->post_status == 'publish') {
+			$ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
+			$content = Social_View::factory('wp-admin/post/meta/broadcast/published', array(
+				'ids' => $ids,
+				'services' => $this->services()
+			));
+		}
+
+		echo Social_View::factory('wp-admin/post/meta/broadcast/shell', array(
+			'post' => $post,
+			'content' => $content
+		));
+	}
+
+	/**
+	 * Adds the aggregation log meta box.
+	 *
+	 * @return void
+	 */
+	public function add_meta_log_box() {
+		global $post;
+
+		$content = '';
+		
+
+		echo Social_View::factory('wp-admin/post/meta/log/shell', array(
+			'post' => $post,
+			'content' => $content
+		));
 	}
 
 	/**
@@ -497,23 +578,104 @@ final class Social {
 	}
 
 	/**
-	 * Add Settings link to plugins - code from GD Star Ratings
+	 * Broadcasts a post to the services.
 	 *
-	 * @param  array  $links
-	 * @param  string  $file
-	 * @return array
+	 * @param  int  $post_id  post id
+	 * @return void
 	 */
-	public function add_settings_link($links, $file) {
-		static $this_plugin;
-		if (!$this_plugin) {
-			$this_plugin = plugin_basename(__FILE__);
+	public function broadcast($post_id) {
+		// Load content to broadcast (accounts, broadcast message, etc)
+
+		// Loop through accounts
+		// $broadcasted_id = $service->broadcast($account, $message)
+
+		// Store broadcasted_ids
+
+		// Add to the aggregation queue.
+		Social_Queue::factory()->add($post_id)->save();
+	}
+
+	/**
+	 * @param $post_id
+	 * @param $service
+	 * @param $broadcasted_id
+	 * @param array $broadcasted_accounts
+	 * @return
+	 */
+	// TODO Finish building out this method for Twitter Tools
+	public function set_broadcasted_meta($post_id, $service, $broadcasted_id, array $broadcasted_accounts) {
+		$post_id = (int) $post_id;
+
+		if (is_string($service)) {
+			$service = $this->service($service);
 		}
 
-		if ($file == $this_plugin) {
-			$settings_link = '<a href="'.esc_url(admin_url('options-general.php?page=social.php')).'">'.__("Settings", "photosmash-galleries").'</a>';
-			array_unshift($links, $settings_link);
+		if ($service === false) {
+			// Do nothing if an invaid service or account ID was passed in.
+			Social::log(sprintf(__('Failed to set broadcasted meta; invalid service key %s.', Social::$i18n), $service));
+			return;
 		}
-		return $links;
+
+		//foreach ($broadcasted_accounts as $)
+
+		// TODO Set post meta
+		// - broadcasted_id
+		// - broadcasted_accounts
+		//
+	}
+
+	/**
+	 * Adds the 15 minute interval.
+	 *
+	 * @param  array  $schedules
+	 * @return array
+	 */
+	public function cron_schedules($schedules) {
+		$schedules['every15min'] = array(
+			'interval' => 900,
+			'display' => 'Every 15 minutes'
+		);
+		return $schedules;
+	}
+
+	/**
+	 * Sends a request to initialize CRON 15.
+	 *
+	 * @return void
+	 */
+	public function cron_15_init() {
+		$this->request(site_url('?social_controller=cron&social_action=cron_15'));
+	}
+
+	/**
+	 * Sends a request to initialize CRON 60.
+	 *
+	 * @return void
+	 */
+	public function cron_60_init() {
+		$this->request(site_url('?social_controller=cron&social_action=cron_60'));
+	}
+
+	/**
+	 * Runs the aggregation loop.
+	 * 
+	 * @return void
+	 */
+	public function run_aggregation() {
+		$queue = Social_Queue::factory();
+
+		foreach ($queue->runable() as $timestamp => $posts) {
+			foreach ($posts as $id => $data) {
+				$post = get_post($id);
+				if ($post !== null) {
+					$queue->add($id, $data->interval)->save();
+					$this->request(site_url('?social_controller=aggregate&social_action=run&social_post_id='.$id.'&social_timestamp='));
+				}
+				else {
+					$queue->remove($id, $data->timestamp)->save();
+				}
+			}
+		}
 	}
 
 	/**
@@ -625,86 +787,6 @@ final class Social {
 	}
 
 	/**
-	 * Handles the display of different messages for admin notices.
-	 *
-	 * @action admin_notices
-	 */
-	public function admin_notices() {
-		if (!$this->_enabled) {
-			if (current_user_can('manage_options') || current_user_can('publish_posts')) {
-				$url = Social_Helper::settings_url();
-				$message = sprintf(__('Social will not run until you update your <a href="%s">settings</a>.', Social::$i18n), esc_url($url));
-				echo '<div class="error"><p>'.$message.'</p></div>';
-			}
-		}
-
-		if (isset($_GET['page']) and $_GET['page'] == basename(SOCIAL_FILE)) {
-			// CRON Lock
-			if (Social::$cron_lock_dir === null) {
-				$upload_dir = wp_upload_dir();
-				if (isset($upload_dir['basedir'])) {
-					$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', Social::$i18n), SOCIAL_PATH, $upload_dir['basedir']);
-				}
-				else {
-					$message = sprintf(__('Social requires that %s is writable for CRON jobs.', Social::$i18n), SOCIAL_PATH);
-				}
-
-				echo '<div class="error"><p>'.esc_html($message).'</p></div>';
-			}
-		}
-	}
-
-	/**
-	 * Handles displaying the admin assets.
-	 *
-	 * @action load-profile.php
-	 * @action load-post.php
-	 * @action load-post-new.php
-	 * @action load-settings_page_social
-	 * @return void
-	 */
-	public function admin_resources() {
-		if (!defined('SOCIAL_ADMIN_JS')) {
-			define('SOCIAL_ADMIN_JS', plugins_url('assets/admin.js', SOCIAL_FILE));
-		}
-
-		if (!defined('SOCIAL_ADMIN_CSS')) {
-			define('SOCIAL_ADMIN_CSS', plugins_url('assets/admin.css', SOCIAL_FILE));
-		}
-
-		if (SOCIAL_ADMIN_CSS !== false) {
-			wp_enqueue_style('social_admin', SOCIAL_ADMIN_CSS, array(), Social::$version, 'screen');
-		}
-
-		if (SOCIAL_ADMIN_JS !== false) {
-			wp_enqueue_script('social_admin', SOCIAL_ADMIN_JS, array(), Social::$version, true);
-		}
-	}
-
-	/**
-	 * Displays the admin options form.
-	 *
-	 * @return void
-	 */
-	public function admin_options_form() {
-		echo Social_View::factory('wp-admin/options', array(
-			'services' => $this->services(),
-		));
-	}
-
-	/**
-	 * Shows the user's social network accounts.
-	 *
-	 * @param  object  $profileuser
-	 * @return void
-	 */
-	public function show_user_profile($profileuser) {
-		echo Social_View::factory('wp-admin/profile', array(
-			'services' => $this->services()
-		));
-	}
-
-	/**
 	 * Handles the remote timeout requests for Social.
 	 *
 	 * @param  string  $url   url to request
@@ -761,6 +843,7 @@ add_action('load-profile.php', array($social, 'admin_resources'));
 add_action('load-settings_page_social', array($social, 'admin_resources'));
 add_action('transition_post_status', array($social, 'transition_post_status'), 10, 3);
 add_action('show_user_profile', array($social, 'show_user_profile'));
+add_action('do_meta_boxes', array($social, 'do_meta_boxes'));
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));
