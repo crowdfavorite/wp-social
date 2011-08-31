@@ -107,7 +107,8 @@ final class Social_Aggregation_Log {
 
 		foreach ($this->_log->items[$this->_timestamp]->items[$service] as $item) {
 			if ($item->id === $id) {
-				return;
+				// Bail! Item already exists.
+				return $this;
 			}
 		}
 
