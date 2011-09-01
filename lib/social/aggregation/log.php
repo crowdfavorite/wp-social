@@ -64,7 +64,7 @@ final class Social_Aggregation_Log {
 		$this->_log = get_post_meta($post_id, '_social_aggregation_log', true);
 
 		// Upgrade?
-		if (!empty($this->_log) and (!is_object($this->_log) or !isset($this->_log->items))) {
+		if (!empty($this->_log) and (!is_object($this->_log) or !isset($this->_log->manual))) {
 			if (!is_object($this->_log)) {
 				$this->_log = (object) $this->_log;
 			}
@@ -75,10 +75,6 @@ final class Social_Aggregation_Log {
 			);
 			update_post_meta($post_id, '_social_aggregation_log', $this->_log);
 		}
-
-		$this->_log->items[$this->_timestamp] = (object) array(
-			'items' => array()
-		);
 	}
 
 	/**
@@ -142,7 +138,7 @@ final class Social_Aggregation_Log {
 		return Social_View::factory('wp-admin/post/meta/log/output', array(
 			'log' => $this->_log,
 			'services' => Social::instance()->services()
-		));
+		))->render();
 	}
 
 } // End Social_Aggregation_Log

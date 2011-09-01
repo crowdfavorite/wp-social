@@ -525,7 +525,7 @@ final class Social {
 	 *
 	 * @return void
 	 */
-	public function add_meta_log_box() {
+	public function add_meta_box_log() {
 		global $post;
 
 		$content = '';
