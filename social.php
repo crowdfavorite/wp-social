@@ -149,10 +149,11 @@ final class Social {
 	 *
 	 * @static
 	 * @param  string  $message  message to add to the log
+	 * @param  array   $args     arguments to pass to the writer
 	 * @return void
 	 */
-	public static function log($message) {
-		Social::$log->write($message);
+	public static function log($message, array $args = null) {
+		Social::$log->write($message, $args);
 	}
 
 	/**
@@ -336,7 +337,7 @@ final class Social {
 	 */
 	public function request_handler() {
 		if (isset($_GET['social_controller']) or isset($_POST['social_controller'])) {
-			Social_Request::instance()->execute();
+			Social_Request::factory()->execute();
 		}
 	}
 
@@ -545,7 +546,11 @@ final class Social {
 		    (isset($_POST['visibility']) and $_POST['visibility'] !== 'private')) {
 			update_post_meta($post_id, '_social_notify', '1');
 			if (isset($_POST['publish']) or isset($_POST['_social_broadcast'])) {
-				$this->broadcast_options($post_id, $location);
+				Social_Request::factory('broadcast/options')->post(array(
+					'post_id' => $post_id,
+					'location' => $location,
+				))->execute();
+				exit;
 			}
 		}
 		else {
@@ -571,24 +576,6 @@ final class Social {
 				delete_post_meta($post->ID, '_social_'.$key.'_content');
 			}
 		}
-	}
-
-	/**
-	 * Broadcasts a post to the services.
-	 *
-	 * @param  int  $post_id  post id
-	 * @return void
-	 */
-	public function broadcast($post_id) {
-		// Load content to broadcast (accounts, broadcast message, etc)
-
-		// Loop through accounts
-		// $broadcasted_id = $service->broadcast($account, $message)
-
-		// Store broadcasted_ids
-
-		// Add to the aggregation queue.
-		Social_Queue::factory()->add($post_id)->save();
 	}
 
 	/**

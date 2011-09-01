@@ -10,22 +10,14 @@
 final class Social_Request {
 
 	/**
-	 * @var  Social_Request  singleton instance
-	 */
-	public static $instance;
-
-	/**
 	 * Returns the singleton request object.
 	 *
 	 * @static
+	 * @param  string  $uri
 	 * @return Social_Request
 	 */
-	public static function instance() {
-		if (self::$instance === null) {
-			self::$instance = new self;
-		}
-
-		return self::$instance;
+	public static function factory($uri = null) {
+		return new self($uri);
 	}
 
 	/**
@@ -85,8 +77,10 @@ final class Social_Request {
 
 	/**
 	 * Initializes the request.
+	 *
+	 * @param  string  $uri
 	 */
-	public function __construct() {
+	public function __construct($uri = null) {
 		if (isset($_SERVER['REQUEST_METHOD'])) {
 			// Use the server request method
 			$method = $_SERVER['REQUEST_METHOD'];
@@ -158,6 +152,12 @@ final class Social_Request {
 					unset($_GET[$key]);
 				}
 			}
+		}
+
+		if ($uri != null) {
+			$uri = explode('/', $uri);
+			$params['controller'] = $uri[0];
+			$params['action'] = $uri[1];
 		}
 
 		if (isset($params['controller'])) {
@@ -356,7 +356,7 @@ final class Social_Request {
 	public function query($key = null, $value = null) {
 		if (is_array($key)) {
 			// Act as a setter, replace all query strings
-			$this->_get = $key;
+			$this->_get = $this->_get + $key;
 
 			return $this;
 		}
@@ -384,10 +384,9 @@ final class Social_Request {
 	 * @return  mixed|Social_Request
 	 */
 	public function post($key = null, $value = null) {
-		if (is_array($key))
-		{
+		if (is_array($key)) {
 			// Act as a setter, replace all fields
-			$this->_post = $key;
+			$this->_post = $this->_post + $key;
 
 			return $this;
 		}
