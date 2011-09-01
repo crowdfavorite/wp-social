@@ -528,12 +528,8 @@ final class Social {
 	public function add_meta_box_log() {
 		global $post;
 
-		$content = '';
-		
-
 		echo Social_View::factory('wp-admin/post/meta/log/shell', array(
-			'post' => $post,
-			'content' => $content
+			'post' => $post
 		));
 	}
 
