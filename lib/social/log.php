@@ -24,11 +24,18 @@ final class Social_Log {
 	 * Adds a message to the error log.
 	 *
 	 * @param  string  $message  message to be logged
+	 * @param  array   $args     arguments to add to the message.
 	 * @return void
 	 */
-	public function write($message) {
+	public function write($message, array $args = null) {
 		if (!Social::option('debug')) {
 			return;
+		}
+
+		if ($args !== null) {
+			foreach ($args as $key => $value) {
+				$message = str_replace(':'.$key, $value, $message);
+			}
 		}
 
 		error_log('[SOCIAL] '.$message);

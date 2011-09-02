@@ -39,6 +39,24 @@ interface Social_Interface_Service {
 	function accounts(array $accounts = null);
 
 	/**
+	 * Formats the provided content to the defined tokens.
+	 *
+	 * @abstract
+	 * @param  object  $post
+	 * @param  string  $format
+	 * @return string
+	 */
+	function format_content($post, $format);
+
+	/**
+	 * The max length a post can be when broadcasted.
+	 *
+	 * @abstract
+	 * @return int
+	 */
+	function max_broadcast_length();
+
+	/**
 	 * Broadcasts the message to the specified account. Returns the broadcasted ID.
 	 *
 	 * @abstract

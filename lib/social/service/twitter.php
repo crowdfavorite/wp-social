@@ -16,6 +16,15 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	protected $_key = 'twitter';
 
 	/**
+	 * The max length a post can be when broadcasted.
+	 *
+	 * @return int
+	 */
+	public function max_broadcast_length() {
+		return 140;
+	}
+
+	/**
 	 * Broadcasts the message to the specified account. Returns the broadcasted ID.
 	 *
 	 * @param  Social_Service_Account  $account  account to broadcast to

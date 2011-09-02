@@ -187,4 +187,81 @@ abstract class Social_Service {
 		return $this;
 	}
 
+	/**
+	 * Formats the broadcast content.
+	 *
+	 * @param  object  $post
+	 * @param  string  $format
+	 * @return string
+	 */
+	public function format_content($post, $format) {
+		// Filter the format
+		$format = apply_filters('social_broadcast_format', $format, $post, $this->_key);
+
+		$_format = $format;
+		$available = $this->max_broadcast_length();
+		foreach (Social::broadcast_tokens() as $token => $description) {
+			$_format = str_replace($token, '', $_format);
+		}
+		$available = $available - strlen($_format);
+
+		$_format = explode(' ', $format);
+		foreach (Social::broadcast_tokens() as $token => $description) {
+			$content = '';
+			switch ($token) {
+				case '{url}':
+					$url = wp_get_shortlink($post->ID);
+					if (empty($url)) {
+						$url = site_url('?p='.$post->ID);
+					}
+					$url = apply_filters('social_broadcast_permalink', $url, $post, $this->_key);
+					$content = esc_url($url);
+					break;
+				case '{title}':
+					$content = $post->post_title;
+					break;
+				case '{content}':
+					$content = strip_tags($post->post_content);
+					$content = str_replace(array("\n", "\r", PHP_EOL), '', $content);
+					$content = str_replace('&nbsp;', ' ', $content);
+					break;
+				case '{author}':
+					$user = get_userdata($post->post_author);
+					$content = $user->display_name;
+					break;
+				case '{date}':
+					$content = get_date_from_gmt($post->post_date_gmt);
+					break;
+			}
+
+			if (strlen($content) > $available) {
+				if (in_array($token, array('{date}', '{author}'))) {
+					$content = '';
+				}
+				else {
+					$content = substr($content, 0, ($available-3)).'...';
+				}
+			}
+
+			// Filter the content
+			$content = apply_filters('social_format_content', $content, $post, $format, $this->_key);
+
+			foreach ($_format as $haystack) {
+				if (strpos($haystack, $token) !== false) {
+					if ($available > 0) {
+						$haystack = str_replace($token, $content, $haystack);
+						$available = $available - strlen($haystack);
+						$format = str_replace($token, $content, $format);
+						break;
+					}
+				}
+			}
+		}
+
+		// Filter the content
+		$format = apply_filters('social_broadcast_content_formatted', $format, $post, $this->_key);
+
+		return $format;
+	}
+
 } // End Social_Service
