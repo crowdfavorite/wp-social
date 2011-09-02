@@ -308,6 +308,12 @@ final class Social {
 				Social::$cron_lock_dir = $upload_dir['basedir'];
 			}
 		}
+
+		// TODO I don't like this, look into an alternative way. -AE
+		// Hack for the CSS on the broadcast options page
+		if (isset($_GET['social_controller']) and $_GET['social_controller'] == 'broadcast') {
+			$this->admin_resources();
+		}
 	}
 
 	/**
@@ -317,7 +323,7 @@ final class Social {
 	 */
 	public function admin_init() {
 		// Schedule CRONs
-		if (isset($_GET['page']) and $_GET['page'] == basename(SOCIAL_FILE) and $this->option('system_crons') != '1') {
+		if ($this->option('system_crons') != '1') {
 			if (wp_next_scheduled('social_cron_15_core') === false) {
 				wp_schedule_event(time() + 900, 'every15min', 'social_cron_15_core');
 			}
@@ -546,11 +552,10 @@ final class Social {
 		    (isset($_POST['visibility']) and $_POST['visibility'] !== 'private')) {
 			update_post_meta($post_id, '_social_notify', '1');
 			if (isset($_POST['publish']) or isset($_POST['social_broadcast'])) {
-				echo Social_Request::factory('broadcast/options')->post(array(
-					'post_id' => $post_id,
+				Social_Request::factory('broadcast/options')->post(array(
+					'post_ID' => $post_id,
 					'location' => $location,
-				))->execute()->response();
-				exit;
+				))->execute();
 			}
 		}
 		else {
@@ -645,7 +650,7 @@ final class Social {
 	 * @return void
 	 */
 	public function run_aggregation() {
-		$queue = Social_Queue::factory();
+		$queue = Social_Aggregation_Queue::factory();
 
 		foreach ($queue->runable() as $timestamp => $posts) {
 			foreach ($posts as $id => $data) {
@@ -817,7 +822,7 @@ $social = Social::instance();
 // General Actions
 add_action('init', array($social, 'init'), 1);
 add_action('init', array($social, 'request_handler'), 2);
-add_action('admin_init', array($social, 'admin_init'), 1);
+add_action('load-'.basename(SOCIAL_FILE), array($social, 'admin_init'), 1);
 add_action('comment_post', array($social, 'comment_post'));
 add_action('admin_notices', array($social, 'admin_notices'));
 add_action('load-post-new.php', array($social, 'admin_resources'));

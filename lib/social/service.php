@@ -153,17 +153,19 @@ abstract class Social_Service {
 	 * Gets the requested account.
 	 *
 	 * @param  int|Social_Service_Account  $account  account id/object
-	 * @return Social_Service_Account|Social_Service
+	 * @return Social_Service_Account|Social_Service|bool
 	 */
 	public function account($account) {
 		if ($account instanceof Social_Service_Account) {
 			$this->_accounts[$account->id()] = $account;
+			return $this;
 		}
-		else if ($this->account_exists($account)) {
+
+		if ($this->account_exists($account)) {
 			return $this->_accounts[$account];
 		}
 
-		return $this;
+		return false;
 	}
 
 	/**

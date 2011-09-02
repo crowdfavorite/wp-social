@@ -130,50 +130,20 @@ final class Social_Request {
 			$client_ip = $_SERVER['REMOTE_ADDR'];
 		}
 
-		$params = array();
-		foreach (array_merge($_POST, $_GET) as $key => $value) {
-			if (strpos($key, 'social_') !== false or
-			   ($method == 'POST' and $key == 'data')) // Hack for the Sopresto API. Would like to get this named to "social_data".
-			{
-				if ($key == 'social_controller') {
-					$params['controller'] = $value;
-				}
-				else if ($key == 'social_action') {
-					$params['action'] = $value;
-				}
-				else {
-					$params[$key] = $value;
-				}
-
-				if ($method == 'POST') {
-					unset($_POST[$key]);
-				}
-				else {
-					unset($_GET[$key]);
-				}
-			}
-		}
-
 		if ($uri != null) {
 			$uri = explode('/', $uri);
 			$params['controller'] = $uri[0];
 			$params['action'] = $uri[1];
 		}
 
-		if (isset($params['controller'])) {
-			$this->controller($params['controller']);
-			unset($params['controller']);
+		if (isset($_GET['social_controller'])) {
+			$this->controller($_GET['social_controller']);
+			unset($_GET['social_controller']);
 		}
 
-		if (isset($params['action'])) {
-			$this->action($params['action']);
-			unset($params['action']);
-		}
-
-		if (count($params)) {
-			foreach ($params as $key => $value) {
-				$this->param($key, $value);
-			}
+		if (isset($_GET['social_action'])) {
+			$this->action($_GET['social_action']);
+			unset($_GET['social_action']);
 		}
 
 		$this->query($_GET)
