@@ -542,10 +542,10 @@ final class Social {
 	 * @return string|void
 	 */
 	public function redirect_post_location($location, $post_id) {
-		if ((isset($_POST['_social_notify']) and $_POST['_social_notify'] == '1') and
+		if ((isset($_POST['social_notify']) and $_POST['social_notify'] == '1') and
 		    (isset($_POST['visibility']) and $_POST['visibility'] !== 'private')) {
 			update_post_meta($post_id, '_social_notify', '1');
-			if (isset($_POST['publish']) or isset($_POST['_social_broadcast'])) {
+			if (isset($_POST['publish']) or isset($_POST['social_broadcast'])) {
 				Social_Request::factory('broadcast/options')->post(array(
 					'post_id' => $post_id,
 					'location' => $location,
