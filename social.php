@@ -546,10 +546,10 @@ final class Social {
 		    (isset($_POST['visibility']) and $_POST['visibility'] !== 'private')) {
 			update_post_meta($post_id, '_social_notify', '1');
 			if (isset($_POST['publish']) or isset($_POST['social_broadcast'])) {
-				Social_Request::factory('broadcast/options')->post(array(
+				echo Social_Request::factory('broadcast/options')->post(array(
 					'post_id' => $post_id,
 					'location' => $location,
-				))->execute();
+				))->execute()->response();
 				exit;
 			}
 		}

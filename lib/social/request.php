@@ -223,6 +223,8 @@ final class Social_Request {
 		else {
 			throw new Exception(sprintf(__('Controller %s does not exist.', Social::$i18n), 'Social_Controller_'.$this->controller()));
 		}
+
+		return $this;
 	}
 
 	/**
