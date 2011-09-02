@@ -13,6 +13,15 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	protected $_key = 'facebook';
 
 	/**
+	 * The max length a post can be when broadcasted.
+	 *
+	 * @return int
+	 */
+	public function max_broadcast_length() {
+		return 400;
+	}
+
+	/**
 	 * Broadcasts the message to the specified account. Returns the broadcasted ID.
 	 *
 	 * @param  Social_Service_Account  $account  account to broadcast to
