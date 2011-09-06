@@ -70,4 +70,20 @@ interface Social_Interface_Service_Account {
 	 */
 	function username();
 
+	/**
+	 * Returns the account's public key.
+	 *
+	 * @abstract
+	 * @return string
+	 */
+	function public_key();
+
+	/**
+	 * Returns the account's private key.
+	 *
+	 * @abstract
+	 * @return string
+	 */
+	function private_key();
+
 } // End Social_Interface_Service_Account

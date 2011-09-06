@@ -132,18 +132,24 @@ final class Social_Request {
 
 		if ($uri != null) {
 			$uri = explode('/', $uri);
-			$params['controller'] = $uri[0];
-			$params['action'] = $uri[1];
-		}
+			if (!empty($uri[0])) {
+				$this->controller($uri[0]);
+			}
 
-		if (isset($_GET['social_controller'])) {
-			$this->controller($_GET['social_controller']);
-			unset($_GET['social_controller']);
+			if (isset($uri[1]) and !empty($uri[1])) {
+				$this->action($uri[1]);
+			}
 		}
+		else {
+			if (isset($_GET['social_controller'])) {
+				$this->controller($_GET['social_controller']);
+				unset($_GET['social_controller']);
+			}
 
-		if (isset($_GET['social_action'])) {
-			$this->action($_GET['social_action']);
-			unset($_GET['social_action']);
+			if (isset($_GET['social_action'])) {
+				$this->action($_GET['social_action']);
+				unset($_GET['social_action']);
+			}
 		}
 
 		$this->query($_GET)

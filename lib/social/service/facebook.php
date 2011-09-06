@@ -26,9 +26,10 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 *
 	 * @param  Social_Service_Account  $account  account to broadcast to
 	 * @param  string  $message  message to broadcast
+	 * @param  array   $args  extra arguments to pass to the request
 	 * @return int
 	 */
-	public function broadcast($account, $message) {
+	public function broadcast($account, $message, array $args = array()) {
 		// TODO: Implement broadcast() method.
 	}
 

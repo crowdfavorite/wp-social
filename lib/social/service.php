@@ -266,4 +266,40 @@ abstract class Social_Service {
 		return $format;
 	}
 
+	/**
+	 * Handles the requests to the proxy.
+	 *
+	 * @param  Social_Service_Account|int  $account
+	 * @param  string  $api
+	 * @param  array   $args
+	 * @param  string  $method
+	 * @return object|bool
+	 */
+	public function request($account, $api, array $args = array(), $method = 'GET') {
+		if (!is_object($account)) {
+			$account = $this->account($account);
+		}
+
+		if ($account !== false) {
+			$request = wp_remote_post(Social::$api_url.$this->_key, array(
+				'sslverify' => false,
+				'body' => array(
+					'api' => $api,
+					'method' => $method,
+					'public_key' => $account->public_key(),
+					'hash' => sha1($account->public_key().$account->private_key()),
+					'params' => json_encode(stripslashes_deep($args))
+				)
+			));
+
+			if (!is_wp_error($request)) {
+				$request['body'] = json_decode($request['body']);
+				$request['body'] = apply_filters('social_response_body', $request['body'], $this->_key);
+				return Social_Response::factory($this, $request);
+			}
+		}
+
+		return false;
+	}
+
 } // End Social_Service

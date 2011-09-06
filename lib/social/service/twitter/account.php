@@ -52,5 +52,4 @@ final class Social_Service_Twitter_Account extends Social_Service_Account implem
 		return $this->_user->screen_name;
 	}
 
-
 } // End Social_Service_Twitter_Account

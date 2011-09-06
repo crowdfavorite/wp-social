@@ -62,9 +62,10 @@ interface Social_Interface_Service {
 	 * @abstract
 	 * @param  Social_Service_Account  $account  account to broadcast to
 	 * @param  string  $message  message to broadcast
+	 * @param  array   $args  extra arguments to pass to the request
 	 * @return int
 	 */
-	function broadcast($account, $message);
+	function broadcast($account, $message, array $args = array());
 
 	/**
 	 * Aggregates to-be WordPress comments from the service.

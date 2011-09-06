@@ -56,5 +56,4 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 		return $this->_user->username;
 	}
 
-
 } // End Social_Service_Facebook_Account
