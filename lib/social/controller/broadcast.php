@@ -74,10 +74,12 @@ final class Social_Controller_Broadcast extends Social_Controller {
 				if (!in_array($this->request->post('social_action'), array('Schedule', 'Update'))) {
 					$this->run($post);
 				}
+
 				$location = $this->request->post('location');
 				if ($location == null) {
 					$location = get_edit_post_link($post->ID, false);
 				}
+				
 				wp_redirect($location);
 				exit;
 			}
@@ -107,7 +109,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 						$broadcast_accounts[$service] = array();
 					}
 
-					$broadcast_accounts[$service][$account['id']] = true;
+					$broadcast_accounts[$service][$account->id] = true;
 				}
 			}
 		}

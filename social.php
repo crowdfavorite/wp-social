@@ -506,7 +506,7 @@ final class Social {
 			$accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
 			$content = Social_View::factory('wp-admin/post/meta/broadcast/scheduled', array(
 				'post' => $post,
-				'service' => $this->services(),
+				'services' => $this->services(),
 				'accounts' => $accounts
 			));
 		}

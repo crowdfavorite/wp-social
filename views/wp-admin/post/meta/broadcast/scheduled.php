@@ -10,7 +10,7 @@
 
 				$output = '';
 				foreach ($_accounts as $account) {
-					if (($account = $service->account($account['id'])) !== false) {
+					if (($account = $service->account($account->id)) !== false) {
 						$output .= Social_View::factory('wp-admin/post/meta/broadcast/parts/account', array('account' => $account));
 					}
 				}
@@ -24,6 +24,6 @@
 ?>
 <p class="submit" style="clear:both;padding:0;margin:20px 0 0;">
 	<input type="submit" name="social_broadcast" value="<?php _e('Edit', Social::$i18n); ?>" />
-	<input type="hidden" name="_social_notify" value="1" />
+	<input type="hidden" name="social_notify" value="1" />
 	<a href="<?php echo esc_url(admin_url('profile.php#social-networks')); ?>" style="float:right;padding-top:8px;"><?php _e('My Accounts', Social::$i18n); ?></a>
 </p>
