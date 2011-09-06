@@ -284,10 +284,6 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			}
 		}
 
-		if (count($broadcasted_ids)) {
-			update_post_meta($post->ID, '_social_broadcasted_ids', $broadcasted_ids);
-		}
-
 		// Errored accounts?
 		if ($errored_accounts !== false) {
 			$deauthed_accounts = false;
@@ -342,9 +338,11 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			}
 		}
 		else {
-			update_post_meta($post->ID, '_social_broadcasted', '1');
 			delete_post_meta($post->ID, '_social_broadcast_accounts');
 		}
+
+		// Set broadcast meta
+		$this->social->set_broadcasted_meta($post->ID, $broadcasted_ids);
 
 		// Add to the aggregation queue.
 		Social_Aggregation_Queue::factory()->add($post->ID)->save();

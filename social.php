@@ -584,32 +584,17 @@ final class Social {
 	}
 
 	/**
-	 * @param $post_id
-	 * @param $service
-	 * @param $broadcasted_id
-	 * @param array $broadcasted_accounts
-	 * @return
+	 * Sets the broadcasted IDs for the post.
+	 *
+	 * @param  int    $post_id
+	 * @param  array  $broadcasted_ids
+	 * @return void
 	 */
-	// TODO Finish building out this method for Twitter Tools
-	public function set_broadcasted_meta($post_id, $service, $broadcasted_id, array $broadcasted_accounts) {
-		$post_id = (int) $post_id;
-
-		if (is_string($service)) {
-			$service = $this->service($service);
+	public function set_broadcasted_meta($post_id, array $broadcasted_ids) {
+		if (count($broadcasted_ids)) {
+			$post_id = (int) $post_id;
+			update_post_meta($post_id, '_social_broadcasted_ids', $broadcasted_ids);
 		}
-
-		if ($service === false) {
-			// Do nothing if an invaid service or account ID was passed in.
-			Social::log(sprintf(__('Failed to set broadcasted meta; invalid service key %s.', Social::$i18n), $service));
-			return;
-		}
-
-		//foreach ($broadcasted_accounts as $)
-
-		// TODO Set post meta
-		// - broadcasted_id
-		// - broadcasted_accounts
-		//
 	}
 
 	/**
@@ -722,14 +707,28 @@ final class Social {
 				'social_notify_twitter',
 				'social_facebook_content',
 				'social_notify_facebook',
-				'social_broadcasted',
-				'social_notify'
+				'social_notify',
+				'social_broadcasted'
 			);
 			if (count($meta_keys)) {
 				foreach ($meta_keys as $key) {
 					$wpdb->query("
 						UPDATE $wpdb->postmeta
 						   SET meta_key = '_$key'
+						 WHERE meta_key = '$key'
+					");
+				}
+			}
+
+			// Delete old useless meta
+			$meta_keys = array(
+				'_social_broadcasted'
+			);
+			if (count($meta_keys)) {
+				foreach ($meta_keys as $key) {
+					$wpdb->query("
+						DELETE
+						  FROM $wpdb->postmeta
 						 WHERE meta_key = '$key'
 					");
 				}
