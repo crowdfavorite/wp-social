@@ -35,8 +35,8 @@ abstract class Social_Service_Account {
 	public function __construct($account) {
 		$this->_user = $account->user;
 		$this->_keys = $account->keys;
-		$this->_personal = $account->personal;
-		$this->_universal = $account->universal;
+		$this->_personal = (isset($account->personal) ? $account->personal : false);
+		$this->_universal = (isset($account->universal) ? $account->universal : false);
 	}
 
 	/**

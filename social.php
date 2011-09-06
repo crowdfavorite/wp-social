@@ -3,7 +3,7 @@
 Plugin Name: Social
 Plugin URI: http://mailchimp.com/social-plugin-for-wordpress/
 Description: Broadcast newly published posts and pull in dicussions using integrations with Twitter and Facebook. Brought to you by <a href="http://mailchimp.com">MailChimp</a>.
-Version: 1.0.1
+Version: 1.0.2
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com/
 */
@@ -25,7 +25,7 @@ final class Social {
 	/**
 	 * @var  string  version number
 	 */
-	public static $version = '1.0.1';
+	public static $version = '1.0.2';
 
 	/**
 	 * @var  string  internationalization key
@@ -710,7 +710,7 @@ final class Social {
 		if (version_compare($installed_version, Social::$version, '<')) {
 			global $wpdb;
 
-			// 1.0.2
+			// 1.5
 			// Find old social_notify and update to _social_notify.
 			$meta_keys = array(
 				'social_aggregated_replies',
@@ -727,7 +727,7 @@ final class Social {
 			);
 			if (count($meta_keys)) {
 				foreach ($meta_keys as $key) {
-					$this->wpdb->query("
+					$wpdb->query("
 						UPDATE $wpdb->postmeta
 						   SET meta_key = '_$key'
 						 WHERE meta_key = '$key'
@@ -736,7 +736,7 @@ final class Social {
 			}
 
 			// De-auth Facebook accounts for new permissions.
-			if (version_compare($installed_version, '1.0.2', '<')) {
+			if (version_compare($installed_version, '1.5', '<')) {
 				// Global accounts
 				$accounts = get_option('social_accounts', array());
 				if (isset($accounts['facebook'])) {
@@ -752,20 +752,21 @@ final class Social {
 						$ids[] = $user->ID;
 					}
 				}
-				$ids = implode(',', $ids);
 
 				$results = $wpdb->get_results("
 					SELECT user_id, meta_value 
 					  FROM $wpdb->usermeta
 					 WHERE meta_key = 'social_accounts'
-					   AND user_id NOT IN ($ids)
 				");
 				foreach ($results as $result) {
 					$accounts = maybe_unserialize($result->meta_value);
 					if (is_array($accounts) and isset($accounts['facebook'])) {
 						$accounts['facebook'] = array();
 						update_user_meta($result->user_id, 'social_accounts', $accounts);
-						update_user_meta($result->user_id, 'social_1.0.2_upgrade', true);
+
+						if (!in_array($result->user_id, $ids)) {
+							update_user_meta($result->user_id, 'social_1.5_upgrade', true);
+						}
 					}
 				}
 			}
