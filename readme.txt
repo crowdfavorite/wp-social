@@ -3,7 +3,7 @@ Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter
 Requires at least: 3.2
 Tested up to: 3.2.1
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 
 Broadcast posts to Twitter and/or Facebook, pull in items from each as comments, and allow commenters to use their Twitter/Facebook identities.
 
@@ -167,6 +167,10 @@ No, the proxy acts just like any Twitter or Facebook application. We've simply p
 4. View of replies imported from Twitter as comments, @anywhere support 
 
 == Changelog ==
+
+= 1.0.2 =
+* Added the social_kses method to cleanse data coming back from the services.
+* WP accounts are no longer created with usernames of "facebook_" and "twitter_".
 
 = 1.0.1 =
 * Automatic CRON jobs now run correctly.
