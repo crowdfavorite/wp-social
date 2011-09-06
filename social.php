@@ -339,7 +339,7 @@ final class Social {
 	 * @return void
 	 */
 	public function request_handler() {
-		if (isset($_GET['social_controller']) or isset($_POST['social_controller'])) {
+		if (isset($_GET['social_controller'])) {
 			Social_Request::factory()->execute();
 		}
 	}
@@ -442,9 +442,7 @@ final class Social {
 	 * @return void
 	 */
 	public function admin_options_form() {
-		echo Social_View::factory('wp-admin/options', array(
-			'services' => $this->services(),
-		));
+		Social_Request::factory('settings/index')->execute();
 	}
 
 	/**
@@ -564,12 +562,12 @@ final class Social {
 	/**
 	 * Removes post meta if the post is going to private.
 	 *
-	 * @param  string  $old
 	 * @param  string  $new
+	 * @param  string  $old
 	 * @param  object  $post
 	 * @return void
 	 */
-	public function transition_post_status($old, $new, $post) {
+	public function transition_post_status($new, $old, $post) {
 		if ($new == 'private') {
 			delete_post_meta($post->ID, '_social_notify');
 			delete_post_meta($post->ID, '_social_broadcast_accounts');
@@ -577,6 +575,11 @@ final class Social {
 			foreach ($this->services() as $key => $service) {
 				delete_post_meta($post->ID, '_social_'.$key.'_content');
 			}
+		}
+		else if ($old == 'future' and $new == 'publish') {
+			Social_Request::factory('broadcast/run')->query(array(
+				'post_ID' => $post->ID
+			))->execute();
 		}
 	}
 

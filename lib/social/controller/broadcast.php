@@ -8,6 +8,8 @@
 final class Social_Controller_Broadcast extends Social_Controller {
 
 	/**
+	 * Displays the broadcast options form.
+	 * 
 	 * @return void
 	 */
 	public function action_options() {
@@ -72,7 +74,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 				update_post_meta($post->ID, '_social_broadcast_accounts', $broadcast_accounts);
 
 				if (!in_array($this->request->post('social_action'), array('Schedule', 'Update'))) {
-					$this->run($post);
+					$this->action_run($post);
 				}
 
 				$location = $this->request->post('location');
@@ -129,17 +131,22 @@ final class Social_Controller_Broadcast extends Social_Controller {
 	/**
 	 * Broadcasts a post to the services.
 	 *
-	 * @param  int|WP_Post  $post  post id or post object
+	 * @param  int|WP_Post  $post_id  post id or post object
 	 * @return void
 	 */
-	public function run($post) {
-		if (is_int($post)) {
-			$post = get_post($post->ID);
+	public function action_run($post_id = null) {
+		if ($post_id === null) {
+			$post_id = intval($this->request->query('post_ID'));
+		}
+
+		$post = $post_id;
+		if (is_int($post_id)) {
+			$post = get_post($post_id);
 		}
 
 		if ($post === null) {
-			$this->social->log('Failed to broadcast post :post_id.', array(
-				'post_id' => $post->ID,
+			Social::log('Failed to broadcast post :post_id.', array(
+				'post_id' => $post_id,
 			));
 			return;
 		}
