@@ -273,12 +273,14 @@ final class Social {
 				update_option(Social::$prefix . $key, $value);
 			}
 
-			if ($key == 'installed_version' and (int)$value < (int)Social::$version) {
+			if ($key == 'installed_version' and version_compare($value, Social::$version, '<')) {
 				// Need to run an upgrade
 				Social::$upgrade = true;
+				$this->option($key, Social::$version, true);
 			}
-
-			$this->option($key, $value);
+			else {
+				$this->option($key, $value);
+			}
 		}
 		
 		$url = plugins_url('', SOCIAL_FILE);
