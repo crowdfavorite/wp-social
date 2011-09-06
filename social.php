@@ -686,6 +686,7 @@ final class Social {
 		}
 		// Authorization complete?
 		else if (isset($_POST['data'])) {
+			// Need to call stripslashes as Sopresto is adding slashes onto the payload.
 			$data = stripslashes($_POST['data']);
 			if (strpos($data, "\r") !== false) {
 				$data = str_replace(array("\r\n", "\r"), "\n", $data);
