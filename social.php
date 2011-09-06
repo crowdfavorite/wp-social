@@ -735,7 +735,7 @@ final class Social {
 </head>
 <script type="text/javascript">
 	jQuery(function() {
-		window.opener.reloadSocialHTML();
+		window.opener.reloadSocialHTML('<?php echo (!$save ? 'false' : 'true'); ?>');
 		window.close();
 	});
 </script>

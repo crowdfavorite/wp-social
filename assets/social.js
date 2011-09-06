@@ -1,18 +1,24 @@
 var $window = null;
-function reloadSocialHTML() {
+function reloadSocialHTML(saved) {
 	if (!$window.hasClass('comments')) {
 		window.location.reload();
 	}
 	else {
-		var $parent = jQuery('.social-post');
-		jQuery.get($parent.find('#reload_url').val(), {}, function(response){
-			if (response.result == 'success') {
-				// Add logged-in body class since we're not going to be refreshing the page.
-				jQuery('body').addClass('logged-in');
-				$parent.html(response.html);
-				jQuery('#primary').find('#social_login').parent().html(response.disconnect_url);
-			}
-		}, 'json');
+		if (saved == 'false') {
+			// This is temporary. This will be fixed in 1.5.
+			alert('Failed to authorize this account. Please try again.')
+		}
+		else {
+			var $parent = jQuery('.social-post');
+			jQuery.get($parent.find('#reload_url').val(), {}, function(response){
+				if (response.result == 'success') {
+					// Add logged-in body class since we're not going to be refreshing the page.
+					jQuery('body').addClass('logged-in');
+					$parent.html(response.html);
+					jQuery('#primary').find('#social_login').parent().html(response.disconnect_url);
+				}
+			}, 'json');
+		}
 	}
 }
 
