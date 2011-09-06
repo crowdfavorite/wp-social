@@ -50,9 +50,11 @@ abstract class Social_Helper {
 	public static function create_user($service, $username) {
 		if (!empty($username)) {
 			// Make sure the user doesn't exist
-			$user = get_userdatabylogin($service . '_' . $username);
+			$username = wp_kses($username, array());
+			$wp_username = $service . '_' . $username;
+			$user = get_userdatabylogin($wp_username);
 			if ($user === false) {
-				$id = wp_create_user($service . '_' . $username, wp_generate_password(20, false), self::create_email($service, $username));
+				$id = wp_create_user($wp_username, wp_generate_password(20, false), self::create_email($service, $username));
 
 				$role = 'subscriber';
 				if (get_option('users_can_register') == '1') {
