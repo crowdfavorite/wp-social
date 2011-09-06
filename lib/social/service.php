@@ -25,6 +25,15 @@ abstract class Social_Service {
 	}
 
 	/**
+	 * Returns the service key.
+	 *
+	 * @return string
+	 */
+	public function key() {
+		return $this->_key;
+	}
+
+	/**
 	 * Gets the title for the service.
 	 *
 	 * @return string
@@ -190,6 +199,25 @@ abstract class Social_Service {
 	}
 
 	/**
+	 * Removes an account from the service.
+	 *
+	 * @abstract
+	 * @param  int|Social_Service_Account  $account
+	 * @return Social_Service
+	 */
+	public function remove_account($account) {
+		if (is_int($account)) {
+			$account = $this->account($account);
+		}
+
+		if ($account !== false) {
+			unset($this->_accounts[$account->id()]);
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Formats the broadcast content.
 	 *
 	 * @param  object  $post
@@ -273,7 +301,7 @@ abstract class Social_Service {
 	 * @param  string  $api
 	 * @param  array   $args
 	 * @param  string  $method
-	 * @return object|bool
+	 * @return Social_Response|bool
 	 */
 	public function request($account, $api, array $args = array(), $method = 'GET') {
 		if (!is_object($account)) {
@@ -295,7 +323,7 @@ abstract class Social_Service {
 			if (!is_wp_error($request)) {
 				$request['body'] = json_decode($request['body']);
 				$request['body'] = apply_filters('social_response_body', $request['body'], $this->_key);
-				return Social_Response::factory($this, $request);
+				return Social_Response::factory($this, $request, $account);
 			}
 		}
 

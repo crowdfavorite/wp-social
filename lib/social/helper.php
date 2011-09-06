@@ -10,9 +10,10 @@ final class Social_Helper {
 	 * Builds the settings URL for the plugin.
 	 *
 	 * @param  array  $params
+	 * @param  bool   $personal
 	 * @return string
 	 */
-	public static function settings_url(array $params = null) {
+	public static function settings_url(array $params = null, $personal = false) {
 		if (!current_user_can('manage_options')) {
 			$path = 'profile.php?';
 		}

@@ -100,7 +100,7 @@ abstract class Social_Service_Account {
 	 * @return string
 	 */
 	public function private_key() {
-		return $this->_keys->private;
+		return $this->_keys->secret;
 	}
 
 } // End Social_Service_Account

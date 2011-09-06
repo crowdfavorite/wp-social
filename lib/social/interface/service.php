@@ -14,6 +14,14 @@ interface Social_Interface_Service {
 	function __construct();
 
 	/**
+	 * Returns the service key.
+	 *
+	 * @abstract
+	 * @return string
+	 */
+	function key();
+
+	/**
 	 * Gets the title for the service.
 	 *
 	 * @abstract
@@ -34,9 +42,16 @@ interface Social_Interface_Service {
 	 *
 	 * @abstract
 	 * @param  array|null  $accounts
-	 * @return void
+	 * @return array|Social_Service
 	 */
 	function accounts(array $accounts = null);
+
+	/**
+	 * @abstract
+	 * @param  int|Social_Service_Account  $account
+	 * @return Social_Service
+	 */
+	function remove_account($account);
 
 	/**
 	 * Formats the provided content to the defined tokens.
@@ -74,5 +89,40 @@ interface Social_Interface_Service {
 	 * @return array
 	 */
 	function aggregate();
+
+	/**
+	 * Checks the response to see if the broadcast limit has been reached.
+	 *
+	 * @abstract
+	 * @param  string  $response
+	 * @return bool
+	 */
+	function limit_reached($response);
+
+	/**
+	 * Checks the response to see if the broadcast is a duplicate.
+	 *
+	 * @abstract
+	 * @param  string  $response
+	 * @return bool
+	 */
+	function duplicate_status($response);
+
+	/**
+	 * Checks the response to see if the account has been deauthorized.
+	 *
+	 * @abstract
+	 * @param  string  $response
+	 * @return bool
+	 */
+	function deauthorized($response);
+
+	/**
+	 * Returns the key to use on the request response to pull the ID.
+	 *
+	 * @abstract
+	 * @return string
+	 */
+	function response_id_key();
 
 } // End Social_Interface_Service
