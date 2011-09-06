@@ -84,17 +84,17 @@ final class Social_Controller_Broadcast extends Social_Controller {
 		}
 
 		$step_text = 'Publish';
-		if (isset($_POST['social_broadcast']) or isset($_POST['social_action'])) {
-			if ((!isset($_POST['social_action']) and $_POST['social_broadcast'] == 'Edit') or
-				(isset($_POST['social_action']) and $_POST['social_action'] == 'Update'))
+		if ($this->request->post('social_broadcast') !== null or $this->request->post('social_action') !== null) {
+			if (($this->request->post('social_action') === null and $this->request->post('social_broadcast') == 'Edit') or
+				$this->request->post('social_action') == 'Update')
 			{
 				$step_text = 'Update';
 			}
-			else if ((!isset($_POST['social_action']) or $_POST['social_action']) != 'Publish') {
+			else if ($this->request->post('social_action') != 'Publish') {
 				$step_text = 'Broadcast';
 			}
 		}
-		else if ($post->post_status == 'future' or (isset($_POST['publish']) and $_POST['publish'] == 'Schedule')) {
+		else if ($post->post_status == 'future' or ($this->request->post('publish') == 'Schedule')) {
 			$step_text = 'Schedule';
 		}
 
@@ -145,8 +145,11 @@ final class Social_Controller_Broadcast extends Social_Controller {
 		// Load content to broadcast (accounts, broadcast message, etc)
 		$personal_accounts = null;
 		$broadcast_accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
-		$broadcasted_ids = array();
 		$errored_accounts = false;
+		$broadcasted_ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
+		if (empty($broadcasted_ids)) {
+			$broadcasted_ids = array();
+		}
 		foreach ($broadcast_accounts as $key => $accounts) {
 			$service = $this->social->service($key);
 			if ($service) {
@@ -170,11 +173,6 @@ final class Social_Controller_Broadcast extends Social_Controller {
 					}
 
 					if ($account !== false) {
-						if (isset($broadcasted_ids[$key]) and isset($broadcasted_ids[$key][$account->id()])) {
-							// Don't run the broadcast to an account more than once.
-							continue;
-						}
-						
 						// Load the message
 						if ($message === null) {
 							$message = get_post_meta($post->ID, '_social_'.$key.'_content', true);
