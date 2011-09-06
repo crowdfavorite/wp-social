@@ -45,35 +45,38 @@ abstract class Social_Helper {
 	 *
 	 * @param  string  $service
 	 * @param  string  $username
-	 * @return int
+	 * @return int|bool
 	 */
 	public static function create_user($service, $username) {
-		// Make sure the user doesn't exist
-		$user = get_userdatabylogin($service . '_' . $username);
-		if ($user === false) {
-			$id = wp_create_user($service . '_' . $username, wp_generate_password(20, false), self::create_email($service, $username));
+		if (!empty($username)) {
+			// Make sure the user doesn't exist
+			$user = get_userdatabylogin($service . '_' . $username);
+			if ($user === false) {
+				$id = wp_create_user($service . '_' . $username, wp_generate_password(20, false), self::create_email($service, $username));
 
-			$role = 'subscriber';
-			if (get_option('users_can_register') == '1') {
-				$role = get_option('default_role');
+				$role = 'subscriber';
+				if (get_option('users_can_register') == '1') {
+					$role = get_option('default_role');
+				}
+
+				$user = new WP_User($id);
+				$user->set_role($role);
+
+				update_user_option($id, 'show_admin_bar_front', 'false');
+			}
+			else {
+				$id = $user->ID;
 			}
 
-			$user = new WP_User($id);
-			$user->set_role($role);
+			// Log the user in
+			wp_set_current_user($id);
+			add_filter('auth_cookie_expiration', array('Social', 'auth_cookie_expiration'));
+			wp_set_auth_cookie($id, true);
+			remove_filter('auth_cookie_expiration', array('Social', 'auth_cookie_expiration'));
 
-			update_user_option($id, 'show_admin_bar_front', 'false');
+			return $id;
 		}
-		else {
-			$id = $user->ID;
-		}
-
-		// Log the user in
-		wp_set_current_user($id);
-		add_filter('auth_cookie_expiration', array('Social', 'auth_cookie_expiration'));
-		wp_set_auth_cookie($id, true);
-		remove_filter('auth_cookie_expiration', array('Social', 'auth_cookie_expiration'));
-
-		return $id;
+		return false;
 	}
 
 	/**

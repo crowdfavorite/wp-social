@@ -76,7 +76,7 @@ final class Social_Facebook extends Social_Service implements Social_IService {
 	 * Creates a WordPress User
 	 *
 	 * @param  int|object  $account  account to use to create WP account
-	 * @return int
+	 * @return int|bool
 	 */
 	function create_user($account) {
 		if (is_int($account)) {

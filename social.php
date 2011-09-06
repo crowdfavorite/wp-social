@@ -3,7 +3,7 @@
 Plugin Name: Social
 Plugin URI: http://mailchimp.com/social-plugin-for-wordpress/
 Description: Broadcast newly published posts and pull in dicussions using integrations with Twitter and Facebook. Brought to you by <a href="http://mailchimp.com">MailChimp</a>.
-Version: 1.0
+Version: 1.0.2
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com/
 */
@@ -30,7 +30,7 @@ final class Social {
 	/**
 	 * @var  string  $version  plugin version
 	 */
-	public static $version = '1.0';
+	public static $version = '1.0.2';
 
 	/**
 	 * @var  string  $prefix  prefix used to identify the plugin
@@ -705,12 +705,17 @@ final class Social {
 			}
 
 			// Do we need to create a user?
+			$save = true;
 			if (!$service->loaded()) {
-				$service->create_user($account);
+				if (!$service->create_user($account)) {
+					$save = false;
+				}
 			}
 
-			// Save the services
-			$service->save($account);
+			if ($save) {
+				// Save the services
+				$service->save($account);
+			}
 
 			// Remove the service from the errors?
 			$deauthed = get_option(Social::$prefix . 'deauthed');
