@@ -58,20 +58,30 @@ final class Social_Aggregation_Queue {
 	 */
 	public function add($post_id, $interval = null) {
 		// Find the next interval to schedule
+		$next_run = 0;
 		if ($interval === null) {
-			$interval = reset($this->schedule());
+			foreach ($this->schedule() as $interval => $next_run) {
+				break;
+			}
 		}
 		else {
 			$schedule = $this->schedule();
-			if (($key = array_search($interval, $schedule)) !== false) {
-				++$key;
-				if (isset($schedule[$key])) {
-					$interval = $schedule[$key];
+			$found = false;
+			foreach ($schedule as $key => $timestamp) {
+				if (!$found) {
+					if ($key == $interval) {
+						$found = true;
+						continue;
+					}
 				}
 				else {
-					// No more scheduled times... Remove the post from the queue.
-					$this->remove($post_id);
+					$next_run = $timestamp;
 				}
+			}
+
+			if (!$found) {
+				$this->remove($post_id);
+				return $this;
 			}
 		}
 
@@ -83,7 +93,7 @@ final class Social_Aggregation_Queue {
 		if (!isset($this->_queue[$timestamp][$post_id])) {
 			$this->_queue[$timestamp][$post_id] = (object) array(
 				'interval' => $interval,
-				'next_run' => ''
+				'next_run' => $next_run,
 			);
 		}
 
@@ -140,11 +150,11 @@ final class Social_Aggregation_Queue {
 	 * @return mixed|void
 	 */
 	protected function schedule() {
-		// TODO Talk to Alex about timestamps here, or elsewhere?
+		$current_time = current_time('timestamp');
 		return apply_filters('social_aggregation_schedule', array(
-			'15min',
-			'30min',
-			'45min',
+			'15min' => $current_time + 54000,
+			'30min' => $current_time + 108000,
+			'45min' => $current_time + 162000,
 		));
 	}
 
