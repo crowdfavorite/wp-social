@@ -93,7 +93,19 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * @return string
 	 */
 	public function response_id_key() {
-		return 'id_str';
+		return 'id';
+	}
+
+	/**
+	 * Returns the status URL to a broadcasted item.
+	 *
+	 * @param  string      $username
+	 * @param  string|int  $id
+	 * @return string
+	 */
+	public function status_url($username, $id) {
+		$ids = explode('_', $id);
+		return 'http://facebook.com/permalink.php?story_fbid='.$ids[1].'&id='.$ids[0];
 	}
 
 } // End Social_Service_Facebook

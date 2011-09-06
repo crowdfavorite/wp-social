@@ -4,7 +4,7 @@
 		<?php
 			echo esc_attr($account->name());
 			if (isset($broadcasted_id)) {
-				echo '<a href="'.esc_url($service->status_url($account->username, $broadcasted_id)).'" target="_blank">View</a>';
+				echo ' <a href="'.esc_url($service->status_url($account->username(), $broadcasted_id)).'" target="_blank">View</a>';
 			}
 		?>
 	</span>

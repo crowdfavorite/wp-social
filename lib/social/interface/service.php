@@ -125,4 +125,14 @@ interface Social_Interface_Service {
 	 */
 	function response_id_key();
 
+	/**
+	 * Returns the status URL to a broadcasted item.
+	 *
+	 * @abstract
+	 * @param  string      $username
+	 * @param  string|int  $id
+	 * @return string
+	 */
+	function status_url($username, $id);
+
 } // End Social_Interface_Service

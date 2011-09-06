@@ -96,4 +96,15 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		return 'id_str';
 	}
 
+	/**
+	 * Returns the status URL to a broadcasted item.
+	 *
+	 * @param  string      $username
+	 * @param  string|int  $id
+	 * @return string
+	 */
+	public function status_url($username, $id) {
+		return 'http://twitter.com/'.$username.'/status/'.$id;
+	}
+
 } // End Social_Service_Twitter
