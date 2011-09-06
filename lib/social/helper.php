@@ -50,7 +50,6 @@ abstract class Social_Helper {
 	public static function create_user($service, $username) {
 		if (!empty($username)) {
 			// Make sure the user doesn't exist
-			$username = wp_kses($username, array());
 			$wp_username = $service . '_' . $username;
 			$user = get_userdatabylogin($wp_username);
 			if ($user === false) {

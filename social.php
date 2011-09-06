@@ -696,6 +696,9 @@ final class Social {
 				'user' => $data->user
 			);
 
+			// Remove all HTML from the user object.
+			$account->user = $this->social_kses($account->user);
+
 			// Add the account to the service.
 			if (IS_PROFILE_PAGE) {
 				$service = $this->service($data->service)->account($account);
@@ -2258,6 +2261,39 @@ endforeach;
 		$file = fopen(SOCIAL_PATH . 'log.txt', 'a+');
 		fwrite($file, '[' . date('Y-m-d H:i:s') . '] ' . $message . PHP_EOL);
 		fclose($file);
+	}
+
+	/**
+	 * Recursively runs wp_kses() on an object.
+	 *
+	 * @param  object|array  $object
+	 * @return object
+	 */
+	private function social_kses($object) {
+		if (is_object($object)) {
+			$_object = new stdClass;
+		}
+		else {
+			$_object = array();
+		}
+
+		foreach ($object as $key => $val) {
+			if (is_object($val)) {
+				$_object->$key = $this->social_kses($val);
+			}
+			else if (is_array($val)) {
+				$_object[$key] = $this->social_kses($val);
+			}
+			else {
+				if (is_object($_object)) {
+					$_object->$key = wp_kses($val, array());
+				}
+				else {
+					$_object[$key] = wp_kses($val, array());
+				}
+			}
+		}
+		return $_object;
 	}
 
 } // End Social
