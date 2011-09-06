@@ -213,7 +213,7 @@ final class Social {
 			foreach ($services as $service) {
 				if (!isset($this->_services[$service])) {
 					$service_accounts = array();
-					if (isset($accounts[$service])) {
+					if (isset($accounts[$service]) and count($accounts[$service])) {
 						$this->_enabled = true; // Flag social as enabled, we have at least one account.
 						$service_accounts = $accounts[$service];
 					}
@@ -227,10 +227,7 @@ final class Social {
 			if (is_array($personal_accounts)) {
 				foreach ($personal_accounts as $key => $_accounts) {
 					if (count($_accounts)) {
-						if (!isset($accounts[$key])) {
-							$accounts[$key] = array();
-						}
-
+						$this->_enabled = true;
 						$class = 'Social_Service_'.$key.'_Account';
 						foreach ($_accounts as $account) {
 							$account = new $class($account);
