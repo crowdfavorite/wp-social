@@ -667,6 +667,16 @@ final class Social {
 	}
 
 	/**
+	 * Removes the post from the aggregation queue.
+	 *
+	 * @param  int  $post_id
+	 * @return void
+	 */
+	public function delete_post($post_id) {
+		Social_Aggregation_Queue::factory()->remove($post_id);
+	}
+
+	/**
 	 * Hides the Site Admin link for social-based users.
 	 *
 	 * @filter register
@@ -847,6 +857,7 @@ add_action('load-settings_page_social', array($social, 'admin_resources'));
 add_action('transition_post_status', array($social, 'transition_post_status'), 10, 3);
 add_action('show_user_profile', array($social, 'show_user_profile'));
 add_action('do_meta_boxes', array($social, 'do_meta_boxes'));
+add_action('delete_post', array($social, 'delete_post'));
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));
