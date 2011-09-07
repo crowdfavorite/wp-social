@@ -228,6 +228,60 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	}
 
 	/**
+	 * Imports a Tweet by URL.
+	 *
+	 * @param  int     $post_id
+	 * @param  string  $url
+	 * @return void
+	 */
+	public function import_tweet_by_url($post_id, $url) {
+		$post = get_post($post_id);
+
+		$url = explode('/', $url);
+		$id = end($url);
+
+		$post_comments = get_post_meta($post->ID, '_social_aggregated_ids', true);
+		if (empty($post_comments)) {
+			$post_comments = array();
+		}
+
+		$url = 'http://api.twitter.com/1/statuses/show.json?id='.$id;
+		$request = wp_remote_get($url);
+		if (!is_wp_error($request)) {
+			$logger = Social_Aggregation_Log::instance($post->ID);
+			$response = apply_filters('social_response_body', $request['body'], $this->_key);
+
+			if (in_array($id, $post_comments)) {
+				$logger->add($this->_key, $response->id, 'Imported', true, array(
+					'username' => $response->user->screen_name
+				));
+			}
+			else {
+				$logger->add($this->_key, $response->id, 'Imported', false, array(
+					'username' => $response->user->screen_name
+				));
+
+				$post->aggregated_ids[$this->_key][] = $response->id;
+				$post->results[$this->_key][$response->id] = (object) array(
+					'id' => $response->id,
+					'from_user_id' => $response->user->id,
+					'from_user' => $response->user->screen_name,
+					'text' => $response->text,
+					'created_at' => $response->created_at,
+					'profile_image_url' => $response->user->profile_image_url,
+				);
+
+				$this->save_aggregated_comments($post);
+
+				// Some cleanup...
+				unset($post->aggregated_ids);
+				unset($post->results);
+			}
+			$logger->save(true);
+		}
+	}
+
+	/**
 	 * Checks the response to see if the broadcast limit has been reached.
 	 *
 	 * @param  string  $response
