@@ -638,14 +638,14 @@ final class Social {
 		$queue = Social_Aggregation_Queue::factory();
 
 		foreach ($queue->runnable() as $timestamp => $posts) {
-			foreach ($posts as $id => $data) {
+			foreach ($posts as $id => $interval) {
 				$post = get_post($id);
 				if ($post !== null) {
-					$queue->add($id, $data->interval)->save();
+					$queue->add($id, $interval)->save();
 					$this->request(site_url('?social_controller=aggregate&social_action=run&social_post_id='.$id.'&social_timestamp='));
 				}
 				else {
-					$queue->remove($id, $data->timestamp)->save();
+					$queue->remove($id, $timestamp)->save();
 				}
 			}
 		}
