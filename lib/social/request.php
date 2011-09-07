@@ -31,11 +31,6 @@ final class Social_Request {
 	protected $_action = '';
 
 	/**
-	 * @var  string  request params
-	 */
-	protected $_params = '';
-
-	/**
 	 * @var  string  the x-requested-with header which most likely will be xmlhttprequest
 	 */
 	protected $_requested_with;
@@ -230,24 +225,6 @@ final class Social_Request {
 		}
 
 		$this->_action = $value;
-		return $this;
-	}
-
-	/**
-	 * Gets and sets the requested parameter.
-	 *
-	 * @param  string  $key
-	 * @param  string  $value
-	 * @return Social_Request|string
-	 */
-	public function param($key, $value = null) {
-		if (strpos($key, 'social_') === false) {
-			$key = 'social_'.$key;
-		}
-		if ($value === null) {
-			return (isset($this->_params[$key]) ? $this->_params[$key] : null);
-		}
-		$this->_params[$key] = $value;
 		return $this;
 	}
 

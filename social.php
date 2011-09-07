@@ -642,7 +642,7 @@ final class Social {
 				$post = get_post($id);
 				if ($post !== null) {
 					$queue->add($id, $interval)->save();
-					$this->request(site_url('?social_controller=aggregate&social_action=run&social_post_id='.$id.'&social_timestamp='));
+					$this->request(site_url('?social_controller=aggregate&social_action=run&post_id='.$id));
 				}
 				else {
 					$queue->remove($id, $timestamp)->save();
