@@ -131,7 +131,7 @@ final class Social_Aggregation_Log {
 	public function render() {
 		return Social_View::factory('wp-admin/post/meta/log/output', array(
 			'log' => $this->_log,
-			'services' => Social::instance()->services()
+			'services' => Social::instance()->services(),
 		))->render();
 	}
 

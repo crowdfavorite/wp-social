@@ -174,18 +174,18 @@ final class Social_Aggregation_Queue {
 	 * @return mixed|void
 	 */
 	protected function schedule() {
-		$current_time = current_time('timestamp');
+		$current_time = current_time('timestamp', 1);
 		return apply_filters('social_aggregation_schedule', array(
-			'15min' => $current_time + 54000,
-			'30min' => $current_time + 108000,
-			'45min' => $current_time + 162000,
-			'60min' => $current_time + 216000,
-			'2hr' => $current_time + 432000,
-			'4hr' => $current_time + 864000,
-			'8hr' => $current_time + 1728000,
-			'12hr' => $current_time + 2592000,
-			'24hr' => $current_time + 5184000,
-			'48hr' => $current_time + 10368000,
+			'15min' => $current_time + 900,
+			'30min' => $current_time + 1800,
+			'45min' => $current_time + 2700,
+			'60min' => $current_time + 3600,
+			'2hr' => $current_time + 7200,
+			'4hr' => $current_time + 14400,
+			'8hr' => $current_time + 28800,
+			'12hr' => $current_time + 43200,
+			'24hr' => $current_time + 86400,
+			'48hr' => $current_time + 172800,
 		));
 	}
 

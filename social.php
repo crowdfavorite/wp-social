@@ -530,8 +530,17 @@ final class Social {
 	public function add_meta_box_log() {
 		global $post;
 
+		$next_run = get_post_meta($post->ID, '_social_aggregation_next_run', true);
+		if (empty($next_run)) {
+			$next_run = __('Not Scheduled', Social::$i18n);
+		}
+		else {
+			$next_run = date('F j, Y, g:i a', ((int) $next_run + (get_option('gmt_offset') * 3600)));
+		}
+
 		echo Social_View::factory('wp-admin/post/meta/log/shell', array(
-			'post' => $post
+			'post' => $post,
+			'next_run' => $next_run,
 		));
 	}
 
@@ -577,8 +586,9 @@ final class Social {
 			}
 		}
 		else if ($new == 'publish') {
-			// Add to the aggregation queue.
-			Social_Aggregation_Queue::factory()->add($post->ID)->save();
+			if (isset($_POST['publish']) and !isset($_POST['social_notify'])) {
+				Social_Aggregation_Queue::factory()->add($post->ID)->save();
+			}
 
 			if ($old == 'future') {
 				Social_Request::factory('broadcast/run')->query(array(
