@@ -37,7 +37,7 @@ final class Social_Aggregation_Queue {
 	 *
 	 * @return array
 	 */
-	public function runable() {
+	public function runnable() {
 		$queue = array();
 		$current_timestamp = current_time('timestamp');
 		foreach ($this->_queue as $timestamp => $posts) {

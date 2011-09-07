@@ -637,7 +637,7 @@ final class Social {
 	public function run_aggregation() {
 		$queue = Social_Aggregation_Queue::factory();
 
-		foreach ($queue->runable() as $timestamp => $posts) {
+		foreach ($queue->runnable() as $timestamp => $posts) {
 			foreach ($posts as $id => $data) {
 				$post = get_post($id);
 				if ($post !== null) {
