@@ -157,6 +157,13 @@ final class Social_Aggregation_Queue {
 			'15min' => $current_time + 54000,
 			'30min' => $current_time + 108000,
 			'45min' => $current_time + 162000,
+			'60min' => $current_time + 216000,
+			'2hr' => $current_time + 432000,
+			'4hr' => $current_time + 864000,
+			'8hr' => $current_time + 1728000,
+			'12hr' => $current_time + 2592000,
+			'24hr' => $current_time + 5184000,
+			'48hr' => $current_time + 10368000,
 		));
 	}
 
