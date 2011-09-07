@@ -85,16 +85,15 @@ final class Social_Aggregation_Queue {
 			}
 		}
 
-		$timestamp = current_time('timestamp');
-		if (!isset($this->_queue[$timestamp])) {
-			$this->_queue[$timestamp] = array();
-		}
+		if ($next_run) {
+			if (!isset($this->_queue[$next_run])) {
+				$this->_queue[$next_run] = array();
+			}
 
-		if (!isset($this->_queue[$timestamp][$post_id])) {
-			$this->_queue[$timestamp][$post_id] = (object) array(
-				'interval' => $interval,
-				'next_run' => $next_run,
-			);
+			if (!isset($this->_queue[$next_run][$post_id])) {
+				$this->_queue[$next_run][$post_id] = $interval;
+				update_post_meta($post_id, '_social_aggregation_next_run', $next_run);
+			}
 		}
 
 		return $this;
@@ -111,13 +110,13 @@ final class Social_Aggregation_Queue {
 		if ($timestamp === null) {
 			$queue = array();
 			foreach ($this->_queue as $timestamp => $posts) {
-				foreach ($posts as $id => $post) {
+				foreach ($posts as $id => $interval) {
 					if ($id !== $post_id) {
 						if (!isset($queue[$timestamp])) {
 							$queue[$timestamp] = array();
 						}
 
-						$queue[$timestamp][$id] = $post;
+						$queue[$timestamp][$id] = $interval;
 					}
 				}
 			}
@@ -132,6 +131,9 @@ final class Social_Aggregation_Queue {
 				}
 			}
 		}
+
+		delete_post_meta($post_id, '_social_aggregation_next_run');
+
 		return $this;
 	}
 
