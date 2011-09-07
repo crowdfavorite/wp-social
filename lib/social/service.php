@@ -322,7 +322,9 @@ abstract class Social_Service {
 
 			if (!is_wp_error($request)) {
 				$request['body'] = apply_filters('social_response_body', $request['body'], $this->_key);
-				$request['body'] = json_decode($request['body']);
+				if (is_string($request['body'])) {
+					$request['body'] = json_decode($request['body']);
+				}
 				return Social_Response::factory($this, $request, $account);
 			}
 		}

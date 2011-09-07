@@ -57,10 +57,11 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 
 					if (isset($response->data) and is_array($response->data) and count($response->data)) {
 						foreach ($response->data as $result) {
-							if (in_array($result->id, $post->aggregated_ids[$this->_key]) or
-							   (isset($post->broadcasted_ids[$this->_key]) and in_array($result->id, $post->broadcasted_ids[$this->_key])))
-							{
+							if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
 								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url', true);
+								continue;
+							}
+							else if (isset($post->broadcasted_ids[$this->_key]) and in_array($result->id, $post->broadcasted_ids[$this->_key])) {
 								continue;
 							}
 
@@ -99,15 +100,16 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 								'parent_id' => $id[0],
 							);
 
-							if (in_array($result->id, $post->aggregated_ids[$this->_key]) or
-								(isset($post->broadcasted_ids[$this->_key]) and in_array($result->id, $post->broadcasted_ids[$this->_key])))
-							{
+							if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
 								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', true, $data);
+								continue;
+							}
+							else if (isset($post->broadcasted_ids[$this->_key]) and in_array($result->id, $post->broadcasted_ids[$this->_key])) {
 								continue;
 							}
 
 							Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
-							$post->aggergated_ids[$this->_key] = $result->id;
+							$post->aggregated_ids[$this->_key][] = $result->id;
 
 							$result->status_id = $post->broadcasted_ids[$this->_key][$account->id()];
 							$post->results[$this->_key][$result->id] = $result;
@@ -167,6 +169,22 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				}
 			}
 		}
+	}
+
+	/**
+	 * Hook to allow services to define their aggregation row items based on the passed in type.
+	 *
+	 * @param  string  $type
+	 * @param  object  $item
+	 * @param  string  $username
+	 * @param  int     $id
+	 * @return string
+	 */
+	public function aggregation_row($type, $item, $username, $id) {
+		if ($type == 'like') {
+			return sprintf(__('Found %s additional likes.', Social::$i18n), $item->data->total);
+		}
+		return '';
 	}
 
 	/**

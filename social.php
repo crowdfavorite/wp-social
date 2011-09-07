@@ -576,10 +576,15 @@ final class Social {
 				delete_post_meta($post->ID, '_social_'.$key.'_content');
 			}
 		}
-		else if ($old == 'future' and $new == 'publish') {
-			Social_Request::factory('broadcast/run')->query(array(
-				'post_ID' => $post->ID
-			))->execute();
+		else if ($new == 'publish') {
+			// Add to the aggregation queue.
+			Social_Aggregation_Queue::factory()->add($post->ID)->save();
+
+			if ($old == 'future') {
+				Social_Request::factory('broadcast/run')->query(array(
+					'post_ID' => $post->ID
+				))->execute();
+			}
 		}
 	}
 

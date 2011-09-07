@@ -92,7 +92,7 @@
 				});
 			}
 		});
-		$('#aggregation_log .parent').hide();
+		$('#aggregation_log .parent:not(:first)').hide();
 		$('#aggregation_log h5').live('click', function(){
 			$('#'+$(this).attr('id')+'-output').toggle();
 		});

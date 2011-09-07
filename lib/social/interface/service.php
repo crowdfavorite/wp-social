@@ -111,6 +111,17 @@ interface Social_Interface_Service {
 	function save_aggregated_comments(&$post);
 
 	/**
+	 * Hook to allow services to define their aggregation row items based on the passed in type.
+	 *
+	 * @param  string  $type
+	 * @param  object  $item
+	 * @param  string  $username
+	 * @param  int     $id
+	 * @return string
+	 */
+	function aggregation_row($type, $item, $username, $id);
+
+	/**
 	 * Checks the response to see if the broadcast limit has been reached.
 	 *
 	 * @abstract

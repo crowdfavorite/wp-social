@@ -46,6 +46,20 @@ final class Social_Response {
 	}
 
 	/**
+	 * Magic method to retrieve data from the request body.
+	 *
+	 * @param  string  $name
+	 * @return mixed
+	 */
+	public function __get($name) {
+		if (isset($this->_request['body']->{$name})) {
+			return $this->_request['body']->{$name};
+		}
+
+		return null;
+	}
+
+	/**
 	 * Checks to see if the response has reached it's limit.
 	 *
 	 * @return bool

@@ -56,17 +56,17 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		$request = wp_remote_get($url);
 		if (!is_wp_error($request)) {
 			$response = apply_filters('social_response_body', $request['body'], $this->_key);
-			$response = json_decode($response);
 			if (isset($response->results) and is_array($response->results) and count($response->results)) {
 				foreach ($response->results as $result) {
 					$data = array(
 						'username' => $result->from_user,
 					);
 
-					if (in_array($result->id, $post->aggregated_ids[$this->_key]) or
-					   (isset($post->broadcasted_ids[$this->_key]) and in_array($result->id, $post->broadcasted_ids[$this->_key])))
-					{
+					if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
 						Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url', true, $data);
+						continue;
+					}
+					else if (isset($post->broadcasted_ids[$this->_key]) and in_array($result->id, $post->broadcasted_ids[$this->_key])) {
 						continue;
 					}
 
@@ -103,15 +103,16 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 								'username' => $result->user->screen_name,
 							);
 
-							if (in_array($result->id, $post->aggregated_ids[$this->_key]) or
-								(isset($post->broadcasted_ids[$this->_key]) and in_array($result->id, $post->broadcasted_ids[$this->_key])))
-							{
+							if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
 								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'retweet', true, $data);
+								continue;
+							}
+							else if (isset($post->broadcasted_ids[$this->_key]) and in_array($result->id, $post->broadcasted_ids[$this->_key])) {
 								continue;
 							}
 
 							Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'retweet', false, $data);
-							$post->aggergated_ids[$this->_key] = $result->id;
+							$post->aggregated_ids[$this->_key][] = $result->id;
 							$post->results[$this->_key][$result->id] = (object) array(
 								'id' => $result->id,
 								'from_user_id' => $result->user->id,
@@ -134,15 +135,16 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 								'username' => $result->user->screen_name,
 							);
 
-							if (in_array($result->id, $post->aggregated_ids[$this->_key]) or
-								(isset($post->broadcasted_ids[$this->_key]) and in_array($result->id, $post->broadcasted_ids[$this->_key])))
-							{
+							if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
 								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', true, $data);
+								continue;
+							}
+							else if (isset($post->broadcasted_ids[$this->_key]) and in_array($result->id, $post->broadcasted_ids[$this->_key])) {
 								continue;
 							}
 
 							Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
-							$post->aggergated_ids[$this->_key] = $result->id;
+							$post->aggregated_ids[$this->_key][] = $result->id;
 							$post->results[$this->_key][$result->id] = (object) array(
 								'id' => $result->id,
 								'from_user_id' => $result->user->id,
@@ -206,6 +208,23 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 				}
 			}
 		}
+	}
+
+	/**
+	 * Hook to allow services to define their aggregation row items based on the passed in type.
+	 *
+	 * @param  string  $type
+	 * @param  object  $item
+	 * @param  string  $username
+	 * @param  int     $id
+	 * @return string
+	 */
+	public function aggregation_row($type, $item, $username, $id) {
+		if ($type == 'retweet') {
+			$link = $this->status_url($username, $id);
+			return '<a href="'.$link.'" target="_blank">#'.$item->id.'</a> ('.__('Retweet Search', Social::$i18n).')';
+		}
+		return '';
 	}
 
 	/**
@@ -273,7 +292,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 * @param  string  $body
 	 * @return object
 	 */
-	public static function request_body($body) {
+	public static function response_body($body) {
 		return json_decode(preg_replace('/"id":(\d+)/', '"id":"$1"', $body));
 	}
 

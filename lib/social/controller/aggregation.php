@@ -69,7 +69,9 @@ final class Social_Controller_Aggregation extends Social_Controller {
 			update_post_meta($post->ID, '_social_aggregated_ids', $post->aggregated_ids);
 
 			foreach ($post->results as $key => $results) {
-				$this->social->service($key)->save_aggregated_comments($results);
+				if (count($results)) {
+					$this->social->service($key)->save_aggregated_comments($post);
+				}
 			}
 		}
 
@@ -81,6 +83,22 @@ final class Social_Controller_Aggregation extends Social_Controller {
 		unset($post->broadcasted_ids);
 		unset($post->aggregated_ids);
 		unset($post->results);
+
+		if ($this->request->is_ajax()) {
+			// Re-add to the queue?
+			$queue = Social_Aggregation_Queue::factory();
+			if (!$queue->find($post->ID)) {
+				$queue->add($post->ID, '24hour');
+			}
+
+			$log = Social_Aggregation_Log::instance($post->ID);
+			$log->save(true);
+			echo $log;
+			exit;
+		}
+		else {
+			Social_Aggregation_Log::instance($post->ID)->save();
+		}
 	}
 
 } // End Social_Controller_Aggregation

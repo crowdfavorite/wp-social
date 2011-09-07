@@ -57,6 +57,8 @@ final class Social_Aggregation_Queue {
 	 * @return Social_Aggregation_Queue
 	 */
 	public function add($post_id, $interval = null) {
+		$this->remove($post_id);
+
 		// Find the next interval to schedule
 		$next_run = 0;
 		if ($interval === null) {
@@ -80,7 +82,6 @@ final class Social_Aggregation_Queue {
 			}
 
 			if (!$found) {
-				$this->remove($post_id);
 				return $this;
 			}
 		}
@@ -135,6 +136,27 @@ final class Social_Aggregation_Queue {
 		delete_post_meta($post_id, '_social_aggregation_next_run');
 
 		return $this;
+	}
+
+	/**
+	 * Attempts to find the post in the queue.
+	 *
+	 * @param  int  $post_id
+	 * @return bool|object
+	 */
+	public function find($post_id) {
+		foreach ($this->_queue as $timestamp => $posts) {
+			foreach ($posts as $id => $interval) {
+				if ($id === $post_id) {
+					return (object) array(
+						'post_id' => $id,
+						'interval' => $interval,
+						'next_run' => $timestamp
+					);
+				}
+			}
+		}
+		return false;
 	}
 
 	/**

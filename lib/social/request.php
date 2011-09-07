@@ -302,6 +302,15 @@ final class Social_Request {
 	}
 
 	/**
+	 * Returns whether this is an AJAX request.
+	 *
+	 * @return  boolean
+	 */
+	public function is_ajax() {
+		return ($this->requested_with() === 'xmlhttprequest');
+	}
+
+	/**
 	 * Gets or sets HTTP query string.
 	 *
 	 * @param   mixed   $key    Key or key value pairs to set
