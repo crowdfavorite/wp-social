@@ -83,12 +83,32 @@ interface Social_Interface_Service {
 	function broadcast($account, $message, array $args = array());
 
 	/**
-	 * Aggregates to-be WordPress comments from the service.
+	 * Aggregates comments by URL.
 	 *
 	 * @abstract
+	 * @param  object  $post
+	 * @param  array   $urls
 	 * @return array
 	 */
-	function aggregate();
+	function aggregate_by_url(&$post, array $urls);
+
+	/**
+	 * Aggregates comments by the service's API.
+	 *
+	 * @abstract
+	 * @param  object  $post
+	 * @return array
+	 */
+	function aggregate_by_api(&$post);
+
+	/**
+	 * Saves the aggregated comments.
+	 *
+	 * @abstract
+	 * @param  object  $post
+	 * @return void
+	 */
+	function save_aggregated_comments(&$post);
 
 	/**
 	 * Checks the response to see if the broadcast limit has been reached.

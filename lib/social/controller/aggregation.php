@@ -18,16 +18,69 @@ final class Social_Controller_Aggregation extends Social_Controller {
 			return;
 		}
 
-		// Load aggregated IDs
+		Social::log('Begin aggregation for post #:post_id.', array(
+			'post_id' => $post->ID,
+		));
 
-		// Process IDs
+		// Get URLs to query
+		$url = wp_get_shortlink($post->ID);
+		if (empty($url)) {
+			$url = site_url('?p='.$post->ID);
+		}
+		$urls = array(
+			urlencode($url)
+		);
 
-		// Send to service for aggregation
-		// $service->aggregate()
+		// Add the permalink?
+		$permalink = urlencode(get_permalink($post->ID));
+		if ($urls[0] != $permalink) {
+			$urls[] = $permalink;
+		}
 
-		// Verify responses
+		$broadcasted_ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
+		if (empty($broadcasted_ids)) {
+			$broadcasted_ids = array();
+		}
 
-		// Store comments
+		$aggregated_ids = get_post_meta($post->ID, '_social_aggregated_ids', true);
+		if (empty($aggregated_ids)) {
+			$aggregated_ids = array();
+		}
+
+		$post->broadcasted_ids = $broadcasted_ids;
+		$post->aggregated_ids = $aggregated_ids;
+		$post->results = array();
+		foreach ($this->social->services() as $key => $service) {
+			$post->results[$key] = array();
+			if (!isset($post->aggregated_ids[$key])) {
+				$post->aggregated_ids[$key] = array();
+			}
+			
+			// URL Search
+			$urls = apply_filters('social_search_urls', $urls, $key);
+			$service->aggregate_by_url($post, $urls);
+
+			if (isset($broadcasted_ids[$key]) and count($broadcasted_ids[$key])) {
+				$service->aggregate_by_api($post);
+			}
+		}
+
+		if (count($post->results)) {
+			update_post_meta($post->ID, '_social_aggregated_ids', $post->aggregated_ids);
+
+			foreach ($post->results as $key => $results) {
+				$this->social->service($key)->save_aggregated_comments($results);
+			}
+		}
+
+		Social::log('Aggregation for post #:post_id complete.', array(
+			'post_id' => $post->ID,
+		));
+
+		// Some cleanup...
+		unset($post->broadcasted_ids);
+		unset($post->aggregated_ids);
+		unset($post->results);
 	}
 
 } // End Social_Controller_Aggregation
