@@ -530,8 +530,17 @@ final class Social {
 	public function add_meta_box_log() {
 		global $post;
 
+		$next_run = get_post_meta($post->ID, '_social_aggregation_next_run', true);
+		if (empty($next_run)) {
+			$next_run = __('Not Scheduled', Social::$i18n);
+		}
+		else {
+			$next_run = date('F j, Y, g:i a', ((int) $next_run + (get_option('gmt_offset') * 3600)));
+		}
+
 		echo Social_View::factory('wp-admin/post/meta/log/shell', array(
-			'post' => $post
+			'post' => $post,
+			'next_run' => $next_run,
 		));
 	}
 
@@ -576,10 +585,16 @@ final class Social {
 				delete_post_meta($post->ID, '_social_'.$key.'_content');
 			}
 		}
-		else if ($old == 'future' and $new == 'publish') {
-			Social_Request::factory('broadcast/run')->query(array(
-				'post_ID' => $post->ID
-			))->execute();
+		else if ($new == 'publish') {
+			if (isset($_POST['publish']) and !isset($_POST['social_notify'])) {
+				Social_Aggregation_Queue::factory()->add($post->ID)->save();
+			}
+
+			if ($old == 'future') {
+				Social_Request::factory('broadcast/run')->query(array(
+					'post_ID' => $post->ID
+				))->execute();
+			}
 		}
 	}
 
@@ -638,14 +653,14 @@ final class Social {
 		$queue = Social_Aggregation_Queue::factory();
 
 		foreach ($queue->runnable() as $timestamp => $posts) {
-			foreach ($posts as $id => $data) {
+			foreach ($posts as $id => $interval) {
 				$post = get_post($id);
 				if ($post !== null) {
-					$queue->add($id, $data->interval)->save();
-					$this->request(site_url('?social_controller=aggregate&social_action=run&social_post_id='.$id.'&social_timestamp='));
+					$queue->add($id, $interval)->save();
+					$this->request(site_url('?social_controller=aggregate&social_action=run&post_id='.$id));
 				}
 				else {
-					$queue->remove($id, $data->timestamp)->save();
+					$queue->remove($id, $timestamp)->save();
 				}
 			}
 		}

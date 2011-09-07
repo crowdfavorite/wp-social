@@ -1,29 +1,29 @@
 <?php
-	if (empty($log->items)) {
+	if (empty($log)) {
 		echo '<p>'.__('Aggregation has not been run for this post yet.', Social::$i18n).'</p>';
 	}
 	else {
 		$i = 0;
-		$log = array_reverse($log->items, true);
 		$output = '';
+		$log = array_reverse($log, 1);
 		foreach ($log as $timestamp => $_log) {
 			++$i;
 
-			$output .= '<h5 id="log-'.$i.'">'.date('j F Y, g:i a', $timestamp + (get_option('gmt_offset') * 3600)).' (';
-			if ($_log->manual) {
+			$output .= '<h5 id="log-'.$i.'">'.date('F j, Y, g:i a', ($timestamp + (get_option('gmt_offset') * 3600))).' (';
+			if (isset($_log->manual) and $_log->manual) { // isset() check for legacy support
 				$output .= __('Manual Aggregation', Social::$i18n);
 			}
 			else {
 				$output .= __('Automatic Aggregation', Social::$i18n);
 			}
-			$output .= '</h5><ul id="log-'.$i.'-output" class="parent">';
+			$output .= ')</h5><ul id="log-'.$i.'-output" class="parent">';
 
-			if (count($log->items)) {
-				foreach ($log->items as $service => $items) {
+			if (isset($_log->items) and count($_log->items)) {
+				foreach ($_log->items as $service => $items) {
 					if (isset($services[$service])) {
 						$service = $services[$service];
 
-						$output .= '<li>'.esc_html($service->title()).':</ul>';
+						$output .= '<li>'.esc_html($service->title()).':<ul>';
 
 						if (count($items)) {
 							$_items = array();
@@ -78,13 +78,15 @@
 								}
 							}
 						}
+
+						$output .= '</ul></li>';
 					}
 				}
 			}
 			else {
-				$output .= '<li style="list-style:none">'.__('No results found.', Social::$i18n).'</li>';
+				$output .= '<li style="list-style:none"><p>'.__('No results found.', Social::$i18n).'</p></li>';
 			}
-			$output .= '</ul></li>';
+			$output .= '</ul>';
 		}
 
 		echo $output;

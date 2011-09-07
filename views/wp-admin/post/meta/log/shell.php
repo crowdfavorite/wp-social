@@ -12,12 +12,15 @@
 </div><!-- .social-meta-box-block -->
 
 <div class="social-meta-box-block cf-clearfix">
-	<h4><?php _e('Manual Refresh', Social::$i18n); ?></h4>
+	<h4>
+		<?php _e('Manual Refresh', Social::$i18n); ?>
+		<span>(<?php echo sprintf(__('Automatic aggregation scheduled for: %s', Social::$i18n), $next_run); ?>)</span>
+	</h4>
 	<p><?php _e('Manually run the comment aggregation and Social will look for mentions of this post on Facebook and Twitter.', Social::$i18n); ?></p>
 
 	<p class="submit" style="clear:both;float:none;padding:0;">
 		<?php // TODO Fix manual aggregation ?>
-		<a href="<?php echo esc_url(wp_nonce_url(admin_url('?social_action=run_aggregation&post_id='.$post->ID))); ?>" id="run_aggregation" class="button" style="float:left;margin-bottom:10px;"><?php _e('Find Social Comments', Social::$i18n); ?></a>
+		<a href="<?php echo esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$post->ID))); ?>" id="run_aggregation" class="button" style="float:left;margin-bottom:10px;"><?php _e('Find Social Comments', Social::$i18n); ?></a>
 		<img src="<?php echo esc_url(admin_url('images/loading.gif')); ?>" style="float:left;position:relative;top:4px;left:5px;display:none;" id="run_aggregation_loader" />
 	</p>
 </div><!-- .social-meta-box-block -->

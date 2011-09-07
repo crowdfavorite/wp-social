@@ -339,6 +339,9 @@ final class Social_Controller_Broadcast extends Social_Controller {
 		}
 		else {
 			delete_post_meta($post->ID, '_social_broadcast_accounts');
+			foreach ($this->social->services() as $service) {
+				delete_post_meta($post->ID, '_social_'.$service->key().'_content');
+			}
 		}
 
 		// Set broadcast meta

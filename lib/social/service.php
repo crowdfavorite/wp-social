@@ -321,13 +321,36 @@ abstract class Social_Service {
 			));
 
 			if (!is_wp_error($request)) {
-				$request['body'] = json_decode($request['body']);
 				$request['body'] = apply_filters('social_response_body', $request['body'], $this->_key);
+				if (is_string($request['body'])) {
+					$request['body'] = json_decode($request['body']);
+				}
 				return Social_Response::factory($this, $request, $account);
 			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Loads all of the accounts to user for aggregation.
+	 *
+	 * @param  object  $post
+	 * @return array
+	 */
+	protected function get_aggregation_accounts($post) {
+		$accounts = get_user_meta($post->post_author, 'social_accounts', true);
+		foreach ($this->accounts() as $account) {
+			if (!isset($accounts[$this->_key])) {
+				$accounts[$this->_key] = array();
+			}
+
+			if (!isset($accounts[$this->_key][$account->id()])) {
+				$accounts[$this->_key][$account->id()] = $account;
+			}
+		}
+
+		return $accounts;
 	}
 
 } // End Social_Service

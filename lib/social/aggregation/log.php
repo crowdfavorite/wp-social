@@ -62,19 +62,6 @@ final class Social_Aggregation_Log {
 
 		// Load the current log for the post
 		$this->_log = get_post_meta($post_id, '_social_aggregation_log', true);
-
-		// Upgrade?
-		if (!empty($this->_log) and (!is_object($this->_log) or !isset($this->_log->manual))) {
-			if (!is_object($this->_log)) {
-				$this->_log = (object) $this->_log;
-			}
-
-			$this->_log = (object) array(
-				'manual' => false,
-				'items' => $this->_log
-			);
-			update_post_meta($post_id, '_social_aggregation_log', $this->_log);
-		}
 	}
 
 	/**
@@ -97,22 +84,29 @@ final class Social_Aggregation_Log {
 	 * @return Social_Aggregation_Log
 	 */
 	public function add($service, $id, $type, $ignored = false, array $data = null) {
-		if (!isset($this->_log->items[$this->_timestamp]->items[$service])) {
-			$this->_log->items[$this->_timestamp]->items[$service] = array();
+		if (!isset($this->_log[$this->_timestamp])) {
+			$this->_log[$this->_timestamp] = (object) array(
+				'manual' => false,
+				'items' => array(),
+			);
+		}
+		
+		if (!isset($this->_log[$this->_timestamp]->items[$service])) {
+			$this->_log[$this->_timestamp]->items[$service] = array();
 		}
 
-		foreach ($this->_log->items[$this->_timestamp]->items[$service] as $item) {
+		foreach ($this->_log[$this->_timestamp]->items[$service] as $item) {
 			if ($item->id === $id) {
 				// Bail! Item already exists.
 				return $this;
 			}
 		}
 
-		$this->_log->items[$this->_timestamp]->items[$service][] = (object) array(
+		$this->_log[$this->_timestamp]->items[$service][] = (object) array(
 			'id' => $id,
 			'type' => $type,
 			'ignored' => $ignored,
-			'data' => $data
+			'data' => $data,
 		);
 
 		return $this;
@@ -125,7 +119,7 @@ final class Social_Aggregation_Log {
 	 * @return void
 	 */
 	public function save($manual = false) {
-		$this->_log->items[$this->_timestamp]->manual = $manual;
+		$this->_log[$this->_timestamp]->manual = $manual;
 		update_post_meta($this->_post_id, '_social_aggregation_log', $this->_log);
 	}
 
@@ -137,7 +131,7 @@ final class Social_Aggregation_Log {
 	public function render() {
 		return Social_View::factory('wp-admin/post/meta/log/output', array(
 			'log' => $this->_log,
-			'services' => Social::instance()->services()
+			'services' => Social::instance()->services(),
 		))->render();
 	}
 
