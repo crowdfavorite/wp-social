@@ -1,6 +1,7 @@
 <?php
 // Service Filters
 add_filter('social_response_body', array('Social_Service_Twitter', 'response_body'));
+add_filter('get_comment_author_link', array('Social_Service_Twitter', 'get_comment_author_link'));
 
 /**
  * Twitter implementation for the service.
@@ -348,6 +349,34 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 */
 	public static function response_body($body) {
 		return json_decode(preg_replace('/"id":(\d+)/', '"id":"$1"', $body));
+	}
+
+	/**
+	 * Adds the account ID to the rel for the author link.
+	 *
+	 * @static
+	 * @param  string  $url
+	 * @return string
+	 */
+	public static function get_comment_author_link($url) {
+		global $comment;
+		if ($comment->comment_type == 'twitter') {
+			$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
+			$output = str_replace("rel='", "rel='" . $status_id . " ", $url);
+
+			$api_key = Social::instance()->option('twitter_anywhere_api_key');
+			if (!empty($api_key)) {
+				$output = str_replace("'>", "' style='display:none'>@", $output);
+				$output .= '@' . get_comment_author($comment->comment_ID);
+			}
+			else {
+				$output = str_replace("'>", "'>@", $output);
+			}
+
+			return $output;
+		}
+
+		return $url;
 	}
 
 } // End Social_Service_Twitter

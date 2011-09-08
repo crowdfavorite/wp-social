@@ -129,7 +129,7 @@ function reloadSocialHTML() {
                 $('.comment-reply-link').show();
             });
 
-            var $avatar = $('#social #respond .avatar:first');
+            var $avatar = $('#commentform .avatar');
             var original_avatar = $avatar.attr('src');
             $('#post_accounts').live('change', function(){
                 $(this).find('option:selected').each(function(){

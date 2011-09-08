@@ -51,16 +51,56 @@ abstract class Social_Service {
 		global $post;
 
 		if (defined('IS_PROFILE_PAGE')) {
-			$url = admin_url('profile.php?social_controller=connect&social_action=authorized#social-networks');
+			$url = admin_url('profile.php?social_controller=auth&social_action=authorized#social-networks');
 		}
 		else if (is_admin()) {
-			$url = admin_url('options-general.php?page=social.php&social_controller=connect&social_action=authorized');
+			$url = admin_url('options-general.php?page=social.php&social_controller=auth&social_action=authorized');
 		}
 		else {
-			$url = site_url('?social_controller=connect&social_action=authorized&p='.$post->ID);
+			$url = site_url('?social_controller=auth&social_action=authorized&p='.$post->ID);
 		}
 
 		return apply_filters('social_authorize_url', Social::$api_url.$this->_key.'/authorize?redirect_to='.urlencode($url), $this->_key);
+	}
+
+	/**
+	 * Returns the disconnect URL.
+	 *
+	 * @static
+	 * @param  object  $account
+	 * @param  bool    $is_admin
+	 * @param  string  $before
+	 * @param  string  $after
+	 * @return string
+	 */
+	public function disconnect_url($account, $is_admin = false, $before = '', $after = '') {
+		$params = array(
+			'social_controller' => 'auth',
+			'social_action' => 'disconnect',
+			'id' => $account->id(),
+			'service' => $this->_key
+		);
+
+		if ($is_admin) {
+			$url = Social_Helper::settings_url($params);
+			$text = '<span title="'.__('Disconnect', Social::$i18n).'" class="social-disconnect social-ir">'.__('Disconnect', Social::$i18n).'</span>';
+		}
+		else {
+			$path = array();
+			foreach ($params as $key => $value) {
+				$path[] = $key . '=' . urlencode($value);
+			}
+
+			$redirect_to = $_SERVER['REQUEST_URI'];
+			if (isset($_GET['redirect_to'])) {
+				$redirect_to = $_GET['redirect_to'];
+			}
+
+			$url = site_url('?' . implode('&', $path) . '&redirect_to=' . $redirect_to);
+			$text = 'Disconnect';
+		}
+
+		return sprintf('%s<a href="%s">%s</a>%s', $before, $url, $text, $after);
 	}
 
 	/**
@@ -330,6 +370,16 @@ abstract class Social_Service {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Show full comment?
+	 *
+	 * @param  string  $type
+	 * @return bool
+	 */
+	public function show_full_comment($type) {
+		return true;
 	}
 
 	/**

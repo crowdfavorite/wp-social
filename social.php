@@ -186,7 +186,7 @@ final class Social {
 	 */
 	public function service($key) {
 		if (!isset($this->_services[$key])) {
-			throw new Exception(sprintf(__('%s is not registered to Social.', Social::$i18n), $key));
+			return false;
 		}
 
 		return $this->_services[$key];
@@ -687,7 +687,10 @@ final class Social {
 	 */
 	public function register($link) {
 		if (is_user_logged_in()) {
-			// TODO Logic to hide the register link for social-based users.
+			$commenter = get_user_meta(get_current_user_id(), 'social_commenter', true);
+			if ($commenter === '1') {
+				return '';
+			}
 		}
 
 		return $link;
@@ -702,14 +705,208 @@ final class Social {
 	 */
 	public function loginout($link) {
 		if (is_user_logged_in()) {
-			// TODO Logic to display the disconnect link for social-based users.
+			$commenter = get_user_meta(get_current_user_id(), 'social_commenter', true);
+			if ($commenter === '1') {
+				foreach ($this->services() as $key => $service) {
+					$account = reset($service->accounts());
+					if ($account) {
+						return $service->disconnect_url($account);
+					}
+				}
+			}
 		}
 		else {
-			$link = explode('>'.__('Log in'), $link);
-			$link = $link[0].' id="social_login">'.__('Log in').$link[1];
+			$link = explode('>' . __('Log in'), $link);
+			$link = $link[0] . ' id="' . Social::$prefix . 'login">' . __('Log in') . $link[1];
 		}
 
 		return $link;
+	}
+
+	/**
+	 * Overrides the default WordPress comments_template function.
+	 *
+	 * @return string
+	 */
+	public function comments_template() {
+		global $post;
+
+		if (!(is_singular() and (have_comments() or $post->comment_status == 'open'))) {
+			return;
+		}
+
+		if (!defined('SOCIAL_COMMENTS_FILE')) {
+			define('SOCIAL_COMMENTS_FILE', trailingslashit(dirname(SOCIAL_FILE)).'views/comments.php');
+		}
+
+		return SOCIAL_COMMENTS_FILE;
+	}
+
+	/**
+	 * Returns an array of comment types that display avatars.
+	 *
+	 * @param  array  $types  default WordPress types
+	 * @return array
+	 */
+	public function get_avatar_comment_types($types) {
+		$types = array_merge($types, array(
+			'wordpress',
+			'twitter',
+			'facebook',
+		));
+		return $types;
+	}
+
+	/**
+	 * Gets the avatar based on the comment type.
+	 *
+	 * @param  string  $avatar
+	 * @param  object  $comment
+	 * @param  int     $size
+	 * @param  string  $default
+	 * @param  string  $alt
+	 * @return string
+	 */
+	public function get_avatar($avatar, $comment, $size, $default, $alt) {
+		$image = null;
+		if (is_object($comment)) {
+			$service = $this->service($comment->comment_type);
+			if ($service !== false) {
+				$image = get_comment_meta($comment->comment_ID, 'social_profile_image_url', true);
+			}
+		}
+		else if ((is_string($comment) or is_int($comment)) and $default != 'force-wordpress') {
+			foreach ($this->services() as $key => $service) {
+				if (count($service->accounts())) {
+					$account = reset($service->accounts());
+					$image = $account->avatar();
+				}
+			}
+		}
+
+		if ($image !== null) {
+			$type = '';
+			if (is_object($comment)) {
+				$type = $comment->comment_type;
+			}
+			return "<img alt='{$alt}' src='{$image}' class='avatar avatar-{$size} photo {$type}' height='{$size}' width='{$size}' />";
+		}
+
+		return $avatar;
+	}
+
+	/**
+	 * Sets the comment type upon being saved.
+	 *
+	 * @param  int  $comment_ID
+	 */
+	public function comment_post($comment_ID) {
+		global $wpdb, $comment_content, $commentdata;
+		$type = false;
+		$services = $this->services();
+		if (!empty($services)) {
+			$account_id = $_POST['social_post_account'];
+
+			$url = wp_get_shortlink($commentdata['comment_post_ID']);
+			if (empty($url)) {
+				$url = home_url('?p='.$commentdata['comment_post_ID']);
+			}
+			$url .= '#comment-'.$comment_ID;
+			$url_length = strlen($url) + 1;
+			$comment_length = strlen($comment_content);
+			$combined_length = $url_length + $comment_length;
+			foreach ($services as $key => $service) {
+				$max_length = $service->max_broadcast_length();
+				if ($combined_length > $max_length) {
+					$output = substr($comment_content, 0, ($max_length - $url_length - 3)).'...';
+				} else {
+					$output = $comment_content;
+				}
+				$output .= ' '.$url;
+
+				foreach ($service->accounts() as $account) {
+					if ($account_id == $account->id()) {
+						if (isset($_POST['post_to_service'])) {
+							$id = $service->broadcast($account, $output)->id();
+							if ($id === false) {
+								// An error occurred...
+								$sql = "
+									DELETE
+									  FROM $wpdb->comments
+									 WHERE comment_ID='$comment_ID'
+								";
+								$wpdb->query($sql);
+								$commentdata = null;
+								$comment_content = null;
+
+								wp_die(sprintf(__('Error: Failed to post your comment to %s, please go back and try again.', Social::$i18n), $service->title()));
+							}
+							update_comment_meta($comment_ID, 'social_status_id', $id);
+						}
+
+						update_comment_meta($comment_ID, 'social_account_id', $account_id);
+						update_comment_meta($comment_ID, 'social_profile_image_url', $account->avatar());
+						update_comment_meta($comment_ID, 'social_comment_type', $service->key());
+
+						if ($commentdata['user_ID'] != '0') {
+							$sql = "
+								UPDATE $wpdb->comments
+								   SET comment_author='{$account->name()}',
+								       comment_author_url='{$account->url()}'
+								 WHERE comment_ID='$comment_ID'
+							";
+							$wpdb->query($sql);
+						}
+						break;
+					}
+				}
+
+				if ($type !== false) {
+					break;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Displays a comment.
+	 *
+	 * @param  object  $comment  comment object
+	 * @param  array   $args
+	 * @param  int     $depth
+	 */
+	public function comment($comment, $args, $depth) {
+		$comment_type = get_comment_meta($comment->comment_ID, 'social_comment_type', true);
+		if (empty($comment_type)) {
+			$comment_type = (empty($comment->comment_type) ? 'wordpress' : $comment->comment_type);
+		}
+		$comment->comment_type = $comment_type;
+		$GLOBALS['comment'] = $comment;
+
+		$status_url = null;
+		$service = null;
+		if (!in_array($comment_type, apply_filters('social_ignored_comment_types', array('wordpress', 'pingback')))) {
+			$service = $this->service($comment->comment_type);
+			if ($service !== false and $service->show_full_comment($comment->comment_type)) {
+				$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
+				if (!empty($status_id)) {
+					$status_url = $service->status_url(get_comment_author(), $status_id);
+				}
+
+				if ($status_url === null) {
+					$comment_type = 'wordpress';
+				}
+			}
+		}
+
+		echo Social_View::factory('comment/comment', array(
+			'comment_type' => $comment_type,
+			'comment' => $comment,
+			'service' => $service,
+			'status_url' => $status_url,
+			'depth' => $depth,
+			'args' => $args,
+		));
 	}
 
 	/**
@@ -874,6 +1071,10 @@ add_action('admin_menu', array($social, 'admin_menu'));
 add_filter('cron_schedules', array($social, 'cron_schedules'));
 add_filter('plugin_action_links', array($social, 'add_settings_link'), 10, 2);
 add_filter('redirect_post_location', array($social, 'redirect_post_location'), 10, 2);
+add_filter('comments_template', array($social, 'comments_template'));
+add_filter('get_avatar_comment_types', array($social, 'get_avatar_comment_types'));
+add_filter('get_avatar', array($social, 'get_avatar'), 10, 5);
+add_filter('register', array($social, 'register'));
 
 // Service filters
 add_filter('social_auto_load_class', array($social, 'auto_load_class'));

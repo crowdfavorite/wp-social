@@ -3,7 +3,7 @@
  * @package Social
  * @subpackage controllers
  */
-final class Social_Controller_Connect extends Social_Controller {
+final class Social_Controller_Auth extends Social_Controller {
 
 	/**
 	 * Handles the authorized response.
@@ -77,4 +77,4 @@ final class Social_Controller_Connect extends Social_Controller {
 		exit;
 	}
 
-} // End Social_Controller_Connect
+} // End Social_Controller_Auth

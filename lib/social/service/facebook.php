@@ -250,4 +250,14 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		return 'http://facebook.com/permalink.php?story_fbid='.$ids[1].'&id='.$ids[0];
 	}
 
+	/**
+	 * Show full comment?
+	 *
+	 * @param  string  $type
+	 * @return bool
+	 */
+	public function show_full_comment($type) {
+		return ($type !== 'facebook-like');
+	}
+
 } // End Social_Service_Facebook

@@ -22,7 +22,7 @@ final class Social_Service_Twitter_Account extends Social_Service_Account implem
 	 * @return string
 	 */
 	public function name() {
-		return $this->_user->name;
+		return $this->_user->screen_name;
 	}
 
 	/**

@@ -7,7 +7,7 @@ ob_start();
 	<?php else: ?>
 	<div class="social-post">
 		<div id="loading" style="display:none">
-			<input type="hidden" id="reload_url" value="<?php echo esc_url(site_url('?'.Social::$prefix.'action=reload_form&redirect_to='.get_permalink(get_the_ID()).'&post_id='.get_the_ID())); ?>" />
+			<input type="hidden" id="reload_url" value="<?php echo esc_url(site_url('?social_action=reload_form&redirect_to='.get_permalink(get_the_ID()).'&post_id='.get_the_ID())); ?>" />
 			<?php _e('Logging In...', Social::$i18n); ?>
 		</div>
 		<?php
@@ -18,7 +18,7 @@ ob_start();
 	    <?php
                     do_action('comment_form_must_log_in_after');
 			    else:
-			        Social_Comment_Form::as_html();
+			        echo Social_Comment_Form::instance(get_the_ID());
 			    endif;
             else:
                 do_action('comment_form_comments_closed');
@@ -37,13 +37,13 @@ ob_start();
 			$groups = array();
 			foreach ($comments as $comment) {
 				if (empty($comment->comment_type)) {
-					$comment_type = get_comment_meta($comment->comment_ID, Social::$prefix.'comment_type', true);
+					$comment_type = get_comment_meta($comment->comment_ID, 'social_comment_type', true);
 					if (empty($comment_type)) {
 						$comment_type = 'wordpress';
 					}
 
 					if ($comment_type != 'wordpress') {
-						$status_id = get_comment_meta($comment->comment_ID, Social::$prefix.'status_id', true);
+						$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
 						if (empty($status_id)) {
 							$comment_type = 'wordpress';
 						}
@@ -72,7 +72,7 @@ ob_start();
 			<div id="comments" class="social-comments">
 				<div class="social-last-reply-when"><?php printf(__('Last reply was %s ago', Social::$i18n), human_time_diff(strtotime($comments[(count($comments)-1)]->comment_date))); ?></div>
 				<ol class="social-commentlist">
-					<?php wp_list_comments(array('callback' => array('Social', 'comment'), 'walker' => new Social_Walker_Comment)); ?>
+					<?php wp_list_comments(array('callback' => array(Social::instance(), 'comment'), 'walker' => new Social_Walker_Comment)); ?>
 				</ol>
 			</div>
 		</div>
