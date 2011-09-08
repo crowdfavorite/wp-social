@@ -77,4 +77,31 @@ final class Social_Controller_Auth extends Social_Controller {
 		exit;
 	}
 
+	/**
+	 * Disconnects an account.
+	 *
+	 * @return void
+	 */
+	public function action_disconnect() {
+		$id = $this->request->query('id');
+		$service_key = $this->request->query('service');
+		if (defined('IS_PROFILE_PAGE')) {
+			$service = $this->social->service($service_key);
+		}
+		else {
+			$service = $this->social->service($service_key);
+			$this->social->remove_from_xmlrpc($service_key, $id);
+		}
+		$service->disconnect($id);
+
+		if (is_admin()) {
+			wp_redirect(Social_Helper::settings_url());
+		}
+		else {
+			wp_logout();
+			wp_redirect($this->request->query('redirect_to'));
+		}
+		exit;
+	}
+
 } // End Social_Controller_Auth

@@ -2,8 +2,8 @@
 /*
 Plugin Name: Social
 Plugin URI: http://mailchimp.com/social-plugin-for-wordpress/
-Description: Broadcast newly published posts and pull in dicussions using integrations with Twitter and Facebook. Brought to you by <a href="http://mailchimp.com">MailChimp</a>.
-Version: 1.0.2
+Description: Broadcast newly published posts and pull in discussions using integrations with Twitter and Facebook. Brought to you by <a href="http://mailchimp.com">MailChimp</a>.
+Version: 1.5
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com/
 */
@@ -25,7 +25,7 @@ final class Social {
 	/**
 	 * @var  string  version number
 	 */
-	public static $version = '1.0.2';
+	public static $version = '1.5';
 
 	/**
 	 * @var  string  internationalization key
@@ -311,8 +311,6 @@ final class Social {
 		if (isset($_GET['social_controller']) and $_GET['social_controller'] == 'broadcast') {
 			$this->admin_resources();
 		}
-
-		$this->run_aggregation();
 	}
 
 	/**
@@ -408,6 +406,46 @@ final class Social {
 
 				echo '<div class="error"><p>'.esc_html($message).'</p></div>';
 			}
+		}
+
+		// Log write error
+		$error = $this->option('log_write_error');
+		if ($error == '1') {
+			echo '<div class="error"><p>'.
+			     sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_deauth">[Dismiss]</a>', Social::$i18n), SOCIAL_PATH, esc_url(admin_url('?social_controller=settings&social_action=clear_log_write_error'))).
+			     '</p></div>';
+		}
+
+		// Deauthed accounts
+		$deauthed = $this->option('deauthed');
+		if (!empty($deauthed)) {
+			foreach ($deauthed as $service => $data) {
+				foreach ($data as $id => $message) {
+					echo '<div class="error"><p>'.$message.' <a href="'.esc_url(admin_url('?social_controller=settings&social_action=clear_deauth&id='.$id.'&service='.$service)).'" class="social_deauth">[Dismiss]</a></p></div>';
+				}
+			}
+		}
+
+		// 1.5 Upgrade?
+		$upgrade_1_5 = get_user_meta(get_current_user_id(), 'social_1.5_upgrade', true);
+		if (!empty($upgrade_1_5)) {
+			$output = 'Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your ';
+			if (current_user_can('manage_options')) {
+				$output .= '<a href="%s">global</a> and ';
+			}
+			$output .= '<a href="%s">personal</a> accounts.';
+
+			$output = __($output, Social::$i18n);
+			if (current_user_can('manage_options')) {
+				$output = sprintf($output, esc_url(Social_Helper::settings_url()), esc_url(admin_url('profile.php#social-networks')));
+			}
+			else {
+				$output = sprintf($output, esc_url(admin_url('profile.php#social-networks')));
+			}
+
+			$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=clear_1_5_upgrade')), 'social_deauth');
+
+			echo '<div class="error"><p>'.$output.' '.$dismiss.'</p></div>';
 		}
 	}
 
@@ -995,6 +1033,31 @@ final class Social {
 			}
 
 			Social::option('installed_version', Social::$version, true);
+		}
+	}
+
+	/**
+	 * Removes an account from the XMLRPC accounts.
+	 *
+	 * @param  string  $service
+	 * @param  int     $id
+	 * @return void
+	 */
+	public function remove_from_xmlrpc($service, $id) {
+		// Remove from the XML-RPC
+		$xmlrpc = $this->option('xmlrpc_accounts');
+		if (!empty($xmlrpc) and isset($xmlrpc[$service])) {
+			$ids = array_values($xmlrpc[$service]);
+			if (in_array($id, $ids)) {
+				$_ids = array();
+				foreach ($ids as $id) {
+					if ($id != $_GET['id']) {
+						$_ids[] = $id;
+					}
+				}
+				$xmlrpc[$_GET['service']] = $_ids;
+				update_option('social_xmlrpc_accounts', $xmlrpc);
+			}
 		}
 	}
 

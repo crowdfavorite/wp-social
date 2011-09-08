@@ -97,10 +97,10 @@ abstract class Social_Service {
 			}
 
 			$url = site_url('?' . implode('&', $path) . '&redirect_to=' . $redirect_to);
-			$text = 'Disconnect';
+			$text = __('Disconnect', Social::$i18n);
 		}
 
-		return sprintf('%s<a href="%s">%s</a>%s', $before, $url, $text, $after);
+		return sprintf('%s<a href="%s">%s</a>%s', $before, esc_url($url), $text, $after);
 	}
 
 	/**
@@ -380,6 +380,34 @@ abstract class Social_Service {
 	 */
 	public function show_full_comment($type) {
 		return true;
+	}
+
+	/**
+	 * Disconnects an account from the user's account.
+	 *
+	 * @param  int  $id
+	 * @return void
+	 */
+	public function disconnect($id) {
+		if (!is_admin() or defined('IS_PROFILE_PAGE')) {
+			$accounts = get_user_meta(get_current_user_id(), 'social_accounts', true);;
+			if (isset($accounts[$this->_key][$id])) {
+				unset($accounts[$this->_key][$id]);
+				update_user_meta(get_current_user_id(), 'social_accounts', $accounts);
+			}
+		}
+		else {
+			$accounts = Social::instance()->option('accounts');
+			if (isset($accounts[$this->_key][$id])) {
+				unset($accounts[$this->_key][$id]);
+
+				if (!count($accounts[$this->_key])) {
+					unset($accounts[$this->_key]);
+				}
+
+				Social::instance()->option('accounts', $accounts, true);
+			}
+		}
 	}
 
 	/**

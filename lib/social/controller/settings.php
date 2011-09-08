@@ -61,4 +61,39 @@ final class Social_Controller_Settings extends Social_Controller {
 		));
 	}
 
+	/**
+	 * Clears the 1.5 upgrade notice.
+	 *
+	 * @return void
+	 */
+	public function action_clear_1_5_upgrade() {
+		delete_user_meta(get_current_user_id(), 'social_1.5_upgrade');
+	}
+
+	/**
+	 * Clears the deauthorized notice.
+	 *
+	 * @return void
+	 */
+	public function action_clear_deauth() {
+		$id = $_GET['clear_deauth'];
+		$service = $_GET['service'];
+		$deauthed = get_option('social_deauthed', array());
+		if (isset($deauthed[$service][$id])) {
+			unset($deauthed[$service][$id]);
+			update_option('social_deauthed', $deauthed);
+
+			$this->social->remove_from_xmlrpc($service, $id);
+		}
+	}
+
+	/**
+	 * Clears the log write error notice.
+	 *
+	 * @return void
+	 */
+	public function action_clear_log_write_error() {
+		delete_option('social_log_write_error');
+	}
+
 } // End Social_Controller_Settings

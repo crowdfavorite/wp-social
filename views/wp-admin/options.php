@@ -25,7 +25,7 @@
 
 								$profile_url = esc_url($account->url());
 								$profile_name = esc_html($account->name());
-								$disconnect = '';
+								$disconnect = $service->disconnect_url($account, true);
 
 								$name = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
 
