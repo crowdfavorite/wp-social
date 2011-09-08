@@ -9,7 +9,7 @@
 				$profile_name = esc_html($account->name());
 
 				$name = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
-				$disconnect = '';
+				$disconnect = $service->disconnect_url($account, true);
 				$items .= '
 					<li>
 						<div class="social-'.$key.'-icon"><i></i></div>
