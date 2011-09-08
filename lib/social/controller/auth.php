@@ -11,7 +11,6 @@ final class Social_Controller_Auth extends Social_Controller {
 	 * @return void
 	 */
 	public function action_authorized() {
-		// TODO Test with magic_quotes_gpc on/off
 		$data = stripslashes($this->request->post('data'));
 		if (strpos($data, "\r") !== false) {
 			$data = str_replace(array("\r\n", "\r"), "\n", $data);
@@ -25,6 +24,7 @@ final class Social_Controller_Auth extends Social_Controller {
 
 		$class = 'Social_Service_'.$data->service.'_Account';
 		$account = new $class($account);
+		$account->personal(true);
 
 		$service = $this->social->service($data->service)->account($account);
 		if (is_admin()) {
@@ -54,9 +54,9 @@ final class Social_Controller_Auth extends Social_Controller {
 			$this->remove_from_xmlrpc($data->service, $account->id());
 		}
 
-		// 1.0.2 Upgrade
+		// 1.5 Upgrade
 		if ($data->service == 'facebook') {
-			delete_user_meta(get_current_user_id(), 'social_1.0.2_upgrade');
+			delete_user_meta(get_current_user_id(), 'social_1.5_upgrade');
 		}
 
 		$pages = array();
@@ -100,6 +100,34 @@ final class Social_Controller_Auth extends Social_Controller {
 		else {
 			wp_logout();
 			wp_redirect($this->request->query('redirect_to'));
+		}
+		exit;
+	}
+
+	/**
+	 * Renders the new comment form.
+	 *
+	 * @return void
+	 */
+	public function action_reload_form() {
+		if (!$this->request->is_ajax()) {
+			exit;
+		}
+		
+		if (!is_user_logged_in()) {
+			echo json_encode(array(
+				'result' => 'error',
+				'html' => 'not logged in',
+			));
+		}
+		else {
+			$post_id = $this->request->query('post_id');
+			$form = trim(Social_Comment_Form::instance($post_id)->render());
+			echo json_encode(array(
+				'result' => 'success',
+				'html' => $form,
+				'disconnect_url' => wp_loginout('', false)
+			));
 		}
 		exit;
 	}

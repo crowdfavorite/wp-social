@@ -1,7 +1,7 @@
 <div class="social-identity">
 	<?php
-		echo get_avatar($current_user->ID, 40, 'force-wordpress');
 		if (current_user_can('manage_options')) {
+		echo get_avatar($current_user->ID, 40, 'force-wordpress');
 	?>
 	<p class="social-input-row">
 		<?php if (count($accounts)) { ?>
@@ -32,6 +32,8 @@
 	<?php
 		}
 		else {
+			echo get_avatar($current_user->ID, 40);
+			
 			foreach ($services as $key => $service) {
 				if (count($service->accounts())) {
 					$account = reset($service->accounts());
@@ -39,7 +41,7 @@
 	<p class="social-input-row">
 		<span class="social-<?php echo $key; ?>-icon">
 			<?php echo esc_html($account->name()); ?>
-			<small class="social-psst"><?php echo esc_html($service->disconnect_url($account)); ?></small>
+			<small class="social-psst"><?php echo $service->disconnect_url($account); ?></small>
 		</span>
 	</p>
 	<input type="hidden" name="social_post_account" value="<?php echo $account->id(); ?>" />
