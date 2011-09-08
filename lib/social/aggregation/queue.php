@@ -39,7 +39,7 @@ final class Social_Aggregation_Queue {
 	 */
 	public function runnable() {
 		$queue = array();
-		$current_timestamp = current_time('timestamp');
+		$current_timestamp = current_time('timestamp', 1);
 		foreach ($this->_queue as $timestamp => $posts) {
 			if ($timestamp <= $current_timestamp) {
 				$queue[$timestamp] = $posts;
@@ -78,6 +78,7 @@ final class Social_Aggregation_Queue {
 				}
 				else {
 					$next_run = $timestamp;
+					$interval = $key;
 				}
 			}
 
@@ -95,6 +96,12 @@ final class Social_Aggregation_Queue {
 				$this->_queue[$next_run][$post_id] = $interval;
 				update_post_meta($post_id, '_social_aggregation_next_run', $next_run);
 			}
+
+			Social::log('Post #:post_id added to the aggregation queue. (Interval: :interval, Next run: :next_run)', array(
+				'post_id' => $post_id,
+				'interval' => $interval,
+				'next_run' => date('F j, Y, g:i a', ($next_run + (get_option('gmt_offset') * 3600))),
+			));
 		}
 
 		return $this;
@@ -134,6 +141,10 @@ final class Social_Aggregation_Queue {
 		}
 
 		delete_post_meta($post_id, '_social_aggregation_next_run');
+
+		Social::log('Post #:post_id removed from the aggregation queue.', array(
+			'post_id' => $post_id
+		));
 
 		return $this;
 	}

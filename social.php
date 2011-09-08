@@ -311,6 +311,8 @@ final class Social {
 		if (isset($_GET['social_controller']) and $_GET['social_controller'] == 'broadcast') {
 			$this->admin_resources();
 		}
+
+		$this->run_aggregation();
 	}
 
 	/**
@@ -321,15 +323,15 @@ final class Social {
 	public function admin_init() {
 		// Schedule CRONs
 		if ($this->option('system_crons') != '1') {
-			if (wp_next_scheduled('social_cron_15_core') === false) {
-				wp_schedule_event(time() + 900, 'every15min', 'social_cron_15_core');
+			if (wp_next_scheduled('social_cron_15_init') === false) {
+				wp_schedule_event(time() + 900, 'every15min', 'social_cron_15_init');
 			}
 
-			if (wp_next_scheduled('social_cron_60_core') === false) {
-				wp_schedule_event(time() + 900, 'hourly', 'social_cron_60_core');
+			if (wp_next_scheduled('social_cron_60_init') === false) {
+				wp_schedule_event(time() + 3600, 'hourly', 'social_cron_60_init');
 			}
 
-			$this->request(admin_url('?social_controller=cron&social_action=check_crons'));
+			$this->request(wp_nonce_url(admin_url('?social_controller=cron&social_action=check_crons')));
 		}
 	}
 
@@ -632,7 +634,7 @@ final class Social {
 	 * @return void
 	 */
 	public function cron_15_init() {
-		$this->request(site_url('?social_controller=cron&social_action=cron_15'));
+		$this->request(wp_nonce_url(site_url('?social_controller=cron&social_action=cron_15')));
 	}
 
 	/**
@@ -641,7 +643,7 @@ final class Social {
 	 * @return void
 	 */
 	public function cron_60_init() {
-		$this->request(site_url('?social_controller=cron&social_action=cron_60'));
+		$this->request(wp_nonce_url(site_url('?social_controller=cron&social_action=cron_60')));
 	}
 
 	/**
@@ -657,7 +659,7 @@ final class Social {
 				$post = get_post($id);
 				if ($post !== null) {
 					$queue->add($id, $interval)->save();
-					$this->request(site_url('?social_controller=aggregate&social_action=run&post_id='.$id));
+					$this->request(site_url('?social_controller=aggregation&social_action=run&post_id='.$id));
 				}
 				else {
 					$queue->remove($id, $timestamp)->save();
@@ -847,6 +849,7 @@ $social = Social::instance();
 // General Actions
 add_action('init', array($social, 'init'), 1);
 add_action('init', array($social, 'request_handler'), 2);
+add_action('load-settings_page_social', array($social, 'admin_init'), 1);
 add_action('load-'.basename(SOCIAL_FILE), array($social, 'admin_init'), 1);
 add_action('comment_post', array($social, 'comment_post'));
 add_action('admin_notices', array($social, 'admin_notices'));

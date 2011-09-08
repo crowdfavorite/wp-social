@@ -18,27 +18,7 @@ final class Social_Controller_CRON extends Social_Controller {
 			wp_die('Oops, please try again.');
 		}
 
-		Social::log('CRON 15: Initiated.');
-		if ($this->lock()) {
-			try {
-				Social::log('CRON 15: Lock set.');
-
-				do_action('social_cron_15');
-
-				Social::log('CRON 15: Finished');
-			}
-			catch (Exception $e) {
-				Social::log('CRON 15: Failed.');
-				throw $e;
-			}
-
-			if ($this->unlock()) {
-				Social::log('CRON 15: Lock removed.');
-			}
-		}
-		else {
-			Social::log('CRON 15: Failed.');
-		}
+		Social_CRON::instance('cron_15')->execute();
 	}
 
 	/**
@@ -52,27 +32,7 @@ final class Social_Controller_CRON extends Social_Controller {
 			wp_die('Oops, please try again.');
 		}
 
-		Social::log('CRON 60: Initiated.');
-		if ($this->lock()) {
-			try {
-				Social::log('CRON 60: Lock set.');
-
-				do_action('social_cron_60');
-
-				Social::log('CRON 60: Finished');
-			}
-			catch (Exception $e) {
-				Social::log('CRON 60: Failed.');
-				throw $e;
-			}
-
-			if ($this->unlock()) {
-				Social::log('CRON 60: Lock removed.');
-			}
-		}
-		else {
-			Social::log('CRON 60: Failed.');
-		}
+		Social_CRON::instance('cron_60')->execute();
 	}
 
 	/**
@@ -104,63 +64,6 @@ final class Social_Controller_CRON extends Social_Controller {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Creates the CRON lock.
-	 *
-	 * @return bool
-	 */
-	private function lock() {
-		$locked = false;
-		$file = trailingslashit(Social::$cron_lock_dir).$this->request->action().'.txt';
-
-		$timestamp = 0;
-		if (is_file($file)) {
-			$timestamp = file_get_contents($file);
-		}
-
-		try {
-			$fp = fopen($file, 'w+');
-			if (flock($fp, LOCK_EX)) {
-				$locked = true;
-				fwrite($fp, time());
-				fclose($fp);
-			}
-			else if (!empty($timestamp) and time() - $timestamp >= 3600) {
-				$this->unlock();
-				$this->lock();
-			}
-		}
-		catch (Exception $e) {
-			Social::log('Failed to set lock for '.$this->request->action());
-		}
-
-		return $locked;
-	}
-
-	/**
-	 * Removes the CRON lock.
-	 *
-	 * @return bool
-	 */
-	private function unlock() {
-		$unlocked = false;
-		$file = trailingslashit(Social::$cron_lock_dir).$this->request->action().'.txt';
-
-		try {
-			$fp = fopen($file, 'r+');
-			flock($fp, LOCK_UN);
-			ftruncate($fp, 0);
-			fclose($fp);
-
-			$unlocked = true;
-		}
-		catch (Exception $e) {
-			Social::log('Failed to unlock lock for '.$this->request->action());
-		}
-
-		return $unlocked;
 	}
 
 } // End Social_Controller_CRON

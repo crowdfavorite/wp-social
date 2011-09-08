@@ -38,19 +38,28 @@ final class Social_CRON {
 	protected $_key = '';
 
 	/**
+	 * @var  bool  enabled flag
+	 */
+	protected $_enabled = true;
+
+	/**
 	 * Sets the CRON lock directory.
 	 *
 	 * @param  string  $key
 	 */
 	public function __construct($key) {
 		// CRON Lock Location
-		if (!is_writable(SOCIAL_PATH)) {
+		if (!is_writable($this->_cron_lock_dir)) {
 			$upload_dir = wp_upload_dir();
 			if (is_writable($upload_dir['basedir'])) {
 				$this->_cron_lock_dir = $upload_dir['basedir'];
 			}
 			else if (isset($_GET['page']) and $_GET['page'] == 'social.php') {
 				add_action('admin_notices', array($this, 'display_cron_lock_write_error'));
+			}
+
+			if (!is_writable($this->_cron_lock_dir)) {
+				$this->_enabled = false;
 			}
 		}
 
@@ -88,54 +97,91 @@ final class Social_CRON {
 	 * @return void
 	 */
 	public function execute() {
-		// TODO Social_CRON::execute()
+		$prefix = strtoupper(str_replace('_', ' ', $this->_key)).': ';
+
+		if (!$this->_enabled) {
+			Social::log($prefix.'Failed to write lock.');
+			return;
+		}
+
+		Social::log($prefix.'Initiated.');
+		if ($this->lock()) {
+			try {
+				Social::log($prefix.'Lock set.');
+
+				do_action('social_'.$this->_key);
+
+				Social::log($prefix.'Finished');
+			}
+			catch (Exception $e) {
+				Social::log($prefix.'Failed.');
+				throw $e;
+			}
+
+			if ($this->unlock()) {
+				Social::log($prefix.'Lock removed.');
+			}
+		}
+		else {
+			Social::log($prefix.'Failed.');
+		}
 	}
 
 	/**
 	 * Creates the file lock.
 	 *
-	 * @param  string  $cron
 	 * @return bool
 	 */
-	private function cron_lock($cron) {
+	private function lock() {
 		$locked = false;
-		$file = trailingslashit($this->cron_lock_dir).$cron.'.txt';
+		$file = trailingslashit(Social::$cron_lock_dir).$this->_key.'.txt';
 
 		$timestamp = 0;
 		if (is_file($file)) {
 			$timestamp = file_get_contents($file);
 		}
 
-		$fp = fopen($file, 'w+');
-		if (flock($fp, LOCK_EX)) {
-			$locked = true;
-			fwrite($fp, time());
+		try {
+			$fp = fopen($file, 'w+');
+			if (flock($fp, LOCK_EX)) {
+				$locked = true;
+				fwrite($fp, time());
+				fclose($fp);
+			}
+			else if (!empty($timestamp) and time() - $timestamp >= 3600) {
+				$this->unlock();
+				$this->lock();
+			}
 		}
-		else if (!empty($timestamp) and time() - $timestamp >= 3600) {
-			$locked = true;
-			$this->cron_unlock($cron);
+		catch (Exception $e) {
+			Social::log('Failed to set lock for '.$this->_key);
 		}
 
-		fclose($fp);
-
-		Social::log('CRON '.$cron.' LOCK COMPLETE.');
 		return $locked;
 	}
 
 	/**
 	 * Unlocks the file.
 	 *
-	 * @param  string  $cron
 	 * @return bool
 	 */
-	private function cron_unlock($cron) {
-		$file = trailingslashit($this->cron_lock_dir).$cron.'.txt';
-		$fp = fopen($file, 'r+');
-		ftruncate($fp, 0);
-		flock($fp, LOCK_UN);
-		fclose($fp);
+	private function unlock() {
+		$unlocked = false;
+		$file = trailingslashit(Social::$cron_lock_dir).$this->_key.'.txt';
 
-		Social::log('CRON '.$cron.' UNLOCK COMPLETE.');
+		try {
+			$fp = fopen($file, 'r+');
+			flock($fp, LOCK_UN);
+			ftruncate($fp, 0);
+			fclose($fp);
+
+			$unlocked = true;
+		}
+		catch (Exception $e) {
+			Social::log('Failed to unlock lock for '.$this->_key);
+		}
+
+		return $unlocked;
 	}
 
 } // End Social_CRON
