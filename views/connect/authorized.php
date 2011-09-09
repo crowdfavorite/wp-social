@@ -7,7 +7,7 @@
 <?php if ($show_pages): ?>
 <?php else: ?>
 <script type="text/javascript">
-	window.opener.reloadSocialHTML();
+	window.opener.reloadSocialHTML(<?php echo (!$save ? 'false' : 'true'); ?>;
 </script>
 <?php endif; ?>
 </body>

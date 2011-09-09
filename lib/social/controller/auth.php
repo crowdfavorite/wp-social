@@ -63,7 +63,9 @@ final class Social_Controller_Auth extends Social_Controller {
 		}
 
 		$pages = array();
-		$view = Social_View::factory('connect/authorized');
+		$view = Social_View::factory('connect/authorized', array(
+			'save' => $save,
+		));
 		if ($this->request->post('with_manage_pages') === 'true') {
 			$data = array(
 				'title' => '',

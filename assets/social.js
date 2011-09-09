@@ -1,31 +1,36 @@
 var $window = null;
 var $auth_window = null;
-function reloadSocialHTML() {
+function reloadSocialHTML(saved) {
 	$auth_window.close();
 	if (!$window.hasClass('comments')) {
 		window.location.reload();
 	}
 	else {
-		var $parent = jQuery('.social-post');
-		jQuery.get($parent.find('#reload_url').val(), {}, function(response){
-			if (response.result == 'success') {
-				// Add logged-in body class since we're not going to be refreshing the page.
-				jQuery('body').addClass('logged-in');
+		if (saved == 'false') {
+			alert('Failed to authorize this account. Please try again.');
+		}
+		else {
+			var $parent = jQuery('.social-post');
+			jQuery.get($parent.find('#reload_url').val(), {}, function(response){
+				if (response.result == 'success') {
+					// Add logged-in body class since we're not going to be refreshing the page.
+					jQuery('body').addClass('logged-in');
 
-				var $cancel = jQuery('#cancel-comment-reply-link');
-				var $parent = $cancel.closest('li');
-				$cancel.click();
-				jQuery('#respond').replaceWith(response.html);
-				$parent.find('.comment-reply-link').click();
+					var $cancel = jQuery('#cancel-comment-reply-link');
+					var $parent = $cancel.closest('li');
+					$cancel.click();
+					jQuery('#respond').replaceWith(response.html);
+					$parent.find('.comment-reply-link').click();
 
-				jQuery('#primary').find('#social_login').parent().html(response.disconnect_url);
-			}
-		}, 'json');
+					jQuery('#primary').find('#social_login').parent().html(response.disconnect_url);
+				}
+			}, 'json');
 
-		// Fix for the missing reply link
-		jQuery('#cancel-comment-reply-link').live('click', function(){
-			jQuery('.comment-reply-link').show();
-		});
+			// Fix for the missing reply link
+			jQuery('#cancel-comment-reply-link').live('click', function(){
+				jQuery('.comment-reply-link').show();
+			});
+		}
 	}
 }
 
