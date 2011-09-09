@@ -26,6 +26,7 @@ final class Social_Controller_Auth extends Social_Controller {
 		$account = new $class($account);
 		$account->personal(true);
 
+		$save = true;
 		$service = $this->social->service($data->service)->account($account);
 		if (is_admin()) {
 			if (defined('IS_PROFILE_PAGE')) {
@@ -36,13 +37,15 @@ final class Social_Controller_Auth extends Social_Controller {
 			}
 		}
 		else {
-			if (!is_user_logged_in()) {
-				$service->create_user($account);
+			if (!is_user_logged_in() and !$service->create_user($account)) {
+				$save = false;
 			}
 		}
 
 		// Save the service
-		$service->save($account);
+		if (!$save) {
+			$service->save($account);
+		}
 
 		// Remove the service from the errors?
 		$deauthed = get_option('social_deauthed');

@@ -107,34 +107,39 @@ abstract class Social_Service {
 	 * Creates a WordPress user with the passed in account.
 	 *
 	 * @param  Social_Service_Account  $account
-	 * @return int
+	 * @return int|bool
 	 */
 	public function create_user($account) {
-		$user = get_userdatabylogin($this->_key.'_'.$account->username());
-		if ($user === false) {
-			$id = wp_create_user($this->_key.'_'.$account->username(), wp_generate_password(20, false), $this->_key.'.'.$account->username.'@example.com');
+		$username = $account->username();
+		if (!empty($username)) {
+			$user = get_userdatabylogin($this->_key.'_'.$username);
+			if ($user === false) {
+				$id = wp_create_user($this->_key.'_'.$username, wp_generate_password(20, false), $this->_key.'.'.$username.'@example.com');
 
-			$role = 'subscriber';
-			if (get_option('users_can_register') == '1') {
-				$role = get_option('default_role');
+				$role = 'subscriber';
+				if (get_option('users_can_register') == '1') {
+					$role = get_option('default_role');
+				}
+
+				$user = new WP_User($id);
+				$user->set_role($role);
+				$user->show_admin_bar_front = 'false';
+				wp_update_user(get_object_vars($user));
+			}
+			else {
+				$id = $user->ID;
 			}
 
-			$user = new WP_User($id);
-			$user->set_role($role);
-			$user->show_admin_bar_front = 'false';
-			wp_update_user(get_object_vars($user));
-		}
-		else {
-			$id = $user->ID;
+			// Log the user in
+			wp_set_current_user($id);
+			add_filter('auth_cookie_expiration', array($this, 'auth_cookie_expiration'));
+			wp_set_auth_cookie($id, true);
+			remove_filter('auth_cookie_expiration', array($this, 'auth_cookie_expiration'));
+
+			return $id;
 		}
 
-		// Log the user in
-		wp_set_current_user($id);
-		add_filter('auth_cookie_expiration', array($this, 'auth_cookie_expiration'));
-		wp_set_auth_cookie($id, true);
-		remove_filter('auth_cookie_expiration', array($this, 'auth_cookie_expiration'));
-
-		return $id;
+		return false;
 	}
 
 	/**
