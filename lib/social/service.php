@@ -88,7 +88,7 @@ abstract class Social_Service {
 		else {
 			$path = array();
 			foreach ($params as $key => $value) {
-				$path[] = $key . '=' . urlencode($value);
+				$path[] = $key.'='.urlencode($value);
 			}
 
 			$redirect_to = $_SERVER['REQUEST_URI'];
@@ -96,7 +96,7 @@ abstract class Social_Service {
 				$redirect_to = $_GET['redirect_to'];
 			}
 
-			$url = site_url('?' . implode('&', $path) . '&redirect_to=' . $redirect_to);
+			$url = site_url('?'.implode('&', $path).'&redirect_to='.$redirect_to);
 			$text = __('Disconnect', Social::$i18n);
 		}
 
