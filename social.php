@@ -305,12 +305,6 @@ final class Social {
 				Social::$cron_lock_dir = $upload_dir['basedir'];
 			}
 		}
-
-		// TODO I don't like this, look into an alternative way. -AE
-		// Hack for the CSS on the broadcast options page
-		if (isset($_GET['social_controller']) and $_GET['social_controller'] == 'broadcast') {
-			$this->admin_resources();
-		}
 	}
 
 	/**
