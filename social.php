@@ -1062,6 +1062,40 @@ final class Social {
 	}
 
 	/**
+	 * Recursively applies wp_kses() to an array/stdClass.
+	 * 
+	 * @param  mixed  $object
+	 * @return mixed
+	 */
+	public function kses($object) {
+		if (is_object($object)) {
+			$_object = new stdClass;
+		}
+		else {
+			$_object = array();
+		}
+
+		foreach ($object as $key => $val) {
+			if (is_object($val)) {
+				$_object->$key = $this->kses($val);
+			}
+			else if (is_array($val)) {
+				$_object[$key] = $this->kses($val);
+			}
+			else {
+				if (is_object($_object)) {
+					$_object->$key = wp_kses($val, array());
+				}
+				else {
+					$_object[$key] = wp_kses($val, array());
+				}
+			}
+		}
+
+		return $_object;
+	}
+
+	/**
 	 * Handles the remote timeout requests for Social.
 	 *
 	 * @param  string  $url   url to request

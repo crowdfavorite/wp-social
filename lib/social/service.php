@@ -112,7 +112,6 @@ abstract class Social_Service {
 	public function create_user($account) {
 		$username = $account->username();
 		if (!empty($username)) {
-			$username = wp_kses($username, array());
 			$user = get_userdatabylogin($this->_key.'_'.$username);
 			if ($user === false) {
 				$id = wp_create_user($this->_key.'_'.$username, wp_generate_password(20, false), $this->_key.'.'.$username.'@example.com');
