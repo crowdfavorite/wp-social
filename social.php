@@ -33,14 +33,14 @@ final class Social {
 	public static $i18n = 'social';
 
 	/**
-	 * @var  Social_Log  logger
-	 */
-	public static $log = null;
-
-	/**
 	 * @var  string  CRON lock directory.
 	 */
 	public static $cron_lock_dir = null;
+
+	/**
+	 * @var  Social_Log  logger
+	 */
+	private static $log = null;
 
 	/**
 	 * @var  array  default options
