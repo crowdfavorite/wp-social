@@ -11,6 +11,7 @@ final class Social_Controller_Auth extends Social_Controller {
 	 * @return void
 	 */
 	public function action_authorized() {
+		// Need to call stripslashes as Sopresto is adding slashes onto the payload.
 		$data = stripslashes($this->request->post('data'));
 		if (strpos($data, "\r") !== false) {
 			$data = str_replace(array("\r\n", "\r"), "\n", $data);
