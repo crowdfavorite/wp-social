@@ -16,6 +16,18 @@ final class Social_Log {
 	public static function factory($file = null) {
 		if ($file == null) {
 			$file = SOCIAL_PATH.'debug_log.txt';
+
+			// Attempt to create the file if it doesn't exist.
+			if (is_writable(SOCIAL_PATH)) {
+				try {
+					$fh = fopen($file, 'w');
+					fclose($fh);
+				}
+				catch (Exception $e) {
+					// Failed to create the file, oh well...
+					$file = null;
+				}
+			}
 		}
 		return new Social_Log($file);
 	}
