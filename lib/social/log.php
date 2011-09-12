@@ -15,9 +15,23 @@ final class Social_Log {
 	 */
 	public static function factory($file = null) {
 		if ($file == null) {
-			$file = SOCIAL_PATH.'log.txt';
+			$file = SOCIAL_PATH.'debug_log.txt';
 		}
-		return new Social_Log;
+		return new Social_Log($file);
+	}
+
+	/**
+	 * @var  string  log file
+	 */
+	private $_file = '';
+
+	/**
+	 * Sets the log pile path.
+	 *
+	 * @param  string  $file
+	 */
+	public function __construct($file = null) {
+		$this->_file = $file;
 	}
 
 	/**
@@ -38,7 +52,12 @@ final class Social_Log {
 			}
 		}
 
-		error_log('[SOCIAL] '.$message);
+		if (is_writable($this->_file)) {
+			error_log('[SOCIAL] '.$message."\n", 3, $this->_file);
+		}
+		else {
+			error_log('[SOCIAL] '.$message);
+		}
 	}
 
 } // End Social_Log
