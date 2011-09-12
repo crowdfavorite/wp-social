@@ -45,7 +45,7 @@ final class Social_Controller_Auth extends Social_Controller {
 		}
 
 		// Save the service
-		if (!$save) {
+		if ($save) {
 			$service->save($account);
 		}
 
