@@ -50,8 +50,8 @@ final class Social {
 		'install_date' => false,
 		'installed_version' => false,
 		'broadcast_format' => '{title}: {content} {url}',
-		'twitter_anywhere_api_key' => '',
-		'system_cron_api_key' => '',
+		'twitter_anywhere_api_key' => null,
+		'system_cron_api_key' => null,
 		'system_crons' => '0'
 	);
 
