@@ -111,6 +111,7 @@ abstract class Social_Service {
 	 */
 	public function create_user($account) {
 		$username = $account->username();
+		$username = str_replace(' ', '_', $username);
 		if (!empty($username)) {
 			$user = get_userdatabylogin($this->_key.'_'.$username);
 			if ($user === false) {
