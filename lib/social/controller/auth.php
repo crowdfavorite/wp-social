@@ -11,6 +11,14 @@ final class Social_Controller_Auth extends Social_Controller {
 	 * @return void
 	 */
 	public function action_authorized() {
+		if (!wp_verify_nonce($this->request->query('_nonce', 'social_authentication'))) {
+			echo json_encode(array(
+				'result' => 'error',
+				'message' => 'Invalid nonce',
+			));
+			exit;
+		}
+
 		// Need to call stripslashes as Sopresto is adding slashes onto the payload.
 		$data = stripslashes($this->request->post('data'));
 		if (strpos($data, "\r") !== false) {
@@ -28,7 +36,6 @@ final class Social_Controller_Auth extends Social_Controller {
 		$account = new $class($account);
 		$account->personal(true);
 
-		$save = true;
 		$service = $this->social->service($data->service)->account($account);
 		if (is_admin()) {
 			if (defined('IS_PROFILE_PAGE')) {
@@ -38,49 +45,37 @@ final class Social_Controller_Auth extends Social_Controller {
 				$account->universal(true);
 			}
 		}
-		else {
-			if (!is_user_logged_in() and !$service->create_user($account)) {
-				$save = false;
-			}
-		}
 
-		// Save the service
-		if ($save) {
+		$user_id = $service->create_user($account, $this->request->query('_nonce'));
+		if ($user_id !== false) {
 			$service->save($account);
-		}
 
-		// Remove the service from the errors?
-		$deauthed = get_option('social_deauthed');
-		if (isset($deauthed[$data->service][$account->id()])) {
-			unset($deauthed[$data->service][$account->id()]);
-			update_option('social_deauthed', $deauthed);
+			// Remove the service from the errors?
+			$deauthed = get_option('social_deauthed');
+			if (isset($deauthed[$data->service][$account->id()])) {
+				unset($deauthed[$data->service][$account->id()]);
+				update_option('social_deauthed', $deauthed);
 
-			// Remove from the global broadcast content as well.
-			$this->remove_from_xmlrpc($data->service, $account->id());
-		}
+				// Remove from the global broadcast content as well.
+				$this->remove_from_xmlrpc($data->service, $account->id());
+			}
 
-		// 1.5 Upgrade
-		if ($data->service == 'facebook') {
-			delete_user_meta(get_current_user_id(), 'social_1.5_upgrade');
-		}
+			// 1.5 Upgrade
+			if ($data->service == 'facebook') {
+				delete_user_meta($user_id, 'social_1.5_upgrade');
+			}
 
-		$pages = array();
-		$view = Social_View::factory('connect/authorized', array(
-			'save' => $save,
-		));
-		if ($this->request->post('with_manage_pages') === 'true') {
-			$data = array(
-				'title' => '',
-				'show_pages' => true,
-			);
+			echo json_encode(array(
+				'result' => 'success',
+				'message' => 'User created',
+			));
 		}
 		else {
-			$data = array(
-				'title' => 'Authorized',
-				'show_pages' => false,
-			);
+			echo json_encode(array(
+				'result' => 'error',
+				'message' => 'Failed to create user',
+			));
 		}
-		echo $view->set($data);
 		exit;
 	}
 
@@ -120,20 +115,37 @@ final class Social_Controller_Auth extends Social_Controller {
 		if (!$this->request->is_ajax()) {
 			exit;
 		}
-		
-		if (!is_user_logged_in()) {
-			echo json_encode(array(
-				'result' => 'error',
-				'html' => 'not logged in',
-			));
-		}
-		else {
+
+		// Find the user by NONCE.
+		global $wpdb;
+		$user_id = $wpdb->get_var($wpdb->prepare("
+			SELECT user_id
+			  FROM $wpdb->usermeta
+			 WHERE meta_key = %s
+		", 'social_auth_nonce_'.$_COOKIE['social_auth_nonce']));
+
+		if ($user_id !== null) {
+			// Log the user in
+			wp_set_current_user($user_id);
+			add_filter('auth_cookie_expiration', array($this->social, 'auth_cookie_expiration'));
+			wp_set_auth_cookie($user_id, true);
+			remove_filter('auth_cookie_expiration', array($this->social, 'auth_cookie_expiration'));
+
 			$post_id = $this->request->query('post_id');
 			$form = trim(Social_Comment_Form::instance($post_id)->render());
 			echo json_encode(array(
 				'result' => 'success',
 				'html' => $form,
 				'disconnect_url' => wp_loginout('', false)
+			));
+
+			delete_user_meta($user_id, 'social_auth_nonce_'.$_COOKIE['social_auth_nonce']);
+			setcookie('social_auth_nonce', '', -3600, '/');
+		}
+		else {
+			echo json_encode(array(
+				'result' => 'error',
+				'html' => 'not logged in',
 			));
 		}
 		exit;

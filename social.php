@@ -288,6 +288,12 @@ final class Social {
 			if (SOCIAL_COMMENTS_JS !== false) {
 				wp_enqueue_script('jquery');
 			}
+
+			// Set NONCE cookie.
+			if (!isset($_COOKIE['social_auth_nonce'])) {
+				$nonce = wp_create_nonce('social_authentication');
+				setcookie('social_auth_nonce_'.$nonce, true, 0, '/');
+			}
 		}
 
 		// JS/CSS
@@ -306,7 +312,7 @@ final class Social {
 			}
 		}
 
-		// TODO I don't like this, look into an alternative way. -AE
+		// TODO Move this to the actual controller.
 		// Hack for the CSS on the broadcast options page
 		if (isset($_GET['social_controller']) and $_GET['social_controller'] == 'broadcast') {
 			$this->admin_resources();

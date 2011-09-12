@@ -57,10 +57,10 @@ abstract class Social_Service {
 			$url = admin_url('options-general.php?page=social.php&social_controller=auth&social_action=authorized');
 		}
 		else {
-			$url = site_url('?social_controller=auth&social_action=authorized&p='.$post->ID);
+			$url = site_url('?social_controller=auth&social_action=authorized&p='.$post->ID.'&_nonce='.$_COOKIE['social_auth_nonce']);
 		}
 
-		return apply_filters('social_authorize_url', Social::$api_url.$this->_key.'/authorize?redirect_to='.urlencode($url), $this->_key);
+		return apply_filters('social_authorize_url', Social::$api_url.$this->_key.'/authorize?callback='.urlencode($url), $this->_key);
 	}
 
 	/**
@@ -107,9 +107,10 @@ abstract class Social_Service {
 	 * Creates a WordPress user with the passed in account.
 	 *
 	 * @param  Social_Service_Account  $account
+	 * @param  string  $nonce
 	 * @return int|bool
 	 */
-	public function create_user($account) {
+	public function create_user($account, $nonce = null) {
 		$username = $account->username();
 		$username = str_replace(' ', '_', $username);
 		if (!empty($username)) {
@@ -131,11 +132,10 @@ abstract class Social_Service {
 				$id = $user->ID;
 			}
 
-			// Log the user in
-			wp_set_current_user($id);
-			add_filter('auth_cookie_expiration', array($this, 'auth_cookie_expiration'));
-			wp_set_auth_cookie($id, true);
-			remove_filter('auth_cookie_expiration', array($this, 'auth_cookie_expiration'));
+			// Set the nonce
+			if ($nonce !== null) {
+				update_user_meta($id, 'social_auth_nonce', $nonce);
+			}
 
 			return $id;
 		}
@@ -144,7 +144,7 @@ abstract class Social_Service {
 	}
 
 	/**
-	 * Auth cookie expriation
+	 * Auth cookie expiration
 	 *
 	 * @param  int  $expiration
 	 * @return int
