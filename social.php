@@ -770,7 +770,7 @@ final class Social {
 		}
 		else {
 			$link = explode('>' . __('Log in'), $link);
-			$link = $link[0] . ' id="' . Social::$prefix . 'login">' . __('Log in') . $link[1];
+			$link = $link[0] . ' id="social_login">' . __('Log in') . $link[1];
 		}
 
 		return $link;

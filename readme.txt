@@ -141,7 +141,7 @@ If you want to run system CRON jobs and disable Social's built in CRON jobs then
 
 If you want to hook into a CRON for extra functionality for a service, all you have to do is add an action:
 
-    <?php add_action(Social::$prefix.'cron_15', array('Your_Class', 'your_method')); ?>
+    <?php add_action('social_cron_15', array('Your_Class', 'your_method')); ?>
 
 = How can I turn on and off Twitter's @Anywhere functionality? =
 
