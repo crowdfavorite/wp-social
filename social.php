@@ -648,7 +648,22 @@ final class Social {
 	public function set_broadcasted_meta($post_id, array $broadcasted_ids) {
 		if (count($broadcasted_ids)) {
 			$post_id = (int) $post_id;
-			update_post_meta($post_id, '_social_broadcasted_ids', $broadcasted_ids);
+			$_broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
+			if (empty($_broadcasted_ids)) {
+				$_broadcasted_ids = array();
+			}
+
+			foreach ($broadcasted_ids as $key => $accounts) {
+				if (!isset($_broadcasted_ids[$key])) {
+					$_broadcasted_ids[$key] = array();
+				}
+
+				foreach ($accounts as $account_id => $id) {
+					$_broadcasted_ids[$key][$account_id] = $id;
+				}
+			}
+
+			update_post_meta($post_id, '_social_broadcasted_ids', $_broadcasted_ids);
 		}
 	}
 
