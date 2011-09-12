@@ -18,7 +18,7 @@
 			$window = $(this);
 			$auth_window = window.open($(this).attr('href'), "ServiceAssociate", 'width=700,height=400');
 
-			auth_poll = setInterval(function(){
+			auth_poll = setInterval(function() {
 				if ($auth_window.closed) {
 					clearInterval(auth_poll);
 
@@ -92,7 +92,7 @@
 					if (prevLink !== null) {
 						$prevLink.attr('href', prevLink);
 					}
-					
+
 					$('.social-commentlist li').removeClass('social-comment-collapse');
 				} else {
 					$('.social-commentlist li').each(function() {
@@ -106,12 +106,12 @@
 
 					if (prevLink !== null) {
 						var _prevLink = prevLink.split('#comments');
-						$prevLink.attr('href', _prevLink[0]+'&social_tab='+className+'#comments');
+						$prevLink.attr('href', _prevLink[0] + '&social_tab=' + className + '#comments');
 					}
 
 					if (nextLink !== null) {
 						var _nextLink = nextLink.split('#comments');
-						$nextLink.attr('href', _nextLink[0]+'&social_tab='+className+'#comments');
+						$nextLink.attr('href', _nextLink[0] + '&social_tab=' + className + '#comments');
 					}
 				}
 			});
