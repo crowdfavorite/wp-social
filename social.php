@@ -677,7 +677,7 @@ final class Social {
 	public function register($link) {
 		if (is_user_logged_in()) {
 			$commenter = get_user_meta(get_current_user_id(), 'social_commenter', true);
-			if ($commenter === '1') {
+			if (!empty($commenter)) {
 				return '';
 			}
 		}
@@ -695,7 +695,7 @@ final class Social {
 	public function loginout($link) {
 		if (is_user_logged_in()) {
 			$commenter = get_user_meta(get_current_user_id(), 'social_commenter', true);
-			if ($commenter === '1') {
+			if (!empty($commenter)) {
 				foreach ($this->services() as $key => $service) {
 					$account = reset($service->accounts());
 					if ($account) {
@@ -1086,6 +1086,7 @@ add_filter('comments_template', array($social, 'comments_template'));
 add_filter('get_avatar_comment_types', array($social, 'get_avatar_comment_types'));
 add_filter('get_avatar', array($social, 'get_avatar'), 10, 5);
 add_filter('register', array($social, 'register'));
+add_filter('loginout', array($social, 'loginout'));
 
 // Service filters
 add_filter('social_auto_load_class', array($social, 'auto_load_class'));

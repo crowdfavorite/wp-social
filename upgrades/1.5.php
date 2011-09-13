@@ -79,3 +79,16 @@ if (version_compare($installed_version, '1.5', '<')) {
 		}
 	}
 }
+
+// Make sure all commenter accounts have the commenter flag
+$results = $wpdb->get_results("
+SELECT m.user_id
+  FROM wp_users AS u
+  JOIN wp_usermeta AS m
+    ON m.user_id = u.ID
+ WHERE m.meta_key = 'social_accounts'
+   AND u.user_email LIKE '%@example.com'
+");
+foreach ($results as $result) {
+	update_user_meta($result->user_id, 'social_commenter', 'true');
+}

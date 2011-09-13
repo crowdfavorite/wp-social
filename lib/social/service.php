@@ -126,6 +126,9 @@ abstract class Social_Service {
 				$user->set_role($role);
 				$user->show_admin_bar_front = 'false';
 				wp_update_user(get_object_vars($user));
+
+				// Set commenter flag
+				update_user_meta($id, 'social_commenter', 'true');
 			}
 			else {
 				$id = $user->ID;
