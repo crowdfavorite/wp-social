@@ -64,6 +64,16 @@ interface Social_Interface_Service {
 	function format_content($post, $format);
 
 	/**
+	 * Formats the provided content to the defined tokens.
+	 *
+	 * @abstract
+	 * @param  object  $comment
+	 * @param  string  $format
+	 * @return string
+	 */
+	function format_comment_content($comment, $format);
+
+	/**
 	 * The max length a post can be when broadcasted.
 	 *
 	 * @abstract

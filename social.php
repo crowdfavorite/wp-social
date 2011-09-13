@@ -50,6 +50,7 @@ final class Social {
 		'install_date' => 0,
 		'installed_version' => 0,
 		'broadcast_format' => '{title}: {content} {url}',
+		'comment_broadcast_format' => '{content} {url}',
 		'twitter_anywhere_api_key' => null,
 		'system_cron_api_key' => null,
 		'system_crons' => '0'
@@ -110,13 +111,27 @@ final class Social {
 	 */
 	public static function broadcast_tokens() {
 		$defaults = array(
-			'{url}' => __('Blog post\'s permalink'),
-			'{title}' => __('Blog post\'s title'),
-			'{content}' => __('Blog post\'s content'),
-			'{date}' => __('Blog post\'s date'),
-			'{author}' => __('Blog post\'s author'),
+			'{url}' => __('Blog post\'s permalink', Social::$i18n),
+			'{title}' => __('Blog post\'s title', Social::$i18n),
+			'{content}' => __('Blog post\'s content', Social::$i18n),
+			'{date}' => __('Blog post\'s date', Social::$i18n),
+			'{author}' => __('Blog post\'s author', Social::$i18n),
 		);
 		return apply_filters('social_broadcast_tokens', $defaults);
+	}
+
+	/**
+	 * Returns the comment broadcast format tokens.
+	 *
+	 * @static
+	 * @return mixed
+	 */
+	public static function comment_broadcast_tokens() {
+		$defaults = array(
+			'{content}' => __('Comment\'s content', Social::$i18n),
+			'{url}' => __('Comment\'s permalink', Social::$i18n),
+		);
+		return apply_filters('social_comment_broadcast_tokens', $defaults);
 	}
 
 	/**
@@ -775,29 +790,16 @@ final class Social {
 	 * @param  int  $comment_ID
 	 */
 	public function comment_post($comment_ID) {
-		global $wpdb, $comment_content, $commentdata;
+		global $wpdb;
+
+		$comment = get_comment($comment_ID);
+		
 		$type = false;
 		$services = $this->services();
 		if (!empty($services)) {
 			$account_id = $_POST['social_post_account'];
-
-			$url = wp_get_shortlink($commentdata['comment_post_ID']);
-			if (empty($url)) {
-				$url = home_url('?p='.$commentdata['comment_post_ID']);
-			}
-			$url .= '#comment-'.$comment_ID;
-			$url_length = strlen($url) + 1;
-			$comment_length = strlen($comment_content);
-			$combined_length = $url_length + $comment_length;
 			foreach ($services as $key => $service) {
-				$max_length = $service->max_broadcast_length();
-				if ($combined_length > $max_length) {
-					$output = substr($comment_content, 0, ($max_length - $url_length - 3)).'...';
-				} else {
-					$output = $comment_content;
-				}
-				$output .= ' '.$url;
-
+				$output = $service->format_comment_content($comment, Social::option('comment_broadcast_format'));
 				foreach ($service->accounts() as $account) {
 					if ($account_id == $account->id()) {
 						if (isset($_POST['post_to_service'])) {
@@ -810,8 +812,6 @@ final class Social {
 									 WHERE comment_ID='$comment_ID'
 								";
 								$wpdb->query($sql);
-								$commentdata = null;
-								$comment_content = null;
 
 								wp_die(sprintf(__('Error: Failed to post your comment to %s, please go back and try again.', Social::$i18n), $service->title()));
 							}
@@ -822,7 +822,7 @@ final class Social {
 						update_comment_meta($comment_ID, 'social_profile_image_url', $account->avatar());
 						update_comment_meta($comment_ID, 'social_comment_type', $service->key());
 
-						if ($commentdata['user_ID'] != '0') {
+						if ($comment->user_id != '0') {
 							$sql = "
 								UPDATE $wpdb->comments
 								   SET comment_author='{$account->name()}',
