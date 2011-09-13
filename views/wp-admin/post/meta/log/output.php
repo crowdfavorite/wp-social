@@ -9,7 +9,7 @@
 		foreach ($log as $timestamp => $_log) {
 			++$i;
 
-			$output .= '<h5 id="log-'.$i.'">'.date('F j, Y, g:i a', ($timestamp + (get_option('gmt_offset') * 3600))).' (';
+			$output .= '<h5 id="log-'.$i.'">'.date(get_option('date_format').' '.get_option('time_format'), ($timestamp + (get_option('gmt_offset') * 3600))).' (';
 			if (isset($_log->manual) and $_log->manual) { // isset() check for legacy support
 				$output .= __('Manual Aggregation', Social::$i18n);
 			}

@@ -61,16 +61,34 @@
 		</tr>
 		<tr>
 			<th>
-				<label for="<?php echo 'social_broadcast_format'; ?>"><?php _e('Broadcast teaser format', Social::$i18n); ?></label>
+				<label for="social_broadcast_format"><?php _e('Broadcast teaser format', Social::$i18n); ?></label>
 			</th>
 			<td>
-				<input type="text" class="regular-text" name="<?php echo 'social_broadcast_format'; ?>" id="<?php echo 'social_broadcast_format'; ?>" value="<?php echo esc_attr(Social::option('broadcast_format')); ?>" />
+				<input type="text" class="regular-text" name="social_broadcast_format" id="social_broadcast_format" value="<?php echo esc_attr(Social::option('broadcast_format')); ?>" />
 				<p class="description"><?php _e('How you would like posts to be formatted when broadcasting to Twitter or Facebook?'); ?></p>
 
 				<div class="description">
 					<?php _e('Tokens:', Social::$i18n); ?>
 					<ul>
 						<?php foreach (Social::broadcast_tokens() as $token => $description): ?>
+						<li><b><?php echo esc_html($token); ?></b>: <?php echo esc_html($description); ?></li>
+						<?php endforeach; ?>
+					</ul>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<th>
+				<label for="social_comment_broadcast_format"><?php _e('Comment broadcast teaser format', Social::$i18n); ?></label>
+			</th>
+			<td>
+				<input type="text" class="regular-text" name="social_comment_broadcast_format" id="social_comment_broadcast_format" value="<?php echo esc_attr(Social::option('comment_broadcast_format')); ?>" />
+				<p class="description"><?php _e('How you would like comments to be formatted when broadcasting to Twitter or Facebook?'); ?></p>
+
+				<div class="description">
+					<?php _e('Tokens:', Social::$i18n); ?>
+					<ul>
+						<?php foreach (Social::comment_broadcast_tokens() as $token => $description): ?>
 						<li><b><?php echo esc_html($token); ?></b>: <?php echo esc_html($description); ?></li>
 						<?php endforeach; ?>
 					</ul>
