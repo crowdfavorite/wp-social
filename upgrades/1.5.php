@@ -41,6 +41,9 @@ if (count($meta_keys)) {
 	}
 }
 
+// Flush the cache
+wp_cache_flush();
+
 // De-auth Facebook accounts for new permissions.
 if (version_compare($installed_version, '1.5', '<')) {
 	// Global accounts
