@@ -162,9 +162,14 @@ final class Social {
 	private $_services = array();
 
 	/**
-	 * @var  bool  social enabled?
+	 * @var  bool  is Social enabled?
 	 */
 	private $_enabled = false;
+
+	/**
+	 * @var  bool  services loaded?
+	 */
+	private $_services_loaded = false;
 
 	/**
 	 * Returns an array of all of the services.
@@ -172,19 +177,24 @@ final class Social {
 	 * @return array
 	 */
 	public function services() {
+		if (!$this->_services_loaded) {
+			$this->load_services();
+		}
+
 		return $this->_services;
 	}
 
 	/**
 	 * Returns a service by access key.
-	 *
-	 * [!!] If an invalid key is provided an exception will be thrown.
-	 *
-	 * @throws Exception
-	 * @param  string  $key  service key
-	 * @return Social_Service_Facebook|Social_Service_Twitter|mixed
+	 * 
+	 * @param  string  $key    service key
+	 * @return Social_Service|Social_Service_Twitter|Social_Service_Facebook
 	 */
 	public function service($key) {
+		if (!$this->_services_loaded) {
+			$this->load_services();
+		}
+
 		if (!isset($this->_services[$key])) {
 			return false;
 		}
@@ -205,42 +215,6 @@ final class Social {
 
 		// Set the logger
 		Social::$log = Social_Log::factory();
-
-		// Register services
-		$services = apply_filters('social_register_service', array());
-		if (is_array($services) and count($services)) {
-			$accounts = get_option('social_accounts', array());
-			foreach ($services as $service) {
-				if (!isset($this->_services[$service])) {
-					$service_accounts = array();
-					if (isset($accounts[$service]) and count($accounts[$service])) {
-						$this->_enabled = true; // Flag social as enabled, we have at least one account.
-						$service_accounts = $accounts[$service];
-					}
-
-					$class = 'Social_Service_'.$service;
-					$this->_services[$service] = new $class($service_accounts);
-				}
-			}
-
-			$personal_accounts = get_user_meta(get_current_user_id(), 'social_accounts', true);
-			if (is_array($personal_accounts)) {
-				foreach ($personal_accounts as $key => $_accounts) {
-					if (count($_accounts)) {
-						$this->_enabled = true;
-						$class = 'Social_Service_'.$key.'_Account';
-						foreach ($_accounts as $account) {
-							$account = new $class($account);
-							if (!$this->service($key)->account_exists($account->id())) {
-								$this->service($key)->account($account);
-							}
-
-							$this->service($key)->account($account->id())->personal(true);
-						}
-					}
-				}
-			}
-		}
 		
 		// Load options
 		foreach (Social::$options as $key => $default) {
@@ -313,6 +287,10 @@ final class Social {
 	 * @return void
 	 */
 	public function admin_init() {
+		if (current_user_can('manage_options') || current_user_can('publish_posts')) {
+			$this->load_services();
+		}
+
 		// Schedule CRONs
 		if ($this->option('system_crons') != '1') {
 			if (wp_next_scheduled('social_cron_15_init') === false) {
@@ -500,7 +478,7 @@ final class Social {
 	public function do_meta_boxes() {
 		global $post;
 
-		if ($this->_enabled and $post !== null) {
+		if ($post !== null) {
 			foreach ($this->services() as $service) {
 				if (count($service->accounts())) {
 					add_meta_box('social_meta_broadcast', __('Social Broadcasting', Social::$i18n), array($this, 'add_meta_box'), 'post', 'side', 'high');
@@ -508,8 +486,10 @@ final class Social {
 				}
 			}
 
-			if ($post->post_status == 'publish') {
-				add_meta_box('social_meta_aggregation_log', __('Social Comments', Social::$i18n), array($this, 'add_meta_box_log'), 'post', 'normal', 'core');
+			if ($this->_enabled) {
+				if ($post->post_status == 'publish') {
+					add_meta_box('social_meta_aggregation_log', __('Social Comments', Social::$i18n), array($this, 'add_meta_box_log'), 'post', 'normal', 'core');
+				}
 			}
 		}
 	}
@@ -1124,6 +1104,54 @@ final class Social {
 		}
 		else {
 			wp_remote_get($url, $data);
+		}
+	}
+
+	/**
+	 * Loads the services.
+	 *
+	 * @return void
+	 */
+	private function load_services() {
+		if (!$this->_services_loaded) {
+			// Register services
+			$services = apply_filters('social_register_service', array());
+			if (is_array($services) and count($services)) {
+				$accounts = $this->option('accounts');
+				foreach ($services as $service) {
+					if (!isset($services[$service])) {
+						$service_accounts = array();
+						if (isset($accounts[$service]) and count($accounts[$service])) {
+							$this->_enabled = true; // Flag social as enabled, we have at least one account.
+							$service_accounts = $accounts[$service];
+						}
+
+						$class = 'Social_Service_'.$service;
+						$this->_services[$service] = new $class($service_accounts);
+					}
+				}
+
+				$personal_accounts = get_user_meta(get_current_user_id(), 'social_accounts', true);
+				if (is_array($personal_accounts)) {
+					foreach ($personal_accounts as $key => $_accounts) {
+						if (count($_accounts)) {
+							$this->_enabled = true;
+							$class = 'Social_Service_'.$key.'_Account';
+							foreach ($_accounts as $account) {
+								$account = new $class($account);
+								if (!$this->service($key)->account_exists($account->id())) {
+									$this->service($key)->account($account);
+								}
+
+								$this->service($key)->account($account->id())->personal(true);
+							}
+						}
+					}
+				}
+			}
+
+			// Flag the services as loaded.
+			$this->_services_loaded = true;
 		}
 	}
 
