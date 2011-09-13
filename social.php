@@ -805,14 +805,7 @@ final class Social {
 						if (isset($_POST['post_to_service'])) {
 							$id = $service->broadcast($account, $output)->id();
 							if ($id === false) {
-								// An error occurred...
-								$sql = "
-									DELETE
-									  FROM $wpdb->comments
-									 WHERE comment_ID='$comment_ID'
-								";
-								$wpdb->query($sql);
-
+								wp_delete_comment($comment_ID);
 								wp_die(sprintf(__('Error: Failed to post your comment to %s, please go back and try again.', Social::$i18n), $service->title()));
 							}
 							update_comment_meta($comment_ID, 'social_status_id', $id);
