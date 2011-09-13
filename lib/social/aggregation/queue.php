@@ -100,7 +100,7 @@ final class Social_Aggregation_Queue {
 			Social::log('Post #:post_id added to the aggregation queue. (Interval: :interval, Next run: :next_run)', array(
 				'post_id' => $post_id,
 				'interval' => $interval,
-				'next_run' => date('F j, Y, g:i a', ($next_run + (get_option('gmt_offset') * 3600))),
+				'next_run' => date(get_option('date_format').' '.get_option('time_format'), ($next_run + (get_option('gmt_offset') * 3600))),
 			));
 		}
 

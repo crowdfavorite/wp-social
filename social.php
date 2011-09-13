@@ -497,7 +497,7 @@ final class Social {
 			$next_run = __('Not Scheduled', Social::$i18n);
 		}
 		else {
-			$next_run = date('F j, Y, g:i a', ((int) $next_run + (get_option('gmt_offset') * 3600)));
+			$next_run = date(get_option('date_format').' '.get_option('time_format'), ((int) $next_run + (get_option('gmt_offset') * 3600)));
 		}
 
 		echo Social_View::factory('wp-admin/post/meta/log/shell', array(
