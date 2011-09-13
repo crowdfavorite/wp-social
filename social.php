@@ -1097,7 +1097,7 @@ final class Social {
 	 * @return array
 	 */
 	private function load_services() {
-		$services = wp_cache_get('social_services');
+		$services = wp_cache_get('services', 'social');
 		if ($services === false) {
 			// Register services
 			$registered_services = apply_filters('social_register_service', array());
@@ -1135,7 +1135,7 @@ final class Social {
 				}
 			}
 
-			wp_cache_set('social_services', $services);
+			wp_cache_set('services', $services, 'social');
 		}
 
 		return $services;
