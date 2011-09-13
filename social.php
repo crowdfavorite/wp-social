@@ -816,13 +816,9 @@ final class Social {
 						update_comment_meta($comment_ID, 'social_comment_type', $service->key());
 
 						if ($comment->user_id != '0') {
-							$sql = "
-								UPDATE $wpdb->comments
-								   SET comment_author='{$account->name()}',
-								       comment_author_url='{$account->url()}'
-								 WHERE comment_ID='$comment_ID'
-							";
-							$wpdb->query($sql);
+							$comment->comment_author = $account->name();
+							$comment->comment_author_url = $account->url();
+							wp_update_comment(get_object_vars($comment));
 						}
 						break;
 					}
