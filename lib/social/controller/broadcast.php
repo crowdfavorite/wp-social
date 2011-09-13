@@ -327,10 +327,10 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			}
 
 			// Retry?
-			$retry = $this->social->option('retry_broadcast');
+			$retry = Social::option('retry_broadcast');
 			if (is_array($retry) and !in_array($post->ID, $retry)) {
 				$retry[] = $post->ID;
-				$this->social->option('retry_broadcast', $retry, true);
+				Social::option('retry_broadcast', $retry);
 			}
 
 			// Deauthed accounts?

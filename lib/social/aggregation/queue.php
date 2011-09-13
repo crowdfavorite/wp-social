@@ -26,7 +26,7 @@ final class Social_Aggregation_Queue {
 	 * Populates Social_Aggregation_Queue with the queue from the database.
 	 */
 	public function __construct() {
-		$queue = Social::instance()->option('aggregation_queue');
+		$queue = Social::option('aggregation_queue');
 		if (!empty($queue)) {
 			$this->_queue = $queue;
 		}
@@ -176,7 +176,7 @@ final class Social_Aggregation_Queue {
 	 * @return void
 	 */
 	public function save() {
-		Social::instance()->option('aggregation_queue', $this->_queue, true);
+		Social::option('aggregation_queue', $this->_queue);
 	}
 
 	/**

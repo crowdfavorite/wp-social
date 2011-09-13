@@ -47,8 +47,8 @@ final class Social {
 	 */
 	protected static $options = array(
 		'debug' => false,
-		'install_date' => false,
-		'installed_version' => false,
+		'install_date' => 0,
+		'installed_version' => 0,
 		'broadcast_format' => '{title}: {content} {url}',
 		'twitter_anywhere_api_key' => null,
 		'system_cron_api_key' => null,
@@ -123,24 +123,21 @@ final class Social {
 	 * Sets or gets an option based on the key defined.
 	 *
 	 * @static
-	 * @throws Exception
 	 * @param  string  $key     option key
 	 * @param  mixed   $value   option value
-	 * @param  bool    $update  update option?
 	 * @return bool|mixed
 	 */
-	public static function option($key, $value = null, $update = false) {
+	public static function option($key, $value = null) {
 		if ($value === null) {
-			$value = get_option('social_'.$key);
-			Social::$options[$key] = $value;
+			$default = null;
+			if (isset(Social::$options[$key])) {
+				$default = Social::$options[$key];
+			}
 
-			return $value;
+			return get_option('social_'.$key, $default);
 		}
 
-		Social::$options[$key] = $value;
-		if ($update) {
-			update_option('social_'.$key, $value);
-		}
+		update_option('social_'.$key, $value);
 		return false;
 	}
 
@@ -199,34 +196,15 @@ final class Social {
 
 		// Set the logger
 		Social::$log = Social_Log::factory();
-		
-		// Load options
-		foreach (Social::$options as $key => $default) {
-			$value = Social::option($key);
-			if (empty($value) or !$value) {
-				switch ($key) {
-					case 'install_date':
-						$value = current_time('timestamp', 1);
-					break;
-					case 'installed_version':
-						$value = Social::$version;
-					break;
-					case 'system_cron_api_key':
-						$value = wp_generate_password(16, false);
-					break;
-					default:
-						$value = $default;
-					break;
-				}
 
-				Social::option($key, $value, true);
-			}
-
-			// Upgrades
-			if ($key == 'installed_version') {
-				$this->upgrade($value);
-			}
+		// Just activated?
+		if (!Social::option('install_date')) {
+			Social::option('install_date', current_time('timestamp', 1));
+			Social::option('system_cron_api_key', wp_generate_password(16, false));
 		}
+		
+		// Trigger upgrade?
+		$this->upgrade(Social::option('installed_version'));
 
 		// JS/CSS
 		if (!defined('SOCIAL_COMMENTS_JS')) {
@@ -276,7 +254,7 @@ final class Social {
 		}
 
 		// Schedule CRONs
-		if ($this->option('system_crons') != '1') {
+		if (Social::option('system_crons') != '1') {
 			if (wp_next_scheduled('social_cron_15_init') === false) {
 				wp_schedule_event(time() + 900, 'every15min', 'social_cron_15_init');
 			}
@@ -365,7 +343,7 @@ final class Social {
 		}
 
 		// Log write error
-		$error = $this->option('log_write_error');
+		$error = Social::option('log_write_error');
 		if ($error == '1') {
 			echo '<div class="error"><p>'.
 			     sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_deauth">[Dismiss]</a>', Social::$i18n), SOCIAL_PATH, esc_url(admin_url('?social_controller=settings&social_action=clear_log_write_error'))).
@@ -373,7 +351,7 @@ final class Social {
 		}
 
 		// Deauthed accounts
-		$deauthed = $this->option('deauthed');
+		$deauthed = Social::option('deauthed');
 		if (!empty($deauthed)) {
 			foreach ($deauthed as $service => $data) {
 				foreach ($data as $id => $message) {
@@ -1005,7 +983,7 @@ final class Social {
 				}
 			}
 
-			Social::option('installed_version', Social::$version, true);
+			Social::option('installed_version', Social::$version);
 		}
 	}
 
@@ -1018,7 +996,7 @@ final class Social {
 	 */
 	public function remove_from_xmlrpc($service, $id) {
 		// Remove from the XML-RPC
-		$xmlrpc = $this->option('xmlrpc_accounts');
+		$xmlrpc = Social::option('xmlrpc_accounts');
 		if (!empty($xmlrpc) and isset($xmlrpc[$service])) {
 			$ids = array_values($xmlrpc[$service]);
 			if (in_array($id, $ids)) {
@@ -1102,7 +1080,7 @@ final class Social {
 			// Register services
 			$registered_services = apply_filters('social_register_service', array());
 			if (is_array($registered_services) and count($registered_services)) {
-				$accounts = $this->option('accounts');
+				$accounts = Social::option('accounts');
 				foreach ($registered_services as $service) {
 					if (!isset($services[$service])) {
 						$service_accounts = array();

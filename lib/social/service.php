@@ -403,7 +403,7 @@ abstract class Social_Service {
 			}
 		}
 		else {
-			$accounts = Social::instance()->option('accounts');
+			$accounts = Social::option('accounts');
 			if (isset($accounts[$this->_key][$id])) {
 				unset($accounts[$this->_key][$id]);
 
@@ -411,7 +411,7 @@ abstract class Social_Service {
 					unset($accounts[$this->_key]);
 				}
 
-				Social::instance()->option('accounts', $accounts, true);
+				Social::option('accounts', $accounts);
 			}
 		}
 	}
