@@ -116,7 +116,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			}
 		}
 
-		$this->social->admin_resources();
+		//$this->social->enqueue_assets();
 		echo Social_View::factory('wp-admin/post/broadcast/options', array(
 			'errors' => $errors,
 			'services' => $services,

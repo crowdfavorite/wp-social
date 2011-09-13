@@ -232,6 +232,23 @@ final class Social {
 				wp_enqueue_script('jquery');
 			}
 		}
+		else {
+			if (!defined('SOCIAL_ADMIN_JS')) {
+				define('SOCIAL_ADMIN_JS', plugins_url('assets/admin.js', SOCIAL_FILE));
+			}
+
+			if (!defined('SOCIAL_ADMIN_CSS')) {
+				define('SOCIAL_ADMIN_CSS', plugins_url('assets/admin.css', SOCIAL_FILE));
+			}
+
+			if (SOCIAL_ADMIN_CSS !== false) {
+				wp_enqueue_style('social_admin', SOCIAL_ADMIN_CSS, array(), Social::$version, 'screen');
+			}
+
+			if (SOCIAL_ADMIN_JS !== false) {
+				wp_enqueue_script('social_admin', SOCIAL_ADMIN_JS, array(), Social::$version, true);
+			}
+		}
 
 		// JS/CSS
 		if (SOCIAL_COMMENTS_JS !== false) {
@@ -240,15 +257,22 @@ final class Social {
 	}
 
 	/**
-	 * Handles admin-specific operations during init.
+	 * Loads the services on every page if the user is an admin.
 	 *
 	 * @return void
 	 */
 	public function admin_init() {
-		if (current_user_can('manage_options') || current_user_can('publish_posts')) {
+		if (current_user_can('manage_options') or current_user_can('publish_posts')) {
 			$this->load_services();
 		}
+	}
 
+	/**
+	 * Checks to see if system crons are disabled.
+	 *
+	 * @return void
+	 */
+	public function check_system_cron() {
 		// Schedule CRONs
 		if (Social::option('system_crons') != '1') {
 			if (wp_next_scheduled('social_cron_15_init') === false) {
@@ -315,7 +339,7 @@ final class Social {
 	 * @action admin_notices
 	 */
 	public function admin_notices() {
-		if (current_user_can('manage_options') || current_user_can('publish_posts')) {
+		if (current_user_can('manage_options') or current_user_can('publish_posts')) {
 			if (!$this->_enabled) {
 				$message = sprintf(__('Social will not run until you update your <a href="%s">settings</a>.', Social::$i18n), esc_url(Social_Helper::settings_url()));
 				echo '<div class="error"><p>'.$message.'</p></div>';
@@ -369,33 +393,6 @@ final class Social {
 
 			$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=clear_1_5_upgrade')), 'social_deauth');
 			echo '<div class="error"><p>'.$output.' '.$dismiss.'</p></div>';
-		}
-	}
-
-	/**
-	 * Handles displaying the admin assets.
-	 *
-	 * @action load-profile.php
-	 * @action load-post.php
-	 * @action load-post-new.php
-	 * @action load-settings_page_social
-	 * @return void
-	 */
-	public function admin_resources() {
-		if (!defined('SOCIAL_ADMIN_JS')) {
-			define('SOCIAL_ADMIN_JS', plugins_url('assets/admin.js', SOCIAL_FILE));
-		}
-
-		if (!defined('SOCIAL_ADMIN_CSS')) {
-			define('SOCIAL_ADMIN_CSS', plugins_url('assets/admin.css', SOCIAL_FILE));
-		}
-
-		if (SOCIAL_ADMIN_CSS !== false) {
-			wp_enqueue_style('social_admin', SOCIAL_ADMIN_CSS, array(), Social::$version, 'screen');
-		}
-
-		if (SOCIAL_ADMIN_JS !== false) {
-			wp_enqueue_script('social_admin', SOCIAL_ADMIN_JS, array(), Social::$version, true);
 		}
 	}
 
@@ -1134,19 +1131,20 @@ $social = Social::instance();
 // General Actions
 add_action('init', array($social, 'init'), 1);
 add_action('init', array($social, 'request_handler'), 2);
-add_action('load-settings_page_social', array($social, 'admin_init'), 1);
-add_action('load-'.basename(SOCIAL_FILE), array($social, 'admin_init'), 1);
+add_action('admin_init', array($social, 'admin_init'), 1);
+add_action('load-settings_page_social', array($social, 'check_system_cron'));
+add_action('load-'.basename(SOCIAL_FILE), array($social, 'check_system_cron'));
 add_action('comment_post', array($social, 'comment_post'));
 add_action('admin_notices', array($social, 'admin_notices'));
-add_action('load-post-new.php', array($social, 'admin_resources'));
-add_action('load-post.php', array($social, 'admin_resources'));
-add_action('load-profile.php', array($social, 'admin_resources'));
-add_action('load-settings_page_social', array($social, 'admin_resources'));
 add_action('transition_post_status', array($social, 'transition_post_status'), 10, 3);
 add_action('show_user_profile', array($social, 'show_user_profile'));
 add_action('do_meta_boxes', array($social, 'do_meta_boxes'));
 add_action('delete_post', array($social, 'delete_post'));
 add_action('wp_enqueue_scripts', array($social, 'enqueue_assets'));
+add_action('load-post-new.php', array($social, 'enqueue_assets'));
+add_action('load-post.php', array($social, 'enqueue_assets'));
+add_action('load-profile.php', array($social, 'enqueue_assets'));
+add_action('load-settings_page_social', array($social, 'enqueue_assets'));
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));
