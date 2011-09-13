@@ -548,9 +548,7 @@ final class Social {
 			}
 		}
 		else if ($new == 'publish') {
-			if (isset($_POST['publish']) and !isset($_POST['social_notify'])) {
-				Social_Aggregation_Queue::factory()->add($post->ID)->save();
-			}
+			Social_Aggregation_Queue::factory()->add($post->ID)->save();
 
 			if ($old == 'future') {
 				Social_Request::factory('broadcast/run')->query(array(
