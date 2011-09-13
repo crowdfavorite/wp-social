@@ -259,7 +259,7 @@ final class Social {
 				wp_schedule_event(time() + 3600, 'hourly', 'social_cron_60_init');
 			}
 
-			$this->request(wp_nonce_url(admin_url('?social_controller=cron&social_action=check_crons')));
+			$this->request(admin_url('?social_controller=cron&social_action=check_crons'), 'check_crons');
 		}
 	}
 
@@ -619,7 +619,7 @@ final class Social {
 	 * @return void
 	 */
 	public function cron_15_init() {
-		$this->request(wp_nonce_url(site_url('?social_controller=cron&social_action=cron_15')));
+		$this->request(site_url('?social_controller=cron&social_action=cron_15'), 'cron_15');
 	}
 
 	/**
@@ -628,7 +628,7 @@ final class Social {
 	 * @return void
 	 */
 	public function cron_60_init() {
-		$this->request(wp_nonce_url(site_url('?social_controller=cron&social_action=cron_60')));
+		$this->request(site_url('?social_controller=cron&social_action=cron_60'), 'cron_60');
 	}
 
 	/**
@@ -644,7 +644,7 @@ final class Social {
 				$post = get_post($id);
 				if ($post !== null) {
 					$queue->add($id, $interval)->save();
-					$this->request(site_url('?social_controller=aggregation&social_action=run&post_id='.$id));
+					$this->request(site_url('?social_controller=aggregation&social_action=run&post_id='.$id), 'run');
 				}
 				else {
 					$queue->remove($id, $timestamp)->save();
@@ -1045,12 +1045,13 @@ final class Social {
 	/**
 	 * Handles the remote timeout requests for Social.
 	 *
-	 * @param  string  $url   url to request
-	 * @param  bool    $post  set to true to do a wp_remote_post
+	 * @param  string  $url        url to request
+	 * @param  string  $nonce_key  key to use when generating the nonce
+	 * @param  bool    $post       set to true to do a wp_remote_post
 	 * @return void
 	 */
-	private function request($url, $post = false) {
-		$url = str_replace('&amp;', '&', wp_nonce_url($url));
+	private function request($url, $nonce_key, $post = false) {
+		$url = str_replace('&amp;', '&', wp_nonce_url($url, $nonce_key));
 		$data = array(
 			'timeout' => 0.01,
 			'blocking' => false,

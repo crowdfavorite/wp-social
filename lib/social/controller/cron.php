@@ -14,10 +14,6 @@ final class Social_Controller_CRON extends Social_Controller {
 	 * @return void
 	 */
 	public function action_cron_15() {
-		if (!wp_verify_nonce($this->request->query('_wpnonce'))) {
-			wp_die('Oops, please try again.');
-		}
-
 		Social_CRON::instance('cron_15')->execute();
 	}
 
@@ -28,10 +24,6 @@ final class Social_Controller_CRON extends Social_Controller {
 	 * @return void
 	 */
 	public function action_cron_60() {
-		if (!wp_verify_nonce($this->request->query('_wpnonce'))) {
-			wp_die('Oops, please try again.');
-		}
-
 		Social_CRON::instance('cron_60')->execute();
 	}
 
