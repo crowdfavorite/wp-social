@@ -429,7 +429,7 @@ final class Social {
 		if ($post !== null) {
 			foreach ($this->services() as $service) {
 				if (count($service->accounts())) {
-					add_meta_box('social_meta_broadcast', __('Social Broadcasting', Social::$i18n), array($this, 'add_meta_box'), 'post', 'side', 'high');
+					add_meta_box('social_meta_broadcast', __('Social Broadcasting', Social::$i18n), array($this, 'add_meta_box_broadcast'), 'post', 'side', 'high');
 					break;
 				}
 			}
@@ -447,7 +447,7 @@ final class Social {
 	 *
 	 * @return void
 	 */
-	public function add_meta_box() {
+	public function add_meta_box_broadcast() {
 		global $post;
 
 		$content = '';
