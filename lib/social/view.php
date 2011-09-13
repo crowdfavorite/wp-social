@@ -58,7 +58,7 @@ final class Social_View {
 	/**
 	 * Sets view data.
 	 *
-	 * @param  string  $key
+	 * @param  mixed  $key
 	 * @param  string  $value
 	 * @return Social_View
 	 */
@@ -91,6 +91,7 @@ final class Social_View {
 			throw new Exception(__('You must set a file to be used before rendering.', Social::$i18n));
 		}
 
+		$this->_data = apply_filters('social_view_data', $this->_data, $this->_file);
 		extract($this->_data, EXTR_SKIP);
 		ob_start();
 		try {
