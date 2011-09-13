@@ -347,9 +347,6 @@ final class Social_Controller_Broadcast extends Social_Controller {
 
 		// Set broadcast meta
 		$this->social->set_broadcasted_meta($post->ID, $broadcasted_ids);
-
-		// Add to the aggregation queue.
-		Social_Aggregation_Queue::factory()->add($post->ID)->save();
 	}
 
 	/**
