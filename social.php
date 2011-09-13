@@ -317,8 +317,7 @@ final class Social {
 	public function admin_notices() {
 		if (current_user_can('manage_options') || current_user_can('publish_posts')) {
 			if (!$this->_enabled) {
-				$url = Social_Helper::settings_url();
-				$message = sprintf(__('Social will not run until you update your <a href="%s">settings</a>.', Social::$i18n), esc_url($url));
+				$message = sprintf(__('Social will not run until you update your <a href="%s">settings</a>.', Social::$i18n), esc_url(Social_Helper::settings_url()));
 				echo '<div class="error"><p>'.$message.'</p></div>';
 			}
 
@@ -351,7 +350,7 @@ final class Social {
 		if (!empty($deauthed)) {
 			foreach ($deauthed as $service => $data) {
 				foreach ($data as $id => $message) {
-					echo '<div class="error"><p>'.$message.' <a href="'.esc_url(admin_url('?social_controller=settings&social_action=clear_deauth&id='.$id.'&service='.$service)).'" class="social_deauth">[Dismiss]</a></p></div>';
+					echo '<div class="error"><p>'.esc_html($message).' <a href="'.esc_url(admin_url('?social_controller=settings&social_action=clear_deauth&id='.$id.'&service='.$service)).'" class="social_deauth">[Dismiss]</a></p></div>';
 				}
 			}
 		}
@@ -359,22 +358,16 @@ final class Social {
 		// 1.5 Upgrade?
 		$upgrade_1_5 = get_user_meta(get_current_user_id(), 'social_1.5_upgrade', true);
 		if (!empty($upgrade_1_5)) {
-			$output = 'Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your ';
 			if (current_user_can('manage_options')) {
-				$output .= '<a href="%s">global</a> and ';
-			}
-			$output .= '<a href="%s">personal</a> accounts.';
-
-			$output = __($output, Social::$i18n);
-			if (current_user_can('manage_options')) {
+				$output = 'Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your <a href="%s">global</a> and <a href="%s">personal</a> accounts.';
 				$output = sprintf($output, esc_url(Social_Helper::settings_url()), esc_url(admin_url('profile.php#social-networks')));
 			}
 			else {
+				$output = 'Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your <a href="%s">personal</a> accounts.';
 				$output = sprintf($output, esc_url(admin_url('profile.php#social-networks')));
 			}
 
 			$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=clear_1_5_upgrade')), 'social_deauth');
-
 			echo '<div class="error"><p>'.$output.' '.$dismiss.'</p></div>';
 		}
 	}
