@@ -205,7 +205,14 @@ final class Social {
 		
 		// Trigger upgrade?
 		$this->upgrade(Social::option('installed_version'));
+	}
 
+	/**
+	 * Enqueues the assets for Social.
+	 *
+	 * @return void
+	 */
+	public function enqueue_assets() {
 		// JS/CSS
 		if (!defined('SOCIAL_COMMENTS_JS')) {
 			define('SOCIAL_COMMENTS_JS', plugins_url('assets/social.js', SOCIAL_FILE));
@@ -229,17 +236,6 @@ final class Social {
 		// JS/CSS
 		if (SOCIAL_COMMENTS_JS !== false) {
 			wp_enqueue_script('social_js', SOCIAL_COMMENTS_JS, array('jquery'), Social::$version, true);
-		}
-
-		// Set CRON lock directory.
-		if (is_writeable(SOCIAL_PATH)) {
-			Social::$cron_lock_dir = SOCIAL_PATH;
-		}
-		else {
-			$upload_dir = wp_upload_dir();
-			if (is_writeable($upload_dir['basedir'])) {
-				Social::$cron_lock_dir = $upload_dir['basedir'];
-			}
 		}
 	}
 
@@ -319,35 +315,35 @@ final class Social {
 	 * @action admin_notices
 	 */
 	public function admin_notices() {
-		if (!$this->_enabled) {
-			if (current_user_can('manage_options') || current_user_can('publish_posts')) {
+		if (current_user_can('manage_options') || current_user_can('publish_posts')) {
+			if (!$this->_enabled) {
 				$url = Social_Helper::settings_url();
 				$message = sprintf(__('Social will not run until you update your <a href="%s">settings</a>.', Social::$i18n), esc_url($url));
 				echo '<div class="error"><p>'.$message.'</p></div>';
 			}
-		}
 
-		if (isset($_GET['page']) and $_GET['page'] == basename(SOCIAL_FILE)) {
-			// CRON Lock
-			if (Social::$cron_lock_dir === null) {
-				$upload_dir = wp_upload_dir();
-				if (isset($upload_dir['basedir'])) {
-					$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', Social::$i18n), SOCIAL_PATH, $upload_dir['basedir']);
-				}
-				else {
-					$message = sprintf(__('Social requires that %s is writable for CRON jobs.', Social::$i18n), SOCIAL_PATH);
-				}
+			if (isset($_GET['page']) and $_GET['page'] == basename(SOCIAL_FILE)) {
+				// CRON Lock
+				if (Social::option('cron_lock_error') !== null) {
+					$upload_dir = wp_upload_dir();
+					if (isset($upload_dir['basedir'])) {
+						$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', Social::$i18n), SOCIAL_PATH, $upload_dir['basedir']);
+					}
+					else {
+						$message = sprintf(__('Social requires that %s is writable for CRON jobs.', Social::$i18n), SOCIAL_PATH);
+					}
 
-				echo '<div class="error"><p>'.esc_html($message).'</p></div>';
+					echo '<div class="error"><p>'.esc_html($message).'</p></div>';
+				}
 			}
-		}
 
-		// Log write error
-		$error = Social::option('log_write_error');
-		if ($error == '1') {
-			echo '<div class="error"><p>'.
-			     sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_deauth">[Dismiss]</a>', Social::$i18n), SOCIAL_PATH, esc_url(admin_url('?social_controller=settings&social_action=clear_log_write_error'))).
-			     '</p></div>';
+			// Log write error
+			$error = Social::option('log_write_error');
+			if ($error == '1') {
+				echo '<div class="error"><p>'.
+					 sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_deauth">[Dismiss]</a>', Social::$i18n), SOCIAL_PATH, esc_url(admin_url('?social_controller=settings&social_action=clear_log_write_error'))).
+					 '</p></div>';
+			}
 		}
 
 		// Deauthed accounts
@@ -1156,6 +1152,7 @@ add_action('transition_post_status', array($social, 'transition_post_status'), 1
 add_action('show_user_profile', array($social, 'show_user_profile'));
 add_action('do_meta_boxes', array($social, 'do_meta_boxes'));
 add_action('delete_post', array($social, 'delete_post'));
+add_action('wp_enqueue_scripts', array($social, 'enqueue_assets'));
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));

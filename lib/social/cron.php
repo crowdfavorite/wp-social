@@ -60,6 +60,7 @@ final class Social_CRON {
 
 			if (!is_writable($this->_cron_lock_dir)) {
 				$this->_enabled = false;
+				Social::option('cron_lock_error', true);
 			}
 		}
 
