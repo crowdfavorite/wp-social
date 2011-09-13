@@ -157,19 +157,9 @@ final class Social {
 	}
 
 	/**
-	 * @var  array  connected services
-	 */
-	private $_services = array();
-
-	/**
 	 * @var  bool  is Social enabled?
 	 */
 	private $_enabled = false;
-
-	/**
-	 * @var  bool  services loaded?
-	 */
-	private $_services_loaded = false;
 
 	/**
 	 * Returns an array of all of the services.
@@ -177,11 +167,7 @@ final class Social {
 	 * @return array
 	 */
 	public function services() {
-		if (!$this->_services_loaded) {
-			$this->load_services();
-		}
-
-		return $this->_services;
+		return $this->load_services();
 	}
 
 	/**
@@ -191,15 +177,13 @@ final class Social {
 	 * @return Social_Service|Social_Service_Twitter|Social_Service_Facebook
 	 */
 	public function service($key) {
-		if (!$this->_services_loaded) {
-			$this->load_services();
-		}
+		$services = $this->load_services();
 
-		if (!isset($this->_services[$key])) {
+		if (!isset($services[$key])) {
 			return false;
 		}
 
-		return $this->_services[$key];
+		return $services[$key];
 	}
 
 	/**
@@ -1110,15 +1094,16 @@ final class Social {
 	/**
 	 * Loads the services.
 	 *
-	 * @return void
+	 * @return array
 	 */
 	private function load_services() {
-		if (!$this->_services_loaded) {
+		$services = wp_cache_get('social_services');
+		if ($services === false) {
 			// Register services
-			$services = apply_filters('social_register_service', array());
-			if (is_array($services) and count($services)) {
+			$registered_services = apply_filters('social_register_service', array());
+			if (is_array($registered_services) and count($registered_services)) {
 				$accounts = $this->option('accounts');
-				foreach ($services as $service) {
+				foreach ($registered_services as $service) {
 					if (!isset($services[$service])) {
 						$service_accounts = array();
 						if (isset($accounts[$service]) and count($accounts[$service])) {
@@ -1127,32 +1112,33 @@ final class Social {
 						}
 
 						$class = 'Social_Service_'.$service;
-						$this->_services[$service] = new $class($service_accounts);
+						$services[$service] = new $class($service_accounts);
 					}
 				}
 
 				$personal_accounts = get_user_meta(get_current_user_id(), 'social_accounts', true);
 				if (is_array($personal_accounts)) {
 					foreach ($personal_accounts as $key => $_accounts) {
-						if (count($_accounts)) {
+						if (count($_accounts) and isset($services[$key])) {
 							$this->_enabled = true;
 							$class = 'Social_Service_'.$key.'_Account';
 							foreach ($_accounts as $account) {
 								$account = new $class($account);
-								if (!$this->service($key)->account_exists($account->id())) {
-									$this->service($key)->account($account);
+								if (!$services[$key]->account_exists($account->id())) {
+									$services[$key]->account($account);
 								}
 
-								$this->service($key)->account($account->id())->personal(true);
+								$services[$key]->account($account->id())->personal(true);
 							}
 						}
 					}
 				}
 			}
 
-			// Flag the services as loaded.
-			$this->_services_loaded = true;
+			wp_cache_set('social_services', $services);
 		}
+
+		return $services;
 	}
 
 } // End Social
