@@ -550,6 +550,7 @@ final class Social {
 		else if ($new == 'publish') {
 			Social_Aggregation_Queue::factory()->add($post->ID)->save();
 
+			// Sends previously saved broadcast information
 			if ($old == 'future') {
 				Social_Request::factory('broadcast/run')->query(array(
 					'post_ID' => $post->ID
