@@ -814,11 +814,7 @@ final class Social {
 	 * @param  int  $comment_ID
 	 */
 	public function comment_post($comment_ID) {
-		global $wpdb;
-
 		$comment = get_comment($comment_ID);
-		
-		$type = false;
 		$services = $this->services();
 		if (!empty($services)) {
 			$account_id = $_POST['social_post_account'];
@@ -827,16 +823,22 @@ final class Social {
 				foreach ($service->accounts() as $account) {
 					if ($account_id == $account->id()) {
 						if (isset($_POST['post_to_service'])) {
-							Social::log(sprintf(__('Broadcasting comment to %s using account #%s.', Social::$i18n), $service->title(), $account->id()));
-							$id = $service->broadcast($account, $output)->id();
-							if ($id === false) {
-								wp_delete_comment($comment_ID);
-								$message = sprintf(__('Error: Failed to post your comment to %s, please go back and try again.', Social::$i18n), $service->title());
-
-								Social::log($message);
-								wp_die($message);
+							if ($comment->comment_approved == '0') {
+								update_comment_meta($comment_ID, 'social_to_broadcast', $_POST['social_post_account']);
 							}
-							update_comment_meta($comment_ID, 'social_status_id', $id);
+							else {
+								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s.', Social::$i18n), $comment_ID, $service->title(), $account->id()));
+								$id = $service->broadcast($account, $output)->id();
+								if ($id === false) {
+									wp_delete_comment($comment_ID);
+									$message = sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', Social::$i18n), $comment_ID, $service->title(), $account->id());
+
+									Social::log($message);
+									wp_die($message);
+								}
+								update_comment_meta($comment_ID, 'social_status_id', $id);
+								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', Social::$i18n), $comment_ID, $service->title(), $account->id()));
+							}
 						}
 
 						update_comment_meta($comment_ID, 'social_account_id', $account_id);
@@ -848,14 +850,71 @@ final class Social {
 							$comment->comment_author_url = $account->url();
 							wp_update_comment(get_object_vars($comment));
 						}
-						Social::log(sprintf(__('Broadcasting comment to %s using account #%s COMPLETE.', Social::$i18n), $service->title(), $account->id()));
+						Social::log(sprintf(__('Comment #%s saved.', Social::$i18n), $comment_ID));
 						break;
 					}
 				}
+			}
+		}
+	}
 
-				if ($type !== false) {
-					break;
+	/**
+	 * Sets the comment to be approved.
+	 *
+	 * @wp-action  wp_set_comment_status
+	 * @param  int     $comment_id
+	 * @param  string  $comment_status
+	 * @return void
+	 */
+	public function wp_set_comment_status($comment_id, $comment_status) {
+		if ($comment_status == 'approve') {
+			global $wpdb;
+			$results = $wpdb->get_results($wpdb->prepare("
+				SELECT user_id, m.meta_value
+				  FROM $wpdb->commentmeta AS m
+				  JOIN $wpdb->comments AS c
+				    ON m.comment_id = c.comment_ID
+				 WHERE m.meta_key = %s
+				   AND m.comment_id = %s
+			", 'social_to_broadcast', $comment_id));
+			if (!empty($results)) {
+				$result = reset($results);
+				$accounts = get_user_meta($result->user_id, 'social_accounts', true);
+				if (!empty($accounts)) {
+					foreach ($accounts as $service => $accounts) {
+						$service = $this->service($service);
+						if ($service !== false) {
+							$account = null;
+							if (!$service->account_exists($result->meta_value)) {
+								foreach ($accounts as $id => $account) {
+									if ($id == $result->meta_value) {
+										$class = 'Social_Service_'.$service->key().'_Account';
+										$account = new $class($account);
+										break;
+									}
+								}
+							}
+							else {
+								$account = $service->account($result->meta_value);
+							}
+
+							if ($account !== null) {
+								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s.', Social::$i18n), $comment_id, $service->title(), $account->id()));
+								$comment = get_comment($comment_id);
+								$output = $service->format_comment_content($comment, Social::option('comment_broadcast_format'));
+								$id = $service->broadcast($account, $output)->id();
+								if ($id === false) {
+									wp_delete_comment($comment_id);
+									Social::log(sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', Social::$i18n), $comment_id, $service->title(), $account->id()));
+								}
+								update_comment_meta($comment_id, 'social_status_id', $id);
+								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', Social::$i18n), $comment_id, $service->title(), $account->id()));
+							}
+						}
+					}
 				}
+
+				delete_comment_meta($comment_id, 'social_to_broadcast');
 			}
 		}
 	}
@@ -1087,6 +1146,7 @@ add_action('init', array($social, 'request_handler'), 2);
 add_action('admin_init', array($social, 'admin_init'), 1);
 add_action('load-settings_page_social', array($social, 'check_system_cron'));
 add_action('comment_post', array($social, 'comment_post'));
+add_action('wp_set_comment_status', array($social, 'wp_set_comment_status'), 10, 3);
 add_action('admin_notices', array($social, 'admin_notices'));
 add_action('transition_post_status', array($social, 'transition_post_status'), 10, 3);
 add_action('show_user_profile', array($social, 'show_user_profile'));
