@@ -160,6 +160,24 @@ No, the proxy acts just like any Twitter or Facebook application. We've simply p
 
 Yes, they can add the account to their profile page.
 
+= Why are some custom posts with my blog post's URL not being found during aggregation? =
+
+This may be due to the bug with Facebook's search API. Currently, for a post to return on the search the URL must not be at the beginning of the post.
+
+Valid post that will be included:
+
+Hey, check out this post! http://example.com/?p=5
+
+Invalid post that will not included:
+
+http://example.com/?p=5 This was a cool post, go read it.
+
+Track this bug on Facebook: http://bugs.developers.facebook.net/show_bug.cgi?id=20611
+
+= Why are some of comments/posts not returning from Facebook right away? =
+
+We have noticed some latency around the inclusion of some items when querying the Graph API. We have seen some comments and posts take up to 72 hours to be included in aggregation requests.
+
 
 
 == Screenshots ==
