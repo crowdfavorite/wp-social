@@ -803,10 +803,14 @@ final class Social {
 				foreach ($service->accounts() as $account) {
 					if ($account_id == $account->id()) {
 						if (isset($_POST['post_to_service'])) {
+							Social::log(sprintf(__('Broadcasting comment to %s using account #%s.', Social::$i18n), $service->title(), $account->id()));
 							$id = $service->broadcast($account, $output)->id();
 							if ($id === false) {
 								wp_delete_comment($comment_ID);
-								wp_die(sprintf(__('Error: Failed to post your comment to %s, please go back and try again.', Social::$i18n), $service->title()));
+								$message = sprintf(__('Error: Failed to post your comment to %s, please go back and try again.', Social::$i18n), $service->title());
+
+								Social::log($message);
+								wp_die($message);
 							}
 							update_comment_meta($comment_ID, 'social_status_id', $id);
 						}
@@ -820,6 +824,7 @@ final class Social {
 							$comment->comment_author_url = $account->url();
 							wp_update_comment(get_object_vars($comment));
 						}
+						Social::log(sprintf(__('Broadcasting comment to %s using account #%s COMPLETE.', Social::$i18n), $service->title(), $account->id()));
 						break;
 					}
 				}
