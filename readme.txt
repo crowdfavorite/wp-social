@@ -178,6 +178,15 @@ Track this bug on Facebook: http://bugs.developers.facebook.net/show_bug.cgi?id=
 
 We have noticed some latency around the inclusion of some items when querying the Graph API. We have seen some comments and posts take up to 72 hours to be included in aggregation requests.
 
+= Does your permalink have apostrophes in it? Is Social stripping these from the URL when disconnecting? =
+
+This is due to the fact that older versions of WordPress did not remove apostrophes from the permalink and newer versions of WordPress do. It is possible that your blog post was created on a version of WordPress that contained this bug. To fix this, simply login to your WP-Admin and edit the post by doing the following (assuming you're running WordPress 3.2+):
+
+1. Click on Posts in the WP-Admin menu.
+2. Find your post and click on "Edit".
+3. Under your post's title, click on the "Edit" link that is next to the permalink.
+4. Click "OK" to save the new permalink. (This will automatically remove the apostrophes for you.)
+
 
 
 == Screenshots ==
