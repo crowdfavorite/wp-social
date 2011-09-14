@@ -201,6 +201,7 @@ final class Social {
 	/**
 	 * Initializes Social.
 	 *
+	 * @wp-action  init
 	 * @return void
 	 */
 	public function init() {
@@ -225,6 +226,11 @@ final class Social {
 	/**
 	 * Enqueues the assets for Social.
 	 *
+	 * @wp-action  wp_enqueue_scripts
+	 * @wp-action  load-post-new.php
+	 * @wp-action  load-post.php
+	 * @wp-action  load-profile.php
+	 * @wp-action  load-settings_page_social
 	 * @return void
 	 */
 	public function enqueue_assets() {
@@ -274,6 +280,7 @@ final class Social {
 	/**
 	 * Loads the services on every page if the user is an admin.
 	 *
+	 * @wp-action  admin_init
 	 * @return void
 	 */
 	public function admin_init() {
@@ -285,6 +292,7 @@ final class Social {
 	/**
 	 * Checks to see if system crons are disabled.
 	 *
+	 * @wp-action  load-settings_page_social
 	 * @return void
 	 */
 	public function check_system_cron() {
@@ -305,6 +313,7 @@ final class Social {
 	/**
 	 * Handlers requests.
 	 *
+	 * @wp-action  init
 	 * @return void
 	 */
 	public function request_handler() {
@@ -316,6 +325,7 @@ final class Social {
 	/**
 	 * Adds a link to the "Settings" menu in WP-Admin.
 	 *
+	 * @wp-action  admin_menu
 	 * @return void
 	 */
 	public function admin_menu() {
@@ -331,6 +341,7 @@ final class Social {
 	/**
 	 * Add Settings link to plugins - code from GD Star Ratings
 	 *
+	 * @wp-filter  plugin_action_links
 	 * @param  array  $links
 	 * @param  string  $file
 	 * @return array
@@ -351,6 +362,7 @@ final class Social {
 	/**
 	 * Handles the display of different messages for admin notices.
 	 *
+	 * @wp-action  admin_notices
 	 * @action admin_notices
 	 */
 	public function admin_notices() {
@@ -423,6 +435,7 @@ final class Social {
 	/**
 	 * Shows the user's social network accounts.
 	 *
+	 * @wp-action  show_user_profile
 	 * @param  object  $profileuser
 	 * @return void
 	 */
@@ -435,7 +448,7 @@ final class Social {
 	/**
 	 * Add Meta Boxes
 	 *
-	 * @action do_meta_boxes
+	 * @wp-action  do_meta_boxes
 	 * @return void
 	 */
 	public function do_meta_boxes() {
@@ -524,6 +537,7 @@ final class Social {
 	/**
 	 * Show the broadcast options if publishing.
 	 *
+	 * @wp-filter  redirect_post_location
 	 * @param  string  $location  default post-publish location
 	 * @param  int     $post_id   post ID
 	 * @return string|void
@@ -548,6 +562,7 @@ final class Social {
 	/**
 	 * Removes post meta if the post is going to private.
 	 *
+	 * @wp-action  transition_post_status
 	 * @param  string  $new
 	 * @param  string  $old
 	 * @param  object  $post
@@ -606,6 +621,7 @@ final class Social {
 	/**
 	 * Adds the 15 minute interval.
 	 *
+	 * @wp-filter  cron_schedules
 	 * @param  array  $schedules
 	 * @return array
 	 */
@@ -620,6 +636,7 @@ final class Social {
 	/**
 	 * Sends a request to initialize CRON 15.
 	 *
+	 * @wp-action  social_cron_15_init
 	 * @return void
 	 */
 	public function cron_15_init() {
@@ -629,6 +646,7 @@ final class Social {
 	/**
 	 * Sends a request to initialize CRON 60.
 	 *
+	 * @wp-action  social_cron_60_init
 	 * @return void
 	 */
 	public function cron_60_init() {
@@ -637,7 +655,8 @@ final class Social {
 
 	/**
 	 * Runs the aggregation loop.
-	 * 
+	 *
+	 * @wp-action  social_cron_15
 	 * @return void
 	 */
 	public function run_aggregation() {
@@ -660,6 +679,7 @@ final class Social {
 	/**
 	 * Removes the post from the aggregation queue.
 	 *
+	 * @wp-action  delete_post
 	 * @param  int  $post_id
 	 * @return void
 	 */
@@ -670,7 +690,7 @@ final class Social {
 	/**
 	 * Hides the Site Admin link for social-based users.
 	 *
-	 * @filter register
+	 * @wp-filter register
 	 * @param  string  $link
 	 * @return string
 	 */
@@ -688,7 +708,7 @@ final class Social {
 	/**
 	 * Show the disconnect link for social-based users.
 	 *
-	 * @filter loginout
+	 * @wp-filter loginout
 	 * @param  string  $link
 	 * @return string
 	 */
@@ -715,6 +735,7 @@ final class Social {
 	/**
 	 * Overrides the default WordPress comments_template function.
 	 *
+	 * @wp-filter  comments_template
 	 * @return string
 	 */
 	public function comments_template() {
@@ -734,6 +755,7 @@ final class Social {
 	/**
 	 * Returns an array of comment types that display avatars.
 	 *
+	 * @wp-filter  get_avatar_comment_types
 	 * @param  array  $types  default WordPress types
 	 * @return array
 	 */
@@ -749,6 +771,7 @@ final class Social {
 	/**
 	 * Gets the avatar based on the comment type.
 	 *
+	 * @wp-filter  get_avatar
 	 * @param  string  $avatar
 	 * @param  object  $comment
 	 * @param  int     $size
@@ -787,6 +810,7 @@ final class Social {
 	/**
 	 * Sets the comment type upon being saved.
 	 *
+	 * @wp-action  comment_post
 	 * @param  int  $comment_ID
 	 */
 	public function comment_post($comment_ID) {
@@ -1062,7 +1086,6 @@ add_action('init', array($social, 'init'), 1);
 add_action('init', array($social, 'request_handler'), 2);
 add_action('admin_init', array($social, 'admin_init'), 1);
 add_action('load-settings_page_social', array($social, 'check_system_cron'));
-add_action('load-'.basename(SOCIAL_FILE), array($social, 'check_system_cron'));
 add_action('comment_post', array($social, 'comment_post'));
 add_action('admin_notices', array($social, 'admin_notices'));
 add_action('transition_post_status', array($social, 'transition_post_status'), 10, 3);

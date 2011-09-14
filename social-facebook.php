@@ -13,6 +13,7 @@ final class Social_Facebook {
 	 * Registers Facebook to Social.
 	 *
 	 * @static
+	 * @wp-filter  social_register_service
 	 * @param  array  $services
 	 * @return array
 	 */
@@ -25,6 +26,7 @@ final class Social_Facebook {
 	 * Adds the permissions stuff in for Facebook.
 	 *
 	 * @static
+	 * @wp-filter  social_authorize_url
 	 * @param  string  $url  authorization url
 	 * @param  string  $key  service key
 	 * @return string

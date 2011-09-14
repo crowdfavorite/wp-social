@@ -13,6 +13,7 @@ final class Social_Twitter {
 	 * Registers Twitter to Social.
 	 *
 	 * @static
+	 * @wp-filter  social_register_service
 	 * @param  array  $services
 	 * @return array
 	 */
