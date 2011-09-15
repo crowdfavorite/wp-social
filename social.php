@@ -3,7 +3,7 @@
 Plugin Name: Social
 Plugin URI: http://mailchimp.com/social-plugin-for-wordpress/
 Description: Broadcast newly published posts and pull in discussions using integrations with Twitter and Facebook. Brought to you by <a href="http://mailchimp.com">MailChimp</a>.
-Version: 1.5
+Version: 1.1
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com/
 */
@@ -25,7 +25,7 @@ final class Social {
 	/**
 	 * @var  string  version number
 	 */
-	public static $version = '1.5';
+	public static $version = '1.1';
 
 	/**
 	 * @var  string  internationalization key
@@ -407,9 +407,9 @@ final class Social {
 			}
 		}
 
-		// 1.5 Upgrade?
-		$upgrade_1_5 = get_user_meta(get_current_user_id(), 'social_1.5_upgrade', true);
-		if (!empty($upgrade_1_5)) {
+		// 1.1 Upgrade?
+		$upgrade_1_1 = get_user_meta(get_current_user_id(), 'social_1.1_upgrade', true);
+		if (!empty($upgrade_1_1)) {
 			if (current_user_can('manage_options')) {
 				$output = 'Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your <a href="%s">global</a> and <a href="%s">personal</a> accounts.';
 				$output = sprintf($output, esc_url(Social_Helper::settings_url()), esc_url(admin_url('profile.php#social-networks')));
@@ -419,7 +419,7 @@ final class Social {
 				$output = sprintf($output, esc_url(admin_url('profile.php#social-networks')));
 			}
 
-			$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=clear_1_5_upgrade')), 'social_deauth');
+			$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=clear_1_1_upgrade')), 'social_deauth');
 			echo '<div class="error"><p>'.$output.' '.$dismiss.'</p></div>';
 		}
 	}
@@ -973,7 +973,7 @@ final class Social {
 			global $wpdb;
 
 			$upgrades = array(
-				SOCIAL_PATH.'upgrades/1.5.php',
+				SOCIAL_PATH.'upgrades/1.1.php',
 			);
 			$upgrades = apply_filters('social_upgrade_files', $upgrades);
 			foreach ($upgrades as $file) {

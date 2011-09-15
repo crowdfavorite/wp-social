@@ -201,8 +201,9 @@ This is due to the fact that older versions of WordPress did not remove apostrop
 
 == Changelog ==
 
-= 1.5 =
+= 1.1 =
 * Refactored Social completely.
+* Facebook Likes are now imported during comment aggregation.
 * Filter: social_broadcast_format now contains a third parameter, $service_key.
 * Filter: social_broadcast_permalink now contains a third parameter, $service_key.
 * Filter: social_format_content now contains a fourth parameter, $service_key.

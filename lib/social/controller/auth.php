@@ -59,9 +59,9 @@ final class Social_Controller_Auth extends Social_Controller {
 			$this->remove_from_xmlrpc($data->service, $account->id());
 		}
 
-		// 1.5 Upgrade
+		// 1.1 Upgrade
 		if ($data->service == 'facebook') {
-			delete_user_meta(get_current_user_id(), 'social_1.5_upgrade');
+			delete_user_meta(get_current_user_id(), 'social_1.1_upgrade');
 		}
 
 		$pages = array();
