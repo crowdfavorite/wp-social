@@ -116,9 +116,9 @@
 						<ul id="social_xmlrpc" class="social-broadcastables">
 							<?php
 								$accounts = get_option('social_xmlrpc_accounts', array());
-								foreach ($services as $key => $service):
-									foreach ($service->accounts() as $account):
-										if ($account->universal()):
+								foreach ($services as $key => $service) {
+									foreach ($service->accounts() as $account) {
+										if ($account->universal()) {
 							?>
 							<li>
 								<label class="social-broadcastable" for="<?php echo esc_attr($key.$account->id()); ?>" style="cursor:pointer">
@@ -128,17 +128,17 @@
 								</label>
 							</li>
 							<?php
-										endif;
-									endforeach;
-								endforeach;
+										}
+									}
+								}
 							?>
-							</ul>
-							<p class="description"><?php _e('Select'.' accounts above to have them auto-broadcast a teaser whenever you publish a post via XML-RPC or email. This only affects posts published remotely; if you&rsquo;re publishing from the post edit screen, you can handle broadcasting settings from there.', Social::$i18n); ?></p>
+						</ul>
+						<p class="description"><?php _e('Select'.' accounts above to have them auto-broadcast a teaser whenever you publish a post via XML-RPC or email. This only affects posts published remotely; if you&rsquo;re publishing from the post edit screen, you can handle broadcasting settings from there.', Social::$i18n); ?></p>
 					</td>
 				</tr>
 				<?php endif ?>
 				<tr>
-					<th>Fetch new comments&hellip;</th>
+					<th><?php _e('Fetch new comments&hellip;', Social::$i18n); ?></th>
 					<td>
 						<ul>
 							<li>
