@@ -1,4 +1,4 @@
-<li <?php comment_class('social-comment social-clearfix social-'.$comment_type); ?> id="li-comment-<?php comment_ID(); ?>">
+<li <?php comment_class('social-comment social-clearfix '.$comment_type); ?> id="li-comment-<?php comment_ID(); ?>">
 <div class="social-comment-inner social-clearfix" id="comment-<?php comment_ID(); ?>">
 	<div class="social-comment-header">
 		<div class="social-comment-author vcard">

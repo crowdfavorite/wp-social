@@ -191,6 +191,7 @@ final class Social {
 	public function service($key) {
 		$services = $this->load_services();
 
+		$key = str_replace('social-', '', $key);
 		$key = apply_filters('social_comment_type_to_service', $key);
 		if (!isset($services[$key])) {
 			return false;
@@ -762,11 +763,7 @@ final class Social {
 	 * @return array
 	 */
 	public function get_avatar_comment_types($types) {
-		$types = array_merge($types, array(
-			'wordpress',
-			'twitter',
-			'facebook',
-		));
+		$types[] = 'wordpress';
 		return $types;
 	}
 

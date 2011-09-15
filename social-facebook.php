@@ -69,7 +69,7 @@ final class Social_Facebook {
 	 * @return array
 	 */
 	public static function get_avatar_comment_types(array $types) {
-		return array_merge($types, array('facebook', 'facebook-like'));
+		return array_merge($types, array('social-facebook', 'social-facebook-like'));
 	}
 
 	/**
@@ -85,7 +85,7 @@ final class Social_Facebook {
 	 * @return string
 	 */
 	public static function get_avatar($avatar, $comment, $size, $default, $alt) {
-		if (is_object($comment) and $comment->comment_type == 'facebook-like') {
+		if (is_object($comment) and $comment->comment_type == 'social-facebook-like') {
 			$image = get_comment_meta($comment->comment_ID, 'social_profile_image_url', true);
 			if ($image !== null) {
 				$type = '';
