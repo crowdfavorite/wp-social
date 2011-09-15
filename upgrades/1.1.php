@@ -78,6 +78,20 @@ if (version_compare($installed_version, '1.1', '<')) {
 			}
 		}
 	}
+
+	// Upgrade system_cron to fetch_comments
+	$fetch = $wpdb->get_var("
+		SELECT option_value
+		  FROM $wpdb->options
+		 WHERE option_name = 'social_fetch_comments'
+	");
+
+	$query = "UPDATE $wpdb->otions SET option_name='social_fetch_comments'";
+	if (empty($fetch)) {
+		$query .= ", option_value='1'";
+	}
+	$query .= " WHERE option_name = 'social_system_crons'";
+	$wpdb->query($query);
 }
 
 // Make sure all commenter accounts have the commenter flag

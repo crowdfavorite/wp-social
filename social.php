@@ -53,7 +53,7 @@ final class Social {
 		'comment_broadcast_format' => '{content} {url}',
 		'twitter_anywhere_api_key' => null,
 		'system_cron_api_key' => null,
-		'system_crons' => '0'
+		'fetch_comments' => '1'
 	);
 
 	/**
@@ -298,7 +298,7 @@ final class Social {
 	 */
 	public function check_system_cron() {
 		// Schedule CRONs
-		if (Social::option('system_crons') != '1') {
+		if (Social::option('fetch_comments') == '1') {
 			if (wp_next_scheduled('social_cron_15_init') === false) {
 				wp_schedule_event(time() + 900, 'every15min', 'social_cron_15_init');
 			}
@@ -463,7 +463,8 @@ final class Social {
 				}
 			}
 
-			if ($this->_enabled) {
+			$fetch = Social::option('fetch_comments');
+			if ($this->_enabled and !empty($fetch)) {
 				if ($post->post_status == 'publish') {
 					add_meta_box('social_meta_aggregation_log', __('Social Comments', Social::$i18n), array($this, 'add_meta_box_log'), 'post', 'normal', 'core');
 				}

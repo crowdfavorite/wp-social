@@ -104,7 +104,10 @@
 			</td>
 		</tr>
 	</table>
-	<?php $toggle = (Social::option('system_crons') == '1' or Social::option('debug') == '1') ? ' social-open' : ''; ?>
+	<?php
+		$fetch = Social::option('fetch_comments');
+		$toggle = (!empty($fetch) or Social::option('debug') == '1') ? ' social-open' : '';
+	?>
 	<div class="social-collapsible<?php echo $toggle; ?>">
 		<h3 class="social-title"><a href="#social-advanced"><?php _e('Advanced Options', Social::$i18n); ?></a></h3>
 		<div class="social-content">
@@ -142,19 +145,26 @@
 					<td>
 						<ul>
 							<li>
-								<label for="system_crons_no">
-									<input type="radio" name="<?php echo 'social_system_crons'; ?>" value="0" id="system_crons_no" style="position:relative;top:-1px"<?php echo Social::option('system_crons') != '1' ? ' checked="checked"' : ''; ?> />
+								<label for="fetch_comments_never">
+									<input type="radio" name="social_fetch_comments" value="0" id="fetch_comments_never" style="position:relative;top:-1px"<?php echo !in_array(Social::option('fetch_comments'), array('1', '2')) ? ' checked="checked"' : ''; ?> />
+									<?php _e('Never', Social::$i18n); ?>
+									<span class="description"><?php _e('(disables fetching of comments)', Social::$i18n); ?></span>
+								</label>
+							</li>
+							<li>
+								<label for="fetch_comments_auto">
+									<input type="radio" name="social_fetch_comments" value="1" id="fetch_comments_auto" style="position:relative;top:-1px"<?php echo Social::option('fetch_comments') == '1' ? ' checked="checked"' : ''; ?> />
 									<?php _e('Automatically', Social::$i18n); ?>
 									<span class="description"><?php _e('(easiest)', Social::$i18n); ?></span>
 								</label>
 							</li>
 							<li>
-								<label for="system_crons_yes">
-									<input type="radio" name="<?php echo 'social_system_crons'; ?>" value="1" id="system_crons_yes" style="position:relative;top:-1px"<?php echo Social::option('system_crons') == '1' ? ' checked="checked"' : ''; ?> />
+								<label for="fetch_comments_cron">
+									<input type="radio" name="social_fetch_comments" value="2" id="fetch_comments_cron" style="position:relative;top:-1px"<?php echo Social::option('fetch_comments') == '2' ? ' checked="checked"' : ''; ?> />
 									<?php _e('Using a custom CRON job <span class="description">(advanced)</span>', Social::$i18n); ?>
 								</label>
 								<p class="description"><?php _e('If you select this option, new tweets and Facebook posts will not be fetched unless you set up a system CRON job or fetch new items manually from the post edit screen. More help is also available in&nbsp;<code>readme.txt</code>.', Social::$i18n); ?></p>
-								<?php if (Social::option('system_crons') == '1'): ?>
+								<?php if (Social::option('fetch_comments') == '2'): ?>
 								<div class="social-callout">
 									<h3 class="social-title"><?php _e('CRON Setup', Social::$i18n); ?></h3>
 									<dl class="social-kv">
