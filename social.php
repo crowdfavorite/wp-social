@@ -191,6 +191,7 @@ final class Social {
 	public function service($key) {
 		$services = $this->load_services();
 
+		$key = apply_filters('social_comment_type_to_service', $key);
 		if (!isset($services[$key])) {
 			return false;
 		}

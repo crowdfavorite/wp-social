@@ -270,7 +270,8 @@ override submit styles in TwentyEleven theme */
 }
 
 #social .social-twitter-icon,
-#social .social-facebook-icon {
+#social .social-facebook-icon,
+#social .social-facebook-like-icon {
 	background: url(social.png) 0 -150px no-repeat;
 	display: block;
 	padding-left: 21px;
@@ -281,7 +282,8 @@ override submit styles in TwentyEleven theme */
 	 */
 	zoom: 1;
 }
-#social .social-facebook-icon {
+#social .social-facebook-icon,
+#social .social-facebook-like-icon {
     background-position: 0 -250px;
 }
 
@@ -573,7 +575,9 @@ override submit styles in TwentyEleven theme */
 	background-position: right -100px;
 }
 #social .social-facebook .social-comment-meta,
-#social ol li ul li.social-facebook .social-comment-meta {
+#social .social-facebook-like .social-comment-meta,
+#social ol li ul li.social-facebook .social-comment-meta,
+#social ol li ul li.social-facebook-like .social-comment-meta {
 	background-position: right -200px;
 }
 #social .social-pingback .social-comment-meta,
@@ -588,10 +592,26 @@ override submit styles in TwentyEleven theme */
 #social .social-comment-collapse > .social-comment-inner > .social-actions {
 	display: none;
 }
-#social .social-comment-collapse > .social-comment-inner > .social-comment-header {
+#social .social-comment-collapse > .social-comment-inner > .social-comment-header,
+#social .social-comment-collapse.social-facebook-like > .social-comment-inner > .social-comment-body {
 	filter:alpha(opacity=30);
 	opacity: .3;
 	font-size: 12px;
+}
+#social .social-facebook-like {
+	margin-bottom: 5px;
+}
+#social .social-facebook-like > .social-comment-inner > .social-comment-body {
+	z-index: 3;
+	position: relative;
+	top: -1px;
+	font-size: 12px;
+}
+#social .social-comment-collapse.social-facebook-like > .social-comment-inner > .social-comment-body {
+	top: -5px;
+}
+#social .social-facebook-like > .social-comment-inner > .social-comment-header > .social-comment-author img {
+	top: 1px;
 }
 #social .social-comment-collapse > .social-comment-inner > .social-comment-header .social-fn {
 	font-size: 12px;

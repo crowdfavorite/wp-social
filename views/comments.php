@@ -58,6 +58,15 @@ ob_start();
 					++$groups[$comment->comment_type];
 				}
 			}
+
+			// Facebook counts
+			$facebook_count = 0;
+			if (isset($groups['facebook'])) {
+				$facebook_count = $groups['facebook'];
+			}
+			if (isset($groups['facebook-like'])) {
+				$facebook_count = $facebook_count + $groups['facebook-like'];
+			}
 		?>
 		<ul class="social-nav social-clearfix">
 			<li class="social-all social-tab-main<?php echo (!isset($_GET['social_tab']) ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-all"><span><?php comments_number(__('0 Replies', Social::$i18n), __('1 Reply', Social::$i18n), __('% Replies', Social::$i18n)); ?></span></a></li>

@@ -496,4 +496,20 @@ abstract class Social_Service {
 		return $accounts;
 	}
 
+	/**
+	 * Checks to see if the result ID is the original broadcasted ID.
+	 *
+	 * @param  WP_Post  $post
+	 * @param  int      $result_id
+	 * @return bool
+	 */
+	protected function is_original_broadcast($post, $result_id) {
+		foreach ($post->broadcasted_ids[$this->_key] as $account_id => $broadcasted_ids) {
+			if (in_array($result_id, $broadcasted_ids)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 } // End Social_Service
