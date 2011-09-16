@@ -1108,6 +1108,7 @@ final class Social {
 							foreach ($_accounts as $account) {
 								$account = new $class($account);
 								if (!$services[$key]->account_exists($account->id())) {
+									$this->_enabled = true;
 									$services[$key]->account($account);
 								}
 
