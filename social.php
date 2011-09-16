@@ -1125,10 +1125,16 @@ final class Social {
 			// Register services
 			$registered_services = apply_filters('social_register_service', array());
 			if (is_array($registered_services) and count($registered_services)) {
-				$accounts = Social::option('accounts');
+				$accounts = array();
+				$commenter = get_user_meta(get_current_user_id(), 'social_commenter', true);
+
+				if ($commenter !== 'true') {
+					$accounts = Social::option('accounts');
+				}
 				foreach ($registered_services as $service) {
 					if (!isset($services[$service])) {
 						$service_accounts = array();
+
 						if (isset($accounts[$service]) and count($accounts[$service])) {
 							$this->_enabled = true; // Flag social as enabled, we have at least one account.
 							$service_accounts = $accounts[$service];
@@ -1148,6 +1154,7 @@ final class Social {
 							foreach ($_accounts as $account) {
 								$account = new $class($account);
 								if (!$services[$key]->account_exists($account->id())) {
+									$this->_enabled = true;
 									$services[$key]->account($account);
 								}
 
