@@ -1080,7 +1080,12 @@ final class Social {
 			// Register services
 			$registered_services = apply_filters('social_register_service', array());
 			if (is_array($registered_services) and count($registered_services)) {
-				$accounts = Social::option('accounts');
+				$accounts = array();
+				$commenter = get_user_meta(get_current_user_id(), 'social_commenter', true);
+
+				if ($commenter != 'true') {
+					$accounts = Social::option('accounts');
+				}
 				foreach ($registered_services as $service) {
 					if (!isset($services[$service])) {
 						$service_accounts = array();
