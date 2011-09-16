@@ -5,6 +5,8 @@
 	<title><?php _e('Social Broadcasting Options', 'social'); ?></title>
 	<?php
 		wp_admin_css('install', true);
+		do_action('wp_enqueue_scripts');
+		do_action('admin_enqueue_scripts');
 		do_action('admin_print_styles');
 	?>
 </head>

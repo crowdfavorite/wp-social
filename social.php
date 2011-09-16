@@ -250,14 +250,11 @@ final class Social {
 			if (SOCIAL_COMMENTS_CSS !== false) {
 				wp_enqueue_style('social_comments', SOCIAL_COMMENTS_CSS, array(), Social::$version, 'screen');
 			}
-
-			if (SOCIAL_COMMENTS_JS !== false) {
-				wp_enqueue_script('jquery');
-			}
 		}
 
 		// JS/CSS
 		if (SOCIAL_COMMENTS_JS !== false) {
+			wp_enqueue_script('jquery');
 			wp_enqueue_script('social_js', SOCIAL_COMMENTS_JS, array('jquery'), Social::$version, true);
 		}
 	}

@@ -85,6 +85,9 @@
 	width: 99%;
 	margin-bottom: 10px;
 }
+.social-counter-limit {
+	color: #f00;
+}
 #social_error {
 	background-color: #ffebe8;
 	border: 1px solid #c00;
