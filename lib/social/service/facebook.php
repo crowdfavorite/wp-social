@@ -95,11 +95,11 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				if (isset($post->broadcasted_ids[$this->_key][$account->id()])) {
 					foreach ($post->broadcasted_ids[$this->_key][$account->id()] as $broadcasted_id) {
 						$id = explode('_', $broadcasted_id);
-						$response = $this->request($account, $id[1].'/comments')->response;
-						if ($response->body() !== false and isset($response->body()->data) and is_array($response->body()->data) and count($response->body()->data)) {
-							foreach ($response->body()->data as $result) {
+						$response = $this->request($account, $id[1].'/comments')->body();
+						if ($response !== false and isset($response->data) and is_array($response->data) and count($response->data)) {
+							foreach ($response->data as $result) {
 								$data = array(
-									'parent_id' => $id[0],
+									'parent_id' => $broadcasted_id,
 								);
 
 								if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
@@ -147,8 +147,8 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		}
 
 		$response = $this->request($account, $url, array('limit' => '100'))->body();
-		if ($response->body() !== false and isset($response->body()->data) and is_array($response->body()->data) and count($response->body()->data)) {
-			foreach ($response->body()->data as $result) {
+		if ($response !== false and isset($response->data) and is_array($response->data) and count($response->data)) {
+			foreach ($response->data as $result) {
 				if (isset($post->results) and isset($post->results[$this->_key]) and isset($post->results[$this->_key][$result->id])) {
 					continue;
 				}

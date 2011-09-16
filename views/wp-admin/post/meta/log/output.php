@@ -43,9 +43,9 @@
 									}
 
 									$id = $item->id;
-									if (isset($item->data['parent_id']) and strpos($item->data['parent_id'], '_')) {
+									if (isset($item->data['parent_id'])) {
+										$id = $item->data['parent_id'];
 										$ids = explode('_', $item->data['parent_id']);
-										$id = $item->data['parent_id'].'_'.$ids[0];
 										$item->id = $id.'#'.$ids[1];
 									}
 
