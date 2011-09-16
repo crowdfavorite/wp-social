@@ -69,7 +69,7 @@ final class Social_Facebook {
 	 * @return array
 	 */
 	public static function get_avatar_comment_types(array $types) {
-		return array_merge($types, array('facebook', 'facebook-like'));
+		return array_merge($types, array('social-facebook', 'social-facebook-like'));
 	}
 
 	/**

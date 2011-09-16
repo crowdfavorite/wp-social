@@ -191,6 +191,7 @@ final class Social {
 	public function service($key) {
 		$services = $this->load_services();
 
+		$key = str_replace('social-', '', $key);
 		$key = apply_filters('social_comment_type_to_service', $key);
 		if (!isset($services[$key])) {
 			return false;
@@ -844,7 +845,7 @@ final class Social {
 
 						update_comment_meta($comment_ID, 'social_account_id', $account_id);
 						update_comment_meta($comment_ID, 'social_profile_image_url', $account->avatar());
-						update_comment_meta($comment_ID, 'social_comment_type', $service->key());
+						update_comment_meta($comment_ID, 'social_comment_type', 'social-'.$service->key());
 
 						if ($comment->user_id != '0') {
 							$comment->comment_author = $account->name();
