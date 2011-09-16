@@ -35,27 +35,29 @@ ob_start();
 		<?php if (have_comments()): ?>
 		<?php
 			$groups = array();
-			foreach ($comments as $comment) {
-				if (empty($comment->comment_type)) {
-					$comment_type = get_comment_meta($comment->comment_ID, 'social_comment_type', true);
-					if (empty($comment_type)) {
-						$comment_type = 'wordpress';
-					}
-
-					if ($comment_type != 'wordpress') {
-						$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
-						if (empty($status_id)) {
+			if (get_comments_number()) {
+				foreach ($comments as $comment) {
+					if (empty($comment->comment_type)) {
+						$comment_type = get_comment_meta($comment->comment_ID, 'social_comment_type', true);
+						if (empty($comment_type)) {
 							$comment_type = 'wordpress';
 						}
-					}
-					$comment->comment_type = $comment_type;
-				}
 
-				if (!isset($groups[$comment->comment_type])) {
-					$groups[$comment->comment_type] = 1;
-				}
-				else {
-					++$groups[$comment->comment_type];
+						if ($comment_type != 'wordpress') {
+							$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
+							if (empty($status_id)) {
+								$comment_type = 'wordpress';
+							}
+						}
+						$comment->comment_type = $comment_type;
+					}
+
+					if (!isset($groups[$comment->comment_type])) {
+						$groups[$comment->comment_type] = 1;
+					}
+					else {
+						++$groups[$comment->comment_type];
+					}
 				}
 			}
 
