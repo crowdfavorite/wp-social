@@ -852,6 +852,7 @@ final class Social {
 									Social::log($message);
 									wp_die($message);
 								}
+								$this->set_comment_aggregated_id($comment->comment_ID, $service->key(), $id);
 								update_comment_meta($comment_ID, 'social_status_id', $id);
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', Social::$i18n), $comment_ID, $service->title(), $account->id()));
 							}
@@ -859,7 +860,7 @@ final class Social {
 
 						update_comment_meta($comment_ID, 'social_account_id', $account_id);
 						update_comment_meta($comment_ID, 'social_profile_image_url', $account->avatar());
-						update_comment_meta($comment_ID, 'social_comment_type', $service->key());
+						update_comment_meta($comment_ID, 'social_comment_type', 'social-'.$service->key());
 
 						if ($comment->user_id != '0') {
 							$comment->comment_author = $account->name();
@@ -923,6 +924,7 @@ final class Social {
 									wp_delete_comment($comment_id);
 									Social::log(sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', Social::$i18n), $comment_id, $service->title(), $account->id()));
 								}
+								$this->set_comment_aggregated_id($comment_id, $service->key(), $id);
 								update_comment_meta($comment_id, 'social_status_id', $id);
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', Social::$i18n), $comment_id, $service->title(), $account->id()));
 							}
@@ -932,6 +934,34 @@ final class Social {
 
 				delete_comment_meta($comment_id, 'social_to_broadcast');
 			}
+		}
+	}
+
+	/**
+	 * Sets the aggregated ID of the comment.
+	 *
+	 * @param  int     $comment_id
+	 * @param  string  $service
+	 * @param  int     $broadcasted_id
+	 * @return void
+	 */
+	private function set_comment_aggregated_id($comment_id, $service, $broadcasted_id) {
+		$comment = get_comment($comment_id);
+		if ($comment != null) {
+			$aggregated_ids = get_post_meta($comment->comment_post_ID, '_social_aggregated_ids', true);
+			if (empty($aggregated_ids)) {
+				$aggregated_ids = array();
+			}
+
+			if (!isset($aggregated_ids[$service])) {
+				$aggregated_ids[$service] = array();
+			}
+
+			if (!in_array($broadcasted_id, $aggregated_ids[$service])) {
+				$aggregated_ids[$service][] = $broadcasted_id;
+			}
+
+			update_post_meta($comment->comment_post_ID, '_social_aggregated_ids', $aggregated_ids);
 		}
 	}
 
