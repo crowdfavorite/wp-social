@@ -62,12 +62,12 @@ final class Social_Controller_Settings extends Social_Controller {
 	}
 
 	/**
-	 * Clears the 1.1 upgrade notice.
+	 * Dismisses the activation notice.
 	 *
 	 * @return void
 	 */
-	public function action_clear_1_1_upgrade() {
-		delete_user_meta(get_current_user_id(), 'social_1.1_upgrade');
+	public function action_dismiss_activation() {
+		update_user_meta(get_current_user_id(), 'social_activation_notice_dismissed', true);
 	}
 
 	/**
@@ -94,6 +94,15 @@ final class Social_Controller_Settings extends Social_Controller {
 	 */
 	public function action_clear_log_write_error() {
 		delete_option('social_log_write_error');
+	}
+
+	/**
+	 * Clears the 1.1 upgrade notice.
+	 *
+	 * @return void
+	 */
+	public function action_clear_1_1_upgrade() {
+		delete_user_meta(get_current_user_id(), 'social_1.1_upgrade');
 	}
 
 } // End Social_Controller_Settings

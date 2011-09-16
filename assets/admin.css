@@ -2,7 +2,7 @@
  * Wrapping form
  */
 .social-view {
-	max-width: 60em;
+	max-width: 60em!important;
 }
 
 /**

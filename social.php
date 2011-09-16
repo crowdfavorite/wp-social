@@ -255,27 +255,34 @@ final class Social {
 				wp_enqueue_script('jquery');
 			}
 		}
-		else {
-			if (!defined('SOCIAL_ADMIN_JS')) {
-				define('SOCIAL_ADMIN_JS', plugins_url('assets/admin.js', SOCIAL_FILE));
-			}
-
-			if (!defined('SOCIAL_ADMIN_CSS')) {
-				define('SOCIAL_ADMIN_CSS', plugins_url('assets/admin.css', SOCIAL_FILE));
-			}
-
-			if (SOCIAL_ADMIN_CSS !== false) {
-				wp_enqueue_style('social_admin', SOCIAL_ADMIN_CSS, array(), Social::$version, 'screen');
-			}
-
-			if (SOCIAL_ADMIN_JS !== false) {
-				wp_enqueue_script('social_admin', SOCIAL_ADMIN_JS, array(), Social::$version, true);
-			}
-		}
 
 		// JS/CSS
 		if (SOCIAL_COMMENTS_JS !== false) {
 			wp_enqueue_script('social_js', SOCIAL_COMMENTS_JS, array('jquery'), Social::$version, true);
+		}
+	}
+
+	/**
+	 * Enqueues the assets for Social.
+	 *
+	 * @wp-action  admin_enqueue_scripts
+	 * @return void
+	 */
+	public function admin_enqueue_assets() {
+		if (!defined('SOCIAL_ADMIN_JS')) {
+			define('SOCIAL_ADMIN_JS', plugins_url('assets/admin.js', SOCIAL_FILE));
+		}
+
+		if (!defined('SOCIAL_ADMIN_CSS')) {
+			define('SOCIAL_ADMIN_CSS', plugins_url('assets/admin.css', SOCIAL_FILE));
+		}
+
+		if (SOCIAL_ADMIN_CSS !== false) {
+			wp_enqueue_style('social_admin', SOCIAL_ADMIN_CSS, array(), Social::$version, 'screen');
+		}
+
+		if (SOCIAL_ADMIN_JS !== false) {
+			wp_enqueue_script('social_admin', SOCIAL_ADMIN_JS, array(), Social::$version, true);
 		}
 	}
 
@@ -393,8 +400,20 @@ final class Social {
 			$error = Social::option('log_write_error');
 			if ($error == '1') {
 				echo '<div class="error"><p>'.
-					 sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_deauth">[Dismiss]</a>', Social::$i18n), SOCIAL_PATH, esc_url(admin_url('?social_controller=settings&social_action=clear_log_write_error'))).
+					 sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_dismiss">[Dismiss]</a>', Social::$i18n), SOCIAL_PATH, esc_url(admin_url('?social_controller=settings&social_action=clear_log_write_error'))).
 					 '</p></div>';
+			}
+
+			// Activation notice?
+			$activation_notice_dismissed = get_user_meta(get_current_user_id(), 'social_activation_notice_dismissed', true);
+			if (empty($activation_notice_dismissed)) {
+				$output = __('When you enable Social, users will be created in your system and given the "New User Default Role" as specified in your %s. Users that are created by Social and only have Subscriber permissions will be prevented from accessing the admin side of WordPress. %s', Social::$i18n);
+
+				$settings_url = sprintf(__('<a href="%s">Settings</a>', Social::$i18n), esc_url(admin_url('options-general.php')));
+				$dismiss_url = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=dismiss_activation')), 'social_dismiss');
+
+				$output = sprintf($output, $settings_url, $dismiss_url);
+				echo '<div class="updated"><p>'.$output.'</p></div>';
 			}
 		}
 
@@ -403,7 +422,8 @@ final class Social {
 		if (!empty($deauthed)) {
 			foreach ($deauthed as $service => $data) {
 				foreach ($data as $id => $message) {
-					echo '<div class="error"><p>'.esc_html($message).' <a href="'.esc_url(admin_url('?social_controller=settings&social_action=clear_deauth&id='.$id.'&service='.$service)).'" class="social_deauth">[Dismiss]</a></p></div>';
+					$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=clear_deauth&id='.$id.'&service='.$service)), 'social_dismiss');
+					echo '<div class="error"><p>'.esc_html($message).' '.$dismiss.'</p></div>';
 				}
 			}
 		}
@@ -420,7 +440,7 @@ final class Social {
 				$output = sprintf($output, esc_url(admin_url('profile.php#social-networks')));
 			}
 
-			$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=clear_1_1_upgrade')), 'social_deauth');
+			$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=clear_1_1_upgrade')), 'social_dismiss');
 			echo '<div class="error"><p>'.$output.' '.$dismiss.'</p></div>';
 		}
 	}
@@ -1156,6 +1176,7 @@ add_action('load-post-new.php', array($social, 'enqueue_assets'));
 add_action('load-post.php', array($social, 'enqueue_assets'));
 add_action('load-profile.php', array($social, 'enqueue_assets'));
 add_action('load-settings_page_social', array($social, 'enqueue_assets'));
+add_action('admin_enqueue_scripts', array($social, 'admin_enqueue_assets'));
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));
