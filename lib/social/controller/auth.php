@@ -50,7 +50,7 @@ final class Social_Controller_Auth extends Social_Controller {
 			}
 		}
 
-		$user_id = $service->create_user($account, $this->request->query('_nonce'));
+		$user_id = $service->create_user($account, $this->request->query('id'));
 		if ($user_id !== false) {
 			$service->save($account);
 
