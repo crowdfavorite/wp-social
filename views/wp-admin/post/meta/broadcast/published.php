@@ -14,15 +14,15 @@ if (is_array($ids) and count($ids)) {
 			}
 
 			$output = '';
-			foreach ($ids[$key] as $user_id => $broadcasted_id) {
+			foreach ($ids[$key] as $user_id => $broadcasted_ids) {
 				if (($account = $service->account($user_id)) !== false) {
-					if (empty($ou)) {
+					if (empty($output)) {
 						$accounts_output = '<h4>'.$service->title().'</h4><ul style="margin:0 0 25px 0;">';
 					}
 
 					$output .= Social_View::factory('wp-admin/post/meta/broadcast/parts/account', array(
 						'account' => $account,
-						'broadcasted_id' => $broadcasted_id,
+						'broadcasted_ids' => $broadcasted_ids,
 						'service' => $service
 					));
 				}

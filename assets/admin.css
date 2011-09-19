@@ -2,7 +2,7 @@
  * Wrapping form
  */
 .social-view {
-	max-width: 60em;
+	max-width: 60em !important;
 }
 
 /**
@@ -94,9 +94,17 @@
 	float: none;
 }
 
+.social-counter-limit {
+	color: #f00;
+}
+
 .form-table .social-preview-content {
 	width: 99%;
 	margin-bottom: 10px;
+}
+
+.social-counter-limit {
+	color: #f00;
 }
 
 #social_error {

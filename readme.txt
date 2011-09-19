@@ -160,6 +160,40 @@ No, the proxy acts just like any Twitter or Facebook application. We've simply p
 
 Yes, they can add the account to their profile page.
 
+= Why are some custom posts with my blog post's URL not being found during aggregation? =
+
+This may be due to the bug with Facebook's search API. Currently, for a post to return on the search the URL must not be at the beginning of the post.
+
+Valid post that will be included:
+
+Hey, check out this post! http://example.com/?p=5
+
+Invalid post that will not included:
+
+http://example.com/?p=5 This was a cool post, go read it.
+
+Track this bug on Facebook: http://bugs.developers.facebook.net/show_bug.cgi?id=20611
+
+= Why are some of comments/posts not returning from Facebook right away? =
+
+We have noticed some latency around the inclusion of some items when querying the Graph API. We have seen some comments and posts take up to 72 hours to be included in aggregation requests.
+
+= Does your permalink have apostrophes in it? Is Social stripping these from the URL when disconnecting? =
+
+This is due to the fact that older versions of WordPress did not remove apostrophes from the permalink and newer versions of WordPress do. It is possible that your blog post was created on a version of WordPress that contained this bug. To fix this, simply login to your WP-Admin and edit the post by doing the following (assuming you're running WordPress 3.2+):
+
+1. Click on Posts in the WP-Admin menu.
+2. Find your post and click on "Edit".
+3. Under your post's title, click on the "Edit" link that is next to the permalink.
+4. Click "OK" to save the new permalink. (This will automatically remove the apostrophes for you.)
+
+= What kind of URL shortening service does Social use? =
+
+By default, Social uses the built in wp_get_shortlink() method to generate the short URLs to blog posts. However, if you want, you can hook onto WordPress' get_shortlink filter and apply your own URL shortening service; or you can use pre-built plugins.
+
+wp_get_shortlink Documentation: http://codex.wordpress.org/Function_Reference/wp_get_shortlink
+Bit.ly Plugin: http://yoast.com/wordpress/bitly-shortlinks/
+
 
 
 == Screenshots ==
@@ -174,8 +208,9 @@ Yes, they can add the account to their profile page.
 
 == Changelog ==
 
-= 1.5 =
+= 1.1 =
 * Refactored Social completely.
+* Facebook Likes are now imported during comment aggregation.
 * Filter: social_broadcast_format now contains a third parameter, $service_key.
 * Filter: social_broadcast_permalink now contains a third parameter, $service_key.
 * Filter: social_format_content now contains a fourth parameter, $service_key.

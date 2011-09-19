@@ -9,12 +9,12 @@
 		
 		function counter($object, $counter, max) {
 			var content = $object.val();
-			if (content.length > max) {
-				$object.val(content.substr(0, max));
-			} else if (counter == 0) {
-				$object.val(content.substr(0, -1));
-			} else {
-				$counter.html(max - content.length);
+			$counter.html(max - content.length);
+
+			var counter = parseFloat($counter.html());
+			$counter.removeClass('social-counter-limit');
+			if (counter <= 10) {
+				$counter.addClass('social-counter-limit');
 			}
 		}
 
@@ -33,8 +33,8 @@
 			}
 		});
 
-		$('#tweet_preview').bind("change keyup paste", function(){
-			counter($(this), $('#tweet_counter'), 140);
+		$('#twitter_preview').bind("change keyup paste", function(){
+			counter($(this), $('#twitter_counter'), 140);
 		});
 
 		$('#facebook_preview').bind("change keyup paste", function(){
@@ -104,6 +104,18 @@
 			e.preventDefault();
 			$.get($(this).attr('href'), {}, function(response){
 				$('.social_api_key').html(response);
+			});
+		});
+
+
+		/**
+		 * Dismissal of notices.
+		 */
+		$('.social_dismiss').click(function(e) {
+			e.preventDefault();
+			var $this = $(this);
+			$.get($this.attr('href'), {}, function() {
+				$this.parent().parent().fadeOut();
 			});
 		});
 	});

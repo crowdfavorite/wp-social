@@ -67,7 +67,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url', true, $data);
 						continue;
 					}
-					else if (isset($post->broadcasted_ids[$this->_key]) and in_array($result->id, $post->broadcasted_ids[$this->_key])) {
+					else if ($this->is_original_broadcast($post, $result->id)) {
 						continue;
 					}
 
@@ -98,8 +98,8 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 				if (isset($post->broadcasted_ids[$this->_key][$account->id()])) {
 					// Retweets
 					$response = $this->request($account, 'statuses/retweets/'.$post->broadcasted_ids[$this->_key][$account->id()]);
-					if (isset($response->response) and is_array($response->response) and count($response->response)) {
-						foreach ($response->response as $result) {
+					if ($response->body() !== false and is_array($response->body()) and count($response->body())) {
+						foreach ($response->body() as $result) {
 							$data = array(
 								'username' => $result->user->screen_name,
 							);
@@ -108,7 +108,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'retweet', true, $data);
 								continue;
 							}
-							else if (isset($post->broadcasted_ids[$this->_key]) and in_array($result->id, $post->broadcasted_ids[$this->_key])) {
+							else if ($this->is_original_broadcast($post, $result->id)) {
 								continue;
 							}
 
@@ -130,8 +130,8 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						'since_id' => $post->broadcasted_ids[$this->_key][$account->id()],
 						'count' => 200
 					));
-					if (isset($response->response) and is_array($response->response) and count($response->response)) {
-						foreach ($response->response as $result) {
+					if ($response->body() !== false and is_array($response->body()) and count($response->body())) {
+						foreach ($response->body() as $result) {
 							$data = array(
 								'username' => $result->user->screen_name,
 							);
@@ -140,7 +140,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', true, $data);
 								continue;
 							}
-							else if (isset($post->broadcasted_ids[$this->_key]) and in_array($result->id, $post->broadcasted_ids[$this->_key])) {
+							else if ($this->is_original_broadcast($post, $result->id)) {
 								continue;
 							}
 
@@ -364,7 +364,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 			$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
 			$output = str_replace("rel='", "rel='".$status_id." ", $url);
 
-			$api_key = Social::instance()->option('twitter_anywhere_api_key');
+			$api_key = Social::option('twitter_anywhere_api_key');
 			if (!empty($api_key)) {
 				$output = str_replace("'>", "' style='display:none'>@", $output);
 				$output .= '@'.get_comment_author($comment->comment_ID);

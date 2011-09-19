@@ -116,7 +116,6 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			}
 		}
 
-		$this->social->admin_resources();
 		echo Social_View::factory('wp-admin/post/broadcast/options', array(
 			'errors' => $errors,
 			'services' => $services,
@@ -266,7 +265,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 									$broadcasted_ids[$key] = array();
 								}
 
-								$broadcasted_ids[$key][$account->id()] = $response->id();
+								$this->social->add_broadcasted_id($post->ID, $key, $account->id(), $response->id());
 								do_action('social_broadcast_response', $response, $key);
 
 								Social::log('Broadcasting to :username, account #:id COMPLETE. (:service)', array(
@@ -327,10 +326,10 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			}
 
 			// Retry?
-			$retry = $this->social->option('retry_broadcast');
+			$retry = Social::option('retry_broadcast');
 			if (is_array($retry) and !in_array($post->ID, $retry)) {
 				$retry[] = $post->ID;
-				$this->social->option('retry_broadcast', $retry, true);
+				Social::option('retry_broadcast', $retry);
 			}
 
 			// Deauthed accounts?
@@ -344,12 +343,6 @@ final class Social_Controller_Broadcast extends Social_Controller {
 				delete_post_meta($post->ID, '_social_'.$service->key().'_content');
 			}
 		}
-
-		// Set broadcast meta
-		$this->social->set_broadcasted_meta($post->ID, $broadcasted_ids);
-
-		// Add to the aggregation queue.
-		Social_Aggregation_Queue::factory()->add($post->ID)->save();
 	}
 
 	/**

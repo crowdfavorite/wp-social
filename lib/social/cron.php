@@ -60,6 +60,7 @@ final class Social_CRON {
 
 			if (!is_writable($this->_cron_lock_dir)) {
 				$this->_enabled = false;
+				Social::option('cron_lock_error', true);
 			}
 		}
 
@@ -134,7 +135,7 @@ final class Social_CRON {
 	 */
 	private function lock() {
 		$locked = false;
-		$file = trailingslashit(Social::$cron_lock_dir).$this->_key.'.txt';
+		$file = trailingslashit($this->_cron_lock_dir).$this->_key.'.txt';
 
 		$timestamp = 0;
 		if (is_file($file)) {
@@ -167,7 +168,7 @@ final class Social_CRON {
 	 */
 	private function unlock() {
 		$unlocked = false;
-		$file = trailingslashit(Social::$cron_lock_dir).$this->_key.'.txt';
+		$file = trailingslashit($this->_cron_lock_dir).$this->_key.'.txt';
 
 		try {
 			$fp = fopen($file, 'r+');

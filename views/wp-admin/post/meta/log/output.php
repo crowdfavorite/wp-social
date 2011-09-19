@@ -9,7 +9,7 @@
 		foreach ($log as $timestamp => $_log) {
 			++$i;
 
-			$output .= '<h5 id="log-'.$i.'">'.date('F j, Y, g:i a', ($timestamp + (get_option('gmt_offset') * 3600))).' (';
+			$output .= '<h5 id="log-'.$i.'">'.date(get_option('date_format').' '.get_option('time_format'), ($timestamp + (get_option('gmt_offset') * 3600))).' (';
 			if (isset($_log->manual) and $_log->manual) { // isset() check for legacy support
 				$output .= __('Manual Aggregation', Social::$i18n);
 			}
@@ -38,14 +38,14 @@
 							foreach ($_items as $type => $items) {
 								foreach ($items as $item) {
 									$username = '';
-									if (isset($item->data->username)) {
-										$username = $item->data->username;
+									if (isset($item->data['username'])) {
+										$username = $item->data['username'];
 									}
 
 									$id = $item->id;
-									if (isset($item->data->parent_id)) {
-										$ids = explode('_', $item->data->parent_id);
-										$id = $item->data->parent_id.'_'.$ids[0];
+									if (isset($item->data['parent_id'])) {
+										$id = $item->data['parent_id'];
+										$ids = explode('_', $item->data['parent_id']);
 										$item->id = $id.'#'.$ids[1];
 									}
 

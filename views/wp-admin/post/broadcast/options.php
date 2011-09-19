@@ -5,6 +5,8 @@
 	<title><?php _e('Social Broadcasting Options', 'social'); ?></title>
 	<?php
 		wp_admin_css('install', true);
+		do_action('wp_enqueue_scripts');
+		do_action('admin_enqueue_scripts');
 		do_action('admin_print_styles');
 	?>
 </head>
@@ -34,7 +36,7 @@
 		else {
 			$content = get_post_meta($post->ID, '_social_'.$key.'_content', true);
 			if (empty($content)) {
-				$content = $service->format_content($post, Social::instance()->option('broadcast_format'));
+				$content = $service->format_content($post, Social::option('broadcast_format'));
 			}
 		}
 		$counter = $service->max_broadcast_length();

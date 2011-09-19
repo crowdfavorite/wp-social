@@ -20,7 +20,7 @@ final class Social_Log {
 			// Attempt to create the file if it doesn't exist.
 			if (is_writable(SOCIAL_PATH)) {
 				try {
-					$fh = fopen($file, 'w');
+					$fh = fopen($file, 'a');
 					fclose($fh);
 				}
 				catch (Exception $e) {

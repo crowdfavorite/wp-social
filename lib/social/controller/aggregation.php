@@ -13,6 +13,12 @@ final class Social_Controller_Aggregation extends Social_Controller {
 	 * @return void
 	 */
 	public function action_run() {
+		$fetch = Social::option('fetch_comments');
+		if (empty($fetch)) {
+			Social::log('Aggregation has been disabled, exiting.');
+			return;
+		}
+		
 		$post = get_post($this->request->query('post_id'));
 		if ($post === null) {
 			return;

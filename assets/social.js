@@ -51,14 +51,6 @@
 			}, 100);
 		});
 
-		$('.social_deauth').click(function(e) {
-			e.preventDefault();
-			var $this = $(this);
-			$.get($this.attr('href'), {}, function() {
-				$this.parent().parent().fadeOut();
-			});
-		});
-
 		// comments.php
 		if ($('#social').length) {
 			// MCC Tabs

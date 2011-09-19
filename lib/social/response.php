@@ -46,20 +46,6 @@ final class Social_Response {
 	}
 
 	/**
-	 * Magic method to retrieve data from the request body.
-	 *
-	 * @param  string  $name
-	 * @return mixed
-	 */
-	public function __get($name) {
-		if (isset($this->_request['body']->{$name})) {
-			return $this->_request['body']->{$name};
-		}
-
-		return null;
-	}
-
-	/**
 	 * Checks to see if the response has reached it's limit.
 	 *
 	 * @return bool
@@ -137,6 +123,19 @@ final class Social_Response {
 	 */
 	public function id() {
 		return $this->_request['body']->response->{$this->_service->response_id_key()};
+	}
+
+	/**
+	 * Returns the request body.
+	 *
+	 * @return bool|object
+	 */
+	public function body() {
+		if (isset($this->_request['body']) and isset($this->_request['body']->response)) {
+			return $this->_request['body']->response;
+		}
+
+		return false;
 	}
 
 } // End Social_Response

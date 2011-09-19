@@ -14,10 +14,10 @@ final class Social_Controller_Settings extends Social_Controller {
 	 */
 	public function action_index() {
 		if ($this->request->post('submit')) {
-			$this->social->option('broadcast_format', $this->request->post('social_broadcast_format'), true);
-			$this->social->option('debug', $this->request->post('social_debug'), true);
+			Social::option('broadcast_format', $this->request->post('social_broadcast_format'));
+			Social::option('debug', $this->request->post('social_debug'));
 
-			if (!$this->social->option('debug')) {
+			if (!Social::option('debug')) {
 				delete_option('social_log_write_error');
 			}
 
@@ -28,7 +28,7 @@ final class Social_Controller_Settings extends Social_Controller {
 					$account = explode('|', $account);
 					$accounts[$account[0]][] = $account[1];
 				}
-				$this->social->option('xmlrpc_accounts', $accounts, true);
+				Social::option('xmlrpc_accounts', $accounts);
 			}
 			else {
 				delete_option('social_xmlrpc_accounts');
@@ -36,12 +36,12 @@ final class Social_Controller_Settings extends Social_Controller {
 
 			// Anywhere key
 			if ($this->request->post('social_twitter_anywhere_api_key') !== null) {
-				$this->social->option('twitter_anywhere_api_key', $this->request->post('social_twitter_anywhere_api_key'), true);
+				Social::option('twitter_anywhere_api_key', $this->request->post('social_twitter_anywhere_api_key'));
 			}
 
 			// System CRON
-			if ($this->request->post('social_system_crons') !== null) {
-				$this->social->option('system_crons', $this->request->post('social_system_crons'), true);
+			if ($this->request->post('social_fetch_comments') !== null) {
+				Social::option('fetch_comments', $this->request->post('social_fetch_comments'));
 
 				// Unschedule the CRONs
 				if (($timestamp = wp_next_scheduled('social_cron_15_core')) !== false) {
@@ -62,12 +62,12 @@ final class Social_Controller_Settings extends Social_Controller {
 	}
 
 	/**
-	 * Clears the 1.5 upgrade notice.
+	 * Suppresses the enable notice.
 	 *
 	 * @return void
 	 */
-	public function action_clear_1_5_upgrade() {
-		delete_user_meta(get_current_user_id(), 'social_1.5_upgrade');
+	public function action_suppress_enable_notice() {
+		update_user_meta(get_current_user_id(), 'social_suppress_enable_notice', 'true');
 	}
 
 	/**
@@ -94,6 +94,15 @@ final class Social_Controller_Settings extends Social_Controller {
 	 */
 	public function action_clear_log_write_error() {
 		delete_option('social_log_write_error');
+	}
+
+	/**
+	 * Clears the 1.1 upgrade notice.
+	 *
+	 * @return void
+	 */
+	public function action_clear_1_1_upgrade() {
+		delete_user_meta(get_current_user_id(), 'social_1.1_upgrade');
 	}
 
 } // End Social_Controller_Settings
