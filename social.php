@@ -20,7 +20,9 @@ final class Social {
 	/**
 	 * @var  string  URL of the API
 	 */
-	public static $api_url = 'https://sopresto.mailchimp.com/';
+	// TODO uncomment this when 1.1 goes live.
+	//public static $api_url = 'https://sopresto.mailchimp.com/';
+	public static $api_url = 'https://devandre.mailchimp.com/sopresto/web/index.php/';
 
 	/**
 	 * @var  string  version number
@@ -224,7 +226,7 @@ final class Social {
 		// Set NONCE cookie.
 		if (!is_admin() and !isset($_COOKIE['social_auth_nonce'])) {
 			$nonce = wp_create_nonce('social_authentication');
-			setcookie('social_auth_nonce_'.$nonce, true, 0, '/');
+			setcookie('social_auth_nonce', $nonce, 0, '/');
 		}
 		
 		// Trigger upgrade?
