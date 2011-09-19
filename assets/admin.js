@@ -107,8 +107,9 @@
 			});
 		});
 
+
 		/**
-		 * Handles the dismissal of social notices.
+		 * Dismissal of notices.
 		 */
 		$('.social_dismiss').click(function(e) {
 			e.preventDefault();

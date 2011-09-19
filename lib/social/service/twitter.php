@@ -98,8 +98,8 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 				if (isset($post->broadcasted_ids[$this->_key][$account->id()])) {
 					// Retweets
 					$response = $this->request($account, 'statuses/retweets/'.$post->broadcasted_ids[$this->_key][$account->id()]);
-					if (isset($response->response) and is_array($response->response) and count($response->response)) {
-						foreach ($response->response as $result) {
+					if ($response->body() !== false and is_array($response->body()) and count($response->body())) {
+						foreach ($response->body() as $result) {
 							$data = array(
 								'username' => $result->user->screen_name,
 							);
@@ -130,8 +130,8 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						'since_id' => $post->broadcasted_ids[$this->_key][$account->id()],
 						'count' => 200
 					));
-					if (isset($response->response) and is_array($response->response) and count($response->response)) {
-						foreach ($response->response as $result) {
+					if ($response->body() !== false and is_array($response->body()) and count($response->body())) {
+						foreach ($response->body() as $result) {
 							$data = array(
 								'username' => $result->user->screen_name,
 							);

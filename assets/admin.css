@@ -81,6 +81,9 @@
 .form-table .social-preview-counter {
 	float: none;
 }
+.social-counter-limit {
+	color: #f00;
+}
 .form-table .social-preview-content {
 	width: 99%;
 	margin-bottom: 10px;

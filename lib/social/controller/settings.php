@@ -62,12 +62,12 @@ final class Social_Controller_Settings extends Social_Controller {
 	}
 
 	/**
-	 * Dismisses the activation notice.
+	 * Suppresses the enable notice.
 	 *
 	 * @return void
 	 */
-	public function action_dismiss_activation() {
-		update_user_meta(get_current_user_id(), 'social_activation_notice_dismissed', true);
+	public function action_suppress_enable_notice() {
+		update_user_meta(get_current_user_id(), 'social_suppress_enable_notice', 'true');
 	}
 
 	/**

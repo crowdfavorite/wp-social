@@ -401,16 +401,13 @@ final class Social {
 					 '</p></div>';
 			}
 
-			// Activation notice?
-			$activation_notice_dismissed = get_user_meta(get_current_user_id(), 'social_activation_notice_dismissed', true);
-			if (empty($activation_notice_dismissed)) {
-				$output = __('When you enable Social, users will be created in your system and given the "New User Default Role" as specified in your %s. Users that are created by Social and only have Subscriber permissions will be prevented from accessing the admin side of WordPress. %s', Social::$i18n);
-
-				$settings_url = sprintf(__('<a href="%s">Settings</a>', Social::$i18n), esc_url(admin_url('options-general.php')));
-				$dismiss_url = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=dismiss_activation')), 'social_dismiss');
-
-				$output = sprintf($output, $settings_url, $dismiss_url);
-				echo '<div class="updated"><p>'.$output.'</p></div>';
+			// Enable notice?
+			$suppress_enable_notice = get_user_meta(get_current_user_id(), 'social_suppress_enable_notice', true);
+			if (empty($suppress_enable_notice)) {
+				$message = __('When you enable Social, users will be created in your system and given the "%s" as specified in your <a href="%s">Settings</a>. Users that are created by Social and only have Subscriber permissions will be prevented from accessing the admin side of WordPress.', Social::$i18n);
+				$dismiss = sprintf(__('<a href="%s" class="social_dismiss">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=suppress_enable_notice')));
+				$message = sprintf($message, get_option('default_role'), esc_url(admin_url('options-general.php')));
+				echo '<div class="updated"><p>'.$message.' '.$dismiss.'</p></div>';
 			}
 		}
 
@@ -852,7 +849,7 @@ final class Social {
 									Social::log($message);
 									wp_die($message);
 								}
-								$this->set_comment_aggregated_id($comment->comment_ID, $service->key(), $id);
+								$this->set_comment_aggregated_id($comment_ID, $service->key(), $id);
 								update_comment_meta($comment_ID, 'social_status_id', $id);
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', Social::$i18n), $comment_ID, $service->title(), $account->id()));
 							}
@@ -938,7 +935,11 @@ final class Social {
 	}
 
 	/**
+<<<<<<< HEAD
 	 * Sets the aggregated ID of the comment.
+=======
+	 * Sets the comment aggregation ID.
+>>>>>>> develop
 	 *
 	 * @param  int     $comment_id
 	 * @param  string  $service
@@ -947,7 +948,7 @@ final class Social {
 	 */
 	private function set_comment_aggregated_id($comment_id, $service, $broadcasted_id) {
 		$comment = get_comment($comment_id);
-		if ($comment != null) {
+		if (is_object($comment)) {
 			$aggregated_ids = get_post_meta($comment->comment_post_ID, '_social_aggregated_ids', true);
 			if (empty($aggregated_ids)) {
 				$aggregated_ids = array();
@@ -1128,7 +1129,7 @@ final class Social {
 				$accounts = array();
 				$commenter = get_user_meta(get_current_user_id(), 'social_commenter', true);
 
-				if ($commenter !== 'true') {
+				if ($commenter != 'true') {
 					$accounts = Social::option('accounts');
 				}
 				foreach ($registered_services as $service) {

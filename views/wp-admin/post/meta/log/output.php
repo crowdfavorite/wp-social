@@ -38,14 +38,14 @@
 							foreach ($_items as $type => $items) {
 								foreach ($items as $item) {
 									$username = '';
-									if (isset($item->data->username)) {
-										$username = $item->data->username;
+									if (isset($item->data['username'])) {
+										$username = $item->data['username'];
 									}
 
 									$id = $item->id;
-									if (isset($item->data->parent_id)) {
-										$ids = explode('_', $item->data->parent_id);
-										$id = $item->data->parent_id.'_'.$ids[0];
+									if (isset($item->data['parent_id'])) {
+										$id = $item->data['parent_id'];
+										$ids = explode('_', $item->data['parent_id']);
 										$item->id = $id.'#'.$ids[1];
 									}
 
