@@ -1184,10 +1184,9 @@ else if (isset($mu_plugin)) {
 else if (isset($network_plugin)) {
 	$social_file = $network_plugin;
 }
-$social_path = dirname($social_file);
 
 define('SOCIAL_FILE', $social_file);
-define('SOCIAL_PATH', $social_path.'/');
+define('SOCIAL_PATH', dirname(__FILE__).'/');
 
 // Register Social's autoloading
 spl_autoload_register(array('Social', 'auto_load'));
