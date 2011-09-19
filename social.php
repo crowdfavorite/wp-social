@@ -224,7 +224,7 @@ final class Social {
 		}
 
 		// Set NONCE cookie.
-		if (!is_admin() and !isset($_COOKIE['social_auth_nonce'])) {
+		if (!is_admin() and !is_user_logged_in() and !isset($_COOKIE['social_auth_nonce'])) {
 			$nonce = wp_create_nonce('social_authentication');
 			setcookie('social_auth_nonce', $nonce, 0, '/');
 		}
@@ -1192,7 +1192,11 @@ else if (isset($mu_plugin)) {
 else if (isset($network_plugin)) {
 	$social_file = $network_plugin;
 }
+
 $social_path = dirname($social_file);
+if (!strpos($social_path, ABSPATH)) {
+	$social_path = ABSPATH.'wp-content/plugins/'.$social_path;
+}
 
 define('SOCIAL_FILE', $social_file);
 define('SOCIAL_PATH', $social_path.'/');

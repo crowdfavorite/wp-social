@@ -61,7 +61,7 @@ final class Social_Controller_Auth extends Social_Controller {
 				update_option('social_deauthed', $deauthed);
 
 				// Remove from the global broadcast content as well.
-				$this->remove_from_xmlrpc($data->service, $account->id());
+				$this->social->remove_from_xmlrpc($data->service, $account->id());
 			}
 
 			// 1.1 Upgrade
