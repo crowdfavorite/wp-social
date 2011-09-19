@@ -34,7 +34,7 @@
 		});
 
 		$('#twitter_preview').bind("change keyup paste", function(){
-			counter($(this), $('#twitter_preview'), 140);
+			counter($(this), $('#twitter_counter'), 140);
 		});
 
 		$('#facebook_preview').bind("change keyup paste", function(){
