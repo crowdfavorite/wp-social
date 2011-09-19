@@ -52,14 +52,6 @@ function reloadSocialHTML(saved) {
 			$auth_window = window.open($(this).attr('href'), "ServiceAssociate", 'width=700,height=400');
 		});
 
-		$('.social_deauth').click(function(e) {
-			e.preventDefault();
-			var $this = $(this);
-			$.get($this.attr('href'), {}, function() {
-				$this.parent().parent().fadeOut();
-			});
-		});
-
 		// comments.php
 		if ($('#social').length) {
 			// MCC Tabs

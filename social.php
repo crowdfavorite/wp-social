@@ -393,8 +393,17 @@ final class Social {
 			$error = Social::option('log_write_error');
 			if ($error == '1') {
 				echo '<div class="error"><p>'.
-					 sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_deauth">[Dismiss]</a>', Social::$i18n), SOCIAL_PATH, esc_url(admin_url('?social_controller=settings&social_action=clear_log_write_error'))).
+					 sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_dismiss">[Dismiss]</a>', Social::$i18n), SOCIAL_PATH, esc_url(admin_url('?social_controller=settings&social_action=clear_log_write_error'))).
 					 '</p></div>';
+			}
+
+			// Enable notice?
+			$suppress_enable_notice = get_user_meta(get_current_user_id(), 'social_suppress_enable_notice', true);
+			if (empty($suppress_enable_notice)) {
+				$message = __('When you enable Social, users will be created in your system and given the "%s" as specified in your <a href="%s">Settings</a>. Users that are created by Social and only have Subscriber permissions will be prevented from accessing the admin side of WordPress.', Social::$i18n);
+				$dismiss = sprintf(__('<a href="%s" class="social_dismiss">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=suppress_enable_notice')));
+				$message = sprintf($message, get_option('default_role'), esc_url(admin_url('options-general.php')));
+				echo '<div class="updated"><p>'.$message.' '.$dismiss.'</p></div>';
 			}
 		}
 
@@ -403,7 +412,7 @@ final class Social {
 		if (!empty($deauthed)) {
 			foreach ($deauthed as $service => $data) {
 				foreach ($data as $id => $message) {
-					echo '<div class="error"><p>'.esc_html($message).' <a href="'.esc_url(admin_url('?social_controller=settings&social_action=clear_deauth&id='.$id.'&service='.$service)).'" class="social_deauth">[Dismiss]</a></p></div>';
+					echo '<div class="error"><p>'.esc_html($message).' <a href="'.esc_url(admin_url('?social_controller=settings&social_action=clear_deauth&id='.$id.'&service='.$service)).'" class="social_dismiss">[Dismiss]</a></p></div>';
 				}
 			}
 		}
@@ -420,7 +429,7 @@ final class Social {
 				$output = sprintf($output, esc_url(admin_url('profile.php#social-networks')));
 			}
 
-			$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=clear_1_1_upgrade')), 'social_deauth');
+			$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=clear_1_1_upgrade')), 'social_dismiss');
 			echo '<div class="error"><p>'.$output.' '.$dismiss.'</p></div>';
 		}
 	}

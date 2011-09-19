@@ -106,5 +106,17 @@
 				$('.social_api_key').html(response);
 			});
 		});
+
+
+		/**
+		 * Dismissal of notices.
+		 */
+		$('.social_dismiss').click(function(e) {
+			e.preventDefault();
+			var $this = $(this);
+			$.get($this.attr('href'), {}, function() {
+				$this.parent().parent().fadeOut();
+			});
+		});
 	});
 })(jQuery);
