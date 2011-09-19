@@ -40,8 +40,8 @@ final class Social_Controller_Settings extends Social_Controller {
 			}
 
 			// System CRON
-			if ($this->request->post('social_system_crons') !== null) {
-				Social::option('system_crons', $this->request->post('social_system_crons'));
+			if ($this->request->post('social_fetch_comments') !== null) {
+				Social::option('fetch_comments', $this->request->post('social_fetch_comments'));
 
 				// Unschedule the CRONs
 				if (($timestamp = wp_next_scheduled('social_cron_15_core')) !== false) {

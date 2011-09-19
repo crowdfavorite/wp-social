@@ -53,7 +53,7 @@ final class Social {
 		'comment_broadcast_format' => '{content} {url}',
 		'twitter_anywhere_api_key' => null,
 		'system_cron_api_key' => null,
-		'system_crons' => '0'
+		'fetch_comments' => '1'
 	);
 
 	/**
@@ -250,32 +250,36 @@ final class Social {
 			if (SOCIAL_COMMENTS_CSS !== false) {
 				wp_enqueue_style('social_comments', SOCIAL_COMMENTS_CSS, array(), Social::$version, 'screen');
 			}
-
-			if (SOCIAL_COMMENTS_JS !== false) {
-				wp_enqueue_script('jquery');
-			}
-		}
-		else {
-			if (!defined('SOCIAL_ADMIN_JS')) {
-				define('SOCIAL_ADMIN_JS', plugins_url('assets/admin.js', SOCIAL_FILE));
-			}
-
-			if (!defined('SOCIAL_ADMIN_CSS')) {
-				define('SOCIAL_ADMIN_CSS', plugins_url('assets/admin.css', SOCIAL_FILE));
-			}
-
-			if (SOCIAL_ADMIN_CSS !== false) {
-				wp_enqueue_style('social_admin', SOCIAL_ADMIN_CSS, array(), Social::$version, 'screen');
-			}
-
-			if (SOCIAL_ADMIN_JS !== false) {
-				wp_enqueue_script('social_admin', SOCIAL_ADMIN_JS, array(), Social::$version, true);
-			}
 		}
 
 		// JS/CSS
 		if (SOCIAL_COMMENTS_JS !== false) {
+			wp_enqueue_script('jquery');
 			wp_enqueue_script('social_js', SOCIAL_COMMENTS_JS, array('jquery'), Social::$version, true);
+		}
+	}
+
+	/**
+	 * Enqueues the assets for Social.
+	 *
+	 * @wp-action  admin_enqueue_scripts
+	 * @return void
+	 */
+	public function admin_enqueue_assets() {
+		if (!defined('SOCIAL_ADMIN_JS')) {
+			define('SOCIAL_ADMIN_JS', plugins_url('assets/admin.js', SOCIAL_FILE));
+		}
+
+		if (!defined('SOCIAL_ADMIN_CSS')) {
+			define('SOCIAL_ADMIN_CSS', plugins_url('assets/admin.css', SOCIAL_FILE));
+		}
+
+		if (SOCIAL_ADMIN_CSS !== false) {
+			wp_enqueue_style('social_admin', SOCIAL_ADMIN_CSS, array(), Social::$version, 'screen');
+		}
+
+		if (SOCIAL_ADMIN_JS !== false) {
+			wp_enqueue_script('social_admin', SOCIAL_ADMIN_JS, array(), Social::$version, true);
 		}
 	}
 
@@ -299,7 +303,7 @@ final class Social {
 	 */
 	public function check_system_cron() {
 		// Schedule CRONs
-		if (Social::option('system_crons') != '1') {
+		if (Social::option('fetch_comments') == '1') {
 			if (wp_next_scheduled('social_cron_15_init') === false) {
 				wp_schedule_event(time() + 900, 'every15min', 'social_cron_15_init');
 			}
@@ -412,7 +416,8 @@ final class Social {
 		if (!empty($deauthed)) {
 			foreach ($deauthed as $service => $data) {
 				foreach ($data as $id => $message) {
-					echo '<div class="error"><p>'.esc_html($message).' <a href="'.esc_url(admin_url('?social_controller=settings&social_action=clear_deauth&id='.$id.'&service='.$service)).'" class="social_dismiss">[Dismiss]</a></p></div>';
+					$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=clear_deauth&id='.$id.'&service='.$service)), 'social_dismiss');
+					echo '<div class="error"><p>'.esc_html($message).' '.$dismiss.'</p></div>';
 				}
 			}
 		}
@@ -473,7 +478,8 @@ final class Social {
 				}
 			}
 
-			if ($this->_enabled) {
+			$fetch = Social::option('fetch_comments');
+			if ($this->_enabled and !empty($fetch)) {
 				if ($post->post_status == 'publish') {
 					add_meta_box('social_meta_aggregation_log', __('Social Comments', Social::$i18n), array($this, 'add_meta_box_log'), 'post', 'normal', 'core');
 				}
@@ -771,11 +777,7 @@ final class Social {
 	 * @return array
 	 */
 	public function get_avatar_comment_types($types) {
-		$types = array_merge($types, array(
-			'wordpress',
-			'twitter',
-			'facebook',
-		));
+		$types[] = 'wordpress';
 		return $types;
 	}
 
@@ -933,7 +935,11 @@ final class Social {
 	}
 
 	/**
+<<<<<<< HEAD
+	 * Sets the aggregated ID of the comment.
+=======
 	 * Sets the comment aggregation ID.
+>>>>>>> develop
 	 *
 	 * @param  int     $comment_id
 	 * @param  string  $service
@@ -956,7 +962,7 @@ final class Social {
 				$aggregated_ids[$service][] = $broadcasted_id;
 			}
 
-			update_post_meta($comment->comment_post_ID, '_social_aggregated_ids', true);
+			update_post_meta($comment->comment_post_ID, '_social_aggregated_ids', $aggregated_ids);
 		}
 	}
 
@@ -1129,6 +1135,7 @@ final class Social {
 				foreach ($registered_services as $service) {
 					if (!isset($services[$service])) {
 						$service_accounts = array();
+
 						if (isset($accounts[$service]) and count($accounts[$service])) {
 							$this->_enabled = true; // Flag social as enabled, we have at least one account.
 							$service_accounts = $accounts[$service];
@@ -1204,6 +1211,7 @@ add_action('load-post-new.php', array($social, 'enqueue_assets'));
 add_action('load-post.php', array($social, 'enqueue_assets'));
 add_action('load-profile.php', array($social, 'enqueue_assets'));
 add_action('load-settings_page_social', array($social, 'enqueue_assets'));
+add_action('admin_enqueue_scripts', array($social, 'admin_enqueue_assets'));
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));

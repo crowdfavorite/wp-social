@@ -63,18 +63,18 @@ ob_start();
 
 			// Facebook counts
 			$facebook_count = 0;
-			if (isset($groups['facebook'])) {
-				$facebook_count = $groups['facebook'];
+			if (isset($groups['social-facebook'])) {
+				$facebook_count = $groups['social-facebook'];
 			}
-			if (isset($groups['facebook-like'])) {
-				$facebook_count = $facebook_count + $groups['facebook-like'];
+			if (isset($groups['social-facebook-like'])) {
+				$facebook_count = $facebook_count + $groups['social-facebook-like'];
 			}
 		?>
 		<ul class="social-nav social-clearfix">
 			<li class="social-all social-tab-main<?php echo (!isset($_GET['social_tab']) ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-all"><span><?php comments_number(__('0 Replies', Social::$i18n), __('1 Reply', Social::$i18n), __('% Replies', Social::$i18n)); ?></span></a></li>
 			<li class="social-wordpress<?php echo ((isset($_GET['social_tab']) and $_GET['social_tab'] == 'social-wordpress') ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-wordpress"><span><?php printf(_n('1 Comment', '%1$s Comments', (isset($groups['wordpress']) ? $groups['wordpress'] : 0), Social::$i18n), (isset($groups['wordpress']) ? $groups['wordpress'] : 0)); ?></span></a></li>
-			<li class="social-twitter<?php echo ((isset($_GET['social_tab']) and $_GET['social_tab'] == 'social-twitter') ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-twitter"><span><?php printf(_n('1 Tweet', '%1$s Tweets', (isset($groups['twitter']) ? $groups['twitter'] : 0), Social::$i18n), (isset($groups['twitter']) ? $groups['twitter'] : 0)); ?></span></a></li>
-			<li class="social-facebook<?php echo ((isset($_GET['social_tab']) and $_GET['social_tab'] == 'social-facebook') ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-facebook"><span><?php printf(_n('1 Facebook', '%1$s Facebook', (isset($groups['facebook']) ? $groups['facebook'] : 0), Social::$i18n), (isset($groups['facebook']) ? $groups['facebook'] : 0)); ?></span></a></li>
+			<li class="social-twitter<?php echo ((isset($_GET['social_tab']) and $_GET['social_tab'] == 'social-twitter') ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-twitter"><span><?php printf(_n('1 Tweet', '%1$s Tweets', (isset($groups['social-twitter']) ? $groups['social-twitter'] : 0), Social::$i18n), (isset($groups['social-twitter']) ? $groups['social-twitter'] : 0)); ?></span></a></li>
+			<li class="social-facebook<?php echo ((isset($_GET['social_tab']) and $_GET['social_tab'] == 'social-facebook') ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-facebook"><span><?php printf(_n('1 Facebook', '%1$s Facebook', $facebook_count, Social::$i18n), $facebook_count); ?></span></a></li>
 			<li class="social-pingback<?php echo ((isset($_GET['social_tab']) and $_GET['social_tab'] == 'social-pingback') ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-pingback"><span><?php printf(_n('1 Pingback', '%1$s Pingbacks', (isset($groups['pingback']) ? $groups['pingback'] : 0), Social::$i18n), (isset($groups['pingback']) ? $groups['pingback'] : 0)); ?></span></a></li>
 		</ul>
 

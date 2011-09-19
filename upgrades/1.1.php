@@ -78,6 +78,37 @@ if (version_compare($installed_version, '1.1', '<')) {
 			}
 		}
 	}
+
+	// Upgrade system_cron to fetch_comments
+	$fetch = $wpdb->get_var("
+		SELECT option_value
+		  FROM $wpdb->options
+		 WHERE option_name = 'social_fetch_comments'
+	");
+
+	$query = "UPDATE $wpdb->options SET option_name='social_fetch_comments'";
+	if (empty($fetch)) {
+		$query .= ", option_value='1'";
+	}
+	$query .= " WHERE option_name = 'social_system_crons'";
+	$wpdb->query($query);
+
+	// Update all comment types
+	$keys = array();
+	foreach (Social::instance()->services() as $service) {
+		$keys[] = $service->key();
+		if ($service->key() == 'facebook') {
+			$keys[] = 'facebook-like';
+		}
+	}
+
+	foreach ($keys as $key) {
+		$query = $wpdb->query("
+			UPDATE $wpdb->comments
+			   SET comment_type = 'social-$key'
+			 WHERE comment_type = '$key'
+		");
+	}
 }
 
 // Make sure all commenter accounts have the commenter flag

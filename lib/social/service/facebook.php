@@ -325,7 +325,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * @return bool
 	 */
 	public function show_full_comment($type) {
-		return ($type !== 'facebook-like');
+		return ($type !== 'social-facebook-like');
 	}
 
 } // End Social_Service_Facebook
