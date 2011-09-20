@@ -1012,6 +1012,7 @@ final class Social {
 	private function upgrade($installed_version) {
 		if (version_compare($installed_version, Social::$version, '<')) {
 			define('SOCIAL_UPGRADE', true);
+			global $wpdb; // Don't delete, this is used in upgrade files.
 
 			$upgrades = array(
 				SOCIAL_PATH.'upgrades/1.1.php',
