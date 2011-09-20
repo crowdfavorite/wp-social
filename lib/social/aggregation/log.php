@@ -124,6 +124,15 @@ final class Social_Aggregation_Log {
 	}
 
 	/**
+	 * Returns the current log.
+	 *
+	 * @return array
+	 */
+	public function current() {
+		return isset($this->_log[$this->_timestamp]) ? $this->_log[$this->_timestamp] : array();
+	}
+
+	/**
 	 * Renders the log to HTML.
 	 *
 	 * @return Social_View

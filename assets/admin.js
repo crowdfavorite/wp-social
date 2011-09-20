@@ -97,6 +97,43 @@
 			$('#'+$(this).attr('id')+'-output').toggle();
 		});
 
+		var running_row_aggregation = [];
+		$('.row-actions .social_aggregation a').click(function(e){
+			e.preventDefault();
+			var rel = $(this).attr('rel');
+			if (!in_running_row_aggregation(rel)) {
+				var $this = $(this);
+				var $loader = $this.parent().find('.run_aggregation_loader');
+				$this.attr('disabled', 'disable');
+				$loader.show();
+
+				$.get($this.attr('href'), {render:'false'}, function(response){
+					remove_running_row_aggregation(rel);
+					$loader.hide();
+					$this.removeAttr('disabled');
+					$this.parent().find('span').hide().html(' - '+response).show().delay(2000).fadeOut();
+				});
+			}
+		});
+
+		var in_running_row_aggregation = function(rel) {
+			for (var i = 0; i < running_row_aggregation.length; ++i) {
+				if (running_row_aggregation[i] == rel) {
+					return true;
+				}
+			}
+			return false;
+		};
+		var remove_running_row_aggregation = function(rel) {
+			var _running_row_aggregation = [];
+			for (var i = 0; i < running_row_aggregation.length; ++i) {
+				if (running_row_aggregation[i] != rel) {
+					_running_row_aggregation.push(running_row_aggregation[i]);
+				}
+			}
+			running_row_aggregation = _running_row_aggregation;
+		};
+
 		/**
 		 * Regenerate API Key
 		 */

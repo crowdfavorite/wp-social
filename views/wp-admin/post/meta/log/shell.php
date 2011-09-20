@@ -19,7 +19,6 @@
 	<p><?php _e('Manually run the comment aggregation and Social will look for mentions of this post on Facebook and Twitter.', Social::$i18n); ?></p>
 
 	<p class="submit" style="clear:both;float:none;padding:0;">
-		<?php // TODO Fix manual aggregation ?>
 		<a href="<?php echo esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')); ?>" id="run_aggregation" class="button" style="float:left;margin-bottom:10px;"><?php _e('Find Social Comments', Social::$i18n); ?></a>
 		<img src="<?php echo esc_url(admin_url('images/loading.gif')); ?>" style="float:left;position:relative;top:4px;left:5px;display:none;" id="run_aggregation_loader" />
 	</p>
