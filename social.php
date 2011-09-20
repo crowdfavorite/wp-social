@@ -1004,6 +1004,20 @@ final class Social {
 	}
 
 	/**
+	 * Adds the Aggregate Comments link to the post row actions.
+	 *
+	 * @param  array    $actions
+	 * @param  WP_Post  $post
+	 * @return array
+	 */
+	public function post_row_actions(array $actions, $post) {
+		$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Find Social Comments</a>', Social::$i18n), esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID) .
+			'<img src="'.esc_url(admin_url('images/loading.gif')).'" style="position:relative;top:4px;left:5px;display:none;" class="run_aggregation_loader" />' .
+			'<span></span>';
+		return $actions;
+	}
+
+	/**
 	 * Runs the upgrade only if the installed version is older than the current version.
 	 *
 	 * @param  string  $installed_version
@@ -1225,6 +1239,7 @@ add_filter('get_avatar_comment_types', array($social, 'get_avatar_comment_types'
 add_filter('get_avatar', array($social, 'get_avatar'), 10, 5);
 add_filter('register', array($social, 'register'));
 add_filter('loginout', array($social, 'loginout'));
+add_filter('post_row_actions', array($social, 'post_row_actions'), 10, 2);
 
 // Service filters
 add_filter('social_auto_load_class', array($social, 'auto_load_class'));

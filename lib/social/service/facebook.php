@@ -124,7 +124,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 			}
 
 			if (count($like_count)) {
-				Social_Aggregation_Log::instance($post->ID)->add($this->_key, $post->ID.time(), 'like', false, array('total' => $like_count));
+				Social_Aggregation_Log::instance($post->ID)->add($this->_key, $post->ID.time(), 'like', !$like_count, array('total' => $like_count));
 			}
 		}
 	}
