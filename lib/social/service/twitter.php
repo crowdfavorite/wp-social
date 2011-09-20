@@ -261,7 +261,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						$wpdb->query($wpdb->prepare("
 							UPDATE $wpdb->comments
 							   SET comment_parent = %s
-							 WHERE ".implode(' OR ', $wheres), $result->comment_id, $comment_ids));
+							 WHERE ".implode(' OR ', $wheres), array_merge(array($result->comment_id), $comment_ids)));
 					}
 				}
 			}
