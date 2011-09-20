@@ -194,5 +194,28 @@ function reloadSocialHTML(saved) {
 			});
 			$('#post_accounts').trigger('change');
 		}
+
+		/**
+		 * Manual Aggregation
+		 */
+		if ($('#wp-admin-bar-social_find_comments').length) {
+			var running_aggregation = false;
+			$('#wp-admin-bar-social_find_comments a').click(function(e){
+				e.preventDefault();
+				
+				if (!running_aggregation) {
+					running_aggregation = true;
+					var $social_running_aggregation = $('#social_running_aggregation');
+					$social_running_aggregation.show().find('img').show();
+
+					$.get($(this).attr('href'), {render:'false'}, function(response){
+						running_aggregation = false;
+						$social_running_aggregation.find('img').hide().stop().find('span').hide().html(response.replace(/[A-Za-z$-]/g, '')).show().delay(2000).fadeOut(function(){
+							$social_running_aggregation.hide();
+						});
+					});
+				}
+			});
+		}
 	});
 })(jQuery);

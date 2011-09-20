@@ -1017,6 +1017,22 @@ final class Social {
 		return $actions;
 	}
 
+	public function admin_bar_menu() {
+		global $wp_admin_bar, $post;
+
+		if (!isset($post->ID)) {
+			return;
+		}
+
+		$running = '<span id="social_running_aggregation" class="pending-count"><img src="'.esc_url(admin_url('images/loading.gif')).'" style="" class="run_aggregation_loader" /></span>';
+		$wp_admin_bar->add_menu(array(
+			'parent' => 'comments',
+			'id' => 'social_find_comments',
+			'title' => sprintf(__('Find Social Comments %s', Social::$i18n), $running),
+			'href' => esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run'))
+		));
+	}
+
 	/**
 	 * Runs the upgrade only if the installed version is older than the current version.
 	 *
@@ -1221,6 +1237,7 @@ add_action('load-post.php', array($social, 'enqueue_assets'));
 add_action('load-profile.php', array($social, 'enqueue_assets'));
 add_action('load-settings_page_social', array($social, 'enqueue_assets'));
 add_action('admin_enqueue_scripts', array($social, 'admin_enqueue_assets'));
+add_action('admin_bar_menu', array($social, 'admin_bar_menu'), 95);
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));

@@ -724,3 +724,24 @@ override submit styles in TwentyEleven theme */
 #social #post_to input {
 	width: auto;
 }
+
+/**
+ * Comment Aggregation Widget
+ */
+#wp-admin-bar-social_find_comments {
+	min-width: 170px;
+}
+
+#social_running_aggregation.pending-count {
+	display: none;
+	background: none!important;
+	min-width: 0!important;
+	padding: 0!important;
+	position: absolute;
+	right: 5px;
+	top: 4px;
+}
+
+#social_running_aggregation.pending-count img {
+	display: none;
+}
