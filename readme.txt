@@ -194,6 +194,19 @@ Social uses the core WordPress shortlink feature when broadcasting blog posts. A
 wp_get_shortlink Documentation: http://codex.wordpress.org/Function_Reference/wp_get_shortlink
 Bit.ly Plugin: http://wordpress.org/extend/plugins/bitly-shortlinks/
 
+When using the Bit.ly plugin, you will need to add the following to your wp-config.php to get it working:
+
+    /**
+     * Settings for Bit.ly Shortlinks Plugin
+     * http://yoast.com/wordpress/bitly-shortlinks/
+     **/
+    define('BITLY_USERNAME', '<your username>');
+    define('BITLY_APIKEY', '<your API key>');
+
+    // optional, if you want to use j.mp instead of bit.ly URL's
+    define('BITLY_JMP', true);
+
+
 
 == Screenshots ==
 
