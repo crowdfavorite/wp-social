@@ -169,6 +169,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 */
 	public function save_aggregated_comments(&$post) {
 		if (isset($post->results[$this->_key])) {
+			$in_reply_ids = array();
 			foreach ($post->results[$this->_key] as $result) {
 				$account = (object) array(
 					'user' => (object) array(
@@ -191,6 +192,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 					'comment_author_IP' => $_SERVER['SERVER_ADDR'],
 					'comment_agent' => 'Social Aggregator',
 				);
+
 				$commentdata['comment_approved'] = wp_allow_comment($commentdata);
 				$comment_id = wp_insert_comment($commentdata);
 
@@ -205,6 +207,43 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 
 					if (get_option('comments_notify') and $commentdata['comment_approved'] and (!isset($commentdata['user_id']) or $post->post_author != $commentdata['user_id'])) {
 						wp_notify_postauthor($comment_id, isset($commentdata['comment_type']) ? $commentdata['comment_type'] : '');
+					}
+				}
+
+				// Attempt to see if the comment is in response to an existing Tweet.
+				if (isset($result->in_reply_to_status_id)) {
+					if (!isset($in_reply_ids[$result->in_reply_to_status_id])) {
+						$in_reply_ids[$result->in_reply_to_status_id] = array();
+					}
+					
+					$in_reply_ids[$result->in_reply_to_status_id][] = $comment_id;
+				}
+			}
+
+			if (count($in_reply_ids)) {
+				global $wpdb;
+
+				$wheres = array();
+				foreach ($in_reply_ids as $ids) {
+					$wheres[] = '`meta_value` = %s';
+				}
+				$results = $wpdb->get_results($wpdb->prepare("
+					SELECT comment_id, meta_value
+					  FROM $wpdb->commentmeta
+					 WHERE meta_key = 'social_status_id'
+					   AND ".implode(' OR ', $wheres), array_keys($in_reply_ids)));
+
+				if (!empty($results)) {
+					foreach ($results as $result) {
+						$comment_ids = $in_reply_ids[$result->meta_value];
+						$wheres = array();
+						foreach ($comment_ids as $id) {
+							$wheres[] = '`comment_ID` = %s';
+						}
+						$wpdb->query($wpdb->prepare("
+							UPDATE $wpdb->comments
+							   SET comment_parent = %s
+							 WHERE ".implode(' OR ', $wheres), $result->comment_id, $comment_ids));
 					}
 				}
 			}
@@ -348,7 +387,9 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 * @return object
 	 */
 	public static function response_body($body) {
-		return json_decode(preg_replace('/"id":(\d+)/', '"id":"$1"', $body));
+		$body = preg_replace('/"id":(\d+)/', '"id":"$1"', $body);
+		$body = preg_replace('/"in_reply_to_status_id":(\d+)/', '"in_reply_to_status_id:"$1"', $body);
+		return json_decode($body);
 	}
 
 	/**
