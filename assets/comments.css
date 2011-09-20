@@ -403,7 +403,7 @@ override submit styles in TwentyEleven theme */
 #social .social-comment-header {
 	margin-bottom: 6px;
 	position: relative;
-	z-index: 2;
+	z-index: 4;
 }
 #social .social-comment-author {
 	margin-right: 125px;

@@ -935,11 +935,7 @@ final class Social {
 	}
 
 	/**
-<<<<<<< HEAD
-	 * Sets the aggregated ID of the comment.
-=======
 	 * Sets the comment aggregation ID.
->>>>>>> develop
 	 *
 	 * @param  int     $comment_id
 	 * @param  string  $service
@@ -986,14 +982,14 @@ final class Social {
 		if (!in_array($comment_type, apply_filters('social_ignored_comment_types', array('wordpress', 'pingback')))) {
 			$service = $this->service($comment->comment_type);
 			if ($service !== false and $service->show_full_comment($comment->comment_type)) {
-				$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
-				if (!empty($status_id)) {
-					$status_url = $service->status_url(get_comment_author(), $status_id);
-				}
-
 				if ($status_url === null) {
 					$comment_type = 'wordpress';
 				}
+			}
+
+			$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
+			if (!empty($status_id)) {
+				$status_url = $service->status_url(get_comment_author(), $status_id);
 			}
 		}
 
@@ -1016,7 +1012,6 @@ final class Social {
 	private function upgrade($installed_version) {
 		if (version_compare($installed_version, Social::$version, '<')) {
 			define('SOCIAL_UPGRADE', true);
-			global $wpdb;
 
 			$upgrades = array(
 				SOCIAL_PATH.'upgrades/1.1.php',

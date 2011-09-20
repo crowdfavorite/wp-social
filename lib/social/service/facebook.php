@@ -149,10 +149,15 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		$response = $this->request($account, $url, array('limit' => '100'))->body();
 		if ($response !== false and isset($response->data) and is_array($response->data) and count($response->data)) {
 			foreach ($response->data as $result) {
-				if (isset($post->results) and isset($post->results[$this->_key]) and isset($post->results[$this->_key][$result->id])) {
+				if ((isset($post->results) and isset($post->results[$this->_key]) and isset($post->results[$this->_key][$result->id])) or
+				    (in_array($result->id, $post->aggregated_ids[$this->_key]))) {
 					continue;
 				}
-				$post->results[$this->_key][$result->id] = (object) array_merge(array('like' => true), (array) $result);
+				$post->aggregated_ids[$this->_key][] = $result->id;
+				$post->results[$this->_key][$result->id] = (object) array_merge(array(
+					'like' => true,
+					'status_id' => $parent_id.'_'.$id,
+				), (array) $result);
 				++$like_count;
 			}
 		}
@@ -191,7 +196,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 						$account = new $class($account);
 
 						$commentdata = array_merge($commentdata, array(
-							'comment_type' => $this->_key,
+							'comment_type' => 'social-'.$this->_key,
 							'comment_author' => $result->from->name,
 							'comment_author_url' => $account->avatar(),
 							'comment_content' => $result->message,
@@ -203,7 +208,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				else {
 					$url = 'http://facebook.com/profile.php?id='.$result->id;
 					$commentdata = array_merge($commentdata, array(
-						'comment_type' => $this->_key.'-like',
+						'comment_type' => 'social-'.$this->_key.'-like',
 						'comment_author' => $result->name,
 						'comment_author_url' => $url,
 						'comment_content' => '<a href="'.$url.'" target="_blank">'.$result->name.'</a> liked this on Facebook.',
@@ -311,9 +316,13 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 *
 	 * @param  string      $username
 	 * @param  string|int  $id
-	 * @return string
+	 * @return string|null
 	 */
 	public function status_url($username, $id) {
+		if (strpos($id, '_') === false) {
+			return null;
+		}
+		
 		$ids = explode('_', $id);
 		return 'http://facebook.com/permalink.php?story_fbid='.$ids[1].'&id='.$ids[0];
 	}

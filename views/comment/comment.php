@@ -25,7 +25,7 @@
 		<div class="social-comment-meta">
 			<span class="social-posted-from">
 				<?php if ($status_url !== null): ?>
-				<a href="<?php echo esc_url($status_url); ?>" title="<?php _e(sprintf('View on %s', $service->title()), Social::$i18n); ?>">
+				<a href="<?php echo esc_url($status_url); ?>" title="<?php _e(sprintf('View on %s', $service->title()), Social::$i18n); ?>" target="_blank">
 				<?php endif; ?>
 				<span><?php _e('View', Social::$i18n); ?></span>
 				<?php if ($status_url !== null): ?>

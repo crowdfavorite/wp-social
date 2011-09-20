@@ -181,7 +181,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 
 				$commentdata = array(
 					'comment_post_ID' => $post->ID,
-					'comment_type' => $this->_key,
+					'comment_type' => 'social-'.$this->_key,
 					'comment_author' => $account->username(),
 					'comment_author_email' => $this->_key.'.'.$account->id().'@example.com',
 					'comment_author_url' => $account->url(),
