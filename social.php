@@ -508,11 +508,13 @@ final class Social {
 			));
 		}
 		else if (in_array($post->post_status, array('future', 'pending'))) {
+			$ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
 			$accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
 			$content = Social_View::factory('wp-admin/post/meta/broadcast/scheduled', array(
 				'post' => $post,
 				'services' => $this->services(),
-				'accounts' => $accounts
+				'accounts' => $accounts,
+				'ids' => $ids,
 			));
 		}
 		else if ($post->post_status == 'publish') {
