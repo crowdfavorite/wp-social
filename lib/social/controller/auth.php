@@ -22,7 +22,6 @@ final class Social_Controller_Auth extends Social_Controller {
 			'keys' => $data->keys,
 			'user' => $data->user
 		);
-		Social::log('Account Pre KSES: '.print_r($account->user, true));
 		$account->user = $this->social->kses($account->user);
 
 		$class = 'Social_Service_'.$data->service.'_Account';

@@ -1098,11 +1098,13 @@ final class Social {
 		}
 
 		foreach ($object as $key => $val) {
-			if (is_object($val)) {
-				$_object->$key = $this->kses($val);
-			}
-			else if (is_array($val)) {
-				$_object[$key] = $this->kses($val);
+			if (is_object($val) or is_array($val)) {
+				if (is_object($_object)) {
+					$_object->$key = $this->kses($val);
+				}
+				else if (is_array($_object)) {
+					$_object[$key] = $this->kses($val);
+				}
 			}
 			else {
 				if (is_object($_object)) {
