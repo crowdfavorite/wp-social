@@ -4,7 +4,7 @@
 	$items = $service_buttons = '';
 	foreach ($services as $key => $service) {
 		foreach ($service->accounts() as $account) {
-			if ($account->personal()) {
+			if ($account->personal() and !$account->universal()) {
 				$profile_url = esc_url($account->url());
 				$profile_name = esc_html($account->name());
 
