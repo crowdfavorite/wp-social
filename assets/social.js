@@ -199,21 +199,29 @@ function reloadSocialHTML(saved) {
 		 * Manual Aggregation
 		 */
 		if ($('#wp-admin-bar-social_find_comments').length) {
+			$('#wp-admin-bar-comments').after('<li id="wp-admin-bar-social-aggregation" style="display:none"></li>');
+			var $social_aggregation = $('#social_aggregation');
+			$social_aggregation.click(function(e){
+				if ($(this).attr('href') == '#') {
+					e.preventDefault();
+				}
+			});
+
+			var $social_aggregation_container = $('#wp-admin-bar-social-aggregation');
+			$social_aggregation_container.append($social_aggregation);
+
 			var running_aggregation = false;
+			var original_html = $social_aggregation.html();
 			$('#wp-admin-bar-social_find_comments a').click(function(e){
 				e.preventDefault();
-				
 				if (!running_aggregation) {
 					running_aggregation = true;
-					var $social_running_aggregation = $('#social_running_aggregation');
-					$social_running_aggregation.show().find('img').show();
-
+					$social_aggregation_container.fadeIn();
+					$social_aggregation.html(original_html).show();
 					$.get($(this).attr('href'), {render:'false'}, function(response){
+						$social_aggregation.html('&laquo; '+response.alt_text+' <span id="ab-social-updates" class="pending-count">'+response.total+'</span>').attr('href', response.link);
 						running_aggregation = false;
-						$social_running_aggregation.find('img').hide().stop().find('span').hide().html(response.replace(/[A-Za-z$-]/g, '')).show().delay(2000).fadeOut(function(){
-							$social_running_aggregation.hide();
-						});
-					});
+					}, 'json');
 				}
 			});
 		}

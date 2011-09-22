@@ -1052,7 +1052,9 @@ final class Social {
 			and current_user_can($post_type_object->cap->edit_post, $current_object->ID)
 			and ($post_type_object->show_ui or 'attachment' == $current_object->post_type))
 		{
-			$running = '<span id="social_running_aggregation" class="pending-count"><img src="'.esc_url(admin_url('images/loading.gif')).'" style="" class="run_aggregation_loader" /></span>';
+			$running = '<a href="#" id="social_aggregation"><span>'.__('&laquo; Finding Social Comments')
+			         . ' <img src="'.esc_url(admin_url('images/wpspin_dark.gif')).'" /></span></a>';
+
 			$wp_admin_bar->add_menu(array(
 				'parent' => 'comments',
 				'id' => 'social_find_comments',
