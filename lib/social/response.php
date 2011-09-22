@@ -51,8 +51,8 @@ final class Social_Response {
 	 * @return bool
 	 */
 	public function limit_reached() {
-		if ($this->_request['body']->response == 'error' and isset($this->_request['body']->response)) {
-			return $this->_service->limit_reached($this->_request['body']->response);
+		if ($this->body()->response == 'error' and isset($this->body()->response)) {
+			return $this->_service->limit_reached($this->body()->response);
 		}
 
 		return false;
@@ -64,8 +64,8 @@ final class Social_Response {
 	 * @return bool
 	 */
 	public function duplicate_status() {
-		if ($this->_request['body']->response == 'error' and isset($this->_request['body']->response)) {
-			return $this->_service->duplicate_status($this->_request['body']->response);
+		if ($this->body()->response == 'error' and isset($this->body()->response)) {
+			return $this->_service->duplicate_status($this->body()->response);
 		}
 
 		return false;
@@ -77,9 +77,9 @@ final class Social_Response {
 	 * @return bool
 	 */
 	public function deauthorized() {
-		if ($this->_request['body']->response == 'error' and
-		    isset($this->_request['body']->response) and
-		    $this->_service->deauthorized($this->_request['body']->response))
+		if ($this->body()->response == 'error' and
+		    isset($this->body()->response) and
+		    $this->_service->deauthorized($this->body()->response))
 		{
 			if ($this->_account->personal()) {
 				$url = Social_Helper::settings_url(array(), true);
@@ -109,7 +109,7 @@ final class Social_Response {
 	 * @return bool
 	 */
 	public function general_error() {
-		if (is_wp_error($this->_request) or $this->_request['body']->result == 'error') {
+		if (is_wp_error($this->_request) or $this->body()->result == 'error') {
 			return true;
 		}
 
@@ -122,7 +122,7 @@ final class Social_Response {
 	 * @return string
 	 */
 	public function id() {
-		return $this->_request['body']->response->{$this->_service->response_id_key()};
+		return $this->body()->response->{$this->_service->response_id_key()};
 	}
 
 	/**
@@ -131,8 +131,8 @@ final class Social_Response {
 	 * @return bool|object
 	 */
 	public function body() {
-		if (isset($this->_request['body']) and isset($this->_request['body']->response)) {
-			return $this->_request['body']->response;
+		if (isset($this->body()->response)) {
+			return $this->body()->response;
 		}
 
 		return false;
