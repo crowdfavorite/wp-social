@@ -225,5 +225,14 @@ function reloadSocialHTML(saved) {
 				}
 			});
 		}
+
+		/**
+		 * Twitter @Anywhere
+		 */
+		if (twttr !== undefined) {
+			twttr.anywhere(function(T){
+				T.hovercards();
+			});
+		}
 	});
 })(jQuery);
