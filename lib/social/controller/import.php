@@ -13,10 +13,6 @@ final class Social_Controller_Import extends Social_Controller {
 	 * @return void
 	 */
 	public function action_from_url() {
-		if (!wp_verify_nonce($this->request->query('_wpnonce'))) {
-			wp_die('Oops, please try again.');
-		}
-
 		Social::log('Import tweet by URL started.');
 
 		$service = $this->social->service('twitter');

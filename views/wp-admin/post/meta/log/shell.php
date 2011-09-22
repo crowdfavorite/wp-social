@@ -5,7 +5,7 @@
 	<p>
 		<input type="text" name="source_url" style="width:350px" />
 		<span class="submit" style="float:none">
-			<a href="<?php echo esc_url(wp_nonce_url(admin_url('?social_controller=import&social_action=from_url&social_service=twitter&post_id='.$post->ID))); ?>" id="import_from_url" class="button"><?php _e('Import Tweet', Social::$i18n); ?></a>
+			<a href="<?php echo esc_url(wp_nonce_url(admin_url('?social_controller=import&social_action=from_url&social_service=twitter&post_id='.$post->ID), 'from_url')); ?>" id="import_from_url" class="button"><?php _e('Import Tweet', Social::$i18n); ?></a>
 		</span>
 		<img src="<?php echo esc_url(admin_url('images/loading.gif')); ?>" style="position:relative;top:4px;left:0;display:none" id="import_from_url_loader" />
 	</p>
