@@ -111,8 +111,9 @@
 					remove_running_row_aggregation(rel);
 					$loader.hide();
 					$this.removeAttr('disabled');
-					$this.parent().find('span').hide().html(' - '+response).show().delay(2000).fadeOut();
-				});
+					var link = '<a href="'+response.link+'">'+response.text+'</a>';
+					$this.parent().find('span').hide().html(' - '+link).show();
+				}, 'json');
 			}
 		});
 

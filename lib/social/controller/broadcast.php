@@ -45,7 +45,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 				}
 			}
 
-			if (!$accounts_selected and !isset($errors['rebroadcast'])) {
+			if (!in_array($post->post_status, array('future', 'pending')) and !$accounts_selected and !isset($errors['rebroadcast'])) {
 				$errors['rebroadcast'] = __('Please select at least one account to broadcast to.', Social::$i18n);
 			}
 

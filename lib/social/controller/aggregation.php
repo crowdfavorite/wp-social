@@ -112,9 +112,11 @@ final class Social_Controller_Aggregation extends Social_Controller {
 					}
 				}
 
-				$text = sprintf(__('%s New Comments', Social::$i18n), $total);
-				$link = sprintf('<a href="%s">%s</a>', esc_url(admin_url('edit-comments.php')), $text);
-				echo $link;
+				$response = array(
+					'link' => esc_url(admin_url('edit-comments.php?p='.$post->ID)),
+					'text' => sprintf(__('%s New Comments', Social::$i18n), $total)
+				);
+				echo json_encode($response);
 			}
 			else {
 				echo $log;
