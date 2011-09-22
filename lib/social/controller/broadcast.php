@@ -254,10 +254,11 @@ final class Social_Controller_Broadcast extends Social_Controller {
 									'account' => $account,
 									'reason' => $reason,
 								);
-								Social::log('Broadcasting to :username, account #:id FAILED. Reason: :reason', array(
+								Social::log('Broadcasting to :username, account #:id FAILED. Reason: :reason'."\n\n".'Response:'."\n\n".':response', array(
 									'id' => $account->id(),
 									'username' => $account->name(),
 									'reason' => $reason,
+									'response' => print_r($response, true),	
 								));
 							}
 							else {
