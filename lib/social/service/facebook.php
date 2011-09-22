@@ -267,7 +267,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * @return bool
 	 */
 	public function limit_reached($response) {
-		return strpos($response, '(#341) Feed action request limit reached');
+		return ($response == '(#341) Feed action request limit reached');
 	}
 
 	/**
@@ -277,7 +277,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * @return bool
 	 */
 	public function duplicate_status($response) {
-		return strpos($response, '(#506) Duplicate status message');
+		return ($response == '(#506) Duplicate status message');
 	}
 
 	/**
@@ -287,11 +287,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * @return bool
 	 */
 	public function deauthorized($response) {
-		if (strpos($response, 'Error validating access token') !== false) {
-			return true;
-		}
-
-		return false;
+		return ($response == 'Error validating access token');
 	}
 
 	/**

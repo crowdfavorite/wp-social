@@ -318,7 +318,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 				}
 			}
 
-			update_post_meta($post->ID, '_social_broadcast_error', 'true');
+			update_post_meta($post->ID, '_social_broadcast_error', $errored_accounts);
 			if (count($_broadcast_accounts)) {
 				update_post_meta($post->ID, '_social_broadcast_accounts', $_broadcast_accounts);
 			}
@@ -355,7 +355,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 	 */
 	private function send_publish_error($post, $accounts) {
 		$author = get_userdata($post->post_author);
-		$message = Social_View::factory('wp-admin/post/broadcast/error', array(
+		$message = Social_View::factory('wp-admin/post/broadcast/error/email', array(
 			'social' => $this->social,
 			'accounts' => $accounts,
 			'post' => $post,

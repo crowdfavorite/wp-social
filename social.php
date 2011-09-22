@@ -422,6 +422,22 @@ final class Social {
 			}
 		}
 
+		// Errored broadcasting?
+		global $post;
+		if (isset($post->ID)) {
+			$error_accounts = get_post_meta($post->ID, '_social_broadcast_error', true);
+			if (!empty($error_accounts)) {
+				$message = Social_View::factory('wp-admin/post/broadcast/error/notice', array(
+					'social' => $this,
+					'accounts' => $error_accounts,
+					'post' => $post,
+				));
+				echo '<div class="error">'.$message.'</div>';
+
+				delete_post_meta($post->ID, '_social_broadcast_error');
+			}
+		}
+
 		// 1.1 Upgrade?
 		$upgrade_1_1 = get_user_meta(get_current_user_id(), 'social_1.1_upgrade', true);
 		if (!empty($upgrade_1_1)) {
