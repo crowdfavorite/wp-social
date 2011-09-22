@@ -356,11 +356,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 * @return bool
 	 */
 	public function duplicate_status($response) {
-		if ($response == 'Status is duplicate.') {
-			return true;
-		}
-
-		return false;
+		return ($response == 'Status is duplicate.');
 	}
 
 	/**
@@ -370,11 +366,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 * @return bool
 	 */
 	public function deauthorized($response) {
-		if ($response == 'Could not authenticate with OAuth.') {
-			return true;
-		}
-
-		return false;
+		return ($response == 'Could not authenticate with OAuth.');
 	}
 
 	/**
