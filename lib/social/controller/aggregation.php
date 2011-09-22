@@ -114,7 +114,9 @@ final class Social_Controller_Aggregation extends Social_Controller {
 
 				$response = array(
 					'link' => esc_url(admin_url('edit-comments.php?p='.$post->ID)),
-					'text' => sprintf(__('%s New Comments', Social::$i18n), $total)
+					'total' => number_format_i18n($total),
+					'text' => sprintf(__('%s New Comments', Social::$i18n), $total),
+					'alt_text' => __('Social Comments', Social::$i18n),
 				);
 				echo json_encode($response);
 			}
