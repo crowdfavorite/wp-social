@@ -79,6 +79,7 @@ final class Social_Aggregation_Queue {
 				else {
 					$next_run = $timestamp;
 					$interval = $key;
+					break;
 				}
 			}
 
