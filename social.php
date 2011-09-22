@@ -1035,20 +1035,33 @@ final class Social {
 		return $actions;
 	}
 
+	/**
+	 * @return
+	 */
 	public function admin_bar_menu() {
-		global $wp_admin_bar, $post;
+		global $wp_admin_bar;
+		
+		$current_object = get_queried_object();
 
-		if (!isset($post->ID)) {
+		if (empty($current_object)) {
 			return;
 		}
 
-		$running = '<span id="social_running_aggregation" class="pending-count"><img src="'.esc_url(admin_url('images/loading.gif')).'" style="" class="run_aggregation_loader" /></span>';
-		$wp_admin_bar->add_menu(array(
-			'parent' => 'comments',
-			'id' => 'social_find_comments',
-			'title' => sprintf(__('Find Social Comments %s', Social::$i18n), $running),
-			'href' => esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run'))
-		));
+		if (!empty($current_object->post_type)
+			and ($post_type_object = get_post_type_object($current_object->post_type))
+			and current_user_can($post_type_object->cap->edit_post, $current_object->ID)
+			and ($post_type_object->show_ui or 'attachment' == $current_object->post_type))
+		{
+			$running = '<a href="#" id="social_aggregation"><span>'.__('&laquo; Finding Social Comments')
+			         . ' <img src="'.esc_url(admin_url('images/wpspin_dark.gif')).'" /></span></a>';
+
+			$wp_admin_bar->add_menu(array(
+				'parent' => 'comments',
+				'id' => 'social_find_comments',
+				'title' => sprintf(__('Find Social Comments %s', Social::$i18n), $running),
+				'href' => esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run'))
+			));
+		}
 	}
 
 	/**
