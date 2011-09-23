@@ -169,7 +169,7 @@ final class Social {
 	public static function log($message, array $args = null) {
 		Social::$log->write($message, $args);
 	}
-
+	
 	/**
 	 * @var  bool  is Social enabled?
 	 */
@@ -332,6 +332,11 @@ final class Social {
 		if (current_user_can('manage_options') or current_user_can('publish_posts')) {
 			$this->load_services();
 		}
+
+		$commenter = get_user_meta(get_current_user_id(), 'social_commenter', true);
+		if (!empty($commenter) and $commenter == 'true') {
+			wp_redirect(site_url());
+		}
 	}
 
 	/**
@@ -461,6 +466,22 @@ final class Social {
 			}
 		}
 
+		// Errored broadcasting?
+		global $post;
+		if (isset($post->ID)) {
+			$error_accounts = get_post_meta($post->ID, '_social_broadcast_error', true);
+			if (!empty($error_accounts)) {
+				$message = Social_View::factory('wp-admin/post/broadcast/error/notice', array(
+					'social' => $this,
+					'accounts' => $error_accounts,
+					'post' => $post,
+				));
+				echo '<div class="error">'.$message.'</div>';
+
+				delete_post_meta($post->ID, '_social_broadcast_error');
+			}
+		}
+
 		// 1.1 Upgrade?
 		$upgrade_1_1 = get_user_meta(get_current_user_id(), 'social_1.1_upgrade', true);
 		if (!empty($upgrade_1_1)) {
@@ -547,11 +568,13 @@ final class Social {
 			));
 		}
 		else if (in_array($post->post_status, array('future', 'pending'))) {
+			$ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
 			$accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
 			$content = Social_View::factory('wp-admin/post/meta/broadcast/scheduled', array(
 				'post' => $post,
 				'services' => $this->services(),
-				'accounts' => $accounts
+				'accounts' => $accounts,
+				'ids' => $ids,
 			));
 		}
 		else if ($post->post_status == 'publish') {
@@ -974,11 +997,7 @@ final class Social {
 	}
 
 	/**
-<<<<<<< HEAD
-	 * Sets the aggregated ID of the comment.
-=======
 	 * Sets the comment aggregation ID.
->>>>>>> develop
 	 *
 	 * @param  int     $comment_id
 	 * @param  string  $service
@@ -1025,14 +1044,14 @@ final class Social {
 		if (!in_array($comment_type, apply_filters('social_ignored_comment_types', array('wordpress', 'pingback')))) {
 			$service = $this->service($comment->comment_type);
 			if ($service !== false and $service->show_full_comment($comment->comment_type)) {
-				$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
-				if (!empty($status_id)) {
-					$status_url = $service->status_url(get_comment_author(), $status_id);
-				}
-
 				if ($status_url === null) {
 					$comment_type = 'wordpress';
 				}
+			}
+
+			$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
+			if (!empty($status_id)) {
+				$status_url = $service->status_url(get_comment_author(), $status_id);
 			}
 		}
 
@@ -1047,6 +1066,49 @@ final class Social {
 	}
 
 	/**
+	 * Adds the Aggregate Comments link to the post row actions.
+	 *
+	 * @param  array    $actions
+	 * @param  WP_Post  $post
+	 * @return array
+	 */
+	public function post_row_actions(array $actions, $post) {
+		$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Find Social Comments</a>', Social::$i18n), esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID) .
+			'<img src="'.esc_url(admin_url('images/loading.gif')).'" style="position:relative;top:4px;left:5px;display:none;" class="run_aggregation_loader" />' .
+			'<span></span>';
+		return $actions;
+	}
+
+	/**
+	 * @return
+	 */
+	public function admin_bar_menu() {
+		global $wp_admin_bar;
+		
+		$current_object = get_queried_object();
+
+		if (empty($current_object)) {
+			return;
+		}
+
+		if (!empty($current_object->post_type)
+			and ($post_type_object = get_post_type_object($current_object->post_type))
+			and current_user_can($post_type_object->cap->edit_post, $current_object->ID)
+			and ($post_type_object->show_ui or 'attachment' == $current_object->post_type))
+		{
+			$running = '<a href="#" id="social_aggregation"><span>'.__('&laquo; Finding Social Comments')
+			         . ' <img src="'.esc_url(admin_url('images/wpspin_dark.gif')).'" /></span></a>';
+
+			$wp_admin_bar->add_menu(array(
+				'parent' => 'comments',
+				'id' => 'social_find_comments',
+				'title' => sprintf(__('Find Social Comments %s', Social::$i18n), $running),
+				'href' => esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run'))
+			));
+		}
+	}
+
+	/**
 	 * Runs the upgrade only if the installed version is older than the current version.
 	 *
 	 * @param  string  $installed_version
@@ -1055,7 +1117,7 @@ final class Social {
 	private function upgrade($installed_version) {
 		if (version_compare($installed_version, Social::$version, '<')) {
 			define('SOCIAL_UPGRADE', true);
-			global $wpdb;
+			global $wpdb; // Don't delete, this is used in upgrade files.
 
 			$upgrades = array(
 				SOCIAL_PATH.'upgrades/1.1.php',
@@ -1111,11 +1173,13 @@ final class Social {
 		}
 
 		foreach ($object as $key => $val) {
-			if (is_object($val)) {
-				$_object->$key = $this->kses($val);
-			}
-			else if (is_array($val)) {
-				$_object[$key] = $this->kses($val);
+			if (is_object($val) or is_array($val)) {
+				if (is_object($_object)) {
+					$_object->$key = $this->kses($val);
+				}
+				else if (is_array($_object)) {
+					$_object[$key] = $this->kses($val);
+				}
 			}
 			else {
 				if (is_object($_object)) {
@@ -1250,6 +1314,7 @@ add_action('load-post.php', array($social, 'enqueue_assets'));
 add_action('load-profile.php', array($social, 'enqueue_assets'));
 add_action('load-settings_page_social', array($social, 'enqueue_assets'));
 add_action('admin_enqueue_scripts', array($social, 'admin_enqueue_assets'));
+add_action('admin_bar_menu', array($social, 'admin_bar_menu'), 95);
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));
@@ -1268,6 +1333,7 @@ add_filter('get_avatar_comment_types', array($social, 'get_avatar_comment_types'
 add_filter('get_avatar', array($social, 'get_avatar'), 10, 5);
 add_filter('register', array($social, 'register'));
 add_filter('loginout', array($social, 'loginout'));
+add_filter('post_row_actions', array($social, 'post_row_actions'), 10, 2);
 
 // Service filters
 add_filter('social_auto_load_class', array($social, 'auto_load_class'));

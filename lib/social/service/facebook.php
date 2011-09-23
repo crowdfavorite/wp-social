@@ -96,8 +96,8 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					foreach ($post->broadcasted_ids[$this->_key][$account->id()] as $broadcasted_id) {
 						$id = explode('_', $broadcasted_id);
 						$response = $this->request($account, $id[1].'/comments')->body();
-						if ($response !== false and isset($response->data) and is_array($response->data) and count($response->data)) {
-							foreach ($response->data as $result) {
+						if ($response !== false and isset($response->response) and isset($response->response->data) and is_array($response->response->data) and count($response->response->data)) {
+							foreach ($response->response->data as $result) {
 								$data = array(
 									'parent_id' => $broadcasted_id,
 								);
@@ -124,7 +124,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 			}
 
 			if (count($like_count)) {
-				Social_Aggregation_Log::instance($post->ID)->add($this->_key, $post->ID.time(), 'like', false, array('total' => $like_count));
+				Social_Aggregation_Log::instance($post->ID)->add($this->_key, $post->ID.time(), 'like', !$like_count, array('total' => $like_count));
 			}
 		}
 	}
@@ -147,12 +147,17 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		}
 
 		$response = $this->request($account, $url, array('limit' => '100'))->body();
-		if ($response !== false and isset($response->data) and is_array($response->data) and count($response->data)) {
-			foreach ($response->data as $result) {
-				if (isset($post->results) and isset($post->results[$this->_key]) and isset($post->results[$this->_key][$result->id])) {
+		if ($response !== false and isset($response->response) and isset($response->response->data) and is_array($response->response->data) and count($response->response->data)) {
+			foreach ($response->response->data as $result) {
+				if ((isset($post->results) and isset($post->results[$this->_key]) and isset($post->results[$this->_key][$result->id])) or
+				    (in_array($result->id, $post->aggregated_ids[$this->_key]))) {
 					continue;
 				}
-				$post->results[$this->_key][$result->id] = (object) array_merge(array('like' => true), (array) $result);
+				$post->aggregated_ids[$this->_key][] = $result->id;
+				$post->results[$this->_key][$result->id] = (object) array_merge(array(
+					'like' => true,
+					'status_id' => $parent_id.'_'.$id,
+				), (array) $result);
 				++$like_count;
 			}
 		}
@@ -191,7 +196,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 						$account = new $class($account);
 
 						$commentdata = array_merge($commentdata, array(
-							'comment_type' => $this->_key,
+							'comment_type' => 'social-'.$this->_key,
 							'comment_author' => $result->from->name,
 							'comment_author_url' => $account->avatar(),
 							'comment_content' => $result->message,
@@ -203,7 +208,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				else {
 					$url = 'http://facebook.com/profile.php?id='.$result->id;
 					$commentdata = array_merge($commentdata, array(
-						'comment_type' => $this->_key.'-like',
+						'comment_type' => 'social-'.$this->_key.'-like',
 						'comment_author' => $result->name,
 						'comment_author_url' => $url,
 						'comment_content' => '<a href="'.$url.'" target="_blank">'.$result->name.'</a> liked this on Facebook.',
@@ -262,11 +267,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * @return bool
 	 */
 	public function limit_reached($response) {
-		if ($response == '(#341) Feed action request limit reached') {
-			return true;
-		}
-
-		return false;
+		return ($response == '(#341) Feed action request limit reached');
 	}
 
 	/**
@@ -276,11 +277,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * @return bool
 	 */
 	public function duplicate_status($response) {
-		if ($response == '(#506) Duplicate status message') {
-			return true;
-		}
-
-		return false;
+		return ($response == '(#506) Duplicate status message');
 	}
 
 	/**
@@ -290,11 +287,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * @return bool
 	 */
 	public function deauthorized($response) {
-		if (strpos($response, 'Error validating access token') !== false) {
-			return true;
-		}
-
-		return false;
+		return ($response == 'Error validating access token');
 	}
 
 	/**
@@ -311,9 +304,13 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 *
 	 * @param  string      $username
 	 * @param  string|int  $id
-	 * @return string
+	 * @return string|null
 	 */
 	public function status_url($username, $id) {
+		if (strpos($id, '_') === false) {
+			return null;
+		}
+		
 		$ids = explode('_', $id);
 		return 'http://facebook.com/permalink.php?story_fbid='.$ids[1].'&id='.$ids[0];
 	}

@@ -284,8 +284,12 @@ final class Social_Comment_Form {
 				$post_to = '';
 				foreach (Social::instance()->services() as $key => $service) {
 					if (count($service->accounts())) {
-						$text = sprintf(__('Also post to %s'), $service->title());
-						$post_to .= $this->to_tag('label', $checkbox.' '.$text, $label_base);
+						foreach ($service->accounts() as $account) {
+							if ($account->personal()) {
+								$text = sprintf(__('Also post to %s'), $service->title());
+								$post_to .= $this->to_tag('label', $checkbox . ' ' . $text, $label_base);
+							}
+						}
 					}
 				}
 			}

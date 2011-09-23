@@ -20,11 +20,13 @@ if (is_array($ids) and count($ids)) {
 						$accounts_output = '<h4>'.$service->title().'</h4><ul style="margin:0 0 25px 0;">';
 					}
 
-					$output .= Social_View::factory('wp-admin/post/meta/broadcast/parts/account', array(
-						'account' => $account,
-						'broadcasted_ids' => $broadcasted_ids,
-						'service' => $service
-					));
+					foreach ($broadcasted_ids as $broadcasted_id) {
+						$output .= Social_View::factory('wp-admin/post/meta/broadcast/parts/account', array(
+							'account' => $account,
+							'service' => $service,
+							'broadcasted_id' => $broadcasted_id
+						));
+					}
 				}
 			}
 

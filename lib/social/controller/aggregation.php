@@ -99,7 +99,30 @@ final class Social_Controller_Aggregation extends Social_Controller {
 
 			$log = Social_Aggregation_Log::instance($post->ID);
 			$log->save(true);
-			echo $log;
+			if (isset($_GET['render']) and $_GET['render'] == 'false') {
+				$total = 0;
+				$log = $log->current();
+				if (isset($log->items)) {
+					foreach ($log->items as $service => $items) {
+						foreach ($items as $item) {
+							if (!$item->ignored) {
+								++$total;
+							}
+						}
+					}
+				}
+
+				$response = array(
+					'link' => esc_url(admin_url('edit-comments.php?p='.$post->ID)),
+					'total' => number_format_i18n($total),
+					'text' => sprintf(__('%s New Comments', Social::$i18n), $total),
+					'alt_text' => __('Social Comments', Social::$i18n),
+				);
+				echo json_encode($response);
+			}
+			else {
+				echo $log;
+			}
 			exit;
 		}
 		else {

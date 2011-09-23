@@ -429,7 +429,7 @@ override submit styles in TwentyEleven theme */
 #social .social-comment-header {
 	margin-bottom: 6px;
 	position: relative;
-	z-index: 2;
+	z-index: 4;
 }
 
 #social .social-comment-author {
@@ -788,4 +788,27 @@ override submit styles in TwentyEleven theme */
 
 #social #post_to input {
 	width: auto;
+}
+
+/**
+ * Comment Aggregation Widget
+ */
+#social_aggregation {
+	display: none;
+}
+
+#social_aggregation img {
+	position: relative;
+	top: 3px;
+}
+
+#wpadminbar .quicklinks a span#ab-social-updates {
+    background: none repeat scroll 0 0 #EEEEEE;
+    border-radius: 10px;
+    color: #333333;
+    display: inline;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 5px;
+    text-shadow: none;
 }

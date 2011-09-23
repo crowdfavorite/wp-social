@@ -33,6 +33,13 @@ final class Social_Twitter {
 		return array_merge($types, array('social-twitter'));
 	}
 
+	public static function enqueue_assets() {
+		$api_key = Social::option('twitter_anywhere_api_key');
+		if (!empty($api_key)) {
+			wp_enqueue_script('twitter_anywhere', 'http://platform.twitter.com/anywhere.js?id='.$api_key, array('social_js'), Social::$version, true);
+		}
+	}
+
 } // End Social_Twitter
 
 define('SOCIAL_TWITTER_FILE', __FILE__);
@@ -40,5 +47,6 @@ define('SOCIAL_TWITTER_FILE', __FILE__);
 // Filters
 add_filter('social_register_service', array('Social_Twitter', 'register_service'));
 add_filter('get_avatar_comment_types', array('Social_Twitter', 'get_avatar_comment_types'));
+add_action('wp_enqueue_scripts', array('Social_Twitter', 'enqueue_assets'));
 
 }

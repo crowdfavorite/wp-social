@@ -187,12 +187,24 @@ This is due to the fact that older versions of WordPress did not remove apostrop
 3. Under your post's title, click on the "Edit" link that is next to the permalink.
 4. Click "OK" to save the new permalink. (This will automatically remove the apostrophes for you.)
 
-= What kind of URL shortening service does Social use? =
+= Can Social use Bit.ly, Bit.ly Pro or another URL shortener when broadcasting? =
 
-By default, Social uses the built in wp_get_shortlink() method to generate the short URLs to blog posts. However, if you want, you can hook onto WordPress' get_shortlink filter and apply your own URL shortening service; or you can use pre-built plugins.
+Social uses the core WordPress shortlink feature when broadcasting blog posts. Any plugin that interacts with the shortlink will also be reflected in Social's broadcasts.
 
 wp_get_shortlink Documentation: http://codex.wordpress.org/Function_Reference/wp_get_shortlink
-Bit.ly Plugin: http://yoast.com/wordpress/bitly-shortlinks/
+Bit.ly Plugin: http://wordpress.org/extend/plugins/bitly-shortlinks/
+
+When using the Bit.ly plugin, you will need to add the following to your wp-config.php to get it working:
+
+    /**
+     * Settings for Bit.ly Shortlinks Plugin
+     * http://yoast.com/wordpress/bitly-shortlinks/
+     **/
+    define('BITLY_USERNAME', '<your username>');
+    define('BITLY_APIKEY', '<your API key>');
+
+    // optional, if you want to use j.mp instead of bit.ly URL's
+    define('BITLY_JMP', true);
 
 
 
