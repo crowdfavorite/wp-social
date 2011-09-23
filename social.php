@@ -293,6 +293,11 @@ final class Social {
 		if (current_user_can('manage_options') or current_user_can('publish_posts')) {
 			$this->load_services();
 		}
+
+		$commenter = get_user_meta(get_current_user_id(), 'social_commenter', true);
+		if (!empty($commenter) and $commenter == 'true') {
+			wp_redirect(site_url());
+		}
 	}
 
 	/**
