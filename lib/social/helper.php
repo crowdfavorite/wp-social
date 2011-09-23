@@ -14,7 +14,7 @@ final class Social_Helper {
 	 * @return string
 	 */
 	public static function settings_url(array $params = null, $personal = false) {
-		if (!current_user_can('manage_options')) {
+		if (!current_user_can('manage_options') or $personal) {
 			$path = 'profile.php?';
 		}
 		else {

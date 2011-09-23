@@ -82,7 +82,11 @@ abstract class Social_Service {
 		);
 
 		if ($is_admin) {
-			$url = Social_Helper::settings_url($params);
+			$personal = false;
+			if (defined('IS_PROFILE_PAGE')) {
+				$personal = true;
+			}
+			$url = Social_Helper::settings_url($params, $personal);
 			$text = '<span title="'.__('Disconnect', Social::$i18n).'" class="social-disconnect social-ir">'.__('Disconnect', Social::$i18n).'</span>';
 		}
 		else {
@@ -168,6 +172,8 @@ abstract class Social_Service {
 				if ($account->personal()) {
 					$accounts[$account->id()] = $account->as_array();
 				}
+
+				$account->universal(false);
 			}
 
 			if (count($accounts)) {
@@ -184,6 +190,8 @@ abstract class Social_Service {
 				if ($account->universal()) {
 					$accounts[$account->id()] = $account->as_array();
 				}
+
+				$account->personal(false);
 			}
 
 			if (count($accounts)) {

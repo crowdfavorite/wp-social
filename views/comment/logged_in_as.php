@@ -37,6 +37,7 @@
 			foreach ($services as $key => $service) {
 				if (count($service->accounts())) {
 					$account = reset($service->accounts());
+					if ($account->personal()) {
 	?>
 	<p class="social-input-row">
 		<span class="social-<?php echo $key; ?>-icon">
@@ -46,6 +47,7 @@
 	</p>
 	<input type="hidden" name="social_post_account" value="<?php echo $account->id(); ?>" />
 	<?php
+					}
 				}
 			}
 		}

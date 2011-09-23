@@ -26,7 +26,6 @@ final class Social_Controller_Auth extends Social_Controller {
 
 		$class = 'Social_Service_'.$data->service.'_Account';
 		$account = new $class($account);
-		$account->personal(true);
 
 		$save = true;
 		$service = $this->social->service($data->service)->account($account);
@@ -42,6 +41,7 @@ final class Social_Controller_Auth extends Social_Controller {
 			if (!is_user_logged_in() and !$service->create_user($account)) {
 				$save = false;
 			}
+			$account->personal(true);
 		}
 
 		// Save the service
@@ -92,7 +92,9 @@ final class Social_Controller_Auth extends Social_Controller {
 	public function action_disconnect() {
 		$id = $this->request->query('id');
 		$service_key = $this->request->query('service');
+		$personal = false;
 		if (defined('IS_PROFILE_PAGE')) {
+			$personal = true;
 			$service = $this->social->service($service_key);
 		}
 		else {
@@ -102,7 +104,7 @@ final class Social_Controller_Auth extends Social_Controller {
 		$service->disconnect($id);
 
 		if (is_admin()) {
-			wp_redirect(Social_Helper::settings_url());
+			wp_redirect(Social_Helper::settings_url(array(), $personal));
 		}
 		else {
 			wp_logout();
