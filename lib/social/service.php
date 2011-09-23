@@ -66,7 +66,9 @@ abstract class Social_Service {
 			$url = site_url('?social_controller=auth&social_action=authorized&p='.$post->ID);
 		}
 
-		return apply_filters('social_authorize_url', Social::$api_url.$this->_key.'/authorize?v=2&response_url='.urlencode($url).'&id='.$id, $this->_key);
+		$url = Social::$api_url.$this->_key.'/authorize?v=2&response_url='.urlencode($url).'&id='.$id;
+		Social::log('Authorize URL: '.$url);
+		return apply_filters('social_authorize_url', $url, $this->_key);
 	}
 
 	/**
