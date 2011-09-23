@@ -94,7 +94,6 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		$accounts = $this->get_aggregation_accounts($post);
 
 		if (isset($accounts[$this->_key]) and count($accounts[$this->_key])) {
-			Social::log(print_r($accounts[$this->_key], true));
 			foreach ($accounts[$this->_key] as $account) {
 				if (isset($post->broadcasted_ids[$this->_key][$account->id()])) {
 					foreach ($post->broadcasted_ids[$this->_key][$account->id()] as $broadcasted_id) {

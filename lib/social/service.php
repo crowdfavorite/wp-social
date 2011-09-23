@@ -484,13 +484,13 @@ abstract class Social_Service {
 	}
 
 	/**
-	 * Loads all of the accounts to user for aggregation.
+	 * Loads all of the accounts to use for aggregation.
 	 *
 	 * @param  object  $post
 	 * @return array
 	 */
 	protected function get_aggregation_accounts($post) {
-		$accounts = get_user_meta($post->post_author, 'social_accounts', true);
+		$accounts = array();
 		foreach ($this->accounts() as $account) {
 			if (!isset($accounts[$this->_key])) {
 				$accounts[$this->_key] = array();
