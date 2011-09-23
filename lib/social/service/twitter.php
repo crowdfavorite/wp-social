@@ -132,8 +132,8 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 							'since_id' => $broadcasted_id,
 							'count' => 200
 						));
-						if ($response->body() !== false and is_array($response->body()) and count($response->body())) {
-							foreach ($response->body() as $result) {
+						if ($response->body() !== false and is_array($response->body()->response) and count($response->body()->response)) {
+							foreach ($response->body()->response as $result) {
 								$data = array(
 									'username' => $result->user->screen_name,
 								);
