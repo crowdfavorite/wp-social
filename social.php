@@ -1052,14 +1052,11 @@ final class Social {
 			and current_user_can($post_type_object->cap->edit_post, $current_object->ID)
 			and ($post_type_object->show_ui or 'attachment' == $current_object->post_type))
 		{
-			$running = '<a href="#" id="social_aggregation"><span>'.__('&laquo; Finding Social Comments')
-			         . ' <img src="'.esc_url(admin_url('images/wpspin_dark.gif')).'" /></span></a>';
-
 			$wp_admin_bar->add_menu(array(
 				'parent' => 'comments',
 				'id' => 'social_find_comments',
-				'title' => sprintf(__('Find Social Comments %s', Social::$i18n), $running),
-				'href' => esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run'))
+				'title' => __('Find Social Comments', Social::$i18n).'<img src="'.esc_url(admin_url('images/wpspin_dark.gif')).'" class="social-aggregation-spinner" style="display: none;" />',
+				'href' => esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run')),
 			));
 		}
 	}
