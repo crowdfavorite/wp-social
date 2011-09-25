@@ -96,6 +96,9 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		if (isset($accounts[$this->_key]) and count($accounts[$this->_key])) {
 			foreach ($accounts[$this->_key] as $account) {
 				if (isset($post->broadcasted_ids[$this->_key][$account->id()])) {
+					if (!is_array($post->broadcasted_ids[$this->_key][$account->id()])) {
+						$post->broadcasted_ids[$this->_key][$account->id()] = array($post->broadcasted_ids[$this->_key][$account->id()]);
+					}
 					foreach ($post->broadcasted_ids[$this->_key][$account->id()] as $broadcasted_id) {
 						// Retweets
 						$response = $this->request($account, 'statuses/retweets/'.$broadcasted_id);

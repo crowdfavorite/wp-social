@@ -234,7 +234,7 @@ function reloadSocialHTML(saved) {
 							$comment_adminbar_item_label.find('#ab-awaiting-mod')
 								.html(response.total).show();
 // show results (slide right)
-							$comment_adminbar_item.addClass('social-comments-found').after(response.html);
+							$comment_adminbar_item.addClass('social-comments-found').after('<li id="wp-adminbar-comments-social">' + response.html + '</li>');
 							$social_comments_found = $('#wp-adminbar-comments-social');
 							var found_width = $social_comments_found.width();
 							$social_comments_found.css({

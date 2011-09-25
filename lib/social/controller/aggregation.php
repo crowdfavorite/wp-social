@@ -116,11 +116,13 @@ final class Social_Controller_Aggregation extends Social_Controller {
 				$awaiting_mod = $awaiting_mod->moderated;
 
 				$link = esc_url(admin_url('edit-comments.php?p='.$post->ID));
-
+				$found_class = ($total > 0 ? ' social-comments-found' : '');
+				
 				$response = array(
 					'total' => number_format_i18n($awaiting_mod),
+					'new' => number_format_i18n($total),
 					'link' => $link,
-					'html' => '<li id="wp-adminbar-comments-social"><a href="'.$link.'"><span class="social-aggregation-results">'.sprintf(__('(%s New)', Social::$i18n), $total).'</span></a></li>',
+					'html' => '<a href="'.$link.'"><span class="social-aggregation-results'.$found_class.'">'.sprintf(__('%s New', Social::$i18n), $total).'</span></a>',
 				);
 				echo json_encode($response);
 			}
