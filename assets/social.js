@@ -201,19 +201,18 @@ function reloadSocialHTML(saved) {
 		$social_comments_adminbar_item = $('#wp-admin-bar-social_find_comments');
 		if ($social_comments_adminbar_item.size()) {
 			var $social_spinner = $social_comments_adminbar_item.find('img.social-aggregation-spinner');
-			var $social_aggregation = $('#social_aggregation');
 			var $comment_adminbar_item = $('#wp-admin-bar-comments');
 			var $comment_adminbar_item_label = $comment_adminbar_item.find('> a:first > span');
 			$social_aggregation.click(function(e) {
 				if ($(this).attr('href') == '#') {
 					e.preventDefault();
 				}
-			}).removeClass('running-aggregation');
+			});
 
 			$social_comments_adminbar_item.find('a').click(function(e) {
 				e.preventDefault();
-				if (!$social_aggregation.hasClass('running-aggregation')) {
-					$social_aggregation.addClass('running-aggregation');
+				if (!$social_comments_adminbar_item.hasClass('running-aggregation')) {
+					$social_comments_adminbar_item.addClass('running-aggregation');
 // remove old results (slide left)
 					$('#wp-adminbar-comments-social').animate({ width: '0' }, function() {
 						$(this).remove();
@@ -243,9 +242,9 @@ function reloadSocialHTML(saved) {
 								width: 0
 							}).animate({ width: found_width + 'px' });
 // set params for next call
-							$social_aggregation
-								.attr('href', response.link)
-								.removeClass('running-aggregation');
+							$social_comments_adminbar_item
+								.removeClass('running-aggregation')
+								.find('a').attr('href', response.link);
 						},
 						'json'
 					);
