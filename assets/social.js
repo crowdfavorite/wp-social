@@ -203,12 +203,6 @@ function reloadSocialHTML(saved) {
 			var $social_spinner = $social_comments_adminbar_item.find('img.social-aggregation-spinner');
 			var $comment_adminbar_item = $('#wp-admin-bar-comments');
 			var $comment_adminbar_item_label = $comment_adminbar_item.find('> a:first > span');
-			$social_aggregation.click(function(e) {
-				if ($(this).attr('href') == '#') {
-					e.preventDefault();
-				}
-			});
-
 			$social_comments_adminbar_item.find('a').click(function(e) {
 				e.preventDefault();
 				if (!$social_comments_adminbar_item.hasClass('running-aggregation')) {
