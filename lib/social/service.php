@@ -310,7 +310,8 @@ abstract class Social_Service {
 				break;
 				case '{content}':
 					$content = strip_tags($post->post_content);
-					$content = str_replace(array("\n", "\r", PHP_EOL), '', $content);
+                    $content = preg_replace('/\s+/', ' ', $content);
+					$content = str_replace(array("\n", "\r", PHP_EOL), ' ', $content);
 					$content = str_replace('&nbsp;', ' ', $content);
 				break;
 				case '{author}':
