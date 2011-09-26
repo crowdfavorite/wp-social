@@ -33,6 +33,12 @@ final class Social_Twitter {
 		return array_merge($types, array('social-twitter'));
 	}
 
+    /**
+     * Enqueues the @Anywhere script.
+     *
+     * @static
+     * @return void
+     */
 	public static function enqueue_assets() {
 		$api_key = Social::option('twitter_anywhere_api_key');
 		if (!empty($api_key)) {
