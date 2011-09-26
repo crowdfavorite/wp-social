@@ -386,7 +386,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 * @return bool
 	 */
 	public function duplicate_status($response) {
-		return ($response == 'Status is duplicate.');
+		return ($response == 'Status is a duplicate.');
 	}
 
 	/**
