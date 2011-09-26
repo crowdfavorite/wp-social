@@ -214,26 +214,31 @@ function reloadSocialHTML(saved) {
 				e.preventDefault();
 				if (!$social_aggregation.hasClass('running-aggregation')) {
 					$social_aggregation.addClass('running-aggregation');
-// remove old results (slide left)
+					
+					// remove old results (slide left)
 					$('#wp-adminbar-comments-social').animate({ width: '0' }, function() {
 						$(this).remove();
 					});
-// show spinner
+
+					// show spinner
 					$comment_adminbar_item_label.find('#ab-awaiting-mod').hide().end()
 						.append($social_spinner);
 					$social_spinner.show();
-// make AJAX call
+
+					// make AJAX call
 					$.get(
 						$(this).attr('href'),
 						{ render: 'false' },
 						function(response) {
-// hide spinner
+							// hide spinner
 							$social_spinner.hide();
 							$social_comments_adminbar_item.append($social_spinner);
-// update count, show count
+
+							// update count, show count
 							$comment_adminbar_item_label.find('#ab-awaiting-mod')
 								.html(response.total).show();
-// show results (slide right)
+
+							// show results (slide right)
 							$comment_adminbar_item.addClass('social-comments-found').after(response.html);
 							$social_comments_found = $('#wp-adminbar-comments-social');
 							var found_width = $social_comments_found.width();
@@ -242,7 +247,8 @@ function reloadSocialHTML(saved) {
 								visibility: 'visible',
 								width: 0
 							}).animate({ width: found_width + 'px' });
-// set params for next call
+
+							// set params for next call
 							$social_aggregation
 								.attr('href', response.link)
 								.removeClass('running-aggregation');
