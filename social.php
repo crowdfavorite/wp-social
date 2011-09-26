@@ -1034,9 +1034,10 @@ final class Social {
 	 * @return array
 	 */
 	public function post_row_actions(array $actions, $post) {
-		$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Find Social Comments</a>', Social::$i18n), esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID) .
-			'<img src="'.esc_url(admin_url('images/loading.gif')).'" style="position:relative;top:4px;left:5px;display:none;" class="run_aggregation_loader" />' .
-			'<span></span>';
+		if ($post->post_status == 'publish') {
+			$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', Social::$i18n), esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID) .
+			'<img src="'.esc_url(admin_url('images/wpspin_light.gif')).'" class="social_run_aggregation_loader" />';
+		}
 		return $actions;
 	}
 
