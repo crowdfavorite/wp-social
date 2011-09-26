@@ -65,13 +65,13 @@
 												$output .= ' ('.__(esc_html($type), Social::$i18n).')';
 											break;
 										}
+
+										if ($item->ignored) {
+											$output .= ' ('.__('Existing Comment', Social::$i18n).')';
+										}
 									}
 									else {
 										$output .= $content;
-									}
-
-									if ($item->ignored) {
-										$output .= ' ('.__('Existing Comment', Social::$i18n).')';
 									}
 
 									$output .= '</li>';

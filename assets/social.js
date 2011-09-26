@@ -195,27 +195,77 @@ function reloadSocialHTML(saved) {
 			$('#post_accounts').trigger('change');
 		}
 
-		/**
-		 * Manual Aggregation
-		 */
-		if ($('#wp-admin-bar-social_find_comments').length) {
-			var running_aggregation = false;
-			$('#wp-admin-bar-social_find_comments a').click(function(e){
-				e.preventDefault();
-				
-				if (!running_aggregation) {
-					running_aggregation = true;
-					var $social_running_aggregation = $('#social_running_aggregation');
-					$social_running_aggregation.show().find('img').show();
+        /**
+         * Manual Aggregation
+         */
+        var $social_comments_adminbar_item = $('#wp-admin-bar-social_find_comments');
+        if ($social_comments_adminbar_item.size()) {
+            var $social_spinner = $social_comments_adminbar_item.find('img.social-aggregation-spinner');
+            var $social_aggregation = $('#social_aggregation');
+            var $comment_adminbar_item = $('#wp-admin-bar-comments');
+            var $comment_adminbar_item_label = $comment_adminbar_item.find('> a:first > span');
+            $social_aggregation.click(function(e) {
+                if ($(this).attr('href') == '#') {
+                    e.preventDefault();
+                }
+            }).removeClass('running-aggregation');
 
-					$.get($(this).attr('href'), {render:'false'}, function(response){
-						running_aggregation = false;
-						$social_running_aggregation.find('img').hide().stop().find('span').hide().html(response.replace(/[A-Za-z$-]/g, '')).show().delay(2000).fadeOut(function(){
-							$social_running_aggregation.hide();
-						});
-					});
-				}
-			});
-		}
+            $social_comments_adminbar_item.find('a').click(function(e) {
+                e.preventDefault();
+                if (!$social_aggregation.hasClass('running-aggregation')) {
+                    $social_aggregation.addClass('running-aggregation');
+
+                    // remove old results (slide left)
+                    $('#wp-adminbar-comments-social').animate({ width: '0' }, function() {
+                        $(this).remove();
+                    });
+
+                    // show spinner
+                    $comment_adminbar_item_label.find('#ab-awaiting-mod').hide().end()
+                        .append($social_spinner);
+                    $social_spinner.show();
+
+                    // make AJAX call
+                    $.get(
+                        $(this).attr('href'),
+                        { render: 'false' },
+                        function(response) {
+                            // hide spinner
+                            $social_spinner.hide();
+                            $social_comments_adminbar_item.append($social_spinner);
+
+                            // update count, show count
+                            $comment_adminbar_item_label.find('#ab-awaiting-mod')
+                                .html(response.total).show();
+
+                            // show results (slide right)
+                            $comment_adminbar_item.addClass('social-comments-found').after(response.html);
+                            var $social_comments_found = $('#wp-adminbar-comments-social');
+                            var found_width = $social_comments_found.width();
+                            $social_comments_found.css({
+                                position: 'relative',
+                                visibility: 'visible',
+                                width: 0
+                            }).animate({ width: found_width + 'px' });
+
+                            // set params for next call
+                            $social_aggregation
+                                .attr('href', response.link)
+                                .removeClass('running-aggregation');
+                        },
+                        'json'
+                    );
+                }
+            });
+        }
+
+        /**
+         * Twitter @Anywhere
+         */
+        if (typeof twttr != 'undefined') {
+            twttr.anywhere(function(T){
+                T.hovercards();
+            });
+        }
 	});
 })(jQuery);

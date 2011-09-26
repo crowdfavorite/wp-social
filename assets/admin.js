@@ -1,5 +1,5 @@
 (function($) {
-	$(function(){
+	$(function () {
 		$('.social-collapsible').each(function () {
 			var $t = $(this);
 			$t.find('.social-title a').click(function (e) {
@@ -103,16 +103,19 @@
 			var rel = $(this).attr('rel');
 			if (!in_running_row_aggregation(rel)) {
 				var $this = $(this);
-				var $loader = $this.parent().find('.run_aggregation_loader');
-				$this.attr('disabled', 'disable');
+				var $loader = $this.parent().find('.social_run_aggregation_loader');
+				$this.hide().closest('.row-actions').addClass('social_run_aggregation');
 				$loader.show();
-
-				$.get($this.attr('href'), {render:'false'}, function(response){
-					remove_running_row_aggregation(rel);
-					$loader.hide();
-					$this.removeAttr('disabled');
-					$this.parent().find('span').hide().html(' - '+response).show().delay(2000).fadeOut();
-				});
+				$.get(
+					$this.attr('href'),
+					{ render:'false' },
+					function(response) {
+						remove_running_row_aggregation(rel);
+						$loader.hide();
+						$this.html(response.html).show();
+					},
+					'json'
+				);
 			}
 		});
 

@@ -112,9 +112,17 @@ final class Social_Controller_Aggregation extends Social_Controller {
 					}
 				}
 
-				$text = sprintf(__('%s New Comments', Social::$i18n), $total);
-				$link = sprintf('<a href="%s">%s</a>', esc_url(admin_url('edit-comments.php')), $text);
-				echo $link;
+				$awaiting_mod = wp_count_comments();
+				$awaiting_mod = $awaiting_mod->moderated;
+
+				$link = esc_url(admin_url('edit-comments.php?p='.$post->ID));
+
+				$response = array(
+					'total' => number_format_i18n($awaiting_mod),
+					'link' => $link,
+					'html' => '<li id="wp-adminbar-comments-social"><a href="'.$link.'"><span class="social-aggregation-results">'.sprintf(__('(%s New)', Social::$i18n), $total).'</span></a></li>',
+				);
+				echo json_encode($response);
 			}
 			else {
 				echo $log;

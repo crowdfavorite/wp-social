@@ -2,7 +2,7 @@
 
 _e('Hello', Social::$i18n).','."\n\n";
 
-echo wordwrap(sprintf(__('Social failed to broadcast the blog post %s to one ore more of your Social accounts.', Social::$i18n), esc_html($post->post_title)), 60)."\n\n";
+echo wordwrap(sprintf(__('Social failed to broadcast the blog post "%s" to one or more of your Social accounts.', Social::$i18n), esc_html($post->post_title)), 60)."\n\n";
 
 foreach ($accounts as $key => $_accounts) {
 	echo $social->service($key)->title().':'."\n";

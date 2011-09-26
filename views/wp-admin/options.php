@@ -99,8 +99,8 @@
 			<tr>
 				<th><?php _e('Twitter @anywhere', Social::$i18n); ?></th>
 				<td>
-					<label for="<?php echo 'social_twitter_anywhere_api_key'; ?>"><?php _e('Consumer API Key', Social::$i18n); ?></label><br />
-					<input type="text" class="regular-text" name="<?php echo 'social_twitter_anywhere_api_key'; ?>" id="<?php echo 'social_twitter_anywhere_api_key'; ?>" value="<?php echo esc_attr(Social::option('twitter_anywhere_api_key')); ?>" />
+					<label for="social_twitter_anywhere_api_key"><?php _e('Consumer API Key', Social::$i18n); ?></label><br />
+					<input type="text" class="regular-text" name="social_twitter_anywhere_api_key" id="social_twitter_anywhere_api_key" value="<?php echo esc_attr(Social::option('twitter_anywhere_api_key')); ?>" />
 					<p class="description"><?php printf(__('To enable Twitter\'s @anywhere hovercards for Twitter usernames, enter your application\'s Consumer API key here. (<a href="%1$s" target="_blank">Click here to get an API key</a>)', Social::$i18n), 'https://dev.twitter.com/docs/anywhere'); ?></p>
 				</td>
 			</tr>
@@ -126,7 +126,7 @@
 								?>
 								<li>
 									<label class="social-broadcastable" for="<?php echo esc_attr($key.$account->id()); ?>" style="cursor:pointer">
-										<input type="checkbox" name="<?php echo 'social_xmlrpc_accounts[]'; ?>" id="<?php echo esc_attr($key.$account->id()); ?>" value="<?php echo esc_attr($key.'|'.$account->id()); ?>"<?php echo ((isset($accounts[$key]) and in_array($account->id(), array_values($accounts[$key]))) ? ' checked="checked"' : ''); ?> />
+										<input type="checkbox" name="social_xmlrpc_accounts[]" id="<?php echo esc_attr($key.$account->id()); ?>" value="<?php echo esc_attr($key.'|'.$account->id()); ?>"<?php echo ((isset($accounts[$key]) and in_array($account->id(), array_values($accounts[$key]))) ? ' checked="checked"' : ''); ?> />
 										<img src="<?php echo esc_attr($account->avatar()); ?>" width="24" height="24" />
 										<span><?php echo esc_html($account->name()); ?></span>
 									</label>
@@ -169,9 +169,9 @@
 									<div class="social-callout">
 										<h3 class="social-title"><?php _e('CRON Setup', Social::$i18n); ?></h3>
 										<dl class="social-kv">
-											<dt><?php _e('CRON API Key', Social::$i18n); ?> <small>(<a href="<?php echo esc_url(wp_nonce_url(admin_url('options-general.php?page=social.php&'.'social_action=regenerate_api_key'), 'regenerate_api_key')); ?>" rel="<?php echo 'social_api_key'; ?>" id="<?php echo 'social_regenerate_api_key'; ?>"><?php _e('regenerate', Social::$i18n); ?></a>)</small></dt>
+											<dt><?php _e('CRON API Key', Social::$i18n); ?> <small>(<a href="<?php echo esc_url(wp_nonce_url(admin_url('options-general.php?page=social.php&'.'social_action=regenerate_api_key'), 'regenerate_api_key')); ?>" rel="social_api_key" id="social_regenerate_api_key"><?php _e('regenerate', Social::$i18n); ?></a>)</small></dt>
 											<dd>
-												<code class="<?php echo 'social_api_key'; ?>"><?php echo esc_html(Social::option('system_cron_api_key')); ?></code>
+												<code class="social_api_key"><?php echo esc_html(Social::option('system_cron_api_key')); ?></code>
 											</dd>
 										</dl>
 										<p><?php _e('For your system CRON to run correctly, make sure it is pointing towards a URL that looks something like the following:', Social::$i18n); ?></p>
@@ -192,13 +192,13 @@
 							<ul>
 								<li>
 									<label for="debug_mode_no">
-										<input type="radio" name="<?php echo 'social_debug'; ?>" id="debug_mode_no" value="0"<?php echo Social::option('debug') != '1' ? ' checked="checked"' : ''; ?> />
+										<input type="radio" name="social_debug" id="debug_mode_no" value="0"<?php echo Social::option('debug') != '1' ? ' checked="checked"' : ''; ?> />
 										<?php _e('Off <span class="description">(recommended)</span>', Social::$i18n); ?>
 									</label>
 								</li>
 								<li>
 									<label for="debug_mode_yes">
-										<input type="radio" name="<?php echo 'social_debug'; ?>" id="debug_mode_yes" value="1"<?php echo Social::option('debug') == '1' ? ' checked="checked"' : ''; ?> />
+										<input type="radio" name="social_debug" id="debug_mode_yes" value="1"<?php echo Social::option('debug') == '1' ? ' checked="checked"' : ''; ?> />
 										<?php _e('On <span class="description">(for troubleshooting)</span>', Social::$i18n); ?>
 									</label>
 								</li>

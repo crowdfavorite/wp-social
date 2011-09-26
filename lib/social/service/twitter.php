@@ -96,6 +96,9 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		if (isset($accounts[$this->_key]) and count($accounts[$this->_key])) {
 			foreach ($accounts[$this->_key] as $account) {
 				if (isset($post->broadcasted_ids[$this->_key][$account->id()])) {
+					if (!is_array($post->broadcasted_ids[$this->_key][$account->id()])) {
+						$post->broadcasted_ids[$this->_key][$account->id()] = array($post->broadcasted_ids[$this->_key][$account->id()]);
+					}
 					foreach ($post->broadcasted_ids[$this->_key][$account->id()] as $broadcasted_id) {
 						// Retweets
 						$response = $this->request($account, 'statuses/retweets/'.$broadcasted_id);
@@ -132,8 +135,8 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 							'since_id' => $broadcasted_id,
 							'count' => 200
 						));
-						if ($response->body() !== false and is_array($response->body()) and count($response->body())) {
-							foreach ($response->body() as $result) {
+						if ($response->body() !== false and is_array($response->body()->response) and count($response->body()->response)) {
+							foreach ($response->body()->response as $result) {
 								$data = array(
 									'username' => $result->user->screen_name,
 								);
@@ -169,9 +172,10 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 * Saves the aggregated comments.
 	 *
 	 * @param  object  $post
+	 * @param  bool    $skip_approval
 	 * @return void
 	 */
-	public function save_aggregated_comments(&$post) {
+	public function save_aggregated_comments(&$post, $skip_approval = false) {
 		if (isset($post->results[$this->_key])) {
 			foreach ($post->results[$this->_key] as $result) {
 				$account = (object) array(
@@ -196,7 +200,12 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 					'comment_agent' => 'Social Aggregator',
 				);
 
-				$commentdata['comment_approved'] = wp_allow_comment($commentdata);
+				if ($skip_approval) {
+					$commentdata['comment_approved'] = '1';
+				}
+				else {
+					$commentdata['comment_approved'] = wp_allow_comment($commentdata);
+				}
 				$comment_id = wp_insert_comment($commentdata);
 
 				update_comment_meta($comment_id, 'social_account_id', $result->from_user_id);
@@ -247,7 +256,13 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	public function aggregation_row($type, $item, $username, $id) {
 		if ($type == 'retweet') {
 			$link = $this->status_url($username, $id);
-			return '<a href="'.$link.'" target="_blank">#'.$item->id.'</a> ('.__('Retweet Search', Social::$i18n).')';
+			$output = '<a href="'.$link.'" target="_blank">#'.$item->id.'</a> ('.__('Retweet Search', Social::$i18n).')';
+
+			if ($item->ignored) {
+				$output .= ' ('.__('Existing Comment', Social::$i18n).')';
+			}
+
+			return $output;
 		}
 		return '';
 	}
@@ -262,48 +277,63 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	public function import_tweet_by_url($post_id, $url) {
 		$post = get_post($post_id);
 
+		$post->broadcasted_ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
+		if (empty($post->broadcasted_ids)) {
+			$post->broadcasted_ids = array();
+		}
+
 		$url = explode('/', $url);
 		$id = end($url);
+		if (!empty($id) and !$this->is_original_broadcast($post, $id)) {
+			$url = 'http://api.twitter.com/1/statuses/show.json?id='.$id;
+			$request = wp_remote_get($url);
+			if (!is_wp_error($request)) {
+				$response = apply_filters('social_response_body', $request['body'], $this->_key);
+				if ($response !== null and !isset($response->error)) {
+					$logger = Social_Aggregation_Log::instance($post->ID);
 
-		$post_comments = get_post_meta($post->ID, '_social_aggregated_ids', true);
-		if (empty($post_comments)) {
-			$post_comments = array();
+					$post->aggregated_ids = get_post_meta($post->ID, '_social_aggregated_ids', true);
+					if (empty($post->aggregated_ids)) {
+						$post->aggregated_ids = array();
+					}
+
+					if (!isset($post->aggregated_ids[$this->_key])) {
+						$post->aggregated_ids[$this->_key] = array();
+					}
+
+					if (in_array($id, $post->aggregated_ids[$this->_key])) {
+						$logger->add($this->_key, $response->id, 'Imported', true, array(
+							'username' => $response->user->screen_name
+						));
+					}
+					else {
+						$logger->add($this->_key, $response->id, 'Imported', false, array(
+							'username' => $response->user->screen_name
+						));
+
+						$post->aggregated_ids[$this->_key][] = $response->id;
+						$post->results[$this->_key][$response->id] = (object) array(
+							'id' => $response->id,
+							'from_user_id' => $response->user->id,
+							'from_user' => $response->user->screen_name,
+							'text' => $response->text,
+							'created_at' => $response->created_at,
+							'profile_image_url' => $response->user->profile_image_url,
+							'in_reply_to_status_id' => $response->in_reply_to_status_id,
+						);
+
+						$this->save_aggregated_comments($post, true);
+
+						// Some cleanup...
+						unset($post->aggregated_ids);
+						unset($post->results);
+					}
+					$logger->save(true);
+				}
+			}
 		}
 
-		$url = 'http://api.twitter.com/1/statuses/show.json?id='.$id;
-		$request = wp_remote_get($url);
-		if (!is_wp_error($request)) {
-			$logger = Social_Aggregation_Log::instance($post->ID);
-			$response = apply_filters('social_response_body', $request['body'], $this->_key);
-
-			if (in_array($id, $post_comments)) {
-				$logger->add($this->_key, $response->id, 'Imported', true, array(
-					'username' => $response->user->screen_name
-				));
-			}
-			else {
-				$logger->add($this->_key, $response->id, 'Imported', false, array(
-					'username' => $response->user->screen_name
-				));
-
-				$post->aggregated_ids[$this->_key][] = $response->id;
-				$post->results[$this->_key][$response->id] = (object) array(
-					'id' => $response->id,
-					'from_user_id' => $response->user->id,
-					'from_user' => $response->user->screen_name,
-					'text' => $response->text,
-					'created_at' => $response->created_at,
-					'profile_image_url' => $response->user->profile_image_url,
-				);
-
-				$this->save_aggregated_comments($post);
-
-				// Some cleanup...
-				unset($post->aggregated_ids);
-				unset($post->results);
-			}
-			$logger->save(true);
-		}
+		unset($post->broadcasted_ids);
 	}
 
 	/**
@@ -323,11 +353,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 * @return bool
 	 */
 	public function duplicate_status($response) {
-		if ($response == 'Status is duplicate.') {
-			return true;
-		}
-
-		return false;
+		return ($response == 'Status is a duplicate.');
 	}
 
 	/**
@@ -337,11 +363,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 * @return bool
 	 */
 	public function deauthorized($response) {
-		if ($response == 'Could not authenticate with OAuth.') {
-			return true;
-		}
-
-		return false;
+		return ($response == 'Could not authenticate with OAuth.');
 	}
 
 	/**
@@ -386,7 +408,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 */
 	public static function get_comment_author_link($url) {
 		global $comment;
-		if ($comment->comment_type == 'twitter') {
+		if ($comment->comment_type == 'social-twitter') {
 			$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
 			$output = str_replace("rel='", "rel='" . $status_id . " ", $url);
 

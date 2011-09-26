@@ -82,7 +82,11 @@ abstract class Social_Service {
 		);
 
 		if ($is_admin) {
-			$url = Social_Helper::settings_url($params);
+			$personal = false;
+			if (defined('IS_PROFILE_PAGE')) {
+				$personal = true;
+			}
+			$url = Social_Helper::settings_url($params, $personal);
 			$text = '<span title="'.__('Disconnect', Social::$i18n).'" class="social-disconnect social-ir">'.__('Disconnect', Social::$i18n).'</span>';
 		}
 		else {
@@ -117,18 +121,19 @@ abstract class Social_Service {
 			if ($user === false) {
 				$id = wp_create_user($this->_key.'_'.$username, wp_generate_password(20, false), $this->_key.'.'.$username.'@example.com');
 
-				$role = 'subscriber';
+				$role = '';
 				if (get_option('users_can_register') == '1') {
 					$role = get_option('default_role');
 				}
+                else {
+                    // Set commenter flag
+                    update_user_meta($id, 'social_commenter', 'true');
+                }
 
 				$user = new WP_User($id);
 				$user->set_role($role);
 				$user->show_admin_bar_front = 'false';
 				wp_update_user(get_object_vars($user));
-
-				// Set commenter flag
-				update_user_meta($id, 'social_commenter', 'true');
 			}
 			else {
 				$id = $user->ID;
@@ -168,6 +173,8 @@ abstract class Social_Service {
 				if ($account->personal()) {
 					$accounts[$account->id()] = $account->as_array();
 				}
+
+				$account->universal(false);
 			}
 
 			if (count($accounts)) {
@@ -184,6 +191,8 @@ abstract class Social_Service {
 				if ($account->universal()) {
 					$accounts[$account->id()] = $account->as_array();
 				}
+
+				$account->personal(false);
 			}
 
 			if (count($accounts)) {
@@ -476,13 +485,13 @@ abstract class Social_Service {
 	}
 
 	/**
-	 * Loads all of the accounts to user for aggregation.
+	 * Loads all of the accounts to use for aggregation.
 	 *
 	 * @param  object  $post
 	 * @return array
 	 */
 	protected function get_aggregation_accounts($post) {
-		$accounts = get_user_meta($post->post_author, 'social_accounts', true);
+		$accounts = array();
 		foreach ($this->accounts() as $account) {
 			if (!isset($accounts[$this->_key])) {
 				$accounts[$this->_key] = array();

@@ -293,6 +293,11 @@ final class Social {
 		if (current_user_can('manage_options') or current_user_can('publish_posts')) {
 			$this->load_services();
 		}
+
+		$commenter = get_user_meta(get_current_user_id(), 'social_commenter', true);
+		if (!empty($commenter) and $commenter == 'true') {
+			wp_redirect(site_url());
+		}
 	}
 
 	/**
@@ -422,6 +427,22 @@ final class Social {
 			}
 		}
 
+		// Errored broadcasting?
+		global $post;
+		if (isset($post->ID)) {
+			$error_accounts = get_post_meta($post->ID, '_social_broadcast_error', true);
+			if (!empty($error_accounts)) {
+				$message = Social_View::factory('wp-admin/post/broadcast/error/notice', array(
+					'social' => $this,
+					'accounts' => $error_accounts,
+					'post' => $post,
+				));
+				echo '<div class="error">'.$message.'</div>';
+
+				delete_post_meta($post->ID, '_social_broadcast_error');
+			}
+		}
+
 		// 1.1 Upgrade?
 		$upgrade_1_1 = get_user_meta(get_current_user_id(), 'social_1.1_upgrade', true);
 		if (!empty($upgrade_1_1)) {
@@ -508,11 +529,13 @@ final class Social {
 			));
 		}
 		else if (in_array($post->post_status, array('future', 'pending'))) {
+			$ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
 			$accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
 			$content = Social_View::factory('wp-admin/post/meta/broadcast/scheduled', array(
 				'post' => $post,
 				'services' => $this->services(),
-				'accounts' => $accounts
+				'accounts' => $accounts,
+				'ids' => $ids,
 			));
 		}
 		else if ($post->post_status == 'publish') {
@@ -721,6 +744,19 @@ final class Social {
 
 		return $link;
 	}
+
+    /**
+     * Sets the user role.
+     *
+     * @wp-action set_user_role
+     * @param  int     $user_id
+     * @param  string  $role
+     */
+    public function set_user_role($user_id, $role) {
+        if (!empty($role)) {
+            delete_user_meta($user_id, 'social_commenter');
+        }
+    }
 
 	/**
 	 * Show the disconnect link for social-based users.
@@ -1011,26 +1047,37 @@ final class Social {
 	 * @return array
 	 */
 	public function post_row_actions(array $actions, $post) {
-		$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Find Social Comments</a>', Social::$i18n), esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID) .
-			'<img src="'.esc_url(admin_url('images/loading.gif')).'" style="position:relative;top:4px;left:5px;display:none;" class="run_aggregation_loader" />' .
-			'<span></span>';
+		if ($post->post_status == 'publish') {
+			$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', Social::$i18n), esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID) .
+			'<img src="'.esc_url(admin_url('images/wpspin_light.gif')).'" class="social_run_aggregation_loader" />';
+		}
 		return $actions;
 	}
 
+	/**
+	 * @return
+	 */
 	public function admin_bar_menu() {
-		global $wp_admin_bar, $post;
+		global $wp_admin_bar;
+		
+		$current_object = get_queried_object();
 
-		if (!isset($post->ID)) {
+		if (empty($current_object)) {
 			return;
 		}
 
-		$running = '<span id="social_running_aggregation" class="pending-count"><img src="'.esc_url(admin_url('images/loading.gif')).'" style="" class="run_aggregation_loader" /></span>';
-		$wp_admin_bar->add_menu(array(
-			'parent' => 'comments',
-			'id' => 'social_find_comments',
-			'title' => sprintf(__('Find Social Comments %s', Social::$i18n), $running),
-			'href' => esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run'))
-		));
+		if (!empty($current_object->post_type)
+			and ($post_type_object = get_post_type_object($current_object->post_type))
+			and current_user_can($post_type_object->cap->edit_post, $current_object->ID)
+			and ($post_type_object->show_ui or 'attachment' == $current_object->post_type))
+		{
+			$wp_admin_bar->add_menu(array(
+				'parent' => 'comments',
+				'id' => 'social_find_comments',
+				'title' => __('Find Social Comments', Social::$i18n).'<img src="'.esc_url(admin_url('images/wpspin_dark.gif')).'" class="social-aggregation-spinner" style="display: none;" />',
+				'href' => esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run')),
+			));
+		}
 	}
 
 	/**
@@ -1240,6 +1287,7 @@ add_action('load-profile.php', array($social, 'enqueue_assets'));
 add_action('load-settings_page_social', array($social, 'enqueue_assets'));
 add_action('admin_enqueue_scripts', array($social, 'admin_enqueue_assets'));
 add_action('admin_bar_menu', array($social, 'admin_bar_menu'), 95);
+add_action('set_user_role', array($social, 'set_user_role'), 10, 2);
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));

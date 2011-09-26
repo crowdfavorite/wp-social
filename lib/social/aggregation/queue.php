@@ -79,6 +79,7 @@ final class Social_Aggregation_Queue {
 				else {
 					$next_run = $timestamp;
 					$interval = $key;
+					break;
 				}
 			}
 
@@ -115,6 +116,7 @@ final class Social_Aggregation_Queue {
 	 * @return Social_Aggregation_Queue
 	 */
 	public function remove($post_id, $timestamp = null) {
+		$unset = false;
 		if ($timestamp === null) {
 			$queue = array();
 			foreach ($this->_queue as $timestamp => $posts) {
@@ -126,12 +128,16 @@ final class Social_Aggregation_Queue {
 
 						$queue[$timestamp][$id] = $interval;
 					}
+					else {
+						$unset = true;
+					}
 				}
 			}
 			$this->_queue = $queue;
 		}
 		else {
 			if (isset($this->_queue[$timestamp]) and isset($this->_queue[$timestamp][$post_id])) {
+				$unset = true;
 				unset($this->_queue[$timestamp][$post_id]);
 
 				if (empty($this->_queue[$timestamp])) {
@@ -140,11 +146,14 @@ final class Social_Aggregation_Queue {
 			}
 		}
 
-		delete_post_meta($post_id, '_social_aggregation_next_run');
+		if ($unset) {
+			delete_post_meta($post_id, '_social_aggregation_next_run');
+			$this->save();
 
-		Social::log('Post #:post_id removed from the aggregation queue.', array(
-			'post_id' => $post_id
-		));
+			Social::log('Post #:post_id removed from the aggregation queue.', array(
+				'post_id' => $post_id
+			));
+		}
 
 		return $this;
 	}
