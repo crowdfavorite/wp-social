@@ -121,10 +121,14 @@ abstract class Social_Service {
 			if ($user === false) {
 				$id = wp_create_user($this->_key.'_'.$username, wp_generate_password(20, false), $this->_key.'.'.$username.'@example.com');
 
-				$role = 'subscriber';
+				$role = '';
 				if (get_option('users_can_register') == '1') {
 					$role = get_option('default_role');
 				}
+                else {
+                    // Set commenter flag
+                    update_user_meta($id, 'social_commenter', 'true');
+                }
 
 				$user = new WP_User($id);
 				$user->set_role($role);
@@ -134,9 +138,6 @@ abstract class Social_Service {
 			else {
 				$id = $user->ID;
 			}
-
-			// Set commenter flag
-			update_user_meta($id, 'social_commenter', 'true');
 
 			// Log the user in
 			wp_set_current_user($id);

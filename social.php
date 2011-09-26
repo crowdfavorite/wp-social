@@ -745,6 +745,19 @@ final class Social {
 		return $link;
 	}
 
+    /**
+     * Sets the user role.
+     *
+     * @wp-action set_user_role
+     * @param  int     $user_id
+     * @param  string  $role
+     */
+    public function set_user_role($user_id, $role) {
+        if (!empty($role)) {
+            delete_user_meta($user_id, 'social_commenter');
+        }
+    }
+
 	/**
 	 * Show the disconnect link for social-based users.
 	 *
@@ -1274,6 +1287,7 @@ add_action('load-profile.php', array($social, 'enqueue_assets'));
 add_action('load-settings_page_social', array($social, 'enqueue_assets'));
 add_action('admin_enqueue_scripts', array($social, 'admin_enqueue_assets'));
 add_action('admin_bar_menu', array($social, 'admin_bar_menu'), 95);
+add_action('set_user_role', array($social, 'set_user_role'), 10, 2);
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));
