@@ -1,5 +1,5 @@
 (function($) {
-	$(function(){
+	$(function () {
 		$('.social-collapsible').each(function () {
 			var $t = $(this);
 			$t.find('.social-title a').click(function (e) {
