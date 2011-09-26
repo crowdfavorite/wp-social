@@ -514,11 +514,13 @@ abstract class Social_Service {
 	 * @return bool
 	 */
 	protected function is_original_broadcast($post, $result_id) {
-		foreach ($post->broadcasted_ids[$this->_key] as $account_id => $broadcasted_ids) {
-			if (in_array($result_id, $broadcasted_ids)) {
-				return true;
-			}
-		}
+        if (isset($post->broadcasted_ids[$this->_key])) {
+            foreach ($post->broadcasted_ids[$this->_key] as $account_id => $broadcasted_ids) {
+                if (in_array($result_id, $broadcasted_ids)) {
+                    return true;
+                }
+            }
+        }
 		return false;
 	}
 

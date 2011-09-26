@@ -3,7 +3,7 @@
 	<p><?php _e('Want to add a tweet? Enter the URL of the tweet here and Social will add it as a comment.', Social::$i18n); ?></p>
 	
 	<p>
-		<input type="text" name="source_url" style="width:350px" />
+		<input type="text" id="social-source-url" name="source_url" style="width:350px" />
 		<span class="submit" style="float:none">
 			<a href="<?php echo esc_url(wp_nonce_url(admin_url('?social_controller=import&social_action=from_url&social_service=twitter&post_id='.$post->ID), 'from_url')); ?>" id="import_from_url" class="button"><?php _e('Import Tweet', Social::$i18n); ?></a>
 		</span>
