@@ -21,7 +21,7 @@ final class Social_Controller_Settings extends Social_Controller {
 				delete_option('social_log_write_error');
 			}
 
-			// Store the XML-RPC accounts
+			// Store the default accounts
 			if (is_array($this->request->post('social_default_accounts'))) {
 				$accounts = array();
 				foreach ($this->request->post('social_default_accounts') as $account) {
