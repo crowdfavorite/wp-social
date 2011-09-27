@@ -14,7 +14,7 @@
 <div class="social-meta-box-block cf-clearfix">
 	<h4>
 		<?php _e('Manual Refresh', Social::$i18n); ?>
-		<span>(<?php echo sprintf(__('Automatic aggregation scheduled for: %s', Social::$i18n), $next_run); ?>)</span>
+		<span>(<?php echo sprintf(__('Automatic aggregation scheduled for approximately: %s', Social::$i18n), $next_run); ?>)</span>
 	</h4>
 	<p><?php _e('Manually run the comment aggregation and Social will look for mentions of this post on Facebook and Twitter.', Social::$i18n); ?></p>
 
