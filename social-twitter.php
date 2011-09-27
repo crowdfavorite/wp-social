@@ -52,35 +52,37 @@ final class Social_Twitter {
 
         if (count($comment_ids)) {
             $results = $wpdb->get_results("
-                SELECT meta_value, comment_id
+                SELECT meta_key, meta_value, comment_id
                   FROM $wpdb->commentmeta
                  WHERE comment_id IN (".implode(',', $comment_ids).")
                    AND meta_key = 'social_in_reply_to_status_id'
+                    OR meta_key = 'social_status_id'
             ");
 
+			$_results = array();
             $in_reply_ids = array();
             foreach ($results as $result) {
-                if (!isset($in_reply_ids[$result->in_reply_to_id])) {
-                    $in_reply_ids[$result->in_reply_to_id] = array();
-                }
-                $in_reply_ids[$result->in_reply_to_id][] = $result->comment_id;
+				if ($result->meta_key == 'social_in_reply_to_status_id') {
+					if (!isset($in_reply_ids[$result->meta_value])) {
+						$in_reply_ids[$result->meta_value] = array();
+					}
+					$in_reply_ids[$result->meta_value][] = $result->comment_id;
+				}
+				else {
+					$_results[] = $result;
+				}
             }
 
-            $results = $wpdb->get_results("
-                SELECT meta_value, comment_id
-                  FROM $wpdb->commentmeta
-                 WHERE meta_key = 'social_status_id'
-                   AND comment_id IN (".implode(',', $comment_ids).")
-            ");
-
-            $parents = array();
-            foreach ($results as $result) {
-                if (isset($in_reply_ids[$result->meta_value])) {
-                    foreach ($in_reply_ids[$result->meta_value] AS $comment_id) {
-                        $parents[$comment_id] = $result->comment_id;
-                    }
-                }
-            }
+			if (count($_results)) {
+				$parents = array();
+				foreach ($_results as $result) {
+					if (isset($in_reply_ids[$result->meta_value])) {
+						foreach ($in_reply_ids[$result->meta_value] AS $comment_id) {
+							$parents[$comment_id] = $result->comment_id;
+						}
+					}
+				}
+			}
 
             $_comments = array();
             if (!empty($parents)) {
