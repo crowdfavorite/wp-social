@@ -1110,17 +1110,16 @@ final class Social {
 	}
 
 	/**
-	 * Removes an account from the XMLRPC accounts.
+	 * Removes an account from the default broadcast accounts.
 	 *
 	 * @param  string  $service
 	 * @param  int     $id
 	 * @return void
 	 */
-	public function remove_from_xmlrpc($service, $id) {
-		// Remove from the XML-RPC
-		$xmlrpc = Social::option('xmlrpc_accounts');
-		if (!empty($xmlrpc) and isset($xmlrpc[$service])) {
-			$ids = array_values($xmlrpc[$service]);
+	public function remove_from_default_accounts($service, $id) {
+		$defaults = Social::option('default_accounts');
+		if (!empty($defaults) and isset($defaults[$service])) {
+			$ids = array_values($defaults[$service]);
 			if (in_array($id, $ids)) {
 				$_ids = array();
 				foreach ($ids as $id) {
@@ -1128,8 +1127,8 @@ final class Social {
 						$_ids[] = $id;
 					}
 				}
-				$xmlrpc[$_GET['service']] = $_ids;
-				update_option('social_xmlrpc_accounts', $xmlrpc);
+				$defaults[$_GET['service']] = $_ids;
+				Social::option('default_accounts', $defaults);
 			}
 		}
 	}
