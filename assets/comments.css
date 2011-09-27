@@ -735,3 +735,6 @@ override submit styles in TwentyEleven theme */
 	position: absolute;
 	visibility: hidden;
 }
+.social-aggregation-results {
+	white-space: nowrap;
+}
