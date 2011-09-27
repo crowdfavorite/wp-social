@@ -122,7 +122,7 @@
 					function(response) {
 						remove_running_row_aggregation(rel);
 						$loader.hide();
-						$this.parent().append(response.html).show().find('a').;
+						$this.parent().append(' '+response.html).find('a').fadeIn();
 					},
 					'json'
 				);
