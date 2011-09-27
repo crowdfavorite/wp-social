@@ -78,6 +78,9 @@
 							$checked = true;
 						}
 					}
+					else {
+						$checked = true;
+					}
 			?>
 			<label class="social-broadcastable" for="<?php echo esc_attr($key.$account->id()); ?>" style="cursor:pointer">
 				<input type="checkbox" name="<?php echo esc_attr('social_'.$key.'_accounts[]'); ?>" id="<?php echo esc_attr($key.$account->id()); ?>" value="<?php echo esc_attr($account->id().($account->universal() ? '|true' : '')); ?>"<?php echo ($checked ? ' checked="checked"' : ''); ?> />
