@@ -29,6 +29,7 @@
 <input type="hidden" name="location" value="<?php echo $location; ?>" />
 <table class="form-table">
 <?php
+	$counters = array();
 	foreach ($services as $key => $service) {
 		if (isset($_POST['social_'.$key.'_content'])) {
 			$content = $_POST['social_'.$key.'_content'];
@@ -40,6 +41,7 @@
 			}
 		}
 		$counter = $service->max_broadcast_length();
+		$counters[$service->key()] = $counter;
 		if (!empty($content)) {
 			$counter = $counter - strlen($content);
 		}
@@ -62,7 +64,7 @@
 				foreach ($accounts as $account):
 					$checked = true;
 					if ((isset($_POST['social_action']) and $_POST['social_action'] == 'Update' and !isset($_POST['social_'.$key.'_accounts'])) or
-					    (isset($_POST['social_'.$key.'_accounts']) and !in_array($account->id().'|true', $_POST['social_'.$key.'_accounts'])) or
+					    (isset($_POST['social_'.$key.'_accounts']) and !in_array($account->id(), $_POST['social_'.$key.'_accounts'])) and !in_array($account->id().'|true', $_POST['social_'.$key.'_accounts']) or
 						(isset($_POST['social_action']) and !isset($_POST['social_'.$key.'_accounts'])))
 					{
 						$checked = false;
@@ -95,6 +97,15 @@
 	<a href="<?php echo esc_url(get_edit_post_link($post->ID, 'url')); ?>" class="button">Cancel</a>
 </p>
 </form>
+<script type="text/javascript">
+	<?php
+		$output = array();
+		foreach ($counters as $key => $max) {
+			$output[] = '"'.$key.'":'.$max;
+		}
+		echo 'var maxLength = {'.implode(',', $output).'};';
+	?>
+</script>
 <script type="text/javascript" src="<?php echo esc_url(includes_url('/js/jquery/jquery.js')); ?>"></script>
 <script type="text/javascript" src="<?php echo esc_url(SOCIAL_ADMIN_JS); ?>"></script>
 </body>
