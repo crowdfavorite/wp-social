@@ -350,7 +350,8 @@
 	margin: 0px 15px 5px 15px;
 }
 
-#run_aggregation {
+#run_aggregation,
+#import_from_url {
     color: #000;
 }
 
