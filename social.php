@@ -517,6 +517,10 @@ final class Social {
 		global $post;
 
 		$content = '';
+        $broadcasted_ids = array();
+        if (in_array($post->post_status, array('publish', 'pending'))) {
+            $broadcasted_ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
+        }
 		if (!in_array($post->post_status, array('publish', 'future', 'pending'))) {
 			$notify = false;
 			if (get_post_meta($post->ID, '_social_notify', true) == '1') {
@@ -528,7 +532,7 @@ final class Social {
 				'notify' => $notify,
 			));
 		}
-		else if (in_array($post->post_status, array('future', 'pending'))) {
+		else if ($post->post_status == 'future' or (empty($broadcasted_ids) and $post->post_status == 'pending')) {
 			$ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
 			$accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
 			$content = Social_View::factory('wp-admin/post/meta/broadcast/scheduled', array(
@@ -538,10 +542,10 @@ final class Social {
 				'ids' => $ids,
 			));
 		}
-		else if ($post->post_status == 'publish') {
-			$ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
+		else if (in_array($post->post_status, array('publish', 'pending'))) {
 			$content = Social_View::factory('wp-admin/post/meta/broadcast/published', array(
-				'ids' => $ids,
+                'post' => $post,
+				'ids' => $broadcasted_ids,
 				'services' => $this->services()
 			));
 		}
