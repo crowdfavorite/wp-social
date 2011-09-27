@@ -488,6 +488,22 @@ abstract class Social_Service {
 	/**
 	 * Loads all of the accounts to use for aggregation.
 	 *
+	 * Format of returned data:
+	 *
+	 *     $accounts = array(
+	 *         'twitter' => array(
+	 *             '1234567890' => Social_Service_Twitter_Account,
+	 *             '0987654321' => Social_Service_Twitter_Account,
+	 *             // ... Other connected accounts
+	 *         ),
+	 *         'facebook' => array(
+	 *             '1234567890' => Social_Service_Facebook_Account,
+	 *             '0987654321' => Social_Service_Facebook_Account,
+	 *             // ... Other connected accounts
+	 *         ),
+	 *         // ... Other registered services
+	 *     );
+	 *
 	 * @param  object  $post
 	 * @return array
 	 */

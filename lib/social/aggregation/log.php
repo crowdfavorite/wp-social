@@ -76,6 +76,26 @@ final class Social_Aggregation_Log {
 	/**
 	 * Adds an item to the log.
 	 *
+	 * Log format:
+	 *
+	 *     array(
+	 *         '1234567890' => (object) array( // current_time('timestamp')
+	 *             'manual' => false, // Can be "true" or "false"
+	 *             'items' => array(
+	 *                 'twitter' => array(
+	 *                     (object) array(
+	 *                         'id' => '1234567890', // Broadcasted ID
+	 *                         'type' => 'url', // url|reply|retweet or whatever you want to group this item by
+	 *                         'ignored' => false, // Can be "true" or "false"
+	 *                         'data' => array(), // Extra data you want to use when displaying this item in the View
+	 *                     ),
+	 *                     // ... More items
+	 *                 ),
+	 *                 // ... Other registered services in aggregation
+	 *             )
+	 *         )
+	 *     )
+	 *
 	 * @param  string  $service  service key (twitter, facebook, etc.)
 	 * @param  string  $id       object id
 	 * @param  string  $type     type of response (reply, retweet, url)

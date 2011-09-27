@@ -35,6 +35,16 @@ final class Social_Aggregation_Queue {
 	/**
 	 * Returns an array of queue items that can be run.
 	 *
+	 * Format of returned content:
+	 *
+	 *     $runnable = array(
+	 *         '1234567890' => array( // Timestamp
+	 *             '23' => '15min', // Post ID => Next run interval key
+	 *             // ... Other posts => next run interval key
+	 *         ),
+	 *         // ... Other timestamps
+	 *     );
+	 *
 	 * @return array
 	 */
 	public function runnable() {
@@ -51,6 +61,16 @@ final class Social_Aggregation_Queue {
 
 	/**
 	 * Adds a post to the queue based on interval, if it's not already set.
+	 *
+	 * Add item to the first next run interval:
+	 *
+	 *     Social_Queue::factory()->add(23);
+	 *
+	 * Add item *after* the 15min interval:
+	 *
+	 *     Social_Queue::factory()->add(23, '15min');
+	 *
+	 *     [!!] If you provide an invalid interval key, the item will not be added to the queue.
 	 *
 	 * @param  int     $post_id   post id
 	 * @param  string  $interval  schedule key

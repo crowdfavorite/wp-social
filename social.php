@@ -106,6 +106,10 @@ final class Social {
 	/**
 	 * Returns the broadcast format tokens.
 	 *
+	 * Format:
+	 *
+	 *     {key} => __('Description', Social::$i18n)
+	 *
 	 * @static
 	 * @return array
 	 */
@@ -123,6 +127,10 @@ final class Social {
 	/**
 	 * Returns the comment broadcast format tokens.
 	 *
+	 * Format:
+	 *
+	 *     {key} => __('Description', Social::$i18n)
+	 *
 	 * @static
 	 * @return mixed
 	 */
@@ -137,10 +145,21 @@ final class Social {
 	/**
 	 * Sets or gets an option based on the key defined.
 	 *
+	 * Get Format:
+	 *
+	 *     Running Social::option('option_name') will load "social_option_name" using get_option()
+	 *
+	 * Set Format:
+	 *
+	 *     Running Social::option('option_name', 'new_value') will update "social_option_name" to "new_value"
+	 *     using update_option().
+	 *
 	 * @static
 	 * @param  string  $key     option key
 	 * @param  mixed   $value   option value
 	 * @return bool|mixed
+	 * @uses get_option()
+	 * @uses update_option()
 	 */
 	public static function option($key, $value = null) {
 		if ($value === null) {
@@ -176,6 +195,14 @@ final class Social {
 	/**
 	 * Returns an array of all of the services.
 	 *
+	 * Format of the data returned:
+	 *
+	 *     $services = array(
+	 *         'twitter' => Social_Service_Twitter,
+	 *         'facebook' => Social_Service_Facebook,
+	 *         // ... any other services registered
+	 *     )
+	 *
 	 * @return array
 	 */
 	public function services() {
@@ -184,6 +211,10 @@ final class Social {
 
 	/**
 	 * Returns a service by access key.
+	 *
+	 * Loading a service:
+	 *
+	 *     $twitter = Social::instance()->service('twitter');
 	 * 
 	 * @param  string  $key    service key
 	 * @return Social_Service|Social_Service_Twitter|Social_Service_Facebook
@@ -977,6 +1008,21 @@ final class Social {
 	/**
 	 * Sets the comment aggregation ID.
 	 *
+	 * Format of the stored data (serialized):
+	 *
+	 *     array(
+	 *         'twitter' => array(
+	 *             1234567890,
+	 *             0987654321,
+	 *             // ... Other aggregated IDs
+	 *         ),
+	 *         'facebook' => array(
+	 *             1234567890_1234567890,
+	 *             0987654321_0987654321,
+	 *             // ... Other aggregated IDs
+	 *         )
+	 *     )
+	 *
 	 * @param  int     $comment_id
 	 * @param  string  $service
 	 * @param  int     $broadcasted_id
@@ -1059,7 +1105,9 @@ final class Social {
 	}
 
 	/**
-	 * @return
+	 * Adds the aggregation functionality to the admin bar.
+	 *
+	 * @return void
 	 */
 	public function admin_bar_menu() {
 		global $wp_admin_bar;
