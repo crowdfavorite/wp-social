@@ -33,12 +33,11 @@
 			}
 		});
 
-		$('#twitter_preview').bind("change keyup paste", function(){
-			counter($(this), $('#twitter_counter'), 140);
-		});
-
-		$('#facebook_preview').bind("change keyup paste", function(){
-			counter($(this), $('#facebook_counter'), 420);
+		$('textarea[id$="_preview"]').bind('change keyup paste', function(){
+			if (typeof maxLength != 'undefined') {
+				var id = $(this).attr('id').split('_');
+				counter($(this), $('#'+id[0]+'_counter'), maxLength[id[0]]);
+			}
 		});
 
 		/**
