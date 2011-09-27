@@ -209,11 +209,12 @@ function reloadSocialHTML(saved) {
                     e.preventDefault();
                 }
             }).removeClass('running-aggregation');
+            $comment_adminbar_item.removeClass('running-aggregation');
 
             $social_comments_adminbar_item.find('a').click(function(e) {
                 e.preventDefault();
-                if (!$social_aggregation.hasClass('running-aggregation')) {
-                    $social_aggregation.addClass('running-aggregation');
+                if (!$comment_adminbar_item.hasClass('running-aggregation')) {
+                    $comment_adminbar_item.addClass('running-aggregation');
 
                     // remove old results (slide left)
                     $('#wp-adminbar-comments-social').animate({ width: '0' }, function() {
@@ -250,8 +251,9 @@ function reloadSocialHTML(saved) {
 
                             // set params for next call
                             $social_aggregation
-                                .attr('href', response.link)
-                                .removeClass('running-aggregation');
+                                .attr('href', response.link);
+
+                            $comment_adminbar_item.removeClass('running-aggregation');
                         },
                         'json'
                     );
