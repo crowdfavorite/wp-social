@@ -122,6 +122,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			'errors' => $errors,
 			'services' => $services,
 			'post' => $post,
+			'default_accounts' => Social::option('default_accounts'),
 			'broadcasted_ids' => $broadcasted_ids,
 			'broadcast_accounts' => $broadcast_accounts,
 			'step_text' => $step_text,
