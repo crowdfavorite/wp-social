@@ -115,11 +115,14 @@
 				$loader.show();
 				$.get(
 					$this.attr('href'),
-					{ render:'false' },
+					{
+                        render:'false',
+                        hide_li:'true'
+                    },
 					function(response) {
 						remove_running_row_aggregation(rel);
 						$loader.hide();
-						$this.html(response.html).show();
+						$this.parent().append(response.html).show().find('a').;
 					},
 					'json'
 				);
