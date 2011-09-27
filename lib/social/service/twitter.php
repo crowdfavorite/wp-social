@@ -31,9 +31,10 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 * @param  Social_Service_Account  $account  account to broadcast to
 	 * @param  string  $message  message to broadcast
 	 * @param  array   $args  extra arguments to pass to the request
+	 * @param  int     $post_id  post ID being broadcasted
 	 * @return Social_Response
 	 */
-	public function broadcast($account, $message, array $args = array()) {
+	public function broadcast($account, $message, array $args = array(), $post_id = null) {
 		$args = $args + array(
 			'status' => $message
 		);

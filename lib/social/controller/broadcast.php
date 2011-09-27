@@ -197,7 +197,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 								'service' => $service->title(),
 							));
 							
-							$response = $service->broadcast($account, $message);
+							$response = $service->broadcast($account, $message, array(), $post->ID);
 							if ($response->limit_reached()) {
 								if (!isset($errored_accounts[$key])) {
 									$errored_accounts[$key] = array();
