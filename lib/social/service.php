@@ -86,7 +86,7 @@ abstract class Social_Service {
 			if (defined('IS_PROFILE_PAGE')) {
 				$personal = true;
 			}
-			$url = Social_Helper::settings_url($params, $personal);
+			$url = Social::settings_url($params, $personal);
 			$text = '<span title="'.__('Disconnect', Social::$i18n).'" class="social-disconnect social-ir">'.__('Disconnect', Social::$i18n).'</span>';
 		}
 		else {

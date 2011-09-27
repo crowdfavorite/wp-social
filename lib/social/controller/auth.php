@@ -104,7 +104,7 @@ final class Social_Controller_Auth extends Social_Controller {
 		$service->disconnect($id);
 
 		if (is_admin()) {
-			wp_redirect(Social_Helper::settings_url(array(), $personal));
+			wp_redirect(Social::settings_url(array(), $personal));
 		}
 		else {
 			wp_logout();

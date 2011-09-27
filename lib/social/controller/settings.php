@@ -52,7 +52,7 @@ final class Social_Controller_Settings extends Social_Controller {
 				}
 			}
 
-			wp_redirect(Social_Helper::settings_url(array('saved' => 'true')));
+			wp_redirect(Social::settings_url(array('saved' => 'true')));
 			exit;
 		}
 

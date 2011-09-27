@@ -379,7 +379,7 @@ final class Social {
 	public function admin_notices() {
 		if (current_user_can('manage_options') or current_user_can('publish_posts')) {
 			if (!$this->_enabled) {
-				$message = sprintf(__('Social will not run until you update your <a href="%s">settings</a>.', Social::$i18n), esc_url(Social_Helper::settings_url()));
+				$message = sprintf(__('Social will not run until you update your <a href="%s">settings</a>.', Social::$i18n), esc_url(Social::settings_url()));
 				echo '<div class="error"><p>'.$message.'</p></div>';
 			}
 
@@ -448,7 +448,7 @@ final class Social {
 		if (!empty($upgrade_1_1)) {
 			if (current_user_can('manage_options')) {
 				$output = 'Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your <a href="%s">global</a> and <a href="%s">personal</a> accounts.';
-				$output = sprintf($output, esc_url(Social_Helper::settings_url()), esc_url(admin_url('profile.php#social-networks')));
+				$output = sprintf($output, esc_url(Social::settings_url()), esc_url(admin_url('profile.php#social-networks')));
 			}
 			else {
 				$output = 'Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your <a href="%s">personal</a> accounts.';
@@ -1249,6 +1249,35 @@ final class Social {
 		}
 
 		return $services;
+	}
+
+	/**
+	 * Builds the settings URL for the plugin.
+	 *
+	 * @param  array  $params
+	 * @param  bool   $personal
+	 * @return string
+	 */
+	public static function settings_url(array $params = null, $personal = false) {
+		if (!current_user_can('manage_options') or $personal) {
+			$path = 'profile.php?';
+		}
+		else {
+			$path = 'options-general.php?page='.basename(SOCIAL_FILE).'&';
+		}
+
+		if ($params !== null) {
+			foreach ($params as $key => $value) {
+				$path .= $key.'='.urlencode($value).'&';
+			}
+		}
+
+		$path = rtrim($path, '&');
+		if (!current_user_can('manage_options')) {
+			$path .= '#social-networks';
+		}
+
+		return admin_url($path);
 	}
 
 } // End Social
