@@ -104,6 +104,34 @@
 					<p class="description"><?php printf(__('To enable Twitter\'s @anywhere hovercards for Twitter usernames, enter your application\'s Consumer API key here. (<a href="%1$s" target="_blank">Click here to get an API key</a>)', Social::$i18n), 'https://dev.twitter.com/docs/anywhere'); ?></p>
 				</td>
 			</tr>
+			<?php if ($have_accounts): ?>
+			<tr>
+				<th><?php _e('Default accounts to broadcast to', Social::$i18n); ?></th>
+				<td>
+					<ul id="social-default-accounts" class="social-broadcastables">
+						<?php
+							$accounts = Social::option('default_accounts');
+							foreach ($services as $key => $service) {
+								foreach ($service->accounts() as $account) {
+									if ($account->universal()) {
+						?>
+						<li>
+							<label class="social-broadcastable" for="<?php echo esc_attr($key.$account->id()); ?>" style="cursor:pointer">
+								<input type="checkbox" name="social_default_accounts[]" id="<?php echo esc_attr($key.$account->id()); ?>" value="<?php echo esc_attr($key.'|'.$account->id()); ?>"<?php echo ((isset($accounts[$key]) and in_array($account->id(), array_values($accounts[$key]))) ? ' checked="checked"' : ''); ?> />
+								<img src="<?php echo esc_attr($account->avatar()); ?>" width="24" height="24" />
+								<span><?php echo esc_html($account->name()); ?></span>
+							</label>
+						</li>
+						<?php
+									}
+								}
+							}
+						?>
+					</ul>
+					<p class="description"><?php _e('Select'.' accounts above to have them auto-broadcast a teaser whenever you publish a post via XML-RPC or email. This only affects posts published remotely; if you&rsquo;re publishing from the post edit screen, you can handle broadcasting settings from there.', Social::$i18n); ?></p>
+				</td>
+			</tr>
+			<?php endif ?>
 		</table>
 		<?php
 			$fetch = Social::option('fetch_comments');
@@ -113,34 +141,6 @@
 			<h3 class="social-title"><a href="#social-advanced"><?php _e('Advanced Options', Social::$i18n); ?></a></h3>
 			<div class="social-content">
 				<table id="social-advanced" class="form-table">
-					<?php if ($have_accounts): ?>
-					<tr>
-						<th><?php _e('When posting via XML-RPC or email, broadcast teasers to&hellip;', Social::$i18n); ?></th>
-						<td>
-							<ul id="social_xmlrpc" class="social-broadcastables">
-								<?php
-									$accounts = get_option('social_xmlrpc_accounts', array());
-									foreach ($services as $key => $service) {
-										foreach ($service->accounts() as $account) {
-											if ($account->universal()) {
-								?>
-								<li>
-									<label class="social-broadcastable" for="<?php echo esc_attr($key.$account->id()); ?>" style="cursor:pointer">
-										<input type="checkbox" name="social_xmlrpc_accounts[]" id="<?php echo esc_attr($key.$account->id()); ?>" value="<?php echo esc_attr($key.'|'.$account->id()); ?>"<?php echo ((isset($accounts[$key]) and in_array($account->id(), array_values($accounts[$key]))) ? ' checked="checked"' : ''); ?> />
-										<img src="<?php echo esc_attr($account->avatar()); ?>" width="24" height="24" />
-										<span><?php echo esc_html($account->name()); ?></span>
-									</label>
-								</li>
-								<?php
-											}
-										}
-									}
-								?>
-							</ul>
-							<p class="description"><?php _e('Select'.' accounts above to have them auto-broadcast a teaser whenever you publish a post via XML-RPC or email. This only affects posts published remotely; if you&rsquo;re publishing from the post edit screen, you can handle broadcasting settings from there.', Social::$i18n); ?></p>
-						</td>
-					</tr>
-					<?php endif ?>
 					<tr>
 						<th><?php _e('Fetch new comments&hellip;', Social::$i18n); ?></th>
 						<td>
