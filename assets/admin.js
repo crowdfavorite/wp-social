@@ -121,6 +121,7 @@
 					function(response) {
 						remove_running_row_aggregation(rel);
 						$loader.hide();
+						$this.parent().find('.social-aggregation-results').remove();
 						$this.parent().append(' '+response.html).find('a').fadeIn();
 					},
 					'json'
