@@ -62,23 +62,17 @@ final class Social_Controller_Auth extends Social_Controller {
 
 		Social::log('Authorizing with nonce :nonce.', array('nonce' => $nonce));
 
-		// Need to call stripslashes as Sopresto is adding slashes onto the payload.
-		$response = stripslashes($this->request->post('response'));
-		if (strpos($response, "\r") !== false) {
-			$user = str_replace(array("\r\n", "\r"), "\n", $response);
-		}
-		$response = json_decode($response);
-
+		$response = $this->request->post('response');
 		$account = (object) array(
-			'keys' => $response->keys,
-			'user' => $response->user
+			'keys' => $response['keys'],
+			'user' => $response['user'],
 		);
 		$account->user = $this->social->kses($account->user);
 
-		$class = 'Social_Service_'.$response->service.'_Account';
+		$class = 'Social_Service_'.$response['service'].'_Account';
 		$account = new $class($account);
 
-		$service = $this->social->service($response->service)->account($account);
+		$service = $this->social->service($response['service'])->account($account);
 		if (is_admin()) {
 			$user_id = get_current_user_id();
 
@@ -100,16 +94,16 @@ final class Social_Controller_Auth extends Social_Controller {
 
 			// Remove the service from the errors?
 			$deauthed = get_option('social_deauthed');
-			if (isset($deauthed[$response->service][$account->id()])) {
-				unset($deauthed[$response->service][$account->id()]);
+			if (isset($deauthed[$response['service']][$account->id()])) {
+				unset($deauthed[$response['service']][$account->id()]);
 				update_option('social_deauthed', $deauthed);
 
 				// Remove from the global broadcast content as well.
-				$this->social->remove_from_default_accounts($response->service, $account->id());
+				$this->social->remove_from_default_accounts($response['service'], $account->id());
 			}
 
 			// 1.1 Upgrade
-			if ($response->service == 'facebook') {
+			if ($response['service'] == 'facebook') {
 				delete_user_meta(get_current_user_id(), 'social_1.1_upgrade');
 			}
 
