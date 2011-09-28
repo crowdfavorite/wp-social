@@ -50,35 +50,15 @@ abstract class Social_Service {
 	public function authorize_url() {
 		global $post;
 
-		if (is_admin()) {
-			if (defined('IS_PROFILE_PAGE')) {
-				$id = get_current_user_id();
-				$url = admin_url('profile.php?social_controller=auth&social_action=authorized&user_id='.get_current_user_id().'#social-networks');
-			}
-			else {
-				$id = wp_create_nonce('social_authentication');
-				$url = admin_url('options-general.php?page=social.php&social_controller=auth&social_action=authorized');
-			}
-		}
-		else {
-			$id = $_COOKIE['social_auth_nonce'];
-			$url = site_url('?social_controller=auth&social_action=authorized&p='.$post->ID);
-		}
-
 		$proxy = Social::$api_url.$this->_key.'/authorize';
-		$params = array(
-			'v' => '2',
-			'response_url' => urlencode($url),
-			'id' => $id
-		);
-		$url = apply_filters('social_authorize_url', $proxy, $params, $this->_key);
+		$url = apply_filters('social_authorize_url', $proxy, $this->_key);
 
-		$url = '?social_controller=auth&social_action=authorize&target='.urlencode($url).'&params='.urlencode(serialize($params));
+		$url = '?social_controller=auth&social_action=authorize&target='.urlencode($url);
 		if (is_admin()) {
 			$url = admin_url($url);
 		}
 		else {
-			$url = site_url($url);
+			$url = site_url($url.'&post_id='.$post->ID);
 		}
 
 		return $url;

@@ -12,18 +12,36 @@ final class Social_Controller_Auth extends Social_Controller {
 	 */
 	public function action_authorize() {
 		if (!isset($_COOKIE['social_auth_nonce'])) {
-			$nonce = wp_create_nonce('social_authentication');
-			setcookie('social_auth_nonce', $nonce, 0, '/');
+
 		}
 
-		$url = urldecode($this->request->query('target')).'?';
-		$params = unserialize(stripslashes($this->request->query('params')));
+		$url = urldecode($this->request->query('target'));
+		if (strpos($url, Social::$api_url) !== false) {
+			if (is_admin()) {
+				if (defined('IS_PROFILE_PAGE')) {
+					$id = get_current_user_id();
+					$url = admin_url('profile.php?social_controller=auth&social_action=authorized&user_id='.get_current_user_id().'#social-networks');
+				}
+				else {
+					$id = wp_create_nonce('social_authentication');
+					$url = admin_url('options-general.php?page=social.php&social_controller=auth&social_action=authorized');
+				}
+			}
+			else {
+				$url = '?social_controller=auth&social_action=authorized';
+				$post_id = $this->request->query('post_id');
+				if ($post_id !== null) {
+					$url .= '&p='.$post_id;
+				}
+				$url = site_url($url);
 
-		$_params = array();
-		foreach ($params as $k => $v) {
-			$_params[] = $k.'='.$v;
+				$id = wp_create_nonce('social_authentication');
+				setcookie('social_auth_nonce', $id, 0, '/');
+			}
+
+			$url .= '?v=2&response_url='.urlencode($url).'&id='.$id;
 		}
-		$url .= implode('&', $_params);
+
 		wp_redirect($url);
 	}
 
