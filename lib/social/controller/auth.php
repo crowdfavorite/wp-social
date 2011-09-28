@@ -32,7 +32,13 @@ final class Social_Controller_Auth extends Social_Controller {
 				setcookie('social_auth_nonce', $id, 0, '/');
 			}
 
-			$proxy .= '?v=2&response_url='.urlencode($url).'&id='.$id;
+			if (strpos('?', $proxy) === false) {
+				$proxy .= '?';
+			}
+			else {
+				$proxy .= '&';
+			}
+			$proxy .= 'v=2&response_url='.urlencode($url).'&id='.$id;
 		}
 
 		wp_redirect($proxy);
