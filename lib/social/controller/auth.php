@@ -79,12 +79,13 @@ final class Social_Controller_Auth extends Social_Controller {
 		$account = new $class($account);
 
 		$service = $this->social->service($response['service'])->account($account);
-		$commenter = false;
+		$is_personal = false;
 		if (is_admin()) {
 			$user_id = get_current_user_id();
 
 			$personal = $this->request->query('personal');
 			if ($personal === 'true') {
+				$is_personal = true;
 				$account->personal(true);
 			}
 			else {
@@ -94,14 +95,14 @@ final class Social_Controller_Auth extends Social_Controller {
 		else {
 			$user_id = $service->create_user($account, $nonce);
 			$account->personal(true);
-			$commenter = true;
+			$is_personal = true;
 		}
 
 		if ($user_id !== false) {
 			Social::log('Saving account #:id.', array(
 				'id' => $account->id(),
 			));
-			$service->save($commenter);
+			$service->save($is_personal);
 
 			// Remove the service from the errors?
 			$deauthed = get_option('social_deauthed');
