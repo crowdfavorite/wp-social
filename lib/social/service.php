@@ -162,11 +162,12 @@ abstract class Social_Service {
 	/**
 	 * Saves the accounts on the service.
 	 *
+	 * @param  bool  $commenter  commenter account?
 	 * @return void
 	 */
-	public function save() {
+	public function save($commenter = false) {
 		$accounts = array();
-		if (!is_admin() or defined('IS_PROFILE_PAGE')) {
+		if ($commenter or defined('IS_PROFILE_PAGE')) {
 			foreach ($this->_accounts AS $account) {
 				if ($account->personal()) {
 					$accounts[$account->id()] = $account->as_array();
