@@ -225,11 +225,7 @@ final class Social {
 
 		// Set NONCE cookie.
 		if (!is_admin() and !is_user_logged_in()) {
-			if (!isset($_COOKIE['social_auth_nonce'])) {
-				$nonce = wp_create_nonce('social_authentication');
-				setcookie('social_auth_nonce', $nonce, 0, '/');
-			}
-			else if (wp_verify_nonce($_COOKIE['social_auth_nonce'], 'social_authentication')) {
+			if (isset($_COOKIE['social_auth_nonce']) and wp_verify_nonce($_COOKIE['social_auth_nonce'], 'social_authentication')) {
 				global $wpdb;
 
 				$user_id = $wpdb->get_var($wpdb->prepare("

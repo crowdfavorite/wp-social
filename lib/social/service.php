@@ -50,7 +50,6 @@ abstract class Social_Service {
 	public function authorize_url() {
 		global $post;
 
-		$id = '';
 		if (is_admin()) {
 			if (defined('IS_PROFILE_PAGE')) {
 				$id = get_current_user_id();
@@ -66,9 +65,23 @@ abstract class Social_Service {
 			$url = site_url('?social_controller=auth&social_action=authorized&p='.$post->ID);
 		}
 
-		$url = Social::$api_url.$this->_key.'/authorize?v=2&response_url='.urlencode($url).'&id='.$id;
-		Social::log('Authorize URL: '.$url);
-		return apply_filters('social_authorize_url', $url, $this->_key);
+		$proxy = Social::$api_url.$this->_key.'/authorize';
+		$params = array(
+			'v' => '2',
+			'response_url' => urlencode($url),
+			'id' => $id
+		);
+		$url = apply_filters('social_authorize_url', $proxy, $params, $this->_key);
+
+		$url = '?social_controller=auth&social_action=authorize&target='.urlencode($url).'&params='.urlencode(serialize($params));
+		if (is_admin()) {
+			$url = admin_url($url);
+		}
+		else {
+			$url = site_url($url);
+		}
+
+		return $url;
 	}
 
 	/**

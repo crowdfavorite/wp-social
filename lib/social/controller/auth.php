@@ -6,6 +6,28 @@
 final class Social_Controller_Auth extends Social_Controller {
 
 	/**
+	 * Sets the nonce cookie then redirects to Sopresto.
+	 *
+	 * @return void
+	 */
+	public function action_authorize() {
+		if (!isset($_COOKIE['social_auth_nonce'])) {
+			$nonce = wp_create_nonce('social_authentication');
+			setcookie('social_auth_nonce', $nonce, 0, '/');
+		}
+
+		$url = urldecode($this->request->query('target')).'?';
+		$params = unserialize(stripslashes($this->request->query('params')));
+
+		$_params = array();
+		foreach ($params as $k => $v) {
+			$_params[] = $k.'='.$v;
+		}
+		$url .= implode('&', $_params);
+		wp_redirect($url);
+	}
+
+	/**
 	 * Handles the authorized response.
 	 *
 	 * @return void
@@ -67,7 +89,7 @@ final class Social_Controller_Auth extends Social_Controller {
 				update_option('social_deauthed', $deauthed);
 
 				// Remove from the global broadcast content as well.
-				$this->social->remove_from_xmlrpc($data->service, $account->id());
+				$this->social->remove_from_default_accounts($data->service, $account->id());
 			}
 
 			// 1.1 Upgrade
@@ -104,7 +126,7 @@ final class Social_Controller_Auth extends Social_Controller {
 		}
 		else {
 			$service = $this->social->service($service_key);
-			$this->social->remove_from_xmlrpc($service_key, $id);
+			$this->social->remove_from_default_accounts($service_key, $id);
 		}
 		$service->disconnect($id);
 
