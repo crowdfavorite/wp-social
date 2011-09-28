@@ -96,6 +96,9 @@ final class Social_Controller_Auth extends Social_Controller {
 		}
 
 		if ($user_id !== false) {
+			Social::log('Saving account #:id.', array(
+				'id' => $account->id(),
+			));
 			$service->save($account);
 
 			// Remove the service from the errors?
