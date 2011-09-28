@@ -144,7 +144,7 @@ abstract class Social_Service {
 			// Set the nonce
 			if ($nonce !== null) {
 				update_user_meta($id, 'social_commenter', 'true');
-				update_user_meta($id, 'social_auth_nonce', $nonce);
+				update_user_meta($id, 'social_auth_nonce_'.$nonce, 'true');
 			}
 
 			return $id;

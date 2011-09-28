@@ -172,7 +172,8 @@ final class Social_Controller_Auth extends Social_Controller {
 			$user_id = $wpdb->get_var($wpdb->prepare("
 				SELECT user_id
 				  FROM $wpdb->usermeta
-				 WHERE meta_key = %s
+				 WHERE meta_key = 'social_auth_nonce'
+				   AND meta_value = %s
 			", 'social_auth_nonce_'.$_COOKIE['social_auth_nonce']));
 
 			if ($user_id !== null) {
