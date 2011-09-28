@@ -64,8 +64,8 @@ final class Social_Controller_Auth extends Social_Controller {
 
 		$response = $this->request->post('response');
 		$account = (object) array(
-			'keys' => $response['keys'],
-			'user' => $response['user'],
+			'keys' => (object) $response['keys'],
+			'user' => (object) $response['user'],
 		);
 		$account->user = $this->social->kses($account->user);
 
