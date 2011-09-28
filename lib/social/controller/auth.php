@@ -45,8 +45,8 @@ final class Social_Controller_Auth extends Social_Controller {
 	 */
 	public function action_authorized() {
 		$nonce = $this->request->post('id');
-		if (!wp_verify_nonce($nonce, 'social_authentication')) {
-			Social::log('Failed to verify activation nonce.');
+		if (!wp_verify_nonce($nonce)) {
+			Social::log('Failed to verify authentication nonce.');
 			echo json_encode(array(
 				'result' => 'error',
 				'message' => 'Invalid nonce',
