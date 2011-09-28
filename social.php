@@ -222,40 +222,6 @@ final class Social {
 			Social::option('install_date', current_time('timestamp', 1));
 			Social::option('system_cron_api_key', wp_generate_password(16, false));
 		}
-
-		// Set NONCE cookie.
-		if (!is_admin() and !is_user_logged_in()) {
-			if (isset($_COOKIE['social_auth_nonce']) and wp_verify_nonce($_COOKIE['social_auth_nonce'], 'social_authentication')) {
-				global $wpdb;
-
-				$user_id = $wpdb->get_var($wpdb->prepare("
-					SELECT user_id
-					  FROM $wpdb->usermeta
-					 WHERE meta_key = 'social_auth_nonce'
-					   AND meta_value = %s
-				", $_COOKIE['social_auth_nonce']));
-
-				if ($user_id != null) {
-					Social::log('Found user #:id using nonce :nonce.', array(
-						'id' => $user_id,
-						'nonce' => $_COOKIE['social_auth_nonce']
-					));
-
-					// Log the user in
-					wp_set_current_user($user_id);
-					add_filter('auth_cookie_expiration', array($this, 'auth_cookie_expiration'));
-					wp_set_auth_cookie($user_id, true);
-					remove_filter('auth_cookie_expiration', array($this, 'auth_cookie_expiration'));
-
-					setcookie('social_auth_nonce', '', -3600, '/');
-				}
-				else {
-					Social::log('Failed to find the user using nonce :nonce.', array(
-						'nonce' => $_COOKIE['social_auth_nonce']
-					));
-				}
-			}
-		}
 		
 		// Trigger upgrade?
 		$this->upgrade(Social::option('installed_version'));
