@@ -143,6 +143,7 @@ abstract class Social_Service {
 
 			// Set the nonce
 			if ($nonce !== null) {
+				wp_set_current_user($id);
 				update_user_meta($id, 'social_commenter', 'true');
 				update_user_meta($id, 'social_auth_nonce_'.$nonce, 'true');
 			}
