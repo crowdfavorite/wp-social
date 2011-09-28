@@ -15,8 +15,8 @@ final class Social_Controller_Auth extends Social_Controller {
 
 		}
 
-		$url = urldecode($this->request->query('target'));
-		if (strpos($url, Social::$api_url) !== false) {
+		$proxy = urldecode($this->request->query('target'));
+		if (strpos($proxy, Social::$api_url) !== false) {
 			if (is_admin()) {
 				if (defined('IS_PROFILE_PAGE')) {
 					$id = get_current_user_id();
@@ -39,10 +39,10 @@ final class Social_Controller_Auth extends Social_Controller {
 				setcookie('social_auth_nonce', $id, 0, '/');
 			}
 
-			$url .= '?v=2&response_url='.urlencode($url).'&id='.$id;
+			$proxy .= '?v=2&response_url='.urlencode($url).'&id='.$id;
 		}
 
-		wp_redirect($url);
+		wp_redirect($proxy);
 	}
 
 	/**
