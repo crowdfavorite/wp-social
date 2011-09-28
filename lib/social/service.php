@@ -94,7 +94,7 @@ abstract class Social_Service {
 			if (defined('IS_PROFILE_PAGE')) {
 				$personal = true;
 			}
-			$url = Social_Helper::settings_url($params, $personal);
+			$url = Social::settings_url($params, $personal);
 			$text = '<span title="'.__('Disconnect', Social::$i18n).'" class="social-disconnect social-ir">'.__('Disconnect', Social::$i18n).'</span>';
 		}
 		else {
@@ -130,10 +130,14 @@ abstract class Social_Service {
 			if ($user === false) {
 				$id = wp_create_user($this->_key.'_'.$username, wp_generate_password(20, false), $this->_key.'.'.$username.'@example.com');
 
-				$role = 'subscriber';
+				$role = '';
 				if (get_option('users_can_register') == '1') {
 					$role = get_option('default_role');
 				}
+                else {
+                    // Set commenter flag
+                    update_user_meta($id, 'social_commenter', 'true');
+                }
 
 				$user = new WP_User($id);
 				$user->set_role($role);
@@ -315,7 +319,8 @@ abstract class Social_Service {
 				break;
 				case '{content}':
 					$content = strip_tags($post->post_content);
-					$content = str_replace(array("\n", "\r", PHP_EOL), '', $content);
+                    $content = preg_replace('/\s+/', ' ', $content);
+					$content = str_replace(array("\n", "\r", PHP_EOL), ' ', $content);
 					$content = str_replace('&nbsp;', ' ', $content);
 				break;
 				case '{author}':
@@ -518,11 +523,13 @@ abstract class Social_Service {
 	 * @return bool
 	 */
 	protected function is_original_broadcast($post, $result_id) {
-		foreach ($post->broadcasted_ids[$this->_key] as $account_id => $broadcasted_ids) {
-			if (in_array($result_id, $broadcasted_ids)) {
-				return true;
-			}
-		}
+        if (isset($post->broadcasted_ids[$this->_key])) {
+            foreach ($post->broadcasted_ids[$this->_key] as $account_id => $broadcasted_ids) {
+                if (in_array($result_id, $broadcasted_ids)) {
+                    return true;
+                }
+            }
+        }
 		return false;
 	}
 

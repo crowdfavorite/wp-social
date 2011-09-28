@@ -98,7 +98,7 @@ final class Social_Aggregation_Queue {
 				update_post_meta($post_id, '_social_aggregation_next_run', $next_run);
 			}
 
-			Social::log('Post #:post_id added to the aggregation queue. (Interval: :interval, Next run: :next_run)', array(
+			Social::log('Post #:post_id added to the aggregation queue. (Interval: :interval, Next run (approximately): :next_run)', array(
 				'post_id' => $post_id,
 				'interval' => $interval,
 				'next_run' => date(get_option('date_format').' '.get_option('time_format'), ($next_run + (get_option('gmt_offset') * 3600))),

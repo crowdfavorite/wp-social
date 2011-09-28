@@ -85,10 +85,10 @@ final class Social_Response {
 		    $this->_service->deauthorized($body->response))
 		{
 			if ($this->_account->personal()) {
-				$url = Social_Helper::settings_url(array(), true);
+				$url = Social::settings_url(array(), true);
 			}
 			else {
-				$url = Social_Helper::settings_url();
+				$url = Social::settings_url();
 			}
 
 			$deauthorized = get_option('social_deauthorized', array());

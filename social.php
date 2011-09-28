@@ -418,7 +418,7 @@ final class Social {
 	public function admin_notices() {
 		if (current_user_can('manage_options') or current_user_can('publish_posts')) {
 			if (!$this->_enabled) {
-				$message = sprintf(__('Social will not run until you update your <a href="%s">settings</a>.', Social::$i18n), esc_url(Social_Helper::settings_url()));
+				$message = sprintf(__('Social will not run until you update your <a href="%s">settings</a>.', Social::$i18n), esc_url(Social::settings_url()));
 				echo '<div class="error"><p>'.$message.'</p></div>';
 			}
 
@@ -487,7 +487,7 @@ final class Social {
 		if (!empty($upgrade_1_1)) {
 			if (current_user_can('manage_options')) {
 				$output = 'Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your <a href="%s">global</a> and <a href="%s">personal</a> accounts.';
-				$output = sprintf($output, esc_url(Social_Helper::settings_url()), esc_url(admin_url('profile.php#social-networks')));
+				$output = sprintf($output, esc_url(Social::settings_url()), esc_url(admin_url('profile.php#social-networks')));
 			}
 			else {
 				$output = 'Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your <a href="%s">personal</a> accounts.';
@@ -556,6 +556,10 @@ final class Social {
 		global $post;
 
 		$content = '';
+        $broadcasted_ids = array();
+        if (in_array($post->post_status, array('publish', 'pending'))) {
+            $broadcasted_ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
+        }
 		if (!in_array($post->post_status, array('publish', 'future', 'pending'))) {
 			$notify = false;
 			if (get_post_meta($post->ID, '_social_notify', true) == '1') {
@@ -567,7 +571,7 @@ final class Social {
 				'notify' => $notify,
 			));
 		}
-		else if (in_array($post->post_status, array('future', 'pending'))) {
+		else if ($post->post_status == 'future' or (empty($broadcasted_ids) and $post->post_status == 'pending')) {
 			$ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
 			$accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
 			$content = Social_View::factory('wp-admin/post/meta/broadcast/scheduled', array(
@@ -577,10 +581,10 @@ final class Social {
 				'ids' => $ids,
 			));
 		}
-		else if ($post->post_status == 'publish') {
-			$ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
+		else if (in_array($post->post_status, array('publish', 'pending'))) {
 			$content = Social_View::factory('wp-admin/post/meta/broadcast/published', array(
-				'ids' => $ids,
+                'post' => $post,
+				'ids' => $broadcasted_ids,
 				'services' => $this->services()
 			));
 		}
@@ -783,6 +787,19 @@ final class Social {
 
 		return $link;
 	}
+
+    /**
+     * Sets the user role.
+     *
+     * @wp-action set_user_role
+     * @param  int     $user_id
+     * @param  string  $role
+     */
+    public function set_user_role($user_id, $role) {
+        if (!empty($role)) {
+            delete_user_meta($user_id, 'social_commenter');
+        }
+    }
 
 	/**
 	 * Show the disconnect link for social-based users.
@@ -1073,9 +1090,10 @@ final class Social {
 	 * @return array
 	 */
 	public function post_row_actions(array $actions, $post) {
-		$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Find Social Comments</a>', Social::$i18n), esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID) .
-			'<img src="'.esc_url(admin_url('images/loading.gif')).'" style="position:relative;top:4px;left:5px;display:none;" class="run_aggregation_loader" />' .
-			'<span></span>';
+		if ($post->post_status == 'publish') {
+			$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', Social::$i18n), esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID) .
+			'<img src="'.esc_url(admin_url('images/wpspin_light.gif')).'" class="social_run_aggregation_loader" />';
+		}
 		return $actions;
 	}
 
@@ -1096,14 +1114,11 @@ final class Social {
 			and current_user_can($post_type_object->cap->edit_post, $current_object->ID)
 			and ($post_type_object->show_ui or 'attachment' == $current_object->post_type))
 		{
-			$running = '<a href="#" id="social_aggregation"><span>'.__('&laquo; Finding Social Comments')
-			         . ' <img src="'.esc_url(admin_url('images/wpspin_dark.gif')).'" /></span></a>';
-
 			$wp_admin_bar->add_menu(array(
 				'parent' => 'comments',
 				'id' => 'social_find_comments',
-				'title' => sprintf(__('Find Social Comments %s', Social::$i18n), $running),
-				'href' => esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run'))
+				'title' => __('Find Social Comments', Social::$i18n).'<img src="'.esc_url(admin_url('images/wpspin_dark.gif')).'" class="social-aggregation-spinner" style="display: none;" />',
+				'href' => esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run')),
 			));
 		}
 	}
@@ -1134,17 +1149,16 @@ final class Social {
 	}
 
 	/**
-	 * Removes an account from the XMLRPC accounts.
+	 * Removes an account from the default broadcast accounts.
 	 *
 	 * @param  string  $service
 	 * @param  int     $id
 	 * @return void
 	 */
-	public function remove_from_xmlrpc($service, $id) {
-		// Remove from the XML-RPC
-		$xmlrpc = Social::option('xmlrpc_accounts');
-		if (!empty($xmlrpc) and isset($xmlrpc[$service])) {
-			$ids = array_values($xmlrpc[$service]);
+	public function remove_from_default_accounts($service, $id) {
+		$defaults = Social::option('default_accounts');
+		if (!empty($defaults) and isset($defaults[$service])) {
+			$ids = array_values($defaults[$service]);
 			if (in_array($id, $ids)) {
 				$_ids = array();
 				foreach ($ids as $id) {
@@ -1152,8 +1166,8 @@ final class Social {
 						$_ids[] = $id;
 					}
 				}
-				$xmlrpc[$_GET['service']] = $_ids;
-				update_option('social_xmlrpc_accounts', $xmlrpc);
+				$defaults[$_GET['service']] = $_ids;
+				Social::option('default_accounts', $defaults);
 			}
 		}
 	}
@@ -1275,6 +1289,35 @@ final class Social {
 		return $services;
 	}
 
+	/**
+	 * Builds the settings URL for the plugin.
+	 *
+	 * @param  array  $params
+	 * @param  bool   $personal
+	 * @return string
+	 */
+	public static function settings_url(array $params = null, $personal = false) {
+		if (!current_user_can('manage_options') or $personal) {
+			$path = 'profile.php?';
+		}
+		else {
+			$path = 'options-general.php?page='.basename(SOCIAL_FILE).'&';
+		}
+
+		if ($params !== null) {
+			foreach ($params as $key => $value) {
+				$path .= $key.'='.urlencode($value).'&';
+			}
+		}
+
+		$path = rtrim($path, '&');
+		if (!current_user_can('manage_options')) {
+			$path .= '#social-networks';
+		}
+
+		return admin_url($path);
+	}
+
 } // End Social
 
 $social_file = __FILE__;
@@ -1315,6 +1358,7 @@ add_action('load-profile.php', array($social, 'enqueue_assets'));
 add_action('load-settings_page_social', array($social, 'enqueue_assets'));
 add_action('admin_enqueue_scripts', array($social, 'admin_enqueue_assets'));
 add_action('admin_bar_menu', array($social, 'admin_bar_menu'), 95);
+add_action('set_user_role', array($social, 'set_user_role'), 10, 2);
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));

@@ -29,6 +29,7 @@
 <input type="hidden" name="location" value="<?php echo $location; ?>" />
 <table class="form-table">
 <?php
+	$counters = array();
 	foreach ($services as $key => $service) {
 		if (isset($_POST['social_'.$key.'_content'])) {
 			$content = $_POST['social_'.$key.'_content'];
@@ -40,6 +41,7 @@
 			}
 		}
 		$counter = $service->max_broadcast_length();
+		$counters[$service->key()] = $counter;
 		if (!empty($content)) {
 			$counter = $counter - strlen($content);
 		}
@@ -60,21 +62,24 @@
 			<strong><?php echo $heading; ?></strong><br/>
 			<?php
 				foreach ($accounts as $account):
-					$checked = true;
-					if ((isset($_POST['social_action']) and $_POST['social_action'] == 'Update' and !isset($_POST['social_'.$key.'_accounts'])) or
-					    (isset($_POST['social_'.$key.'_accounts']) and !in_array($account->id().'|true', $_POST['social_'.$key.'_accounts'])) or
-						(isset($_POST['social_action']) and !isset($_POST['social_'.$key.'_accounts'])))
-					{
-						$checked = false;
-
+					$checked = false;
+					if (isset($_POST['social_'.$key.'_accounts'])) {
+						if (in_array($account->id(), $_POST['social_'.$key.'_accounts']) or in_array($account->id().'|true', $_POST['social_'.$key.'_accounts'])) {
+							$checked = true;
+						}
+					}
+					else if (empty($broadcasted_ids) and !empty($default_accounts)) {
+						if (isset($default_accounts[$key]) and in_array($account->id(), $default_accounts[$key])) {
+							$checked = true;
+						}
 					}
 					else if (count($broadcasted_ids)) {
-						if (isset($broadcasted_ids[$key]) and isset($broadcasted_ids[$key][$account->id()])) {
-							$checked = false;
+						if (!isset($_POST['social_action']) and (!isset($broadcasted_ids[$key]) or !isset($broadcasted_ids[$key][$account->id()]))) {
+							$checked = true;
 						}
-						else if ($post->post_status != 'publish' and (!count($broadcast_accounts) or (isset($broadcast_accounts[$key]) and isset($broadcast_accounts[$key][$account->id()])))) {
-							$checked = false;
-						}
+					}
+					else {
+						$checked = true;
 					}
 			?>
 			<label class="social-broadcastable" for="<?php echo esc_attr($key.$account->id()); ?>" style="cursor:pointer">
@@ -95,6 +100,15 @@
 	<a href="<?php echo esc_url(get_edit_post_link($post->ID, 'url')); ?>" class="button">Cancel</a>
 </p>
 </form>
+<script type="text/javascript">
+	<?php
+		$output = array();
+		foreach ($counters as $key => $max) {
+			$output[] = '"'.$key.'":'.$max;
+		}
+		echo 'var maxLength = {'.implode(',', $output).'};';
+	?>
+</script>
 <script type="text/javascript" src="<?php echo esc_url(includes_url('/js/jquery/jquery.js')); ?>"></script>
 <script type="text/javascript" src="<?php echo esc_url(SOCIAL_ADMIN_JS); ?>"></script>
 </body>

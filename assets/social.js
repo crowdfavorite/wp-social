@@ -194,44 +194,79 @@
 			$('#post_accounts').trigger('change');
 		}
 
-		/**
-		 * Manual Aggregation
-		 */
-		if ($('#wp-admin-bar-social_find_comments').length) {
-			$('#wp-admin-bar-comments').after('<li id="wp-admin-bar-social-aggregation" style="display:none"></li>');
-			var $social_aggregation = $('#social_aggregation');
-			$social_aggregation.click(function(e){
-				if ($(this).attr('href') == '#') {
-					e.preventDefault();
-				}
-			});
+        /**
+         * Manual Aggregation
+         */
+        var $social_comments_adminbar_item = $('#wp-admin-bar-social_find_comments');
+        if ($social_comments_adminbar_item.size()) {
+            var $social_spinner = $social_comments_adminbar_item.find('img.social-aggregation-spinner');
+            var $social_aggregation = $('#social_aggregation');
+            var $comment_adminbar_item = $('#wp-admin-bar-comments');
+            var $comment_adminbar_item_label = $comment_adminbar_item.find('> a:first > span');
+            $social_aggregation.click(function(e) {
+                if ($(this).attr('href') == '#') {
+                    e.preventDefault();
+                }
+            }).removeClass('running-aggregation');
+            $comment_adminbar_item.removeClass('running-aggregation');
 
-			var $social_aggregation_container = $('#wp-admin-bar-social-aggregation');
-			$social_aggregation_container.append($social_aggregation);
+            $social_comments_adminbar_item.find('a').click(function(e) {
+                e.preventDefault();
+                if (!$comment_adminbar_item.hasClass('running-aggregation')) {
+                    $comment_adminbar_item.addClass('running-aggregation');
 
-			var running_aggregation = false;
-			var original_html = $social_aggregation.html();
-			$('#wp-admin-bar-social_find_comments a').click(function(e){
-				e.preventDefault();
-				if (!running_aggregation) {
-					running_aggregation = true;
-					$social_aggregation_container.fadeIn();
-					$social_aggregation.html(original_html).show();
-					$.get($(this).attr('href'), {render:'false'}, function(response){
-						$social_aggregation.html('&laquo; '+response.alt_text+' <span id="ab-social-updates" class="pending-count">'+response.total+'</span>').attr('href', response.link);
-						running_aggregation = false;
-					}, 'json');
-				}
-			});
-		}
+                    // remove old results (slide left)
+                    $('#wp-adminbar-comments-social').animate({ width: '0' }, function() {
+                        $(this).remove();
+                    });
 
-		/**
-		 * Twitter @Anywhere
-		 */
-		if (window.twttr !== undefined) {
-			twttr.anywhere(function(T){
-				T.hovercards();
-			});
-		}
+                    // show spinner
+                    $comment_adminbar_item_label.find('#ab-awaiting-mod').hide().end()
+                        .append($social_spinner);
+                    $social_spinner.show();
+
+                    // make AJAX call
+                    $.get(
+                        $(this).attr('href'),
+                        { render: 'false' },
+                        function(response) {
+                            // hide spinner
+                            $social_spinner.hide();
+                            $social_comments_adminbar_item.append($social_spinner);
+
+                            // update count, show count
+                            $comment_adminbar_item_label.find('#ab-awaiting-mod')
+                                .html(response.total).show();
+
+                            // show results (slide right)
+                            $comment_adminbar_item.addClass('social-comments-found').after(response.html);
+                            var $social_comments_found = $('#wp-adminbar-comments-social');
+                            var found_width = $social_comments_found.width();
+                            $social_comments_found.css({
+                                position: 'relative',
+                                visibility: 'visible',
+                                width: 0
+                            }).animate({ width: found_width + 'px' });
+
+                            // set params for next call
+                            $social_aggregation
+                                .attr('href', response.link);
+
+                            $comment_adminbar_item.removeClass('running-aggregation');
+                        },
+                        'json'
+                    );
+                }
+            });
+        }
+
+        /**
+         * Twitter @Anywhere
+         */
+        if (typeof twttr != 'undefined') {
+            twttr.anywhere(function(T){
+                T.hovercards();
+            });
+        }
 	});
 })(jQuery);

@@ -1,5 +1,5 @@
 (function($) {
-	$(function(){
+	$(function () {
 		$('.social-collapsible').each(function () {
 			var $t = $(this);
 			$t.find('.social-title a').click(function (e) {
@@ -33,12 +33,11 @@
 			}
 		});
 
-		$('#twitter_preview').bind("change keyup paste", function(){
-			counter($(this), $('#twitter_counter'), 140);
-		});
-
-		$('#facebook_preview').bind("change keyup paste", function(){
-			counter($(this), $('#facebook_counter'), 420);
+		$('textarea[id$="_preview"]').bind('change keyup paste', function(){
+			if (typeof maxLength != 'undefined') {
+				var id = $(this).attr('id').split('_');
+				counter($(this), $('#'+id[0]+'_counter'), maxLength[id[0]]);
+			}
 		});
 
 		/**
@@ -68,6 +67,13 @@
 				});
 			}
 		});
+
+        $('#social-source-url').keydown(function(e){
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                $('#import_from_url').trigger('click');
+            }
+        });
 
 		/**
 		 * Manual Aggregation
@@ -103,17 +109,23 @@
 			var rel = $(this).attr('rel');
 			if (!in_running_row_aggregation(rel)) {
 				var $this = $(this);
-				var $loader = $this.parent().find('.run_aggregation_loader');
-				$this.attr('disabled', 'disable');
+				var $loader = $this.parent().find('.social_run_aggregation_loader');
+				$this.hide().closest('.row-actions').addClass('social_run_aggregation');
 				$loader.show();
-
-				$.get($this.attr('href'), {render:'false'}, function(response){
-					remove_running_row_aggregation(rel);
-					$loader.hide();
-					$this.removeAttr('disabled');
-					var link = '<a href="'+response.link+'">'+response.text+'</a>';
-					$this.parent().find('span').hide().html(' - '+link).show();
-				}, 'json');
+				$.get(
+					$this.attr('href'),
+					{
+                        render:'false',
+                        hide_li:'true'
+                    },
+					function(response) {
+						remove_running_row_aggregation(rel);
+						$loader.hide();
+						$this.parent().find('.social-aggregation-results').remove();
+						$this.parent().append(' '+response.html).find('a').fadeIn();
+					},
+					'json'
+				);
 			}
 		});
 

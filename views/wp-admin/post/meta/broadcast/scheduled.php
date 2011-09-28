@@ -1,9 +1,23 @@
 <?php
 	if (empty($accounts)) {
-		echo '<p class="mar-top-none">'.__('This post is scheduled to be published at a later date. However, it is not scheduled to be broadcasted to any of your social accounts.', Social::$i18n).'</p>';
+        echo '<p class=="mar-top-none">';
+        if ($post->post_status == 'pending') {
+            _e('This post will not be broadcasted to any of your social accounts.', Social::$i18n);
+        }
+        else {
+		    echo _e('This post is scheduled to be published at a later date. However, it is not scheduled to be broadcasted to any of your social accounts.', Social::$i18n);
+        }
+        echo '</p>';
 	}
 	else {
-		echo '<p class="mar-top-none">'.__('This post is scheduled to be broadcasted to the following accounts.', Social::$i18n).'</p>';
+		echo '<p class="mar-top-none">';
+        if ($post->post_status == 'pending') {
+            _e('This post will be broadcasted to the following accounts.', Social::$i18n);
+        }
+        else {
+            _e('This post is scheduled to be broadcasted to the following accounts.', Social::$i18n);
+        }
+        echo '</p>';
 		foreach ($accounts as $service => $_accounts) {
 			if (isset($services[$service])) {
 				$service = $services[$service];

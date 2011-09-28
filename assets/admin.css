@@ -406,6 +406,22 @@
 	margin: 0px 15px 5px 15px;
 }
 
+#run_aggregation,
+#import_from_url {
+    color: #000;
+}
+
+.row-actions.social_run_aggregation {
+	visibility: visible;
+}
+.social_run_aggregation_loader {
+	display: none;
+	vertical-align: middle;
+}
+.social-aggregation-results.social-comments-found {
+	font-weight: bold;
+}
+
 .cf-clearfix {
 	display: block;
 	zoom: 1;
