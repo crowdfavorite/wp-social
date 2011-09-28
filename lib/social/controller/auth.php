@@ -17,9 +17,9 @@ final class Social_Controller_Auth extends Social_Controller {
 			$url = '?social_controller=auth&social_action=authorized';
 			if (is_admin()) {
 				if (defined('IS_PROFILE_PAGE')) {
-					$url .= '&user_id='.get_current_user_id();
+					$url .= '&personal=true';
 				}
-				$url = admin_url($url);
+				$url = admin_url($url.'&user_id='.get_current_user_id());
 			}
 			else {
 				$post_id = $this->request->query('post_id');
@@ -44,6 +44,12 @@ final class Social_Controller_Auth extends Social_Controller {
 	 * @return void
 	 */
 	public function action_authorized() {
+		// User ID on the request?
+		$user_id = $this->request->query('user_id');
+		if ($user_id !== null) {
+			wp_set_current_user($user_id);
+		}
+
 		$nonce = $this->request->post('id');
 		if (wp_verify_nonce($nonce, 'social_authentication') === false) {
 			Social::log('Failed to verify authentication nonce.');
