@@ -147,9 +147,15 @@ abstract class Social_Service {
 				update_user_meta($id, 'social_auth_nonce_'.$nonce, 'true');
 			}
 
+			Social::log('Created/found user #:id.', array(
+				'id' => $id,
+			));
 			return $id;
 		}
 
+		Social::log('Failed to create/find user with username of :username.', array(
+			'username' => $username,
+		));
 		return false;
 	}
 
