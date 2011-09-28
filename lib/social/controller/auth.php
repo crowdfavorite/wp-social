@@ -11,31 +11,24 @@ final class Social_Controller_Auth extends Social_Controller {
 	 * @return void
 	 */
 	public function action_authorize() {
-		if (!isset($_COOKIE['social_auth_nonce'])) {
-
-		}
-
 		$proxy = urldecode($this->request->query('target'));
 		if (strpos($proxy, Social::$api_url) !== false) {
+			$id = wp_create_nonce('social_authentication');
+			$url = '?social_controller=auth&social_action=authorized';
 			if (is_admin()) {
 				if (defined('IS_PROFILE_PAGE')) {
-					$id = get_current_user_id();
-					$url = admin_url('profile.php?social_controller=auth&social_action=authorized&user_id='.get_current_user_id().'#social-networks');
+					$url .= '&user_id='.get_current_user_id();
 				}
-				else {
-					$id = wp_create_nonce('social_authentication');
-					$url = admin_url('options-general.php?page=social.php&social_controller=auth&social_action=authorized');
-				}
+				$url = admin_url($url);
 			}
 			else {
-				$url = '?social_controller=auth&social_action=authorized';
 				$post_id = $this->request->query('post_id');
 				if ($post_id !== null) {
 					$url .= '&p='.$post_id;
 				}
 				$url = site_url($url);
 
-				$id = wp_create_nonce('social_authentication');
+				// Set the nonce cookie
 				setcookie('social_auth_nonce', $id, 0, '/');
 			}
 
