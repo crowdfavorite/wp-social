@@ -166,31 +166,43 @@ final class Social_Controller_Auth extends Social_Controller {
 			exit;
 		}
 
-		// Find the user by NONCE.
-		global $wpdb;
-		$user_id = $wpdb->get_var($wpdb->prepare("
-			SELECT user_id
-			  FROM $wpdb->usermeta
-			 WHERE meta_key = %s
-		", 'social_auth_nonce_'.$_COOKIE['social_auth_nonce']));
+		if (isset($_COOKIE['social_auth_nonce']) and wp_verify_nonce($_COOKIE['social_auth_nonce'], 'social_authentication')) {
+			// Find the user by NONCE.
+			global $wpdb;
+			$user_id = $wpdb->get_var($wpdb->prepare("
+				SELECT user_id
+				  FROM $wpdb->usermeta
+				 WHERE meta_key = %s
+			", 'social_auth_nonce_'.$_COOKIE['social_auth_nonce']));
 
-		if ($user_id !== null) {
-			// Log the user in
-			wp_set_current_user($user_id);
-			add_filter('auth_cookie_expiration', array($this->social, 'auth_cookie_expiration'));
-			wp_set_auth_cookie($user_id, true);
-			remove_filter('auth_cookie_expiration', array($this->social, 'auth_cookie_expiration'));
+			if ($user_id !== null) {
+				Social::log('Found user #:id using nonce :nonce.', array(
+					'id' => $user_id,
+					'nonce' => $_COOKIE['social_auth_nonce']
+				));
 
-			$post_id = $this->request->query('post_id');
-			$form = trim(Social_Comment_Form::instance($post_id)->render());
-			echo json_encode(array(
-				'result' => 'success',
-				'html' => $form,
-				'disconnect_url' => wp_loginout('', false)
-			));
+				// Log the user in
+				wp_set_current_user($user_id);
+				add_filter('auth_cookie_expiration', array($this->social, 'auth_cookie_expiration'));
+				wp_set_auth_cookie($user_id, true);
+				remove_filter('auth_cookie_expiration', array($this->social, 'auth_cookie_expiration'));
 
-			delete_user_meta($user_id, 'social_auth_nonce_'.$_COOKIE['social_auth_nonce']);
-			setcookie('social_auth_nonce', '', -3600, '/');
+				$post_id = $this->request->query('post_id');
+				$form = trim(Social_Comment_Form::instance($post_id)->render());
+				echo json_encode(array(
+					'result' => 'success',
+					'html' => $form,
+					'disconnect_url' => wp_loginout('', false)
+				));
+
+				delete_user_meta($user_id, 'social_auth_nonce_'.$_COOKIE['social_auth_nonce']);
+				setcookie('social_auth_nonce', '', -3600, '/');
+			}
+			else {
+				Social::log('Failed to find the user using nonce :nonce.', array(
+					'nonce' => $_COOKIE['social_auth_nonce']
+				));
+			}
 		}
 		else {
 			echo json_encode(array(

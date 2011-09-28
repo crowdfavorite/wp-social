@@ -154,16 +154,6 @@ abstract class Social_Service {
 	}
 
 	/**
-	 * Auth cookie expiration
-	 *
-	 * @param  int  $expiration
-	 * @return int
-	 */
-	public function auth_cookie_expiration($expiration = 31536000) {
-		return 31536000;
-	}
-
-	/**
 	 * Saves the accounts on the service.
 	 *
 	 * @return void
