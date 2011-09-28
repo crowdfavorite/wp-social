@@ -91,7 +91,7 @@ final class Social_Controller_Auth extends Social_Controller {
 			}
 		}
 		else {
-			$user_id = !$service->create_user($account);
+			$user_id = $service->create_user($account, $nonce);
 			$account->personal(true);
 		}
 

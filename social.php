@@ -240,6 +240,7 @@ final class Social {
 						'id' => $user_id,
 						'nonce' => $_COOKIE['social_auth_nonce']
 					));
+					
 					// Log the user in
 					wp_set_current_user($user_id);
 					add_filter('auth_cookie_expiration', array($this, 'auth_cookie_expiration'));
