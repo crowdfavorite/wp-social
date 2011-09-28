@@ -203,6 +203,11 @@ final class Social_Controller_Auth extends Social_Controller {
 				Social::log('Failed to find the user using nonce :nonce.', array(
 					'nonce' => $_COOKIE['social_auth_nonce']
 				));
+
+				echo json_encode(array(
+					'result' => 'error',
+					'html' => 'not logged in',
+				));
 			}
 		}
 		else {
