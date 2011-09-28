@@ -32,7 +32,7 @@ final class Social_Controller_Auth extends Social_Controller {
 				setcookie('social_auth_nonce', $id, 0, '/');
 			}
 
-			if (strpos('?', $proxy) === false) {
+			if (strpos($proxy, '?') === false) {
 				$proxy .= '?';
 			}
 			else {
