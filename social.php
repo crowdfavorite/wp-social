@@ -20,7 +20,9 @@ final class Social {
 	/**
 	 * @var  string  URL of the API
 	 */
-	public static $api_url = 'https://sopresto.mailchimp.com/';
+	// TODO uncomment this when 1.1 goes live.
+	//public static $api_url = 'https://sopresto.mailchimp.com/';
+	public static $api_url = 'https://devandre.mailchimp.com/sopresto/web/index.php/';
 
 	/**
 	 * @var  string  version number
@@ -33,14 +35,14 @@ final class Social {
 	public static $i18n = 'social';
 
 	/**
-	 * @var  Social_Log  logger
-	 */
-	public static $log = null;
-
-	/**
 	 * @var  string  CRON lock directory.
 	 */
 	public static $cron_lock_dir = null;
+
+	/**
+	 * @var  Social_Log  logger
+	 */
+	private static $log = null;
 
 	/**
 	 * @var  array  default options
@@ -53,7 +55,7 @@ final class Social {
 		'comment_broadcast_format' => '{content} {url}',
 		'twitter_anywhere_api_key' => null,
 		'system_cron_api_key' => null,
-		'fetch_comments' => '1'
+		'fetch_comments' => '1',
 	);
 
 	/**
@@ -223,6 +225,15 @@ final class Social {
 		
 		// Trigger upgrade?
 		$this->upgrade(Social::option('installed_version'));
+	}
+
+	/**
+	 * Auth Cookie expiration for API users.
+	 *
+	 * @return int
+	 */
+	public function auth_cookie_expiration() {
+		return 31536000; // 1 Year
 	}
 
 	/**
@@ -782,8 +793,8 @@ final class Social {
 			}
 		}
 		else {
-			$link = explode('>' . __('Log in'), $link);
-			$link = $link[0] . ' id="social_login">' . __('Log in') . $link[1];
+			$link = explode('>'.__('Log in'), $link);
+			$link = $link[0].' id="social_login">'.__('Log in').$link[1];
 		}
 
 		return $link;

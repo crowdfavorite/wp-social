@@ -83,7 +83,7 @@ final class Social_Controller_Settings extends Social_Controller {
 			unset($deauthed[$service][$id]);
 			update_option('social_deauthed', $deauthed);
 
-			$this->social->remove_from_xmlrpc($service, $id);
+			$this->social->remove_from_default_accounts($service, $id);
 		}
 	}
 

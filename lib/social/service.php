@@ -50,17 +50,21 @@ abstract class Social_Service {
 	public function authorize_url() {
 		global $post;
 
-		if (defined('IS_PROFILE_PAGE')) {
-			$url = admin_url('profile.php?social_controller=auth&social_action=authorized#social-networks');
-		}
-		else if (is_admin()) {
-			$url = admin_url('options-general.php?page=social.php&social_controller=auth&social_action=authorized');
+		$proxy = Social::$api_url.$this->_key.'/authorize';
+		$url = apply_filters('social_authorize_url', $proxy, $this->_key);
+
+		$url = '?social_controller=auth&social_action=authorize&target='.urlencode($url);
+		if (is_admin()) {
+			if (defined('IS_PROFILE_PAGE')) {
+				$url = 'profile.php'.$url;
+			}
+			$url = admin_url($url);
 		}
 		else {
-			$url = site_url('?social_controller=auth&social_action=authorized&p='.$post->ID);
+			$url = site_url($url.'&post_id='.$post->ID);
 		}
 
-		return apply_filters('social_authorize_url', Social::$api_url.$this->_key.'/authorize?redirect_to='.urlencode($url), $this->_key);
+		return $url;
 	}
 
 	/**
@@ -92,7 +96,7 @@ abstract class Social_Service {
 		else {
 			$path = array();
 			foreach ($params as $key => $value) {
-				$path[] = $key . '=' . urlencode($value);
+				$path[] = $key.'='.urlencode($value);
 			}
 
 			$redirect_to = $_SERVER['REQUEST_URI'];
@@ -100,7 +104,7 @@ abstract class Social_Service {
 				$redirect_to = $_GET['redirect_to'];
 			}
 
-			$url = site_url('?' . implode('&', $path) . '&redirect_to=' . $redirect_to);
+			$url = site_url('?'.implode('&', $path).'&redirect_to='.$redirect_to);
 			$text = __('Disconnect', Social::$i18n);
 		}
 
@@ -111,9 +115,10 @@ abstract class Social_Service {
 	 * Creates a WordPress user with the passed in account.
 	 *
 	 * @param  Social_Service_Account  $account
+	 * @param  string  $nonce
 	 * @return int|bool
 	 */
-	public function create_user($account) {
+	public function create_user($account, $nonce = null) {
 		$username = $account->username();
 		$username = str_replace(' ', '_', $username);
 		if (!empty($username)) {
@@ -139,36 +144,34 @@ abstract class Social_Service {
 				$id = $user->ID;
 			}
 
-			// Log the user in
-			wp_set_current_user($id);
-			add_filter('auth_cookie_expiration', array($this, 'auth_cookie_expiration'));
-			wp_set_auth_cookie($id, true);
-			remove_filter('auth_cookie_expiration', array($this, 'auth_cookie_expiration'));
+			// Set the nonce
+			if ($nonce !== null) {
+				wp_set_current_user($id);
+				update_user_meta($id, 'social_commenter', 'true');
+				update_user_meta($id, 'social_auth_nonce_'.$nonce, 'true');
+			}
 
+			Social::log('Created/found user #:id.', array(
+				'id' => $id,
+			));
 			return $id;
 		}
 
+		Social::log('Failed to create/find user with username of :username.', array(
+			'username' => $username,
+		));
 		return false;
-	}
-
-	/**
-	 * Auth cookie expriation
-	 *
-	 * @param  int  $expiration
-	 * @return int
-	 */
-	public function auth_cookie_expiration($expiration = 31536000) {
-		return 31536000;
 	}
 
 	/**
 	 * Saves the accounts on the service.
 	 *
+	 * @param  bool  $personal  personal account?
 	 * @return void
 	 */
-	public function save() {
+	public function save($personal = false) {
 		$accounts = array();
-		if (!is_admin() or defined('IS_PROFILE_PAGE')) {
+		if ($personal) {
 			foreach ($this->_accounts AS $account) {
 				if ($account->personal()) {
 					$accounts[$account->id()] = $account->as_array();

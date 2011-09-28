@@ -155,8 +155,8 @@ final class Social_Comment_Form {
 			$help = $this->to_tag('small', $help_text, array('class' => 'social-help'));
 		}
 
-		return $this->to_tag('p', $label . $input . $help, array(
-			'class' => 'social-input-row social-input-row-' . $id
+		return $this->to_tag('p', $label.$input.$help, array(
+			'class' => 'social-input-row social-input-row-'.$id
 		));
 	}
 
@@ -278,7 +278,7 @@ final class Social_Comment_Form {
 		if ($this->is_logged_in) {
 			if (current_user_can('manage_options')) {
 				$text = sprintf(__('Also post to %s', Social::$i18n), '<span></span>');
-				$post_to = $this->to_tag('label', $checkbox . ' ' . $text, $label_base, array('style' => 'display:none;'));
+				$post_to = $this->to_tag('label', $checkbox.' '.$text, $label_base, array('style' => 'display:none;'));
 			}
 			else {
 				$post_to = '';
@@ -365,11 +365,11 @@ final class Social_Comment_Form {
 
 		$attrs = $this->to_attr($attr1, $attr2);
 		if ($text !== false) {
-			return '<' . $tag . ' ' . $attrs . '>' . $text . '</' . $tag . '>';
+			return '<'.$tag.' '.$attrs.'>'.$text.'</'.$tag.'>';
 		}
 			// No text == self closing tag
 		else {
-			return '<' . $tag . ' ' . $attrs . ' />';
+			return '<'.$tag.' '.$attrs.' />';
 		}
 	}
 
@@ -388,7 +388,7 @@ final class Social_Comment_Form {
 				$key = esc_attr($key);
 				$value = esc_attr($value);
 			}
-			$attrs[] = $key . '="' . $value . '"';
+			$attrs[] = $key.'="'.$value.'"';
 		}
 		return implode(' ', $attrs);
 	}

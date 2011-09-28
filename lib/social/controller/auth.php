@@ -6,31 +6,86 @@
 final class Social_Controller_Auth extends Social_Controller {
 
 	/**
+	 * Sets the nonce cookie then redirects to Sopresto.
+	 *
+	 * @return void
+	 */
+	public function action_authorize() {
+		$proxy = urldecode($this->request->query('target'));
+		if (strpos($proxy, Social::$api_url) !== false) {
+			$id = wp_create_nonce('social_authentication');
+			$url = '?social_controller=auth&social_action=authorized';
+			if (is_admin()) {
+				if (defined('IS_PROFILE_PAGE')) {
+					$url .= '&personal=true';
+				}
+				$url = admin_url($url.'&user_id='.get_current_user_id());
+			}
+			else {
+				$post_id = $this->request->query('post_id');
+				if ($post_id !== null) {
+					$url .= '&p='.$post_id;
+				}
+				$url = site_url($url);
+
+				// Set the nonce cookie
+				setcookie('social_auth_nonce', $id, 0, '/');
+			}
+
+			if (strpos($proxy, '?') === false) {
+				$proxy .= '?';
+			}
+			else {
+				$proxy .= '&';
+			}
+			$proxy .= 'v=2&response_url='.urlencode($url).'&id='.$id;
+		}
+
+		wp_redirect($proxy);
+	}
+
+	/**
 	 * Handles the authorized response.
 	 *
 	 * @return void
 	 */
 	public function action_authorized() {
-		// Need to call stripslashes as Sopresto is adding slashes onto the payload.
-		$data = stripslashes($this->request->post('data'));
-		if (strpos($data, "\r") !== false) {
-			$data = str_replace(array("\r\n", "\r"), "\n", $data);
+		// User ID on the request?
+		$user_id = $this->request->query('user_id');
+		if ($user_id !== null) {
+			wp_set_current_user($user_id);
 		}
-		$data = json_decode($data);
 
+		$nonce = $this->request->post('id');
+		if (wp_verify_nonce($nonce, 'social_authentication') === false) {
+			Social::log('Failed to verify authentication nonce.');
+			echo json_encode(array(
+				'result' => 'error',
+				'message' => 'Invalid nonce',
+			));
+			exit;
+		}
+
+		Social::log('Authorizing with nonce :nonce.', array('nonce' => $nonce));
+
+		$response = $this->request->post('response');
 		$account = (object) array(
-			'keys' => $data->keys,
-			'user' => $data->user
+			'keys' => (object) $response['keys'],
+			'user' => (object) $response['user'],
 		);
 		$account->user = $this->social->kses($account->user);
 
-		$class = 'Social_Service_'.$data->service.'_Account';
+		$class = 'Social_Service_'.$response['service'].'_Account';
 		$account = new $class($account);
 
-		$save = true;
-		$service = $this->social->service($data->service)->account($account);
+		$service = $this->social->service($response['service'])->account($account);
+		$is_personal = false;
 		if (is_admin()) {
-			if (defined('IS_PROFILE_PAGE')) {
+			$user_id = get_current_user_id();
+
+			$personal = $this->request->query('personal');
+			if ($personal === 'true') {
+				$is_personal = true;
 				$account->personal(true);
 			}
 			else {
@@ -38,49 +93,43 @@ final class Social_Controller_Auth extends Social_Controller {
 			}
 		}
 		else {
-			if (!is_user_logged_in() and !$service->create_user($account)) {
-				$save = false;
-			}
+			$user_id = $service->create_user($account, $nonce);
 			$account->personal(true);
+			$is_personal = true;
 		}
 
-		// Save the service
-		if ($save) {
-			$service->save($account);
-		}
+		if ($user_id !== false) {
+			Social::log('Saving account #:id.', array(
+				'id' => $account->id(),
+			));
+			$service->save($is_personal);
 
-		// Remove the service from the errors?
-		$deauthed = get_option('social_deauthed');
-		if (isset($deauthed[$data->service][$account->id()])) {
-			unset($deauthed[$data->service][$account->id()]);
-			update_option('social_deauthed', $deauthed);
+			// Remove the service from the errors?
+			$deauthed = get_option('social_deauthed');
+			if (isset($deauthed[$response['service']][$account->id()])) {
+				unset($deauthed[$response['service']][$account->id()]);
+				update_option('social_deauthed', $deauthed);
 
-			// Remove from the global broadcast content as well.
-			$this->remove_from_xmlrpc($data->service, $account->id());
-		}
+				// Remove from the global broadcast content as well.
+				$this->social->remove_from_default_accounts($response['service'], $account->id());
+			}
 
-		// 1.1 Upgrade
-		if ($data->service == 'facebook') {
-			delete_user_meta(get_current_user_id(), 'social_1.1_upgrade');
-		}
+			// 1.1 Upgrade
+			if ($response['service'] == 'facebook') {
+				delete_user_meta(get_current_user_id(), 'social_1.1_upgrade');
+			}
 
-		$pages = array();
-		$view = Social_View::factory('connect/authorized', array(
-			'save' => $save,
-		));
-		if ($this->request->post('with_manage_pages') === 'true') {
-			$data = array(
-				'title' => '',
-				'show_pages' => true,
-			);
+			echo json_encode(array(
+				'result' => 'success',
+				'message' => 'User created',
+			));
 		}
 		else {
-			$data = array(
-				'title' => 'Authorized',
-				'show_pages' => false,
-			);
+			echo json_encode(array(
+				'result' => 'error',
+				'message' => 'Failed to create user',
+			));
 		}
-		echo $view->set($data);
 		exit;
 	}
 
@@ -99,7 +148,7 @@ final class Social_Controller_Auth extends Social_Controller {
 		}
 		else {
 			$service = $this->social->service($service_key);
-			$this->social->remove_from_xmlrpc($service_key, $id);
+			$this->social->remove_from_default_accounts($service_key, $id);
 		}
 		$service->disconnect($id);
 
@@ -122,20 +171,54 @@ final class Social_Controller_Auth extends Social_Controller {
 		if (!$this->request->is_ajax()) {
 			exit;
 		}
-		
-		if (!is_user_logged_in()) {
+
+		if (isset($_COOKIE['social_auth_nonce']) and wp_verify_nonce($_COOKIE['social_auth_nonce'], 'social_authentication')) {
+			// Find the user by NONCE.
+			global $wpdb;
+			$user_id = $wpdb->get_var($wpdb->prepare("
+				SELECT user_id
+				  FROM $wpdb->usermeta
+				 WHERE meta_key = %s
+			", 'social_auth_nonce_'.$_COOKIE['social_auth_nonce']));
+
+			if ($user_id !== null) {
+				Social::log('Found user #:id using nonce :nonce.', array(
+					'id' => $user_id,
+					'nonce' => $_COOKIE['social_auth_nonce']
+				));
+
+				// Log the user in
+				wp_set_current_user($user_id);
+				add_filter('auth_cookie_expiration', array($this->social, 'auth_cookie_expiration'));
+				wp_set_auth_cookie($user_id, true);
+				remove_filter('auth_cookie_expiration', array($this->social, 'auth_cookie_expiration'));
+
+				$post_id = $this->request->query('post_id');
+				$form = trim(Social_Comment_Form::instance($post_id)->render());
+				echo json_encode(array(
+					'result' => 'success',
+					'html' => $form,
+					'disconnect_url' => wp_loginout('', false)
+				));
+
+				delete_user_meta($user_id, 'social_auth_nonce_'.$_COOKIE['social_auth_nonce']);
+				setcookie('social_auth_nonce', '', -3600, '/');
+			}
+			else {
+				Social::log('Failed to find the user using nonce :nonce.', array(
+					'nonce' => $_COOKIE['social_auth_nonce']
+				));
+
+				echo json_encode(array(
+					'result' => 'error',
+					'html' => 'not logged in',
+				));
+			}
+		}
+		else {
 			echo json_encode(array(
 				'result' => 'error',
 				'html' => 'not logged in',
-			));
-		}
-		else {
-			$post_id = $this->request->query('post_id');
-			$form = trim(Social_Comment_Form::instance($post_id)->render());
-			echo json_encode(array(
-				'result' => 'success',
-				'html' => $form,
-				'disconnect_url' => wp_loginout('', false)
 			));
 		}
 		exit;
