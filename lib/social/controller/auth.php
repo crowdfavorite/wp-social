@@ -81,8 +81,9 @@ final class Social_Controller_Auth extends Social_Controller {
 		$service = $this->social->service($response->service)->account($account);
 		if (is_admin()) {
 			$user_id = get_current_user_id();
-			
-			if (defined('IS_PROFILE_PAGE')) {
+
+			$personal = $this->request->query('personal');
+			if ($personal === 'true') {
 				$account->personal(true);
 			}
 			else {
@@ -90,9 +91,7 @@ final class Social_Controller_Auth extends Social_Controller {
 			}
 		}
 		else {
-			if (!is_user_logged_in() and !$service->create_user($account)) {
-				$save = false;
-			}
+			$user_id = !$service->create_user($account);
 			$account->personal(true);
 		}
 
