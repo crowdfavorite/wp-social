@@ -42,6 +42,7 @@ final class Social_Controller_Auth extends Social_Controller {
 		}
 
 		wp_redirect($proxy);
+		exit;
 	}
 
 	/**
