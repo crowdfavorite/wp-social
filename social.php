@@ -1340,25 +1340,27 @@ final class Social {
 	 * @return string
 	 */
 	public static function settings_url(array $params = null, $personal = false) {
-		if (!current_user_can('manage_options') or $personal) {
-			$path = 'profile.php?';
-		}
-		else {
-			$path = 'options-general.php?page='.basename(SOCIAL_FILE).'&';
-		}
-
 		if ($params !== null) {
 			foreach ($params as $key => $value) {
-				$path .= $key.'='.urlencode($value).'&';
+				$params[$key] = urlencode($value);
 			}
 		}
 
-		$path = rtrim($path, '&');
-		if (!current_user_can('manage_options')) {
-			$path .= '#social-networks';
+		if (!current_user_can('manage_options') or $personal) {
+			$file = 'profile.php';
+		}
+		else {
+			$file = 'options-general.php';
+			$params['page'] = basename(SOCIAL_FILE);
 		}
 
-		return admin_url($path);
+		$url = add_query_arg($params, admin_url($file));
+
+		if (!current_user_can('manage_options') or $personal) {
+			$url .= '#social-networks';
+		}
+
+		return $url;
 	}
 
 } // End Social

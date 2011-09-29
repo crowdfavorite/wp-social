@@ -14,30 +14,37 @@ final class Social_Controller_Auth extends Social_Controller {
 		$proxy = urldecode($this->request->query('target'));
 		if (strpos($proxy, Social::$api_url) !== false) {
 			$id = wp_create_nonce('social_authentication');
-			$url = '?social_controller=auth&social_action=authorized';
+			$url = site_url();
+			$args = array(
+				'social_controller' => 'auth',
+				'social_action' => 'authorized',
+			);
+
 			if (is_admin()) {
+				$args += array(
+					'is_admin' => 'true',
+					'user_id' => get_current_user_id(),
+				);
 				if (defined('IS_PROFILE_PAGE')) {
-					$url .= '&personal=true';
+					$args['personal'] = 'true';
+					$url = add_query_arg('personal', 'true', $url);
 				}
-				$url = $url.'&is_admin=true&user_id='.get_current_user_id();
 			}
 			else {
 				$post_id = $this->request->query('post_id');
 				if ($post_id !== null) {
-					$url .= '&p='.$post_id;
+					$args['p'] = $post_id;
 				}
 
 				// Set the nonce cookie
 				setcookie('social_auth_nonce', $id, 0, '/');
 			}
 
-			if (strpos($proxy, '?') === false) {
-				$proxy .= '?';
-			}
-			else {
-				$proxy .= '&';
-			}
-			$proxy .= 'v=2&response_url='.urlencode(site_url($url)).'&id='.$id;
+			$proxy = add_query_arg(array(
+				'v' => '2',
+				'response_url' => urlencode(add_query_arg($args, $url)),
+				'id' => $id
+			), $proxy);
 		}
 
 		wp_redirect($proxy);

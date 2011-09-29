@@ -53,6 +53,7 @@ abstract class Social_Service {
 		$proxy = Social::$api_url.$this->_key.'/authorize';
 		$url = apply_filters('social_authorize_url', $proxy, $this->_key);
 
+
 		$url = '?social_controller=auth&social_action=authorize&target='.urlencode($url);
 		if (is_admin()) {
 			if (defined('IS_PROFILE_PAGE')) {
@@ -99,12 +100,12 @@ abstract class Social_Service {
 				$path[] = $key.'='.urlencode($value);
 			}
 
-			$redirect_to = $_SERVER['REQUEST_URI'];
+			$path['redirect_to'] = $_SERVER['REQUEST_URI'];
 			if (isset($_GET['redirect_to'])) {
-				$redirect_to = $_GET['redirect_to'];
+				$path['redirect_to'] = $_GET['redirect_to'];
 			}
 
-			$url = site_url('?'.implode('&', $path).'&redirect_to='.$redirect_to);
+			$url = add_query_arg($path, site_url());
 			$text = __('Disconnect', Social::$i18n);
 		}
 
