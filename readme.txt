@@ -211,6 +211,12 @@ When using the Bit.ly plugin, you will need to add the following to your wp-conf
 
 The proxy Social connects to requires your website to be publicly accessible to properly authorize your Facebook and Twitter accounts.
 
+= How can I be notified via email of comments left using Social? =
+
+You can install the "Subscribe to Comments" plugin written by Mark Jaquith.
+
+Download: http://wordpress.org/extend/plugins/subscribe-to-comments/
+
 
 
 == Screenshots ==
