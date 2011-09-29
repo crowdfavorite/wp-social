@@ -95,17 +95,16 @@ abstract class Social_Service {
 			$text = '<span title="'.__('Disconnect', Social::$i18n).'" class="social-disconnect social-ir">'.__('Disconnect', Social::$i18n).'</span>';
 		}
 		else {
-			$path = array();
 			foreach ($params as $key => $value) {
-				$path[] = $key.'='.urlencode($value);
+				$params[$key] = urlencode($value);
 			}
 
-			$path['redirect_to'] = $_SERVER['REQUEST_URI'];
+			$params['redirect_to'] = $_SERVER['REQUEST_URI'];
 			if (isset($_GET['redirect_to'])) {
-				$path['redirect_to'] = $_GET['redirect_to'];
+				$params['redirect_to'] = $_GET['redirect_to'];
 			}
 
-			$url = add_query_arg($path, site_url());
+			$url = add_query_arg($params, site_url());
 			$text = __('Disconnect', Social::$i18n);
 		}
 
