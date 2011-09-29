@@ -62,6 +62,9 @@ final class Social_CRON {
 				$this->_enabled = false;
 				Social::option('cron_lock_error', true);
 			}
+			else {
+				delete_option('social_cron_lock_error');
+			}
 		}
 
 		$this->_key = $key;
