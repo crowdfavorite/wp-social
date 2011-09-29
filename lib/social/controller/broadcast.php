@@ -118,11 +118,12 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			}
 		}
 
+		$default_accounts = apply_filters('social_default_accounts', Social::option('default_accounts'), $post);
 		echo Social_View::factory('wp-admin/post/broadcast/options', array(
 			'errors' => $errors,
 			'services' => $services,
 			'post' => $post,
-			'default_accounts' => Social::option('default_accounts'),
+			'default_accounts' => $default_accounts,
 			'broadcasted_ids' => $broadcasted_ids,
 			'broadcast_accounts' => $broadcast_accounts,
 			'step_text' => $step_text,
