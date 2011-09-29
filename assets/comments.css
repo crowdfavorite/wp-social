@@ -605,8 +605,8 @@ override submit styles in TwentyEleven theme */
 	text-align: right;
 }
 
-#social .social-wordpress .social-comment-meta,
-#social ol li ul li.social-wordpress .social-comment-meta {
+#social .social-comment .social-comment-meta,
+#social ol li ul li.social-comment .social-comment-meta {
 	background-position: right -1px;
 }
 
