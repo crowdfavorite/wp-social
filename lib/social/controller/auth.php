@@ -19,14 +19,13 @@ final class Social_Controller_Auth extends Social_Controller {
 				if (defined('IS_PROFILE_PAGE')) {
 					$url .= '&personal=true';
 				}
-				$url = admin_url($url.'&user_id='.get_current_user_id());
+				$url = $url.'&is_admin=true&user_id='.get_current_user_id();
 			}
 			else {
 				$post_id = $this->request->query('post_id');
 				if ($post_id !== null) {
 					$url .= '&p='.$post_id;
 				}
-				$url = site_url($url);
 
 				// Set the nonce cookie
 				setcookie('social_auth_nonce', $id, 0, '/');
@@ -38,7 +37,7 @@ final class Social_Controller_Auth extends Social_Controller {
 			else {
 				$proxy .= '&';
 			}
-			$proxy .= 'v=2&response_url='.urlencode($url).'&id='.$id;
+			$proxy .= 'v=2&response_url='.urlencode(site_url($url)).'&id='.$id;
 		}
 
 		wp_redirect($proxy);
@@ -81,7 +80,8 @@ final class Social_Controller_Auth extends Social_Controller {
 
 		$service = $this->social->service($response['service'])->account($account);
 		$is_personal = false;
-		if (is_admin()) {
+		$is_admin = $this->request->query('is_admin');
+		if ($is_admin == 'true') {
 			$user_id = get_current_user_id();
 
 			$personal = $this->request->query('personal');
