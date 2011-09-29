@@ -527,43 +527,66 @@ final class Social {
 	public function add_meta_box_broadcast() {
 		global $post;
 
-		$content = '';
-        $broadcasted_ids = array();
-        if (in_array($post->post_status, array('publish', 'pending'))) {
-            $broadcasted_ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
-        }
-		if (!in_array($post->post_status, array('publish', 'future', 'pending'))) {
-			$notify = false;
-			if (get_post_meta($post->ID, '_social_notify', true) == '1') {
-				$notify = true;
-			}
-
-			$content = Social_View::factory('wp-admin/post/meta/broadcast/default', array(
-				'post' => $post,
-				'notify' => $notify,
-			));
-		}
-		else if ($post->post_status == 'future' or (empty($broadcasted_ids) and $post->post_status == 'pending')) {
-			$ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
-			$accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
-			$content = Social_View::factory('wp-admin/post/meta/broadcast/scheduled', array(
-				'post' => $post,
+		$broadcasted = '';
+		$broadcasted_ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
+		if (!empty($broadcasted_ids)) {
+			$broadcasted = Social_View::factory('wp-admin/post/meta/broadcast/parts/broadcasted', array(
 				'services' => $this->services(),
-				'accounts' => $accounts,
-				'ids' => $ids,
+				'ids' => $broadcasted_ids
 			));
 		}
-		else if (in_array($post->post_status, array('publish', 'pending'))) {
-			$content = Social_View::factory('wp-admin/post/meta/broadcast/published', array(
-                'post' => $post,
-				'ids' => $broadcasted_ids,
-				'services' => $this->services()
+
+		// Content
+		$button = '';
+		switch ($post->post_status) {
+			case 'pending':
+				$button = 'Edit';
+				$accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
+				$content = Social_View::factory('wp-admin/post/meta/broadcast/pending', array(
+					'accounts' => $accounts,
+					'services' => $this->services(),
+				));
+			break;
+			case 'future':
+				$button = 'Edit';
+				$accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
+				$content = Social_View::factory('wp-admin/post/meta/broadcast/scheduled', array(
+					'services' => $this->services(),
+					'accounts' => $accounts,
+				));
+			break;
+			case 'publish':
+				$button = 'Broadcast';
+				$content = Social_View::factory('wp-admin/post/meta/broadcast/published', array(
+					'ids' => $broadcasted_ids,
+					'broadcasted' => !empty($broadcasted_ids),
+				));
+			break;
+			default:
+				$notify = false;
+				if (get_post_meta($post->ID, '_social_notify', true) == '1') {
+					$notify = true;
+				}
+
+				$content = Social_View::factory('wp-admin/post/meta/broadcast/default', array(
+					'post' => $post,
+					'notify' => $notify,
+				));
+			break;
+		}
+
+		// Button
+		if (!empty($button)) {
+			$button = Social_View::factory('wp-admin/post/meta/broadcast/parts/button', array(
+				'button_text' => $button,
 			));
 		}
 
 		echo Social_View::factory('wp-admin/post/meta/broadcast/shell', array(
 			'post' => $post,
-			'content' => $content
+			'content' => $content,
+			'broadcasted' => $broadcasted,
+			'button' => $button
 		));
 	}
 

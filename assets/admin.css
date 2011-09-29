@@ -55,34 +55,6 @@
 	margin-top: 10px;
 }
 
-#social_meta_broadcast .service-label,
-#social_proxy_keys label {
-	float: left;
-	width: 135px;
-	padding-top: 2px;
-}
-
-#social_meta_broadcast .broadcast-label {
-	float: left;
-}
-
-#social_proxy_keys label {
-	padding-top: 6px;
-}
-
-#social_proxy_keys input {
-	width: 350px;
-}
-
-#social_meta_broadcast .social-toggle-label {
-	margin-right: 10px;
-}
-
-#social_meta_broadcast .social-broadcast-options {
-	position: relative;
-	top: 2px;
-}
-
 .social-preview-counter {
 	float: right;
 	font-weight: normal;
@@ -434,4 +406,49 @@
 	height: 0;
 	clear: both;
 	visibility: hidden;
+}
+
+/**
+ * Meta Broadcast Box
+ */
+#social_meta_broadcast .service-label,
+#social_proxy_keys label {
+	float: left;
+	width: 135px;
+	padding-top: 2px;
+}
+
+#social_meta_broadcast .broadcast-label {
+	float: left;
+}
+
+#social_proxy_keys label {
+	padding-top: 6px;
+}
+
+#social_proxy_keys input {
+	width: 350px;
+}
+
+#social_meta_broadcast .social-toggle-label {
+	margin-right: 10px;
+}
+
+#social_meta_broadcast .social-broadcast-options {
+	position: relative;
+	top: 2px;
+}
+
+.social-meta-broadcast-button a {
+	float: right;
+	padding-top: 4px;
+}
+
+.social-meta-broadcast-button {
+	padding-bottom: 0;
+}
+
+.social-meta-broadcast-button.broadcasted {
+	margin-top: 0;
+	padding: 0 0 10px;
 }

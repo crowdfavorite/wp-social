@@ -62,24 +62,34 @@
 			<strong><?php echo $heading; ?></strong><br/>
 			<?php
 				foreach ($accounts as $account):
-					$checked = false;
+					$checked = true;
 					if (isset($_POST['social_'.$key.'_accounts'])) {
-						if (in_array($account->id(), $_POST['social_'.$key.'_accounts']) or in_array($account->id().'|true', $_POST['social_'.$key.'_accounts'])) {
-							$checked = true;
+						if (!in_array($account->id(), $_POST['social_'.$key.'_accounts']) and !in_array($account->id().'|true', $_POST['social_'.$key.'_accounts'])) {
+							$checked = false;
 						}
 					}
-					else if (empty($broadcasted_ids) and !empty($default_accounts)) {
-						if (isset($default_accounts[$key]) and in_array($account->id(), $default_accounts[$key])) {
-							$checked = true;
+					else if (count($errors) and !isset($_POST['social_'.$key.'_accounts'])) {
+						$checked = false;
+					}
+					else if (!empty($broadcasted_ids) and empty($default_accounts)) {
+						if (!isset($default_accounts[$key]) or (isset($default_accounts[$key]) and !in_array($account->id(), $default_accounts[$key]))) {
+							$checked = false;
 						}
 					}
 					else if (count($broadcasted_ids)) {
-						if (!isset($_POST['social_action']) and (!isset($broadcasted_ids[$key]) or !isset($broadcasted_ids[$key][$account->id()]))) {
-							$checked = true;
+						if (isset($_POST['social_action']) and isset($broadcasted_ids[$key]) and isset($broadcasted_ids[$key][$account->id()])) {
+							$checked = false;
 						}
 					}
-					else {
-						$checked = true;
+					else if (isset($_POST['social_broadcast'])) {
+						if ($_POST['social_broadcast'] == 'Edit') {
+							if (empty($broadcasted_ids) and empty($broadcast_accounts)) {
+								$checked = false;
+							}
+						}
+					}
+					else if (!empty($broadcast_accounts) and (!isset($broadcast_accounts[$key]) or !isset($broadcast_accounts[$key][$account->id()]))) {
+						$checked = false;
 					}
 			?>
 			<label class="social-broadcastable" for="<?php echo esc_attr($key.$account->id()); ?>" style="cursor:pointer">
