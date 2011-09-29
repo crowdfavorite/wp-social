@@ -167,13 +167,13 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			if ($service) {
 				$message = null;
 				foreach ($accounts as $account) {
-					if ($account->universal === false) {
+					if ($account->universal != '1') {
 						if ($personal_accounts === null) {
 							$personal_accounts = get_user_meta($post->post_author, 'social_accounts', true);
 						}
 
 						if (isset($personal_accounts[$key][$account->id])) {
-							$class = 'Social_'.$key.'_Account';
+							$class = 'Social_Service_'.$key.'_Account';
 							$account = new $class($personal_accounts[$key][$account->id]);
 						}
 						else {
