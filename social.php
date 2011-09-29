@@ -40,6 +40,11 @@ final class Social {
 	public static $cron_lock_dir = null;
 
 	/**
+	 * @var  string  plugins URL
+	 */
+	public static $plugins_url = '';
+
+	/**
 	 * @var  Social_Log  logger
 	 */
 	private static $log = null;
@@ -256,6 +261,10 @@ final class Social {
 		
 		// Trigger upgrade?
 		$this->upgrade(Social::option('installed_version'));
+
+		// Plugins URL
+		$url = plugins_url('', SOCIAL_FILE);
+		Social::$plugins_url = trailingslashit(apply_filters('social_plugins_url', $url));
 	}
 
 	/**
@@ -280,12 +289,12 @@ final class Social {
 	public function enqueue_assets() {
 		// JS/CSS
 		if (!defined('SOCIAL_COMMENTS_JS')) {
-			define('SOCIAL_COMMENTS_JS', plugins_url('assets/social.js', SOCIAL_FILE));
+			define('SOCIAL_COMMENTS_JS', Social::$plugins_url.'assets/social.js');
 		}
 
 		if (!is_admin()) {
 			if (!defined('SOCIAL_COMMENTS_CSS')) {
-				define('SOCIAL_COMMENTS_CSS', plugins_url('assets/comments.css', SOCIAL_FILE));
+				define('SOCIAL_COMMENTS_CSS', Social::$plugins_url.'assets/comments.css');
 			}
 
 			// JS/CSS
@@ -309,11 +318,11 @@ final class Social {
 	 */
 	public function admin_enqueue_assets() {
 		if (!defined('SOCIAL_ADMIN_JS')) {
-			define('SOCIAL_ADMIN_JS', plugins_url('assets/admin.js', SOCIAL_FILE));
+			define('SOCIAL_ADMIN_JS', Social::$plugins_url.'assets/admin.js');
 		}
 
 		if (!defined('SOCIAL_ADMIN_CSS')) {
-			define('SOCIAL_ADMIN_CSS', plugins_url('assets/admin.css', SOCIAL_FILE));
+			define('SOCIAL_ADMIN_CSS', Social::$plugins_url.'assets/admin.css');
 		}
 
 		if (SOCIAL_ADMIN_CSS !== false) {
