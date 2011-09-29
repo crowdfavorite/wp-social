@@ -127,6 +127,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 									'created_at' => $result->created_at,
 									'profile_image_url' => $result->user->profile_image_url,
 									'in_reply_to_status_id' => $result->in_reply_to_status_id,
+									'raw' => $result->raw,
 								);
 							}
 						}
@@ -160,6 +161,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 									'created_at' => $result->created_at,
 									'profile_image_url' => $result->user->profile_image_url,
 									'in_reply_to_status_id' => $result->in_reply_to_status_id,
+									'raw' => $result->raw,
 								);
 							}
 						}
@@ -233,6 +235,15 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 				if (isset($result->in_reply_to_status_id)) {
 					update_comment_meta($comment_id, 'social_in_reply_to_status_id', $result->in_reply_to_status_id);
 				}
+
+				if (!isset($result->raw)) {
+					$result->raw = json_encode($result);
+				}
+				else {
+					// Need to do this as the above $result->raw = $result resulted in an empty stdClass object...
+					$result->raw = json_encode($result->raw);
+				}
+				update_comment_meta($comment_id, 'social_raw_data', $result->raw);
 
 				if ($commentdata['comment_approved'] !== 'spam') {
 					if ($commentdata['comment_approved'] == '0') {
@@ -323,6 +334,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 							'created_at' => $response->created_at,
 							'profile_image_url' => $response->user->profile_image_url,
 							'in_reply_to_status_id' => $response->in_reply_to_status_id,
+							'raw' => $response,
 						);
 
 						$this->save_aggregated_comments($post, true);
