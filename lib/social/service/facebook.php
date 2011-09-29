@@ -184,10 +184,12 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 */
 	public function save_aggregated_comments(&$post) {
 		if (isset($post->results[$this->_key])) {
+			global $wpdb;
+
 			foreach ($post->results[$this->_key] as $result) {
 				$commentdata = array(
 					'comment_post_ID' => $post->ID,
-					'comment_author_email' => $this->_key.'.'.$result->id.'@example.com',
+					'comment_author_email' => $wpdb->escape($this->_key.'.'.$result->id.'@example.com'),
 					'comment_author_IP' => $_SERVER['SERVER_ADDR'],
 					'comment_agent' => 'Social Aggregator'
 				);
@@ -205,9 +207,9 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 
 						$commentdata = array_merge($commentdata, array(
 							'comment_type' => 'social-'.$this->_key,
-							'comment_author' => $result->from->name,
+							'comment_author' => $wpdb->escape($result->from->name),
 							'comment_author_url' => $account->avatar(),
-							'comment_content' => $result->message,
+							'comment_content' => $wpdb->escape($result->message),
 							'comment_date' => date('Y-m-d H:i:s', strtotime($result->created_time) + (get_option('gmt_offset') * 3600)),
 							'comment_date_gmt' => gmdate('Y-m-d H:i:s', strtotime($result->created_time)),
 						));
@@ -217,9 +219,9 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					$url = 'http://facebook.com/profile.php?id='.$result->id;
 					$commentdata = array_merge($commentdata, array(
 						'comment_type' => 'social-'.$this->_key.'-like',
-						'comment_author' => $result->name,
+						'comment_author' => $wpdb->escape($result->name),
 						'comment_author_url' => $url,
-						'comment_content' => '<a href="'.$url.'" target="_blank">'.$result->name.'</a> liked this on Facebook.',
+						'comment_content' => $wpdb->escape('<a href="'.$url.'" target="_blank">'.$result->name.'</a> liked this on Facebook.'),
 						'comment_date' => current_time('mysql'),
 						'comment_date_gmt' => current_time('mysql', 1)
 					));

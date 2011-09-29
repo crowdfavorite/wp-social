@@ -178,6 +178,8 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 */
 	public function save_aggregated_comments(&$post, $skip_approval = false) {
 		if (isset($post->results[$this->_key])) {
+			global $wpdb;
+
 			foreach ($post->results[$this->_key] as $result) {
 				$account = (object) array(
 					'user' => (object) array(
@@ -191,10 +193,10 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 				$commentdata = array(
 					'comment_post_ID' => $post->ID,
 					'comment_type' => 'social-'.$this->_key,
-					'comment_author' => $account->username(),
-					'comment_author_email' => $this->_key.'.'.$account->id().'@example.com',
+					'comment_author' => $wpdb->escape($account->username()),
+					'comment_author_email' => $wpdb->escape($this->_key.'.'.$account->id().'@example.com'),
 					'comment_author_url' => $account->url(),
-					'comment_content' => $result->text,
+					'comment_content' => $wpdb->escape($result->text),
 					'comment_date' => date('Y-m-d H:i:s', strtotime($result->created_at) + (get_option('gmt_offset') * 3600)),
 					'comment_date_gmt' => gmdate('Y-m-d H:i:s', strtotime($result->created_at)),
 					'comment_author_IP' => $_SERVER['SERVER_ADDR'],
