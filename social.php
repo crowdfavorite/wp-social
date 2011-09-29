@@ -20,7 +20,9 @@ final class Social {
 	/**
 	 * @var  string  URL of the API
 	 */
-	public static $api_url = 'https://sopresto.mailchimp.com/';
+	// TODO uncomment this when 1.1 goes live.
+	//public static $api_url = 'https://sopresto.mailchimp.com/';
+	public static $api_url = 'https://devandre.mailchimp.com/sopresto/web/index.php/';
 
 	/**
 	 * @var  string  version number
@@ -33,14 +35,14 @@ final class Social {
 	public static $i18n = 'social';
 
 	/**
-	 * @var  Social_Log  logger
-	 */
-	public static $log = null;
-
-	/**
 	 * @var  string  CRON lock directory.
 	 */
 	public static $cron_lock_dir = null;
+
+	/**
+	 * @var  Social_Log  logger
+	 */
+	private static $log = null;
 
 	/**
 	 * @var  array  default options
@@ -53,7 +55,7 @@ final class Social {
 		'comment_broadcast_format' => '{content} {url}',
 		'twitter_anywhere_api_key' => null,
 		'system_cron_api_key' => null,
-		'fetch_comments' => '1'
+		'fetch_comments' => '1',
 	);
 
 	/**
@@ -254,6 +256,15 @@ final class Social {
 		
 		// Trigger upgrade?
 		$this->upgrade(Social::option('installed_version'));
+	}
+
+	/**
+	 * Auth Cookie expiration for API users.
+	 *
+	 * @return int
+	 */
+	public function auth_cookie_expiration() {
+		return 31536000; // 1 Year
 	}
 
 	/**
@@ -547,43 +558,66 @@ final class Social {
 	public function add_meta_box_broadcast() {
 		global $post;
 
-		$content = '';
-        $broadcasted_ids = array();
-        if (in_array($post->post_status, array('publish', 'pending'))) {
-            $broadcasted_ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
-        }
-		if (!in_array($post->post_status, array('publish', 'future', 'pending'))) {
-			$notify = false;
-			if (get_post_meta($post->ID, '_social_notify', true) == '1') {
-				$notify = true;
-			}
-
-			$content = Social_View::factory('wp-admin/post/meta/broadcast/default', array(
-				'post' => $post,
-				'notify' => $notify,
-			));
-		}
-		else if ($post->post_status == 'future' or (empty($broadcasted_ids) and $post->post_status == 'pending')) {
-			$ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
-			$accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
-			$content = Social_View::factory('wp-admin/post/meta/broadcast/scheduled', array(
-				'post' => $post,
+		$broadcasted = '';
+		$broadcasted_ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
+		if (!empty($broadcasted_ids)) {
+			$broadcasted = Social_View::factory('wp-admin/post/meta/broadcast/parts/broadcasted', array(
 				'services' => $this->services(),
-				'accounts' => $accounts,
-				'ids' => $ids,
+				'ids' => $broadcasted_ids
 			));
 		}
-		else if (in_array($post->post_status, array('publish', 'pending'))) {
-			$content = Social_View::factory('wp-admin/post/meta/broadcast/published', array(
-                'post' => $post,
-				'ids' => $broadcasted_ids,
-				'services' => $this->services()
+
+		// Content
+		$button = '';
+		switch ($post->post_status) {
+			case 'pending':
+				$button = 'Edit';
+				$accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
+				$content = Social_View::factory('wp-admin/post/meta/broadcast/pending', array(
+					'accounts' => $accounts,
+					'services' => $this->services(),
+				));
+			break;
+			case 'future':
+				$button = 'Edit';
+				$accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
+				$content = Social_View::factory('wp-admin/post/meta/broadcast/scheduled', array(
+					'services' => $this->services(),
+					'accounts' => $accounts,
+				));
+			break;
+			case 'publish':
+				$button = 'Broadcast';
+				$content = Social_View::factory('wp-admin/post/meta/broadcast/published', array(
+					'ids' => $broadcasted_ids,
+					'broadcasted' => !empty($broadcasted_ids),
+				));
+			break;
+			default:
+				$notify = false;
+				if (get_post_meta($post->ID, '_social_notify', true) == '1') {
+					$notify = true;
+				}
+
+				$content = Social_View::factory('wp-admin/post/meta/broadcast/default', array(
+					'post' => $post,
+					'notify' => $notify,
+				));
+			break;
+		}
+
+		// Button
+		if (!empty($button)) {
+			$button = Social_View::factory('wp-admin/post/meta/broadcast/parts/button', array(
+				'button_text' => $button,
 			));
 		}
 
 		echo Social_View::factory('wp-admin/post/meta/broadcast/shell', array(
 			'post' => $post,
-			'content' => $content
+			'content' => $content,
+			'broadcasted' => $broadcasted,
+			'button' => $button
 		));
 	}
 
@@ -813,8 +847,8 @@ final class Social {
 			}
 		}
 		else {
-			$link = explode('>' . __('Log in'), $link);
-			$link = $link[0] . ' id="social_login">' . __('Log in') . $link[1];
+			$link = explode('>'.__('Log in'), $link);
+			$link = $link[0].' id="social_login">'.__('Log in').$link[1];
 		}
 
 		return $link;
@@ -1158,17 +1192,16 @@ final class Social {
 	}
 
 	/**
-	 * Removes an account from the XMLRPC accounts.
+	 * Removes an account from the default broadcast accounts.
 	 *
 	 * @param  string  $service
 	 * @param  int     $id
 	 * @return void
 	 */
-	public function remove_from_xmlrpc($service, $id) {
-		// Remove from the XML-RPC
-		$xmlrpc = Social::option('xmlrpc_accounts');
-		if (!empty($xmlrpc) and isset($xmlrpc[$service])) {
-			$ids = array_values($xmlrpc[$service]);
+	public function remove_from_default_accounts($service, $id) {
+		$defaults = Social::option('default_accounts');
+		if (!empty($defaults) and isset($defaults[$service])) {
+			$ids = array_values($defaults[$service]);
 			if (in_array($id, $ids)) {
 				$_ids = array();
 				foreach ($ids as $id) {
@@ -1176,8 +1209,8 @@ final class Social {
 						$_ids[] = $id;
 					}
 				}
-				$xmlrpc[$_GET['service']] = $_ids;
-				update_option('social_xmlrpc_accounts', $xmlrpc);
+				$defaults[$_GET['service']] = $_ids;
+				Social::option('default_accounts', $defaults);
 			}
 		}
 	}

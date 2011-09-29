@@ -31,9 +31,10 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 * @param  Social_Service_Account  $account  account to broadcast to
 	 * @param  string  $message  message to broadcast
 	 * @param  array   $args  extra arguments to pass to the request
+	 * @param  int     $post_id  post ID being broadcasted
 	 * @return Social_Response
 	 */
-	public function broadcast($account, $message, array $args = array()) {
+	public function broadcast($account, $message, array $args = array(), $post_id = null) {
 		$args = $args + array(
 			'status' => $message
 		);
@@ -410,12 +411,12 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		global $comment;
 		if ($comment->comment_type == 'social-twitter') {
 			$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
-			$output = str_replace("rel='", "rel='" . $status_id . " ", $url);
+			$output = str_replace("rel='", "rel='".$status_id." ", $url);
 
 			$api_key = Social::option('twitter_anywhere_api_key');
 			if (!empty($api_key)) {
 				$output = str_replace("'>", "' style='display:none'>@", $output);
-				$output .= '@' . get_comment_author($comment->comment_ID);
+				$output .= '@'.get_comment_author($comment->comment_ID);
 			}
 			else {
 				$output = str_replace("'>", "'>@", $output);

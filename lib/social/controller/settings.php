@@ -21,17 +21,17 @@ final class Social_Controller_Settings extends Social_Controller {
 				delete_option('social_log_write_error');
 			}
 
-			// Store the XML-RPC accounts
-			if (is_array($this->request->post('social_xmlrpc_accounts'))) {
+			// Store the default accounts
+			if (is_array($this->request->post('social_default_accounts'))) {
 				$accounts = array();
-				foreach ($this->request->post('social_xmlrpc_accounts') as $account) {
+				foreach ($this->request->post('social_default_accounts') as $account) {
 					$account = explode('|', $account);
 					$accounts[$account[0]][] = $account[1];
 				}
-				Social::option('xmlrpc_accounts', $accounts);
+				Social::option('default_accounts', $accounts);
 			}
 			else {
-				delete_option('social_xmlrpc_accounts');
+				delete_option('social_default_accounts');
 			}
 
 			// Anywhere key
@@ -83,7 +83,7 @@ final class Social_Controller_Settings extends Social_Controller {
 			unset($deauthed[$service][$id]);
 			update_option('social_deauthed', $deauthed);
 
-			$this->social->remove_from_xmlrpc($service, $id);
+			$this->social->remove_from_default_accounts($service, $id);
 		}
 	}
 

@@ -88,9 +88,10 @@ interface Social_Interface_Service {
 	 * @param  Social_Service_Account  $account  account to broadcast to
 	 * @param  string  $message  message to broadcast
 	 * @param  array   $args  extra arguments to pass to the request
-	 * @return int
+	 * @param  int     $post_id  post ID being broadcasted
+	 * @return Social_Response
 	 */
-	function broadcast($account, $message, array $args = array());
+	function broadcast($account, $message, array $args = array(), $post_id = null);
 
 	/**
 	 * Aggregates comments by URL.

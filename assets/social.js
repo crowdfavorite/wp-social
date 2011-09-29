@@ -1,39 +1,3 @@
-var $window = null;
-var $auth_window = null;
-function reloadSocialHTML(saved) {
-	$auth_window.close();
-	if (!$window.hasClass('comments')) {
-		window.location.reload();
-	}
-	else {
-		if (saved == 'false') {
-			alert('Failed to authorize this account. Please try again.');
-		}
-		else {
-			var $parent = jQuery('.social-post');
-			jQuery.get($parent.find('#reload_url').val(), {}, function(response) {
-				if (response.result == 'success') {
-					// Add logged-in body class since we're not going to be refreshing the page.
-					jQuery('body').addClass('logged-in');
-
-					var $cancel = jQuery('#cancel-comment-reply-link');
-					var $parent = $cancel.closest('li');
-					$cancel.click();
-					jQuery('#respond').replaceWith(response.html);
-					$parent.find('.comment-reply-link').click();
-
-					jQuery('#primary').find('#social_login').parent().html(response.disconnect_url);
-				}
-			}, 'json');
-
-			// Fix for the missing reply link
-			jQuery('#cancel-comment-reply-link').live('click', function() {
-				jQuery('.comment-reply-link').show();
-			});
-		}
-	}
-}
-
 (function($) {
 	/*
 	 * Append social-js class to html element. This allows us to prevent JS FOUC
@@ -45,11 +9,46 @@ function reloadSocialHTML(saved) {
 	c.className += ' social-js';
 
 	$(function() {
+		var $window = null;
+		var $auth_window = null;
+		var auth_poll = null;
 		$('.social-login').click(function(e) {
 			e.preventDefault();
 
 			$window = $(this);
 			$auth_window = window.open($(this).attr('href'), "ServiceAssociate", 'width=700,height=400');
+
+			auth_poll = setInterval(function() {
+				if ($auth_window.closed) {
+					clearInterval(auth_poll);
+
+					if (!$window.hasClass('comments')) {
+						window.location.reload();
+					}
+					else {
+						var $parent = $('.social-post');
+						$.get($parent.find('#reload_url').val(), {}, function(response) {
+							if (response.result == 'success') {
+								// Add logged-in body class since we're not going to be refreshing the page.
+								$('body').addClass('logged-in');
+
+								var $cancel = $('#cancel-comment-reply-link');
+								var $parent = $cancel.closest('li');
+								$cancel.click();
+								$('#respond').replaceWith(response.html);
+								$parent.find('.comment-reply-link').click();
+
+								$('#primary').find('#social_login').parent().html(response.disconnect_url);
+							}
+						}, 'json');
+
+						// Fix for the missing reply link
+						$('#cancel-comment-reply-link').live('click', function() {
+							jQuery('.comment-reply-link').show();
+						});
+					}
+				}
+			}, 100);
 		});
 
 		// comments.php
@@ -85,7 +84,7 @@ function reloadSocialHTML(saved) {
 					if (prevLink !== null) {
 						$prevLink.attr('href', prevLink);
 					}
-					
+
 					$('.social-commentlist li').removeClass('social-comment-collapse');
 				} else {
 					$('.social-commentlist li').each(function() {
@@ -99,12 +98,12 @@ function reloadSocialHTML(saved) {
 
 					if (prevLink !== null) {
 						var _prevLink = prevLink.split('#comments');
-						$prevLink.attr('href', _prevLink[0]+'&social_tab='+className+'#comments');
+						$prevLink.attr('href', _prevLink[0] + '&social_tab=' + className + '#comments');
 					}
 
 					if (nextLink !== null) {
 						var _nextLink = nextLink.split('#comments');
-						$nextLink.attr('href', _nextLink[0]+'&social_tab='+className+'#comments');
+						$nextLink.attr('href', _nextLink[0] + '&social_tab=' + className + '#comments');
 					}
 				}
 			});

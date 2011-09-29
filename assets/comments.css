@@ -39,6 +39,7 @@
 	text-decoration: none;
 	outline: 0;
 }
+
 #social a:hover {
 	text-decoration: underline;
 }
@@ -57,9 +58,11 @@
 	height: 0;
 	visibility: hidden;
 }
+
 #social .social-clearfix:after {
 	clear: both;
 }
+
 #social .social-clearfix {
 	zoom: 1;
 }
@@ -80,6 +83,7 @@
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 12px;
 }
+
 #social .social-help {
 	font-style: italic;
 }
@@ -96,9 +100,11 @@
 	margin: 6px 0;
 	padding: 0 0 0 7px;
 }
+
 #social .social-commentlist #reply-title {
 	background-position: 0 -400px;
 }
+
 #social .social-commentlist #commentform {
 	border-left: 1px solid #e1e1e1;
 	padding-left: 10px;
@@ -190,6 +196,7 @@ Remove float from para wrapping submit button. */
 	top: 4px;
 	width: 70px;
 }
+
 #social #submit,
 #social .social-input-row .social-input {
 	/* Bypasses vertical alignment issues.
@@ -199,6 +206,7 @@ Remove float from para wrapping submit button. */
 	but good to have either way */
 	margin: 0;
 }
+
 #social .social-input-row .social-help {
 	float: left;
 	line-height: 28px;
@@ -212,9 +220,11 @@ Remove float from para wrapping submit button. */
 	margin-bottom: 30px;
 	width: auto;
 }
+
 #social #respond input.social-input {
 	width: 314px;
 }
+
 #social #respond textarea.social-input {
 	height: 83px;
 	max-width: 464px;
@@ -251,12 +261,14 @@ override submit styles in TwentyEleven theme */
 	position: static;
 	text-shadow: #fff 0 1px 0;
 }
+
 /* Specificity of this selector is dialed in to
 override submit styles in TwentyEleven theme */
 #social input#submit:active {
 	background: #dedede url(sprite-y-24.png) 0 -100px no-repeat;
 	color: #0867ab;
 }
+
 /**
  * @bugfix invisible hidden element
  * FF adds an invisible pseudo element to inputs. Reset it here.
@@ -282,15 +294,17 @@ override submit styles in TwentyEleven theme */
 	 */
 	zoom: 1;
 }
+
 #social .social-facebook-icon,
 #social .social-facebook-like-icon {
-    background-position: 0 -250px;
+	background-position: 0 -250px;
 }
 
 #social .social-sign-in-links {
 	margin: 0 auto 9px;
 	width: 360px;
 }
+
 #social .social-sign-in-links a {
 	display: inline;
 	float: left;
@@ -298,21 +312,27 @@ override submit styles in TwentyEleven theme */
 	margin: 0 15px;
 	width: 150px;
 }
+
 #social .social-sign-in-links .social-twitter {
 	background: url('social.png') 0 0 no-repeat;
 }
+
 #social .social-sign-in-links .social-twitter:hover {
 	background-position: 0 -22px;
 }
+
 #social .social-sign-in-links .social-twitter:active {
 	background-position: 0 -44px;
 }
+
 #social .social-sign-in-links .social-facebook {
 	background: url('social.png') -150px 0 no-repeat;
 }
+
 #social .social-sign-in-links .social-facebook:hover {
 	background-position: -150px -22px;
 }
+
 #social .social-sign-in-links .social-facebook:active {
 	background-position: -150px -44px;
 }
@@ -324,6 +344,7 @@ override submit styles in TwentyEleven theme */
 	left: -999em;
 	position: absolute;
 }
+
 .logged-in #social #respond .form-submit,
 .logged-in #social .social-input-row {
 	/* Override TwentyEleven theme
@@ -343,6 +364,7 @@ override submit styles in TwentyEleven theme */
 .social-js .social-tabs-panel {
 	display: none;
 }
+
 .social-js .social-tabs-first-panel {
 	display: block;
 }
@@ -352,14 +374,15 @@ override submit styles in TwentyEleven theme */
 	font-family: Helvetica, Arial, sans-serif;
 	margin-bottom: 10px;
 }
+
 #social .social-title {
 	margin: 0 0 0 9px;
 	zoom: 1;
 }
+
 #social .social-title span {
 	display: block;
 }
-
 
 #social .social-divider {
 	background: url('background-strikethrough.gif') center repeat-x;
@@ -368,17 +391,19 @@ override submit styles in TwentyEleven theme */
 	margin: 0 7px 10px;
 	text-align: center;
 }
+
 #social .social-divider span {
 	background-color: #fff;
 	padding: 0 10px;
 }
+
 #social .must-log-in {
 	text-align: center;
 }
+
 #social .social-must-log-in {
 	margin-bottom: 25px;
 }
-
 
 /** @section Comments List
  -------------------------------------------------- */
@@ -400,14 +425,17 @@ override submit styles in TwentyEleven theme */
 	margin: 0 0 10px;
 	zoom: 1;
 }
+
 #social .social-comment-header {
 	margin-bottom: 6px;
 	position: relative;
 	z-index: 4;
 }
+
 #social .social-comment-author {
 	margin-right: 125px;
 }
+
 #social .social-fn {
 	display: block;
 	font-size: 16px;
@@ -422,6 +450,7 @@ override submit styles in TwentyEleven theme */
 	 */
 	width: 100%;
 }
+
 /* Callout post-author name */
 #social .bypostauthor .social-fn {
 	font-weight: bold;
@@ -431,11 +460,13 @@ override submit styles in TwentyEleven theme */
 	margin-top: 10px;
 	position: relative;
 }
+
 #social .social-identity .avatar {
 	left: 0;
 	position: absolute;
 	top: 2px;
 }
+
 #social #cancel-comment-reply-link {
 	display: inline;
 	font-family: Helvetica, Arial, sans-serif;
@@ -486,12 +517,14 @@ override submit styles in TwentyEleven theme */
 #social .social-comment-body p {
 	margin: 0 0 5px;
 }
+
 /* Children Comments */
 #social .social-children {
 	margin: 0;
 	padding: 0;
 	zoom: 1;
 }
+
 #social .social-children li {
 	list-style: none;
 	margin: 0;
@@ -519,6 +552,7 @@ override submit styles in TwentyEleven theme */
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 12px;
 }
+
 #social a.comment-reply-link {
 	/* Override TwentyEleven theme
 	Remove background from reply links. */
@@ -528,10 +562,12 @@ override submit styles in TwentyEleven theme */
 #social .social-actions {
 	margin-bottom: 8px;
 }
+
 #social .social-actions a,
 #social .social-comment-meta a {
 	text-decoration: underline;
 }
+
 #social .social-comment-meta {
 	background: url('sprite-y-24-icons.png') no-repeat;
 	line-height: 16px;
@@ -541,6 +577,7 @@ override submit styles in TwentyEleven theme */
 	top: 2px;
 	white-space: nowrap;
 }
+
 #social .social-comment-meta .social-posted-from a,
 #social .social-comment-meta .social-posted-from {
 	position: absolute;
@@ -549,9 +586,11 @@ override submit styles in TwentyEleven theme */
 	height: 16px;
 	margin-left: 5px;
 }
+
 #social .social-comment-meta .social-posted-from span {
 	display: none;
 }
+
 #social .social-actions,
 #social .social-actions a,
 #social .social-last-reply-when,
@@ -566,24 +605,28 @@ override submit styles in TwentyEleven theme */
 	text-align: right;
 }
 
-#social .social-wordpress .social-comment-meta,
-#social ol li ul li.social-wordpress .social-comment-meta {
+#social .social-comment .social-comment-meta,
+#social ol li ul li.social-comment .social-comment-meta {
 	background-position: right -1px;
 }
+
 #social .social-twitter .social-comment-meta,
 #social ol li ul li.social-twitter .social-comment-meta {
 	background-position: right -100px;
 }
+
 #social .social-facebook .social-comment-meta,
 #social .social-facebook-like .social-comment-meta,
 #social ol li ul li.social-facebook .social-comment-meta,
 #social ol li ul li.social-facebook-like .social-comment-meta {
 	background-position: right -200px;
 }
+
 #social .social-pingback .social-comment-meta,
 #social ol li ul li.social-pingback .social-comment-meta {
 	background-position: right -400px;
 }
+
 #social .social-pingback > .social-comment-inner {
 	padding-left: 10px;
 }
@@ -592,35 +635,43 @@ override submit styles in TwentyEleven theme */
 #social .social-comment-collapse > .social-comment-inner > .social-actions {
 	display: none;
 }
+
 #social .social-comment-collapse > .social-comment-inner > .social-comment-header,
 #social .social-comment-collapse.social-facebook-like > .social-comment-inner > .social-comment-body {
-	filter:alpha(opacity=30);
+	filter: alpha(opacity = 30);
 	opacity: .3;
 	font-size: 12px;
 }
+
 #social .social-facebook-like {
 	margin-bottom: 5px;
 }
+
 #social .social-facebook-like > .social-comment-inner > .social-comment-body {
 	z-index: 3;
 	position: relative;
 	top: -1px;
 	font-size: 12px;
 }
+
 #social .social-comment-collapse.social-facebook-like > .social-comment-inner > .social-comment-body {
 	top: -5px;
 }
+
 #social .social-facebook-like > .social-comment-inner > .social-comment-header > .social-comment-author img {
 	top: 1px;
 }
+
 #social .social-comment-collapse > .social-comment-inner > .social-comment-header .social-fn {
 	font-size: 12px;
 	position: relative;
 	left: -10px;
 }
+
 #social .social-pingback.social-comment-collapse > .social-comment-inner > .social-comment-header .social-fn {
 	left: 0;
 }
+
 #social .social-comment-collapse > .social-comment-inner > .social-comment-header > .social-comment-author img {
 	width: 16px;
 	height: 16px;
@@ -644,25 +695,31 @@ override submit styles in TwentyEleven theme */
 	float: left;
 	margin-left: 10px;
 }
+
 #social .social-nav .social-tab-main {
 	margin-left: 0;
 }
+
 #social #social-tabs-comments .social-nav li a span {
 	background: url('sprite-y-24-icons.png') 0 100px no-repeat;
 	display: block;
 }
+
 #social #social-tabs-comments .social-nav .social-wordpress a span {
 	background-position: 0 4px;
 	padding-left: 19px;
 }
+
 #social #social-tabs-comments .social-nav .social-twitter a span {
 	background-position: 0 -96px;
 	padding-left: 19px;
 }
+
 #social #social-tabs-comments .social-nav .social-facebook a span {
 	background-position: 0 -195px;
 	padding-left: 19px;
 }
+
 #social #social-tabs-comments .social-nav .social-pingback a span {
 	background-position: 0 -394px;
 	padding-left: 19px;
@@ -675,6 +732,7 @@ override submit styles in TwentyEleven theme */
 	padding-left: 13px;
 	zoom: 1;
 }
+
 #social #reply-title span,
 #social .social-nav li a {
 	float: left;
@@ -682,22 +740,27 @@ override submit styles in TwentyEleven theme */
 	height: 26px;
 	line-height: 26px;
 }
+
 #social .social-nav li a {
 	background: #fff;
 	padding: 0 12px 4px 12px;
 }
+
 #social #reply-title span,
 #social .social-nav .social-current-tab a {
 	padding: 0 12px 4px 8px;
 }
+
 #social #reply-title,
 #social .social-nav .social-current-tab {
 	background: url(sprite-y-24.png) 0 -200px no-repeat;
 }
+
 #social .social-nav .social-current-tab {
 	background-position: -9px -200px;
 	padding-left: 4px;
 }
+
 #social #reply-title span,
 #social .social-nav .social-current-tab a {
 	background: url(sprite-y-24.png) right -300px no-repeat;
@@ -717,10 +780,12 @@ override submit styles in TwentyEleven theme */
 #social #post_to {
 	margin: 0 10px;
 }
+
 #social #post_to label {
 	cursor: pointer;
 	width: auto;
 }
+
 #social #post_to input {
 	width: auto;
 }
@@ -734,4 +799,7 @@ override submit styles in TwentyEleven theme */
 #wp-adminbar-comments-social {
 	position: absolute;
 	visibility: hidden;
+}
+.social-aggregation-results {
+	white-space: nowrap;
 }

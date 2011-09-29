@@ -38,8 +38,7 @@ final class Social_Facebook {
 				$perms .= ',read_stream,offline_access';
 			}
 
-			$url = explode('redirect_to', $url);
-			$url = $url[0].'req_perms='.$perms.'&redirect_to'.$url[1];
+			$url = $url.'?req_perms='.$perms;
 		}
 
 		return $url;

@@ -207,6 +207,11 @@ When using the Bit.ly plugin, you will need to add the following to your wp-conf
     define('BITLY_JMP', true);
 
 
+= I have Apache's 401 auth enabled on my website, why is Social not working? =
+
+The proxy Social connects to requires your website to be publicly accessible to properly authorize your Facebook and Twitter accounts.
+
+
 
 == Screenshots ==
 

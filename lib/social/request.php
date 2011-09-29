@@ -185,6 +185,11 @@ final class Social_Request {
 
 			$action = 'action_'.$this->action();
 			if (method_exists($controller, $action)) {
+				Social::log('Running request: :controller/:action', array(
+					'controller' => str_replace('Social_Controller_', '', get_class($controller)),
+					'action' => $action
+				));
+
 				$controller->{$action}();
 			}
 			else {
