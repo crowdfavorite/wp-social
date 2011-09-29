@@ -427,7 +427,11 @@ abstract class Social_Service {
 		}
 
 		if ($account !== false) {
-			$request = wp_remote_post(Social::$api_url.$this->_key, array(
+			$proxy = apply_filters('social_api_proxy', Social::$api_url.$this->_key, $this->_key);
+			$api = apply_filters('social_api_endpoint', $api, $this->_key);
+			$method = apply_filters('social_api_endpoint_method', $method, $this->_key);
+			$args = apply_filters('social_api_endpoint_args', $args, $this->_key);
+			$request = wp_remote_post($proxy, array(
 				'sslverify' => false,
 				'body' => array(
 					'api' => $api,
