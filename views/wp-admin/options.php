@@ -14,7 +14,7 @@
 	<div class="social-view">
 		<table class="form-table">
 			<tr>
-				<th><?php _e('Connect accounts', Social::$i18n); ?></th>
+				<th><?php _e('Accounts', Social::$i18n); ?></th>
 				<td nowrap="nowrap">
 					<?php
 						$have_accounts = false;
@@ -45,7 +45,7 @@
 
 						echo '<p>'.__('Before blog authors can broadcast to social networks you need to connect some accounts:', Social::$i18n).'</p>'
 						   . '<div>'.$service_buttons.'</div>'
-						   . '<p class="description"><strong>'.__('Connected accounts will be accessible by every blog author.', Social::$i18n).'</strong></p>';
+						   . '<p class="description">'.__('Connected accounts are available to all blog authors.', Social::$i18n).'</p>';
 
 						if (!empty($items)) {
 							echo '
@@ -60,53 +60,9 @@
 					?>
 				</td>
 			</tr>
-			<tr>
-				<th>
-					<label for="social_broadcast_format"><?php _e('Broadcast teaser format', Social::$i18n); ?></label>
-				</th>
-				<td>
-					<input type="text" class="regular-text" name="social_broadcast_format" id="social_broadcast_format" value="<?php echo esc_attr(Social::option('broadcast_format')); ?>" />
-					<p class="description"><?php _e('How you would like posts to be formatted when broadcasting to Twitter or Facebook?'); ?></p>
-
-					<div class="description">
-						<?php _e('Tokens:', Social::$i18n); ?>
-						<ul>
-							<?php foreach (Social::broadcast_tokens() as $token => $description): ?>
-							<li><b><?php echo esc_html($token); ?></b>: <?php echo esc_html($description); ?></li>
-							<?php endforeach; ?>
-						</ul>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<th>
-					<label for="social_comment_broadcast_format"><?php _e('Comment broadcast teaser format', Social::$i18n); ?></label>
-				</th>
-				<td>
-					<input type="text" class="regular-text" name="social_comment_broadcast_format" id="social_comment_broadcast_format" value="<?php echo esc_attr(Social::option('comment_broadcast_format')); ?>" />
-					<p class="description"><?php _e('How you would like comments to be formatted when broadcasting to Twitter or Facebook?'); ?></p>
-
-					<div class="description">
-						<?php _e('Tokens:', Social::$i18n); ?>
-						<ul>
-							<?php foreach (Social::comment_broadcast_tokens() as $token => $description): ?>
-							<li><b><?php echo esc_html($token); ?></b>: <?php echo esc_html($description); ?></li>
-							<?php endforeach; ?>
-						</ul>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<th><?php _e('Twitter @anywhere', Social::$i18n); ?></th>
-				<td>
-					<label for="social_twitter_anywhere_api_key"><?php _e('Consumer API Key', Social::$i18n); ?></label><br />
-					<input type="text" class="regular-text" name="social_twitter_anywhere_api_key" id="social_twitter_anywhere_api_key" value="<?php echo esc_attr(Social::option('twitter_anywhere_api_key')); ?>" />
-					<p class="description"><?php printf(__('To enable Twitter\'s @anywhere hovercards for Twitter usernames, enter your application\'s Consumer API key here. (<a href="%1$s" target="_blank">Click here to get an API key</a>)', Social::$i18n), 'https://dev.twitter.com/docs/anywhere'); ?></p>
-				</td>
-			</tr>
 			<?php if ($have_accounts): ?>
 			<tr>
-				<th><?php _e('Default accounts to broadcast to', Social::$i18n); ?></th>
+				<th><?php _e('Default accounts', Social::$i18n); ?></th>
 				<td>
 					<ul id="social-default-accounts" class="social-broadcastables">
 						<?php
@@ -128,10 +84,54 @@
 							}
 						?>
 					</ul>
-					<p class="description"><?php _e('Select'.' accounts above to have them auto-broadcast a teaser whenever you publish a post via XML-RPC or email. This only affects posts published remotely; if you&rsquo;re publishing from the post edit screen, you can handle broadcasting settings from there.', Social::$i18n); ?></p>
+					<p class="description"><?php _e('Accounts that will be selected by default; and will auto-broadcast in the default teaser format when you publish via XML-RPC or email.', Social::$i18n); ?></p>
 				</td>
 			</tr>
 			<?php endif ?>
+			<tr>
+				<th>
+					<label for="social_broadcast_format"><?php _e('Post broadcast format', Social::$i18n); ?></label>
+				</th>
+				<td>
+					<input type="text" class="regular-text" name="social_broadcast_format" id="social_broadcast_format" value="<?php echo esc_attr(Social::option('broadcast_format')); ?>" />
+					<p class="description"><?php _e('How you would like posts to be formatted when broadcasting to Twitter or Facebook?'); ?></p>
+
+					<div class="description">
+						<?php _e('Tokens:', Social::$i18n); ?>
+						<ul>
+							<?php foreach (Social::broadcast_tokens() as $token => $description): ?>
+							<li><b><?php echo esc_html($token); ?></b> - <?php echo esc_html($description); ?></li>
+							<?php endforeach; ?>
+						</ul>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					<label for="social_comment_broadcast_format"><?php _e('Comment broadcast format', Social::$i18n); ?></label>
+				</th>
+				<td>
+					<input type="text" class="regular-text" name="social_comment_broadcast_format" id="social_comment_broadcast_format" value="<?php echo esc_attr(Social::option('comment_broadcast_format')); ?>" />
+					<p class="description"><?php _e('How you would like comments to be formatted when broadcasting to Twitter or Facebook?'); ?></p>
+
+					<div class="description">
+						<?php _e('Tokens:', Social::$i18n); ?>
+						<ul>
+							<?php foreach (Social::comment_broadcast_tokens() as $token => $description): ?>
+							<li><b><?php echo esc_html($token); ?></b> - <?php echo esc_html($description); ?></li>
+							<?php endforeach; ?>
+						</ul>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<th><?php _e('Twitter @anywhere', Social::$i18n); ?></th>
+				<td>
+					<label for="social_twitter_anywhere_api_key"><?php _e('Consumer API Key', Social::$i18n); ?></label><br />
+					<input type="text" class="regular-text" name="social_twitter_anywhere_api_key" id="social_twitter_anywhere_api_key" value="<?php echo esc_attr(Social::option('twitter_anywhere_api_key')); ?>" />
+					<p class="description"><?php printf(__('To enable Twitter\'s @anywhere hovercards for Twitter usernames, enter your application\'s Consumer API key here. (<a href="%1$s" target="_blank">Click here to get an API key</a>)', Social::$i18n), 'https://dev.twitter.com/docs/anywhere'); ?></p>
+				</td>
+			</tr>
 		</table>
 		<?php
 			$fetch = Social::option('fetch_comments');
