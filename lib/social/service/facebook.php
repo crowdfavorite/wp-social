@@ -41,6 +41,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		$args = $args + array(
 			'message' => $message,
 		);
+		$args = apply_filters($this->key().'_broadcast_args', $args, $post_id);
 		return $this->request($account, 'feed', $args, 'POST');
 	}
 
