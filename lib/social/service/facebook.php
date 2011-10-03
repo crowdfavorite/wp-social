@@ -102,32 +102,32 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 			$like_count = 0;
 			foreach ($accounts[$this->_key] as $account) {
 				if (isset($post->broadcasted_ids[$this->_key][$account->id()])) {
-					foreach ($post->broadcasted_ids[$this->_key][$account->id()] as $broadcasted_id) {
-						$id = explode('_', $broadcasted_id);
-						$response = $this->request($account, $id[1].'/comments')->body();
-						if ($response !== false and isset($response->response) and isset($response->response->data) and is_array($response->response->data) and count($response->response->data)) {
-							foreach ($response->response->data as $result) {
-								$data = array(
-									'parent_id' => $broadcasted_id,
-								);
+					foreach ($post->broadcasted_ids[$this->_key][$account->id()] as $broadcasted_id => $data) {
+                        $id = explode('_', $broadcasted_id);
+                        $response = $this->request($account, $id[1].'/comments')->body();
+                        if ($response !== false and isset($response->response) and isset($response->response->data) and is_array($response->response->data) and count($response->response->data)) {
+                            foreach ($response->response->data as $result) {
+                                $data = array(
+                                    'parent_id' => $broadcasted_id,
+                                );
 
-								if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
-									Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', true, $data);
-									continue;
-								}
-								else if ($this->is_original_broadcast($post, $result->id)) {
-									continue;
-								}
+                                if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
+                                    Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', true, $data);
+                                    continue;
+                                }
+                                else if ($this->is_original_broadcast($post, $result->id)) {
+                                    continue;
+                                }
 
-								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
-								$post->aggregated_ids[$this->_key][] = $result->id;
+                                Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
+                                $post->aggregated_ids[$this->_key][] = $result->id;
 
-								$result->status_id = $broadcasted_id;
-								$post->results[$this->_key][$result->id] = $result;
-							}
-						}
+                                $result->status_id = $broadcasted_id;
+                                $post->results[$this->_key][$result->id] = $result;
+                            }
+                        }
 
-						$this->search_for_likes($account, $id[1], $id[0], $post, $like_count);
+                        $this->search_for_likes($account, $id[1], $id[0], $post, $like_count);
 					}
 				}
 			}

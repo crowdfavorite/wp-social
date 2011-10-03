@@ -98,74 +98,71 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		if (isset($accounts[$this->_key]) and count($accounts[$this->_key])) {
 			foreach ($accounts[$this->_key] as $account) {
 				if (isset($post->broadcasted_ids[$this->_key][$account->id()])) {
-					if (!is_array($post->broadcasted_ids[$this->_key][$account->id()])) {
-						$post->broadcasted_ids[$this->_key][$account->id()] = array($post->broadcasted_ids[$this->_key][$account->id()]);
-					}
-					foreach ($post->broadcasted_ids[$this->_key][$account->id()] as $broadcasted_id) {
-						// Retweets
-						$response = $this->request($account, 'statuses/retweets/'.$broadcasted_id);
-						if ($response->body() !== false and is_array($response->body()->response) and count($response->body()->response)) {
-							foreach ($response->body()->response as $result) {
-								$data = array(
-									'username' => $result->user->screen_name,
-								);
+					foreach ($post->broadcasted_ids[$this->_key][$account->id()] as $broadcasted_id => $data) {
+                        // Retweets
+                        $response = $this->request($account, 'statuses/retweets/'.$broadcasted_id);
+                        if ($response !== false and is_array($response->body()->response) and count($response->body()->response)) {
+                            foreach ($response->body()->response as $result) {
+                                $data = array(
+                                    'username' => $result->user->screen_name,
+                                );
 
-								if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
-									Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'retweet', true, $data);
-									continue;
-								}
-								else if ($this->is_original_broadcast($post, $result->id)) {
-									continue;
-								}
+                                if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
+                                    Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'retweet', true, $data);
+                                    continue;
+                                }
+                                else if ($this->is_original_broadcast($post, $result->id)) {
+                                    continue;
+                                }
 
-								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'retweet', false, $data);
-								$post->aggregated_ids[$this->_key][] = $result->id;
-								$post->results[$this->_key][$result->id] = (object) array(
-									'id' => $result->id,
-									'from_user_id' => $result->user->id,
-									'from_user' => $result->user->screen_name,
-									'text' => $result->text,
-									'created_at' => $result->created_at,
-									'profile_image_url' => $result->user->profile_image_url,
-									'in_reply_to_status_id' => $result->in_reply_to_status_id,
-									'raw' => $result,
-								);
-							}
-						}
+                                Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'retweet', false, $data);
+                                $post->aggregated_ids[$this->_key][] = $result->id;
+                                $post->results[$this->_key][$result->id] = (object) array(
+                                    'id' => $result->id,
+                                    'from_user_id' => $result->user->id,
+                                    'from_user' => $result->user->screen_name,
+                                    'text' => $result->text,
+                                    'created_at' => $result->created_at,
+                                    'profile_image_url' => $result->user->profile_image_url,
+                                    'in_reply_to_status_id' => $result->in_reply_to_status_id,
+                                    'raw' => $result,
+                                );
+                            }
+                        }
 
-						// Mentions
-						$response = $this->request($account, 'statuses/mentions', array(
-							'since_id' => $broadcasted_id,
-							'count' => 200
-						));
-						if ($response->body() !== false and is_array($response->body()->response) and count($response->body()->response)) {
-							foreach ($response->body()->response as $result) {
-								$data = array(
-									'username' => $result->user->screen_name,
-								);
+                        // Mentions
+                        $response = $this->request($account, 'statuses/mentions', array(
+                            'since_id' => $broadcasted_id,
+                            'count' => 200
+                        ));
+                        if ($response !== false and is_array($response->body()->response) and count($response->body()->response)) {
+                            foreach ($response->body()->response as $result) {
+                                $data = array(
+                                    'username' => $result->user->screen_name,
+                                );
 
-								if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
-									Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', true, $data);
-									continue;
-								}
-								else if ($this->is_original_broadcast($post, $result->id)) {
-									continue;
-								}
+                                if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
+                                    Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', true, $data);
+                                    continue;
+                                }
+                                else if ($this->is_original_broadcast($post, $result->id)) {
+                                    continue;
+                                }
 
-								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
-								$post->aggregated_ids[$this->_key][] = $result->id;
-								$post->results[$this->_key][$result->id] = (object) array(
-									'id' => $result->id,
-									'from_user_id' => $result->user->id,
-									'from_user' => $result->user->screen_name,
-									'text' => $result->text,
-									'created_at' => $result->created_at,
-									'profile_image_url' => $result->user->profile_image_url,
-									'in_reply_to_status_id' => $result->in_reply_to_status_id,
-									'raw' => $result,
-								);
-							}
-						}
+                                Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
+                                $post->aggregated_ids[$this->_key][] = $result->id;
+                                $post->results[$this->_key][$result->id] = (object) array(
+                                    'id' => $result->id,
+                                    'from_user_id' => $result->user->id,
+                                    'from_user' => $result->user->screen_name,
+                                    'text' => $result->text,
+                                    'created_at' => $result->created_at,
+                                    'profile_image_url' => $result->user->profile_image_url,
+                                    'in_reply_to_status_id' => $result->in_reply_to_status_id,
+                                    'raw' => $result,
+                                );
+                            }
+                        }
 					}
 				}
 			}

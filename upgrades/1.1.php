@@ -83,15 +83,19 @@ if (version_compare($installed_version, '1.1', '<')) {
 	$fetch = $wpdb->get_var("
 		SELECT option_value
 		  FROM $wpdb->options
-		 WHERE option_name = 'social_fetch_comments'
+		 WHERE option_name = 'social_system_crons'
 	");
 
-	$query = "UPDATE $wpdb->options SET option_name='social_fetch_comments'";
-	if (empty($fetch)) {
-		$query .= ", option_value='1'";
-	}
-	$query .= " WHERE option_name = 'social_system_crons'";
-	$wpdb->query($query);
+    if (empty($fetch)) {
+        $fetch = '1';
+    }
+    
+    $wpdb->query("
+        INSERT
+          INTO $wpdb->options (option_name, option_value)
+        VALUES('social_fetch_comments', '$fetch')
+            ON DUPLICATE KEY UPDATE option_id = option_id
+    ");
 
 	// Update all comment types
 	$keys = array();
@@ -130,3 +134,43 @@ UPDATE $wpdb->options
    SET option_name = 'social_default_accounts'
  WHERE option_name = 'social_xmlrpc_accounts'
 ");
+
+// Fix the broadcasted IDs format
+$results = $wpdb->get_results("
+SELECT meta_value, post_id
+  FROM $wpdb->postmeta
+ WHERE meta_key = '_social_broadcasted_ids'
+");
+foreach ($results as $result) {
+    $meta_value = maybe_unserialize($result->meta_value);
+    if (is_array($meta_value)) {
+        $_meta_value = array();
+        foreach ($meta_value as $service_key => $accounts) {
+            if (!isset($_meta_value[$service_key])) {
+                $_meta_value[$service_key] = array();
+            }
+
+            foreach ($accounts as $account_id => $broadcasted) {
+                if (!isset($_meta_value[$service_key][$account_id])) {
+                    $_meta_value[$service_key][$account_id] = array();
+                }
+
+                foreach ($broadcasted as $id => $data) {
+                    if ((int) $data) {
+                        $_meta_value[$service_key][$account_id][$data] = array(
+                            'username' => '',
+                            'message' => '',
+                        );
+                    }
+                    else {
+                        $_meta_value[$service_key][$account_id][$id] = $data;
+                    }
+                }
+            }
+        }
+
+        if (!empty($_meta_value)) {
+            update_post_meta($result->post_id, '_social_broadcasted_ids', $_meta_value);
+        }
+    }
+}

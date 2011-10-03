@@ -549,8 +549,8 @@ abstract class Social_Service {
 		}
 		
         if (isset($post->broadcasted_ids[$this->_key])) {
-            foreach ($post->broadcasted_ids[$this->_key] as $account_id => $broadcasted_ids) {
-                if (in_array($result_id, $broadcasted_ids)) {
+            foreach ($post->broadcasted_ids[$this->_key] as $account_id => $broadcasted) {
+                if (isset($broadcasted[$result_id])) {
                     return true;
                 }
             }

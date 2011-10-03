@@ -707,16 +707,18 @@ final class Social {
 		}
 	}
 
-	/**
-	 * Sets the broadcasted IDs for the post.
-	 *
-	 * @param  int     $post_id         post id
-	 * @param  string  $service         service key
-	 * @param  string  $account         account id
-	 * @param  string  $broadcasted_id  broadcasted id
-	 * @return void
-	 */
-	public function add_broadcasted_id($post_id, $service, $account, $broadcasted_id) {
+    /**
+     * Sets the broadcasted IDs for the post.
+     *
+     * @param  int     $post_id           post id
+     * @param  string  $service           service key
+     * @param  string  $broadcasted_id    broadcasted id
+     * @param  string  $message           broadcasted message
+     * @param  string  $account_id        account id
+     * @param  string  $account_username  broadcasted username
+     * @return void
+     */
+	public function add_broadcasted_id($post_id, $service, $broadcasted_id, $message, $account_id, $account_username) {
 		$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
 		if (empty($broadcasted_ids)) {
 			$broadcasted_ids = array();
@@ -726,12 +728,15 @@ final class Social {
 			$broadcasted_ids[$service] = array();
 		}
 
-		if (!isset($broadcasted_ids[$service][$account])) {
-			$broadcasted_ids[$service][$account] = array();
+		if (!isset($broadcasted_ids[$service][$account_id])) {
+			$broadcasted_ids[$service][$account_id] = array();
 		}
 
-		if (!in_array($broadcasted_id, $broadcasted_ids[$service][$account])) {
-			$broadcasted_ids[$service][$account][] = $broadcasted_id;
+		if (!isset($broadcasted_ids[$service][$account_id][$broadcasted_id])) {
+			$broadcasted_ids[$service][$account_id][$broadcasted_id] = array(
+                'username' => $account_username,
+                'message' => $message
+            );
 			update_post_meta($post_id, '_social_broadcasted_ids', $broadcasted_ids);
 		}
 	}

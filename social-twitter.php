@@ -66,6 +66,7 @@ final class Social_Twitter {
 		        $broadcasted_ids = array();
 	        }
 
+            $formatted_content = array();
 	        $_results = array();
             $in_reply_ids = array();
             foreach ($results as $result) {
@@ -78,12 +79,55 @@ final class Social_Twitter {
 				else if ($result->meta_key == 'social_raw_data') {
 					$raw = json_decode(base64_decode($result->meta_value));
 					if (isset($broadcasted_ids['twitter']) and isset($raw->retweeted_status) and isset($raw->retweeted_status->id)) {
-						foreach ($broadcasted_ids['twitter'] as $account_id => $_broadcasted_ids) {
-							if (in_array($raw->retweeted_status->id, $_broadcasted_ids)) {
+						foreach ($broadcasted_ids['twitter'] as $account_id => $broadcasted) {
+							if (isset($broadcasted[$raw->retweeted_status->id])) {
 								Social_Plugin::add_to_social_items('twitter', $result->comment_id, $comments, true);
 							}
 						}
 					}
+                    else {
+                        $service = Social::instance()->service('twitter');
+                        if ($service !== false) {
+                            if (empty($formatted_content)) {
+                                foreach ($broadcasted_ids['twitter'] as $account_id => $broadcasted) {
+                                    foreach ($broadcasted as $id => $data) {
+                                        $data_message = explode(' ', $data['message']);
+                                        $message = '';
+                                        foreach ($data_message as $_content) {
+                                            if (!empty($_content) and strpos($_content, 'http://') === false) {
+                                                $message .= $_content.' ';
+                                            }
+                                        }
+                                        $message = trim($message);
+
+                                        $formatted_content[$id] = array(
+                                            'username' => $data['username'],
+                                            'message' => md5($message),
+                                        );
+                                    }
+                                }
+                            }
+
+                            foreach ($formatted_content as $id => $data) {
+                                $text = explode(' ', trim($raw->text));
+                                $content = '';
+                                foreach ($text as $_content) {
+                                    if (!empty($_content) and
+                                        !in_array($_content, array('RT', '@'.$data['username'].':')) and
+                                        strpos($_content, 'http://') === false)
+                                    {
+                                        $content .= $_content.' ';
+                                    }
+                                }
+
+                                $content = md5(trim($content));
+                                if ($content == $data['message']) {
+                                    Social_Plugin::add_to_social_items('twitter', $result->comment_id, $comments, true);
+                                }
+                            }
+
+                        }
+                    }
 				}
 				else {
 					$_results[] = $result;

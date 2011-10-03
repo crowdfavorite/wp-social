@@ -394,6 +394,20 @@
 	font-weight: bold;
 }
 
+.cf-clearfix {
+	display: block;
+	zoom: 1;
+}
+
+.cf-clearfix:after {
+	content: " ";
+	display: block;
+	font-size: 0;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+
 /**
  * Meta Broadcast Box
  */
