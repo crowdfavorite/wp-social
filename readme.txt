@@ -217,6 +217,10 @@ You can install the "Subscribe to Comments" plugin written by Mark Jaquith.
 
 Download: http://wordpress.org/extend/plugins/subscribe-to-comments/
 
+= I occasionally receive a PHP notice of "Undefined property: WP_Http_Curl::$headers", what does this mean? =
+
+This is actually a bug in the WordPress core. This will be fixed in WordPress 3.3 according to this ticket http://core.trac.wordpress.org/ticket/18157.
+
 
 
 == Screenshots ==
