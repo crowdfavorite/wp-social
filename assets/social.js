@@ -115,8 +115,8 @@
 			/**
 			 * Inserts the Twitter username for the reply to content.
 			 *
+             * @param $author
 			 * @param $textarea
-			 * @param username
 			 * @param extraContent
 			 */
 			function insertTwitterUsername($author, $textarea, extraContent) {
