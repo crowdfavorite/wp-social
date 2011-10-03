@@ -399,14 +399,25 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
      *
      * @param  object  $item
      * @param  int     $count
+     * @param  array   $avatar_size
      * @return string
      */
-    public function social_item_output($item, $count = 0) {
+    public function social_item_output($item, $count = 0, array $avatar_size = array()) {
         $style = '';
         if ($count >= 10) {
             $style = ' style="display:none"';
         }
-        $image = sprintf('<img src="%s" width="24" height="24"%s />', $item->social_profile_image_url, $style);
+
+        $width = '24';
+        $height = '24';
+        if (isset($avatar_size['width'])) {
+            $width = $avatar_size['width'];
+        }
+        if (isset($avatar_size['height'])) {
+            $height = $avatar_size['height'];
+        }
+
+        $image = sprintf('<img src="%s" width="%s" height="%s"%s />', $item->social_profile_image_url, $width, $height, $style);
         return sprintf('<a href="%s">%s</a>', $this->status_url($item->comment_author, $item->social_status_id), $image);
     }
 

@@ -4,7 +4,7 @@
 		<?php
 			$i = 0;
 			foreach ($items as $item) {
-                echo $service->social_item_output($item, $i);
+                echo $service->social_item_output($item, $i, (isset($avatar_size) ? $avatar_size : array()));
                 ++$i;
 			}
 

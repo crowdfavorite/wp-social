@@ -67,6 +67,7 @@ ob_start();
 						unset($comments['social_items']);
 					}
 				}
+                sort($comments);
 			}
 
 			// Facebook counts
@@ -78,7 +79,7 @@ ob_start();
 				$facebook_count = $facebook_count + $groups['social-facebook-like'];
 			}
 
-			Social_Plugin::add_social_items_count($social_items, $groups);
+			Social::add_social_items_count($social_items, $groups);
 		?>
 		<ul class="social-nav social-clearfix">
 			<li class="social-all social-tab-main<?php echo (!isset($_GET['social_tab']) ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-all"><span><?php comments_number(__('0 Replies', Social::$i18n), __('1 Reply', Social::$i18n), __('% Replies', Social::$i18n)); ?></span></a></li>
@@ -96,8 +97,8 @@ ob_start();
 						echo '<div class="social-last-reply-when">'.sprintf(__('Last reply was %s ago', Social::$i18n), human_time_diff(strtotime($comments[(count($comments)-1)]->comment_date))).'</div>';
 					}
 
-					if (isset($social_items['parent']) and count($social_items['parent'])) {
-						foreach ($social_items['parent'] as $group => $items) {
+					if (count($social_items)) {
+						foreach ($social_items as $group => $items) {
 							$service = Social::instance()->service($group);
 							if ($service !== false) {
 								echo Social_View::factory('comment/social_item', array(

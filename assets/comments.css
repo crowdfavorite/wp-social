@@ -830,6 +830,15 @@ override submit styles in TwentyEleven theme */
     color: #666;
 }
 
+#social .social-items-comment {
+    margin-top: 10px;
+}
+
+#social .social-items-comment .social-items-and-more {
+    font-size: 11px;
+    margin-top: 3px;
+}
+
 .cf-clearfix {
 	display: block;
 	zoom: 1;

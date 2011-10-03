@@ -869,6 +869,28 @@ final class Social {
 		return $link;
 	}
 
+    /**
+     * Increments the service comment counter.
+     *
+     * @static
+     * @param  array  $items
+     * @param  array  $groups
+     */
+    public static function add_social_items_count($items, &$groups) {
+        foreach ($items as $group => $_items) {
+            if ($group == 'parent') {
+                self::add_social_items_count($_items, $groups);
+            }
+            else {
+                if (!isset($groups['social-'.$group])) {
+                    $groups['social-'.$group] = 0;
+                }
+
+                $groups['social-'.$group] = $groups['social-'.$group] + count($_items);
+            }
+        }
+    }
+
 	/**
 	 * Overrides the default WordPress comments_template function.
 	 *
@@ -1128,6 +1150,19 @@ final class Social {
 			}
 		}
 
+        // Social items?
+        $social_items = '';
+        if (isset($comment->social_items)) {
+            $social_items = Social_View::factory('comment/social_item', array(
+                'items' => $comment->social_items,
+                'service' => $service,
+                'avatar_size' => array(
+                    'width' => 18,
+                    'height' => 18,
+                )
+            ));
+        }
+
 		echo Social_View::factory('comment/comment', array(
 			'comment_type' => $comment_type,
 			'comment' => $comment,
@@ -1135,6 +1170,7 @@ final class Social {
 			'status_url' => $status_url,
 			'depth' => $depth,
 			'args' => $args,
+            'social_items' => $social_items,
 		));
 	}
 
