@@ -143,10 +143,11 @@ final class Social_Twitter {
                             isset($comments['social_items']['parent']['twitter'][$result->comment_id])) {
                             $comments['social_items']['parent']['twitter'][$result->comment_id]->{$result->meta_key} = $result->meta_value;
                         }
-                    }
-                    else if (isset($in_reply_ids[$result->meta_value])) {
-                        foreach ($in_reply_ids[$result->meta_value] AS $comment_id) {
-                            $parents[$comment_id] = $result->comment_id;
+
+                        if ($result->meta_key == 'social_status_id' and isset($in_reply_ids[$result->meta_value])) {
+                            foreach ($in_reply_ids[$result->meta_value] AS $comment_id) {
+                                $parents[$comment_id] = $result->comment_id;
+                            }
                         }
                     }
 				}
@@ -154,12 +155,12 @@ final class Social_Twitter {
 
             $_comments = array();
             if (!empty($parents)) {
-                foreach ($comments as $comment) {
-                    if (isset($parents[$comment->comment_ID])) {
+                foreach ($comments as $key => $comment) {
+                    if (is_object($comment) and isset($parents[$comment->comment_ID])) {
                         $comment->comment_parent = $parents[$comment->comment_ID];
                     }
 
-                    $_comments[] = $comment;
+                    $_comments[$key] = $comment;
                 }
 
                 $comments = $_comments;

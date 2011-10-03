@@ -38,8 +38,8 @@ ob_start();
 			$social_items = array();
 			if (get_comments_number()) {
 				$comments = apply_filters('social_comments_array', $comments, $post->ID);
-				foreach ($comments as $id => $comment) {
-					if (is_int($id)) {
+				foreach ($comments as $key => $comment) {
+					if (is_object($comment)) {
 						if (empty($comment->comment_type)) {
 							$comment_type = get_comment_meta($comment->comment_ID, 'social_comment_type', true);
 							if (empty($comment_type)) {
@@ -62,7 +62,7 @@ ob_start();
 							++$groups[$comment->comment_type];
 						}
 					}
-					else if ($id == 'social_items') {
+					else if ($key == 'social_items') {
 						$social_items = $comment;
 						unset($comments['social_items']);
 					}
