@@ -39,6 +39,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 			'status' => $message
 		);
 
+		$args = apply_filters($this->key().'_broadcast_args', $args, $post_id);
 		return $this->request($account, 'statuses/update', $args, 'POST');
 	}
 
