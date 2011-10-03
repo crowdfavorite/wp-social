@@ -4,11 +4,12 @@
 		<?php
 			$i = 0;
 			foreach ($items as $item) {
-				echo $service->social_item_output($item, $i);
+                echo $service->social_item_output($item, $i);
+                ++$i;
 			}
 
 			if ($i >= 10) {
-				echo sprintf(__('<a href="%s">... and %s more</a>', Social::$i18n), '', ($i - 10));
+				echo sprintf(__('<a href="%s" class="social-items-and-more">... and %s more</a>', Social::$i18n), '', ($i - 10));
 			}
 		?>
 	</div>

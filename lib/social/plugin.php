@@ -47,7 +47,7 @@ abstract class Social_Plugin {
 					$comments['social_items']['parent'][$key] = array();
 				}
 
-				$comments['social_items']['parent'][$key][] = $object;
+				$comments['social_items']['parent'][$key][$comment_id] = $object;
 			}
 			else {
 				if (!isset($comments['social_items'])) {

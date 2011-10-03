@@ -803,3 +803,27 @@ override submit styles in TwentyEleven theme */
 .social-aggregation-results {
 	white-space: nowrap;
 }
+
+/**
+ * Social items display (retweets, likes, etc...)
+ */
+.social-items {
+    clear: both;
+}
+
+#social .social-items-icon {
+    float: left;
+    margin: 2px 5px;
+}
+
+#social .social-items-comments img {
+    float: left;
+    margin: 2px;
+}
+
+#social .social-items-and-more {
+    float: left;
+    margin: 8px 0 0 5px;
+    font-size: 11px;
+    color: #666;
+}

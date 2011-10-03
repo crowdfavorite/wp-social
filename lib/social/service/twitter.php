@@ -387,6 +387,32 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		return 'id_str';
 	}
 
+    /**
+     * Returns the Social items icon.
+     *
+     * @return string
+     */
+    public function social_items_icon() {
+        $icon = apply_filters('social_items_icon', Social::$plugins_url.'assets/retweet.png', $this->_key);
+        return '<img src="'.$icon.'" alt="'.$this->_key.'" />';
+    }
+
+    /**
+     * Returns the avatar of the retweeted status.
+     *
+     * @param  object  $item
+     * @param  int     $count
+     * @return string
+     */
+    public function social_item_output($item, $count = 0) {
+        $style = '';
+        if ($count >= 10) {
+            $style = ' style="display:none"';
+        }
+        $image = sprintf('<img src="%s" width="24" height="24"%s />', $item->social_profile_image_url, $style);
+        return sprintf('<a href="%s">%s</a>', $this->status_url($item->comment_author, $item->social_status_id), $image);
+    }
+
 	/**
 	 * Returns the status URL to a broadcasted item.
 	 *

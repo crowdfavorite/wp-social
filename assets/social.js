@@ -268,5 +268,16 @@
                 T.hovercards();
             });
         }
+
+        /**
+         * Social items
+         */
+        if ($('.social-items-and-more').length) {
+            $('.social-items-and-more').click(function(e){
+                e.preventDefault();
+
+                $(this).hide().parent().find('img').show();
+            });
+        }
 	});
 })(jQuery);

@@ -58,6 +58,7 @@ final class Social_Twitter {
                    AND meta_key = 'social_in_reply_to_status_id'
                     OR meta_key = 'social_status_id'
                     OR meta_key = 'social_raw_data'
+                    OR meta_key = 'social_profile_image_url'
             ");
 
 			$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
@@ -92,11 +93,18 @@ final class Social_Twitter {
 			if (count($_results)) {
 				$parents = array();
 				foreach ($_results as $result) {
-					if (isset($in_reply_ids[$result->meta_value])) {
-						foreach ($in_reply_ids[$result->meta_value] AS $comment_id) {
-							$parents[$comment_id] = $result->comment_id;
-						}
-					}
+					if (in_array($result->meta_key, array('social_status_id', 'social_profile_image_url')) and isset($comments['social_items'])) {
+                        if (isset($comments['social_items']['parent']) and
+                            isset($comments['social_items']['parent']['twitter']) and
+                            isset($comments['social_items']['parent']['twitter'][$result->comment_id])) {
+                            $comments['social_items']['parent']['twitter'][$result->comment_id]->{$result->meta_key} = $result->meta_value;
+                        }
+                    }
+                    else if (isset($in_reply_ids[$result->meta_value])) {
+                        foreach ($in_reply_ids[$result->meta_value] AS $comment_id) {
+                            $parents[$comment_id] = $result->comment_id;
+                        }
+                    }
 				}
 			}
 
