@@ -243,7 +243,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					update_comment_meta($comment_id, 'social_status_id', (isset($result->status_id) ? $result->status_id : $result->id));
 
 					if (!isset($result->raw)) {
-						$result->raw = $result;
+                        $result = (object) array_merge((array) $result, array('raw' => $result));
 					}
 					update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($result->raw)));
 

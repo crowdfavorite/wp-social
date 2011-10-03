@@ -235,7 +235,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 				}
 
 				if (!isset($result->raw)) {
-					$result->raw = $result;
+					$result = (object) array_merge((array) $result, array('raw' => $result));
 				}
 				update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($result->raw)));
 

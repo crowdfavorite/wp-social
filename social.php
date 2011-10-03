@@ -618,6 +618,7 @@ final class Social {
 		// Button
 		if (!empty($button)) {
 			$button = Social_View::factory('wp-admin/post/meta/broadcast/parts/button', array(
+                'broadcasted' => $broadcasted,
 				'button_text' => $button,
 			));
 		}
