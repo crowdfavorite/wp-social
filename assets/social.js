@@ -74,6 +74,7 @@
 
 				$('.social-current-tab').removeClass('social-current-tab');
 				$(this).parent().addClass('social-current-tab');
+                $('.social-items').removeClass('social-comment-collapse');
 
 				var className = $(this).attr('rel');
 				if (className == 'social-all') {
@@ -85,7 +86,7 @@
 						$prevLink.attr('href', prevLink);
 					}
 
-					$('.social-commentlist li, .social-items').removeClass('social-comment-collapse');
+					$('.social-commentlist li').removeClass('social-comment-collapse');
 				} else {
                     $('.social-items:not(.'+className+')').addClass('social-comment-collapse');
 					$('.social-commentlist li').each(function() {
