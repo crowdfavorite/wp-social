@@ -106,6 +106,7 @@ ob_start();
 								));
 							}
 						}
+                        echo '<div class="cf-clearfix"></div>';
 					}
 				?>
 				<ol class="social-commentlist">

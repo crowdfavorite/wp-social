@@ -34,9 +34,9 @@ final class Social_Twitter {
 	}
 
 	/**
-	 * Pre-processor to the comments to match up in_reply_to_status_ids.
+	 * Pre-processor to the comments.
 	 *
-	 * @wp-filter comments_array
+	 * @wp-filter social_comments_array
 	 * @static
 	 * @param  array  $comments
 	 * @param  int    $post_id
