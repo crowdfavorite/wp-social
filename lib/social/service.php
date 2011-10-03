@@ -532,11 +532,22 @@ abstract class Social_Service {
 	/**
 	 * Checks to see if the result ID is the original broadcasted ID.
 	 *
-	 * @param  WP_Post  $post
-	 * @param  int      $result_id
+	 * @param  WP_Post|int  $post
+	 * @param  int          $result_id
 	 * @return bool
 	 */
-	protected function is_original_broadcast($post, $result_id) {
+	public function is_original_broadcast($post, $result_id) {
+		if (!is_object($post)) {
+			$broadcasted_ids = get_post_meta($post, '_social_broadcasted_ids', true);
+			if (empty($broadcasted_ids)) {
+				$broadcasted_ids = array();
+			}
+
+			$post = (object) array(
+				'broadcasted_ids' => $broadcasted_ids,
+			);
+		}
+		
         if (isset($post->broadcasted_ids[$this->_key])) {
             foreach ($post->broadcasted_ids[$this->_key] as $account_id => $broadcasted_ids) {
                 if (in_array($result_id, $broadcasted_ids)) {

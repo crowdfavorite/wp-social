@@ -103,8 +103,8 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 					foreach ($post->broadcasted_ids[$this->_key][$account->id()] as $broadcasted_id) {
 						// Retweets
 						$response = $this->request($account, 'statuses/retweets/'.$broadcasted_id);
-						if ($response->body() !== false and is_array($response->body()) and count($response->body())) {
-							foreach ($response->body() as $result) {
+						if ($response->body() !== false and is_array($response->body()->response) and count($response->body()->response)) {
+							foreach ($response->body()->response as $result) {
 								$data = array(
 									'username' => $result->user->screen_name,
 								);
@@ -127,7 +127,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 									'created_at' => $result->created_at,
 									'profile_image_url' => $result->user->profile_image_url,
 									'in_reply_to_status_id' => $result->in_reply_to_status_id,
-									'raw' => $result->raw,
+									'raw' => $result,
 								);
 							}
 						}
@@ -161,7 +161,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 									'created_at' => $result->created_at,
 									'profile_image_url' => $result->user->profile_image_url,
 									'in_reply_to_status_id' => $result->in_reply_to_status_id,
-									'raw' => $result->raw,
+									'raw' => $result,
 								);
 							}
 						}
@@ -237,13 +237,9 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 				}
 
 				if (!isset($result->raw)) {
-					$result->raw = json_encode($result);
+					$result->raw = $result;
 				}
-				else {
-					// Need to do this as the above $result->raw = $result resulted in an empty stdClass object...
-					$result->raw = json_encode($result->raw);
-				}
-				update_comment_meta($comment_id, 'social_raw_data', $result->raw);
+				update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($result->raw)));
 
 				if ($commentdata['comment_approved'] !== 'spam') {
 					if ($commentdata['comment_approved'] == '0') {

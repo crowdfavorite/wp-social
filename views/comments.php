@@ -35,28 +35,36 @@ ob_start();
 		<?php if (have_comments()): ?>
 		<?php
 			$groups = array();
+			$social_items = array();
 			if (get_comments_number()) {
-				foreach ($comments as $comment) {
-					if (empty($comment->comment_type)) {
-						$comment_type = get_comment_meta($comment->comment_ID, 'social_comment_type', true);
-						if (empty($comment_type)) {
-							$comment_type = 'wordpress';
-						}
-
-						if ($comment_type != 'wordpress') {
-							$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
-							if (empty($status_id)) {
+				$comments = apply_filters('social_comments_array', $comments, $post->ID);
+				foreach ($comments as $id => $comment) {
+					if (is_int($id)) {
+						if (empty($comment->comment_type)) {
+							$comment_type = get_comment_meta($comment->comment_ID, 'social_comment_type', true);
+							if (empty($comment_type)) {
 								$comment_type = 'wordpress';
 							}
-						}
-						$comment->comment_type = $comment_type;
-					}
 
-					if (!isset($groups[$comment->comment_type])) {
-						$groups[$comment->comment_type] = 1;
+							if ($comment_type != 'wordpress') {
+								$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
+								if (empty($status_id)) {
+									$comment_type = 'wordpress';
+								}
+							}
+							$comment->comment_type = $comment_type;
+						}
+
+						if (!isset($groups[$comment->comment_type])) {
+							$groups[$comment->comment_type] = 1;
+						}
+						else {
+							++$groups[$comment->comment_type];
+						}
 					}
-					else {
-						++$groups[$comment->comment_type];
+					else if ($id == 'social_items') {
+						$social_items = $comment;
+						unset($comments['social_items']);
 					}
 				}
 			}
@@ -69,6 +77,8 @@ ob_start();
 			if (isset($groups['social-facebook-like'])) {
 				$facebook_count = $facebook_count + $groups['social-facebook-like'];
 			}
+
+			Social_Plugin::add_social_items_count($social_items, $groups);
 		?>
 		<ul class="social-nav social-clearfix">
 			<li class="social-all social-tab-main<?php echo (!isset($_GET['social_tab']) ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-all"><span><?php comments_number(__('0 Replies', Social::$i18n), __('1 Reply', Social::$i18n), __('% Replies', Social::$i18n)); ?></span></a></li>
@@ -81,9 +91,30 @@ ob_start();
 		<!-- panel items -->
 		<div id="social-comments-tab-all" class="social-tabs-panel social-tabs-first-panel">
 			<div id="comments" class="social-comments">
-				<div class="social-last-reply-when"><?php printf(__('Last reply was %s ago', Social::$i18n), human_time_diff(strtotime($comments[(count($comments)-1)]->comment_date))); ?></div>
+				<?php
+					if (count($comments)) {
+						echo '<div class="social-last-reply-when">'.sprintf(__('Last reply was %s ago', Social::$i18n), human_time_diff(strtotime($comments[(count($comments)-1)]->comment_date))).'</div>';
+					}
+
+					if (isset($social_items['parent']) and count($social_items['parent'])) {
+						foreach ($social_items['parent'] as $group => $items) {
+							$service = Social::instance()->service($group);
+							if ($service !== false) {
+								echo Social_View::factory('comment/social_item', array(
+									'items' => $items,
+									'service' => $service,
+								));
+							}
+						}
+					}
+				?>
 				<ol class="social-commentlist">
-					<?php wp_list_comments(array('callback' => array(Social::instance(), 'comment'), 'walker' => new Social_Walker_Comment)); ?>
+					<?php
+						wp_list_comments(array(
+							'callback' => array(Social::instance(), 'comment'),
+							'walker' => new Social_Walker_Comment,
+						), $comments);
+					?>
 				</ol>
 
 				<?php if (get_comment_pages_count() > 1 and get_option('page_comments')): ?>

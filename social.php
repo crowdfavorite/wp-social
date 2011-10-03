@@ -1098,7 +1098,7 @@ final class Social {
 	 * @param  array   $args
 	 * @param  int     $depth
 	 */
-	public function comment($comment, $args, $depth) {
+	public function comment($comment, array $args = array(), $depth = 0) {
 		$comment_type = get_comment_meta($comment->comment_ID, 'social_comment_type', true);
 		if (empty($comment_type)) {
 			$comment_type = (empty($comment->comment_type) ? 'wordpress' : $comment->comment_type);

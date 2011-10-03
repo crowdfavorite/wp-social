@@ -242,13 +242,9 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					update_comment_meta($comment_id, 'social_status_id', (isset($result->status_id) ? $result->status_id : $result->id));
 
 					if (!isset($result->raw)) {
-						$result->raw = json_encode($result);
+						$result->raw = $result;
 					}
-					else {
-						// Need to do this as the above $result->raw = $result resulted in an empty stdClass object...
-						$result->raw = json_encode($result->raw);
-					}
-					update_comment_meta($comment_id, 'social_raw_data', $result->raw);
+					update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($result->raw)));
 
 					if ($commentdata['comment_approved'] !== 'spam') {
 						if ($commentdata['comment_approved'] == '0') {

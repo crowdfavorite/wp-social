@@ -62,13 +62,13 @@ final class Social_Controller_Aggregation extends Social_Controller {
 				$post->aggregated_ids[$key] = array();
 			}
 			
-			// URL Search
-			$urls = apply_filters('social_search_urls', $urls, $key);
-			$service->aggregate_by_url($post, $urls);
-
 			if (isset($broadcasted_ids[$key]) and count($broadcasted_ids[$key])) {
 				$service->aggregate_by_api($post);
 			}
+
+			// URL Search
+			$urls = apply_filters('social_search_urls', $urls, $key);
+			$service->aggregate_by_url($post, $urls);
 		}
 
 		if (count($post->results)) {

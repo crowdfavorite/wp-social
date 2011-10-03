@@ -51,15 +51,21 @@ final class Social_Twitter {
         }
 
         if (count($comment_ids)) {
-            $results = $wpdb->get_results("
+	        $results = $wpdb->get_results("
                 SELECT meta_key, meta_value, comment_id
                   FROM $wpdb->commentmeta
                  WHERE comment_id IN (".implode(',', $comment_ids).")
                    AND meta_key = 'social_in_reply_to_status_id'
                     OR meta_key = 'social_status_id'
+                    OR meta_key = 'social_raw_data'
             ");
 
-			$_results = array();
+			$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
+	        if (empty($broadcasted_ids)) {
+		        $broadcasted_ids = array();
+	        }
+
+	        $_results = array();
             $in_reply_ids = array();
             foreach ($results as $result) {
 				if ($result->meta_key == 'social_in_reply_to_status_id') {
@@ -67,6 +73,16 @@ final class Social_Twitter {
 						$in_reply_ids[$result->meta_value] = array();
 					}
 					$in_reply_ids[$result->meta_value][] = $result->comment_id;
+				}
+				else if ($result->meta_key == 'social_raw_data') {
+					$raw = json_decode(base64_decode($result->meta_value));
+					if (isset($broadcasted_ids['twitter']) and isset($raw->retweeted_status) and isset($raw->retweeted_status->id)) {
+						foreach ($broadcasted_ids['twitter'] as $account_id => $_broadcasted_ids) {
+							if (in_array($raw->retweeted_status->id, $_broadcasted_ids)) {
+								Social_Plugin::add_to_social_items('twitter', $result->comment_id, $comments, true);
+							}
+						}
+					}
 				}
 				else {
 					$_results[] = $result;
@@ -120,7 +136,7 @@ define('SOCIAL_TWITTER_FILE', __FILE__);
 // Filters
 add_filter('social_register_service', array('Social_Twitter', 'register_service'));
 add_filter('get_avatar_comment_types', array('Social_Twitter', 'get_avatar_comment_types'));
-add_filter('comments_array', array('Social_Twitter', 'comments_array'), 10, 2);
+add_filter('social_comments_array', array('Social_Twitter', 'comments_array'), 10, 2);
 add_action('wp_enqueue_scripts', array('Social_Twitter', 'enqueue_assets'));
 
 }
