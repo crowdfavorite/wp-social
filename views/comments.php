@@ -126,7 +126,6 @@ ob_start();
 				<?php endif; ?>
 			</div>
 		</div>
-		<?php else: ?>
 		<?php endif; ?>
 	</div>
 	<!-- #Comments Tabs -->

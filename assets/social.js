@@ -77,6 +77,8 @@
 
 				var className = $(this).attr('rel');
 				if (className == 'social-all') {
+                    $('.social-items').show();
+
 					if (nextLink !== null) {
 						$nextLink.attr('href', nextLink);
 					}
@@ -87,6 +89,11 @@
 
 					$('.social-commentlist li').removeClass('social-comment-collapse');
 				} else {
+                    $('.social-items').hide();
+                    if ($('.social-items.'+className).length) {
+                        $('.social-items.'+className).show();
+                    }
+
 					$('.social-commentlist li').each(function() {
 						if (!$(this).hasClass(className)) {
 							$(this).addClass('social-comment-collapse');

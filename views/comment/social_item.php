@@ -1,4 +1,4 @@
-<div class="social-items <?php echo $service->key(); ?>">
+<div class="social-items social-<?php echo $service->key(); ?>">
 	<div class="social-items-icon"><?php echo $service->social_items_icon(); ?></div>
 	<div class="social-items-comments">
 		<?php
