@@ -22,7 +22,7 @@ final class Social {
 	 */
 	// TODO uncomment this when 1.1 goes live.
 	//public static $api_url = 'https://sopresto.mailchimp.com/';
-	public static $api_url = 'https://dev.sopresto.com/dev.php/';
+	public static $api_url = 'https://soprestodev.mailchimp.com/dev.php/';
 
 	/**
 	 * @var  string  version number
