@@ -54,6 +54,7 @@ final class Social_Twitter {
             $working_comments = array();
             $comment_hashes = array();
             $broadcasted_retweets = array();
+            $in_reply_to_ids = array();
 
             // Store the broadcasted hashses
             $broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
@@ -89,6 +90,9 @@ final class Social_Twitter {
                             if ($result->meta_key == 'social_raw_data') {
                                 $result->meta_value = json_decode(base64_decode($result->meta_value));
                             }
+                            else if ($result->meta_key == 'social_status_id') {
+                                $in_reply_to_ids[$result->meta_value] = $result->comment_id;
+                            }
 
                             $comment->{$result->meta_key} = $result->meta_value;
                         }
@@ -116,6 +120,11 @@ final class Social_Twitter {
             // Loop through the comments again and see if they're a retweet of anything
             foreach ($comments as $comment) {
                 if (is_object($comment)) {
+                    // Match comments up to their parents, if they're a reply.
+                    if (isset($comment->social_in_reply_to_status_id) and isset($in_reply_to_ids[$comment->social_in_reply_to_status_id])) {
+                        $comment->comment_parent = $in_reply_to_ids[$comment->social_in_reply_to_status_id];
+                    }
+
                     if (isset($comment->social_retweet_hash) and isset($comment_hashes[$comment->social_retweet_hash])) {
                         if (isset($working_comments[$comment_hashes[$comment->social_retweet_hash]])) {
                             $working_comments[$comment_hashes[$comment->social_retweet_hash]]->social_items[] = $comment;
