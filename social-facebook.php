@@ -112,7 +112,7 @@ final class Social_Facebook {
 	 * @return array
 	 */
 	public static function comments_array(array $comments, $post_id) {
-
+		return $comments;
 	}
 
 } // End Social_Facebook
@@ -125,6 +125,6 @@ add_filter('social_authorize_url', array('Social_Facebook', 'social_authorize_ur
 add_filter('social_comment_type_to_service', array('Social_Facebook', 'comment_type_to_service'));
 add_filter('get_avatar', array('Social_Facebook', 'get_avatar'), 10, 5);
 add_filter('get_avatar_comment_types', array('Social_Facebook', 'get_avatar_comment_types'));
-add_filter('social_comments_array', array('Social_Twitter', 'comments_array'), 10, 2);
+add_filter('social_comments_array', array('Social_Facebook', 'comments_array'), 10, 2);
 
 }

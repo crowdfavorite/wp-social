@@ -90,36 +90,38 @@ final class Social_Twitter {
 			// Store meta and comment hashses
 			foreach ($comments as $comment) {
 				if (is_object($comment)) {
-					foreach ($results as $result) {
-						if ($comment->comment_ID == $result->comment_id) {
-							if ($result->meta_key == 'social_raw_data') {
-								$result->meta_value = json_decode(base64_decode($result->meta_value));
-							}
-							else {
-								if ($result->meta_key == 'social_status_id') {
-									$in_reply_to_ids[$result->meta_value] = $result->comment_id;
+					if ($comment->comment_type == 'twitter') {
+						foreach ($results as $result) {
+							if ($comment->comment_ID == $result->comment_id) {
+								if ($result->meta_key == 'social_raw_data') {
+									$result->meta_value = json_decode(base64_decode($result->meta_value));
 								}
+								else {
+									if ($result->meta_key == 'social_status_id') {
+										$in_reply_to_ids[$result->meta_value] = $result->comment_id;
+									}
+								}
+
+								$comment->{$result->meta_key} = $result->meta_value;
 							}
-
-							$comment->{$result->meta_key} = $result->meta_value;
 						}
-					}
 
-					// Comment a retweet?
-					if (substr($comment->comment_content, 0, 4) != 'RT @') {
-						if (isset($comment->social_status_id)) {
-							// Hash
-							if (isset($comment->social_raw_data)) {
-								$hash = self::strip_retweet_data($comment->comment_content, false);
-								$comment_hashes[$hash] = $comment->social_status_id;
+						// Comment a retweet?
+						if (substr($comment->comment_content, 0, 4) != 'RT @') {
+							if (isset($comment->social_status_id)) {
+								// Hash
+								if (isset($comment->social_raw_data)) {
+									$hash = self::strip_retweet_data($comment->comment_content, false);
+									$comment_hashes[$hash] = $comment->social_status_id;
+								}
+
+								$comment->social_items = array();
+								$working_comments[$comment->social_status_id] = $comment;
 							}
-
-							$comment->social_items = array();
-							$working_comments[$comment->social_status_id] = $comment;
 						}
-					}
-					else {
-						$comment->social_retweet_hash = self::strip_retweet_data($comment->comment_content);
+						else {
+							$comment->social_retweet_hash = self::strip_retweet_data($comment->comment_content);
+						}
 					}
 				}
 			}
@@ -127,21 +129,26 @@ final class Social_Twitter {
 			// Loop through the comments again and see if they're a retweet of anything
 			foreach ($comments as $comment) {
 				if (is_object($comment)) {
-					// Match comments up to their parents, if they're a reply.
-					if (isset($comment->social_in_reply_to_status_id) and isset($in_reply_to_ids[$comment->social_in_reply_to_status_id])) {
-						$comment->comment_parent = $in_reply_to_ids[$comment->social_in_reply_to_status_id];
-					}
-
-					if (isset($comment->social_retweet_hash) and isset($comment_hashes[$comment->social_retweet_hash])) {
-						if (isset($working_comments[$comment_hashes[$comment->social_retweet_hash]])) {
-							$working_comments[$comment_hashes[$comment->social_retweet_hash]]->social_items[] = $comment;
+					if ($comment->comment_type == 'twitter') {
+						// Match comments up to their parents, if they're a reply.
+						if (isset($comment->social_in_reply_to_status_id) and isset($in_reply_to_ids[$comment->social_in_reply_to_status_id])) {
+							$comment->comment_parent = $in_reply_to_ids[$comment->social_in_reply_to_status_id];
 						}
-						else {
-							if ($comment_hashes[$comment->social_retweet_hash] == 'broadcasted') {
-								$broadcasted_retweets[] = $comment;
+
+						if (isset($comment->social_retweet_hash) and isset($comment_hashes[$comment->social_retweet_hash])) {
+							if (isset($working_comments[$comment_hashes[$comment->social_retweet_hash]])) {
+								$working_comments[$comment_hashes[$comment->social_retweet_hash]]->social_items[] = $comment;
+							}
+							else {
+								if ($comment_hashes[$comment->social_retweet_hash] == 'broadcasted') {
+									$broadcasted_retweets[] = $comment;
+								}
 							}
 						}
 					}
+				    else {
+					    $working_comments[] = $comment;
+				    }
 				}
 			}
 

@@ -93,13 +93,13 @@ ob_start();
 			<div id="comments" class="social-comments">
 				<?php
 					if (count($comments)) {
-						echo '<div class="social-last-reply-when">'.sprintf(__('Last reply was %s ago', Social::$i18n), human_time_diff(strtotime($comments[(count($comments)-1)]->comment_date))).'</div>';
+						echo '<div class="social-last-reply-when">'.sprintf(__('Last reply was %s ago', Social::$i18n), human_time_diff(strtotime($comments[(count($comments)-1)]->comment_date_gmt))).'</div>';
 					}
 
 					if (count($social_items)) {
 						foreach ($social_items as $group => $items) {
 							$service = Social::instance()->service($group);
-							if ($service !== false) {
+							if ($service !== false and count($items)) {
 								echo Social_View::factory('comment/social_item', array(
 									'items' => $items,
 									'service' => $service,
