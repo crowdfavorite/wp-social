@@ -56,6 +56,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 *
 	 * @param  object  $post
 	 * @param  array   $urls
+	 *
 	 * @return void
 	 */
 	public function aggregate_by_url(&$post, array $urls) {
@@ -110,7 +111,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 			$like_count = 0;
 			foreach ($accounts[$this->_key] as $account) {
 				if (isset($post->broadcasted_ids[$this->_key][$account->id()])) {
-					foreach ($post->broadcasted_ids[$this->_key][$account->id()] as $broadcasted_id) {
+					foreach ($post->broadcasted_ids[$this->_key][$account->id()] as $broadcasted_id => $data) {
 						$id = explode('_', $broadcasted_id);
 						$response = $this->request($account, $id[1].'/comments')->body();
 						if ($response !== false and isset($response->response) and isset($response->response->data) and is_array($response->response->data) and count($response->response->data)) {
@@ -118,7 +119,6 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 								$data = array(
 									'parent_id' => $broadcasted_id,
 								);
-
 								if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
 									Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', true, $data);
 									continue;
@@ -243,9 +243,9 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				if (count($commentdata)) {
 					$user_id = (isset($result->like) ? $result->id : $result->from->id);
 					$commentdata = array_merge($commentdata, array(
-						'comment_post_ID' => $post->ID,
-						'comment_author_email' => $this->_key.'.'.$user_id.'@example.com',
-					));
+					                                              'comment_post_ID' => $post->ID,
+					                                              'comment_author_email' => $this->_key.'.'.$user_id.'@example.com',
+					                                         ));
 					$commentdata['comment_approved'] = wp_allow_comment($commentdata);
 					$comment_id = wp_insert_comment($commentdata);
 
@@ -254,13 +254,9 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					update_comment_meta($comment_id, 'social_status_id', (isset($result->status_id) ? $result->status_id : $result->id));
 
 					if (!isset($result->raw)) {
-						$result->raw = json_encode($result);
+						$result = (object) array_merge((array) $result, array('raw' => $result));
 					}
-					else {
-						// Need to do this as the above $result->raw = $result resulted in an empty stdClass object...
-						$result->raw = json_encode($result->raw);
-					}
-					update_comment_meta($comment_id, 'social_raw_data', $result->raw);
+					update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($result->raw)));
 
 					if ($commentdata['comment_approved'] !== 'spam') {
 						if ($commentdata['comment_approved'] == '0') {

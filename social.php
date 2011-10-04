@@ -618,6 +618,7 @@ final class Social {
 		// Button
 		if (!empty($button)) {
 			$button = Social_View::factory('wp-admin/post/meta/broadcast/parts/button', array(
+                'broadcasted' => $broadcasted,
 				'button_text' => $button,
 			));
 		}
@@ -707,16 +708,18 @@ final class Social {
 		}
 	}
 
-	/**
-	 * Sets the broadcasted IDs for the post.
-	 *
-	 * @param  int     $post_id         post id
-	 * @param  string  $service         service key
-	 * @param  string  $account         account id
-	 * @param  string  $broadcasted_id  broadcasted id
-	 * @return void
-	 */
-	public function add_broadcasted_id($post_id, $service, $account, $broadcasted_id) {
+    /**
+     * Sets the broadcasted IDs for the post.
+     *
+     * @param  int     $post_id           post id
+     * @param  string  $service           service key
+     * @param  string  $broadcasted_id    broadcasted id
+     * @param  string  $message           broadcasted message
+     * @param  string  $account_id        account id
+     * @param  string  $account_username  broadcasted username
+     * @return void
+     */
+	public function add_broadcasted_id($post_id, $service, $broadcasted_id, $message, $account_id, $account_username) {
 		$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
 		if (empty($broadcasted_ids)) {
 			$broadcasted_ids = array();
@@ -726,12 +729,12 @@ final class Social {
 			$broadcasted_ids[$service] = array();
 		}
 
-		if (!isset($broadcasted_ids[$service][$account])) {
-			$broadcasted_ids[$service][$account] = array();
+		if (!isset($broadcasted_ids[$service][$account_id])) {
+			$broadcasted_ids[$service][$account_id] = array();
 		}
 
-		if (!in_array($broadcasted_id, $broadcasted_ids[$service][$account])) {
-			$broadcasted_ids[$service][$account][] = $broadcasted_id;
+		if (!isset($broadcasted_ids[$service][$account_id][$broadcasted_id])) {
+			$broadcasted_ids[$service][$account_id][$broadcasted_id] = $message;
 			update_post_meta($post_id, '_social_broadcasted_ids', $broadcasted_ids);
 		}
 	}
@@ -862,6 +865,28 @@ final class Social {
 
 		return $link;
 	}
+
+    /**
+     * Increments the service comment counter.
+     *
+     * @static
+     * @param  array  $items
+     * @param  array  $groups
+     */
+    public static function add_social_items_count($items, &$groups) {
+        foreach ($items as $group => $_items) {
+            if ($group == 'parent') {
+                self::add_social_items_count($_items, $groups);
+            }
+            else {
+                if (!isset($groups['social-'.$group])) {
+                    $groups['social-'.$group] = 0;
+                }
+
+                $groups['social-'.$group] = $groups['social-'.$group] + count($_items);
+            }
+        }
+    }
 
 	/**
 	 * Overrides the default WordPress comments_template function.
@@ -1098,7 +1123,7 @@ final class Social {
 	 * @param  array   $args
 	 * @param  int     $depth
 	 */
-	public function comment($comment, $args, $depth) {
+	public function comment($comment, array $args = array(), $depth = 0) {
 		$comment_type = get_comment_meta($comment->comment_ID, 'social_comment_type', true);
 		if (empty($comment_type)) {
 			$comment_type = (empty($comment->comment_type) ? 'wordpress' : $comment->comment_type);
@@ -1122,6 +1147,19 @@ final class Social {
 			}
 		}
 
+        // Social items?
+        $social_items = '';
+        if (!empty($comment->social_items)) {
+            $social_items = Social_View::factory('comment/social_item', array(
+                'items' => $comment->social_items,
+                'service' => $service,
+                'avatar_size' => array(
+                    'width' => 18,
+                    'height' => 18,
+                )
+            ));
+        }
+
 		echo Social_View::factory('comment/comment', array(
 			'comment_type' => $comment_type,
 			'comment' => $comment,
@@ -1129,6 +1167,7 @@ final class Social {
 			'status_url' => $status_url,
 			'depth' => $depth,
 			'args' => $args,
+            'social_items' => $social_items,
 		));
 	}
 

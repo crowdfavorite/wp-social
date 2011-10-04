@@ -74,6 +74,7 @@
 
 				$('.social-current-tab').removeClass('social-current-tab');
 				$(this).parent().addClass('social-current-tab');
+                $('.social-items').removeClass('social-comment-collapse');
 
 				var className = $(this).attr('rel');
 				if (className == 'social-all') {
@@ -87,6 +88,7 @@
 
 					$('.social-commentlist li').removeClass('social-comment-collapse');
 				} else {
+                    $('.social-items:not(.'+className+')').addClass('social-comment-collapse');
 					$('.social-commentlist li').each(function() {
 						if (!$(this).hasClass(className)) {
 							$(this).addClass('social-comment-collapse');
@@ -113,8 +115,8 @@
 			/**
 			 * Inserts the Twitter username for the reply to content.
 			 *
+             * @param $author
 			 * @param $textarea
-			 * @param username
 			 * @param extraContent
 			 */
 			function insertTwitterUsername($author, $textarea, extraContent) {
@@ -266,6 +268,17 @@
         if (typeof twttr != 'undefined') {
             twttr.anywhere(function(T){
                 T.hovercards();
+            });
+        }
+
+        /**
+         * Social items
+         */
+        if ($('.social-items-and-more').length) {
+            $('.social-items-and-more').click(function(e){
+                e.preventDefault();
+
+                $(this).hide().parent().find('img').show();
             });
         }
 	});

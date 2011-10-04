@@ -35,8 +35,16 @@ ob_start();
 		<?php if (have_comments()): ?>
 		<?php
 			$groups = array();
+			$social_items = array();
 			if (get_comments_number()) {
-				foreach ($comments as $comment) {
+				$comments = apply_filters('social_comments_array', $comments, $post->ID);
+
+				if (isset($comments['social_items'])) {
+					$social_items = $comments['social_items'];
+				    unset($comments['social_items']);
+				}
+
+				foreach ($comments as $key => $comment) {
 					if (empty($comment->comment_type)) {
 						$comment_type = get_comment_meta($comment->comment_ID, 'social_comment_type', true);
 						if (empty($comment_type)) {
@@ -69,6 +77,8 @@ ob_start();
 			if (isset($groups['social-facebook-like'])) {
 				$facebook_count = $facebook_count + $groups['social-facebook-like'];
 			}
+
+			Social::add_social_items_count($social_items, $groups);
 		?>
 		<ul class="social-nav social-clearfix">
 			<li class="social-all social-tab-main<?php echo (!isset($_GET['social_tab']) ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-all"><span><?php comments_number(__('0 Replies', Social::$i18n), __('1 Reply', Social::$i18n), __('% Replies', Social::$i18n)); ?></span></a></li>
@@ -81,9 +91,31 @@ ob_start();
 		<!-- panel items -->
 		<div id="social-comments-tab-all" class="social-tabs-panel social-tabs-first-panel">
 			<div id="comments" class="social-comments">
-				<div class="social-last-reply-when"><?php printf(__('Last reply was %s ago', Social::$i18n), human_time_diff(strtotime($comments[(count($comments)-1)]->comment_date))); ?></div>
+				<?php
+					if (count($comments)) {
+						echo '<div class="social-last-reply-when">'.sprintf(__('Last reply was %s ago', Social::$i18n), human_time_diff(strtotime($comments[(count($comments)-1)]->comment_date))).'</div>';
+					}
+
+					if (count($social_items)) {
+						foreach ($social_items as $group => $items) {
+							$service = Social::instance()->service($group);
+							if ($service !== false) {
+								echo Social_View::factory('comment/social_item', array(
+									'items' => $items,
+									'service' => $service,
+								));
+							}
+						}
+                        echo '<div class="cf-clearfix"></div>';
+					}
+				?>
 				<ol class="social-commentlist">
-					<?php wp_list_comments(array('callback' => array(Social::instance(), 'comment'), 'walker' => new Social_Walker_Comment)); ?>
+					<?php
+						wp_list_comments(array(
+							'callback' => array(Social::instance(), 'comment'),
+							'walker' => new Social_Walker_Comment,
+						), $comments);
+					?>
 				</ol>
 
 				<?php if (get_comment_pages_count() > 1 and get_option('page_comments')): ?>
@@ -95,7 +127,6 @@ ob_start();
 				<?php endif; ?>
 			</div>
 		</div>
-		<?php else: ?>
 		<?php endif; ?>
 	</div>
 	<!-- #Comments Tabs -->

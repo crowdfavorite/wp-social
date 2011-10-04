@@ -2,7 +2,7 @@
 /**
  * Twitter implementation for Social.
  *
- * @package Social
+ * @package    Social
  * @subpackage plugins
  */
 if (class_exists('Social') and !class_exists('Social_Facebook')) {
@@ -14,7 +14,9 @@ final class Social_Facebook {
 	 *
 	 * @static
 	 * @wp-filter  social_register_service
+	 *
 	 * @param  array  $services
+	 *
 	 * @return array
 	 */
 	public static function register_service(array $services) {
@@ -68,7 +70,10 @@ final class Social_Facebook {
 	 * @return array
 	 */
 	public static function get_avatar_comment_types(array $types) {
-		return array_merge($types, array('social-facebook', 'social-facebook-like'));
+		return array_merge($types, array(
+		                                'social-facebook',
+		                                'social-facebook-like'
+		                           ));
 	}
 
 	/**
@@ -97,15 +102,29 @@ final class Social_Facebook {
 		return $avatar;
 	}
 
+	/**
+	 * Pre-processor to the comments.
+	 *
+	 * @wp-filter social_comments_array
+	 * @static
+	 * @param  array  $comments
+	 * @param  int    $post_id
+	 * @return array
+	 */
+	public static function comments_array(array $comments, $post_id) {
+
+	}
+
 } // End Social_Facebook
 
 define('SOCIAL_FACEBOOK_FILE', __FILE__);
-	
+
 // Filters
 add_filter('social_register_service', array('Social_Facebook', 'register_service'));
 add_filter('social_authorize_url', array('Social_Facebook', 'social_authorize_url'), 10, 2);
 add_filter('social_comment_type_to_service', array('Social_Facebook', 'comment_type_to_service'));
 add_filter('get_avatar', array('Social_Facebook', 'get_avatar'), 10, 5);
 add_filter('get_avatar_comment_types', array('Social_Facebook', 'get_avatar_comment_types'));
+add_filter('social_comments_array', array('Social_Twitter', 'comments_array'), 10, 2);
 
 }
