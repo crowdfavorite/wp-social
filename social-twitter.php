@@ -51,6 +51,26 @@ final class Social_Twitter {
         }
 
         if (count($comment_ids)) {
+            $working_comments = array();
+            $comment_hashes = array();
+            $broadcasted_retweets = array();
+
+            // Store the broadcasted hashses
+            $broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
+            if (empty($broadcasted_ids)) {
+                $broadcasted_ids = array();
+            }
+            
+            if (isset($broadcasted_ids['twitter'])) {
+                foreach ($broadcasted_ids['twitter'] as $broadcasted) {
+                    foreach ($broadcasted as $id => $message) {
+                        $hash = self::strip_retweet_data($message, false);
+                        $comment_hashes[$hash] = 'broadcasted';
+                    }
+                }
+            }
+
+            // Load the comment meta
 	        $results = $wpdb->get_results("
                 SELECT meta_key, meta_value, comment_id
                   FROM $wpdb->commentmeta
@@ -61,156 +81,65 @@ final class Social_Twitter {
                     OR meta_key = 'social_profile_image_url'
             ");
 
-			$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
-	        if (empty($broadcasted_ids)) {
-		        $broadcasted_ids = array();
-	        }
+            // Store meta and comment hashses
+            foreach ($comments as $comment) {
+                if (is_object($comment)) {
+                    foreach ($results as $result) {
+                        if ($comment->comment_ID == $result->comment_id) {
+                            if ($result->meta_key == 'social_raw_data') {
+                                $result->meta_value = json_decode(base64_decode($result->meta_value));
+                            }
 
-            $social_items = array();
-            if (isset($comments['social_items'])) {
-                $social_items = $comments['social_items'];
-                unset($comments['social_items']);
-            }
+                            $comment->{$result->meta_key} = $result->meta_value;
+                        }
+                    }
 
-            $_results = array();
-            $in_reply_ids = array();
-            $comment_raw = array();
-            $formatted_content = array();
-            foreach ($results as $result) {
-				if ($result->meta_key == 'social_in_reply_to_status_id') {
-					if (!isset($in_reply_ids[$result->meta_value])) {
-						$in_reply_ids[$result->meta_value] = array();
-					}
-					$in_reply_ids[$result->meta_value][] = $result->comment_id;
-				}
-				else if ($result->meta_key == 'social_raw_data') {
-					$raw = json_decode(base64_decode($result->meta_value));
-                    $comment_raw[$result->comment_id] = $raw;
-					if (isset($broadcasted_ids['twitter']) and isset($raw->retweeted_status) and isset($raw->retweeted_status->id)) {
-						foreach ($broadcasted_ids['twitter'] as $broadcasted) {
-							if (isset($broadcasted[$raw->retweeted_status->id])) {
-								self::add_to_social_items($result->comment_id, $comments, $social_items);
-							}
-						}
-					}
+                    // Comment a retweet?
+                    if (substr($comment->comment_content, 0, 4) != 'RT @') {
+                        if (isset($comment->social_status_id)) {
+                            // Hash
+                            if (isset($comment->social_raw_data)) {
+                                $hash = self::strip_retweet_data($comment->comment_content, false);
+                                $comment_hashes[$hash] = $comment->social_status_id;
+                            }
+
+                            $comment->social_items = array();
+                            $working_comments[$comment->social_status_id] = $comment;
+                        }
+                    }
                     else {
-                        $service = Social::instance()->service('twitter');
-                        if ($service !== false) {
-                            if (empty($formatted_content)) {
-                                foreach ($broadcasted_ids['twitter'] as $broadcasted) {
-                                    foreach ($broadcasted as $id => $data) {
-                                        $message = self::strip_retweet_data($data['message'], $data['username'], false);
-                                        $formatted_content[$id] = array(
-                                            'username' => $data['username'],
-                                            'message' => $message,
-                                        );
-                                    }
-                                }
-                            }
-
-                            foreach ($formatted_content as $data) {
-                                $content = self::strip_retweet_data($raw->text, $data['username']);
-                                if ($content == $data['message']) {
-                                    self::add_to_social_items($result->comment_id, $comments, $social_items);
-                                }
-                            }
-
-                        }
+                        $comment->social_retweet_hash = self::strip_retweet_data($comment->comment_content);
                     }
-				}
-				else {
-					$_results[] = $result;
-				}
-            }
-
-			if (count($_results)) {
-				$parents = array();
-				foreach ($_results as $key => $result) {
-                    $unset = false;
-					if (in_array($result->meta_key, array('social_status_id', 'social_profile_image_url'))) {
-                        if (isset($social_items['twitter']) and isset($social_items['twitter'][$result->comment_id])) {
-                            $social_items['twitter'][$result->comment_id]->{$result->meta_key} = $result->meta_value;
-                            $unset = true;
-                        }
-
-                        if ($result->meta_key == 'social_status_id' and isset($in_reply_ids[$result->meta_value])) {
-                            foreach ($in_reply_ids[$result->meta_value] AS $comment_id) {
-                                $parents[$comment_id] = $result->comment_id;
-                            }
-                            $unset = true;
-                        }
-                    }
-
-                    if ($unset) {
-                        $_results[$key];
-                    }
-				}
-			}
-            sort($_results);
-
-            $_comments = array();
-            if (!empty($parents)) {
-                foreach ($comments as $key => $comment) {
-                    if (is_object($comment)) {
-                        if (isset($parents[$comment->comment_ID])) {
-                            $comment->comment_parent = $parents[$comment->comment_ID];
-                        }
-                        else {
-                            $comment->social_hashed_content = self::strip_retweet_data($comment->comment_content, $comment->comment_author);
-                        }
-                    }
-
-                    $_comments[$key] = $comment;
-                }
-                $comments = $_comments;
-
-                // Now attempt to match retweets of children comments
-                $retweets = array();
-                foreach ($comments as $key => $comment) {
-                    if (is_object($comment) and substr($comment->comment_content, 0, 4) == 'RT @') {
-                        $found = false;
-                        foreach ($comments as $_comment) {
-                            $hashed = self::strip_retweet_data($comment->comment_content, $_comment->comment_author);
-                            $_comment_hashed = self::strip_retweet_data($_comment->comment_content, $_comment->comment_author, false);
-                            if ($hashed == $_comment_hashed) {
-                                if (!isset($_comments[$_comment->comment_ID])) {
-                                    $retweets[$_comment->comment_ID] = array();
-                                }
-
-                                foreach ($_results as $result) {
-                                    $comment->{$result->meta_key} = $result->meta_value;
-                                }
-
-                                $found = true;
-                                $retweets[$_comment->comment_ID][] = $comment;
-                                break;
-                            }
-                        }
-
-                        if ($found) {
-                            unset($comments[$key]);
-                        }
-                    }
-                }
-
-                if (count($retweets)) {
-                    $_comments = array();
-                    foreach ($comments as $key => $comment) {
-                        if (is_object($comment) and isset($retweets[$comment->comment_ID])) {
-                            $comment->social_items = $retweets[$comment->comment_ID];
-                        }
-
-                        $_comments[$key] = $comment;
-                    }
-
-                    $comments = $_comments;
                 }
             }
 
-            if (count($social_items)) {
-                $comments['social_items'] = $social_items;
+            // Loop through the comments again and see if they're a retweet of anything
+            foreach ($comments as $comment) {
+                if (is_object($comment)) {
+                    if (isset($comment->social_retweet_hash) and isset($comment_hashes[$comment->social_retweet_hash])) {
+                        if (isset($working_comments[$comment_hashes[$comment->social_retweet_hash]])) {
+                            $working_comments[$comment_hashes[$comment->social_retweet_hash]]->social_items[] = $comment;
+                        }
+                        else if ($comment_hashes[$comment->social_retweet_hash] == 'broadcasted') {
+                            $broadcasted_retweets[] = $comment;
+                        }
+                    }
+                }
             }
+
+            // Merge social items
+            if (!isset($comments['social_items'])) {
+                $comments = array();
+                $comments['social_items'] = array();
+            }
+
+            if (!isset($comments['social_items']['twitter'])) {
+                $comments['social_items']['twitter'] = $broadcasted_retweets;
+            }
+
+            $comments = array_merge($comments, $working_comments);
         }
+
 		return $comments;
     }
 
@@ -232,16 +161,15 @@ final class Social_Twitter {
      *
      * @static
      * @param  string  $text
-     * @param  string  $username
      * @param  bool    $retweet   is this a reply comment?
      * @return string
      */
-    private static function strip_retweet_data($text, $username, $retweet = true) {
+    private static function strip_retweet_data($text, $retweet = true) {
         $text = explode(' ', trim($text));
         $content = '';
         foreach ($text as $_content) {
             if (!empty($_content) and strpos($_content, 'http://') === false) {
-                if ($retweet and in_array($_content, array('RT', '@'.$username.':'))) {
+                if ($retweet and ($_content == 'RT' or preg_match('/@([\w_]+):/i', $_content))) {
                     continue;
                 }
                 

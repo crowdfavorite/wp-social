@@ -157,10 +157,7 @@ foreach ($results as $result) {
 
                 foreach ($broadcasted as $id => $data) {
                     if ((int) $data) {
-                        $_meta_value[$service_key][$account_id][$data] = array(
-                            'username' => '',
-                            'message' => '',
-                        );
+                        $_meta_value[$service_key][$account_id][$data] = '';
                     }
                     else {
                         $_meta_value[$service_key][$account_id][$id] = $data;

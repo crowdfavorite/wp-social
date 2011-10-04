@@ -734,10 +734,7 @@ final class Social {
 		}
 
 		if (!isset($broadcasted_ids[$service][$account_id][$broadcasted_id])) {
-			$broadcasted_ids[$service][$account_id][$broadcasted_id] = array(
-                'username' => $account_username,
-                'message' => $message
-            );
+			$broadcasted_ids[$service][$account_id][$broadcasted_id] = $message;
 			update_post_meta($post_id, '_social_broadcasted_ids', $broadcasted_ids);
 		}
 	}
@@ -1152,7 +1149,7 @@ final class Social {
 
         // Social items?
         $social_items = '';
-        if (isset($comment->social_items)) {
+        if (!empty($comment->social_items)) {
             $social_items = Social_View::factory('comment/social_item', array(
                 'items' => $comment->social_items,
                 'service' => $service,
