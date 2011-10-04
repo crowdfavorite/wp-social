@@ -2,7 +2,7 @@
 /**
  * Facebook implementation for the service.
  *
- * @package Social
+ * @package    Social
  * @subpackage services
  */
 final class Social_Service_Facebook extends Social_Service implements Social_Interface_Service {
@@ -25,16 +25,22 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * Broadcasts the message to the specified account. Returns the broadcasted ID.
 	 *
 	 * @param  Social_Service_Account  $account  account to broadcast to
-	 * @param  string  $message  message to broadcast
-	 * @param  array   $args  extra arguments to pass to the request
-	 * @param  int     $post_id  post ID being broadcasted
+	 * @param  string                  $message  message to broadcast
+	 * @param  array                   $args     extra arguments to pass to the request
+	 * @param  int                     $post_id  post ID being broadcasted
+	 *
 	 * @return Social_Response
 	 */
 	public function broadcast($account, $message, array $args = array(), $post_id = null) {
+		global $post;
 		if (has_post_thumbnail($post_id)) {
+			$post = get_post($post_id);
 			$image = wp_get_attachment_image_src(get_post_thumbnail_id($post_id), 'single-post-thumbnail');
 			$args = $args + array(
-				'link' => $image[0]
+				'link' => get_post_permalink($post_id),
+				'title' => $post->post_title,
+				'picture' => $image[0],
+				'description' => get_the_excerpt(),
 			);
 		}
 
@@ -50,6 +56,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 *
 	 * @param  object  $post
 	 * @param  array   $urls
+	 *
 	 * @return void
 	 */
 	public function aggregate_by_url(&$post, array $urls) {
@@ -70,8 +77,10 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url', true);
 								continue;
 							}
-							else if ($this->is_original_broadcast($post, $result->id)) {
-								continue;
+							else {
+								if ($this->is_original_broadcast($post, $result->id)) {
+									continue;
+								}
 							}
 
 							Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url');
@@ -103,31 +112,32 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 			foreach ($accounts[$this->_key] as $account) {
 				if (isset($post->broadcasted_ids[$this->_key][$account->id()])) {
 					foreach ($post->broadcasted_ids[$this->_key][$account->id()] as $broadcasted_id => $data) {
-                        $id = explode('_', $broadcasted_id);
-                        $response = $this->request($account, $id[1].'/comments')->body();
-                        if ($response !== false and isset($response->response) and isset($response->response->data) and is_array($response->response->data) and count($response->response->data)) {
-                            foreach ($response->response->data as $result) {
-                                $data = array(
-                                    'parent_id' => $broadcasted_id,
-                                );
+						$id = explode('_', $broadcasted_id);
+						$response = $this->request($account, $id[1].'/comments')->body();
+						if ($response !== false and isset($response->response) and isset($response->response->data) and is_array($response->response->data) and count($response->response->data)) {
+							foreach ($response->response->data as $result) {
+								$data = array(
+									'parent_id' => $broadcasted_id,
+								);
+								if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
+									Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', true, $data);
+									continue;
+								}
+								else {
+									if ($this->is_original_broadcast($post, $result->id)) {
+										continue;
+									}
+								}
 
-                                if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
-                                    Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', true, $data);
-                                    continue;
-                                }
-                                else if ($this->is_original_broadcast($post, $result->id)) {
-                                    continue;
-                                }
+								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
+								$post->aggregated_ids[$this->_key][] = $result->id;
 
-                                Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
-                                $post->aggregated_ids[$this->_key][] = $result->id;
+								$result->status_id = $broadcasted_id;
+								$post->results[$this->_key][$result->id] = $result;
+							}
+						}
 
-                                $result->status_id = $broadcasted_id;
-                                $post->results[$this->_key][$result->id] = $result;
-                            }
-                        }
-
-                        $this->search_for_likes($account, $id[1], $id[0], $post, $like_count);
+						$this->search_for_likes($account, $id[1], $id[0], $post, $like_count);
 					}
 				}
 			}
@@ -141,11 +151,11 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	/**
 	 * Searches for likes on the post.
 	 *
-	 * @param  object   $account
-	 * @param  string   $id
-	 * @param  int      $parent_id
-	 * @param  WP_Post  $post
-	 * @param  int      $like_count
+	 * @param  object       $account
+	 * @param  string       $id
+	 * @param  int          $parent_id
+	 * @param  WP_Post      $post
+	 * @param  int          $like_count
 	 * @param  bool|string  $next
 	 * @return void
 	 */
@@ -159,7 +169,8 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		if ($response !== false and isset($response->response) and isset($response->response->data) and is_array($response->response->data) and count($response->response->data)) {
 			foreach ($response->response->data as $result) {
 				if ((isset($post->results) and isset($post->results[$this->_key]) and isset($post->results[$this->_key][$result->id])) or
-				    (in_array($result->id, $post->aggregated_ids[$this->_key]))) {
+					(in_array($result->id, $post->aggregated_ids[$this->_key]))
+				) {
 					continue;
 				}
 				$post->aggregated_ids[$this->_key][] = $result->id;
@@ -201,7 +212,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					if (!is_wp_error($request)) {
 						$response = json_decode($request['body']);
 
-						$account = (object)array(
+						$account = (object) array(
 							'user' => $response
 						);
 						$class = 'Social_Service_'.$this->_key.'_Account';
@@ -232,18 +243,18 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				if (count($commentdata)) {
 					$user_id = (isset($result->like) ? $result->id : $result->from->id);
 					$commentdata = array_merge($commentdata, array(
-						'comment_post_ID' => $post->ID,
-						'comment_author_email' => $this->_key.'.'.$user_id.'@example.com',
-					));
+					                                              'comment_post_ID' => $post->ID,
+					                                              'comment_author_email' => $this->_key.'.'.$user_id.'@example.com',
+					                                         ));
 					$commentdata['comment_approved'] = wp_allow_comment($commentdata);
 					$comment_id = wp_insert_comment($commentdata);
 
 					update_comment_meta($comment_id, 'social_account_id', $user_id);
-					update_comment_meta($comment_id, 'social_profile_image_url', 'http://graph.facebook.com/' . $user_id . '/picture');
+					update_comment_meta($comment_id, 'social_profile_image_url', 'http://graph.facebook.com/'.$user_id.'/picture');
 					update_comment_meta($comment_id, 'social_status_id', (isset($result->status_id) ? $result->status_id : $result->id));
 
 					if (!isset($result->raw)) {
-                        $result = (object) array_merge((array) $result, array('raw' => $result));
+						$result = (object) array_merge((array) $result, array('raw' => $result));
 					}
 					update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($result->raw)));
 
@@ -327,7 +338,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		if (strpos($id, '_') === false) {
 			return null;
 		}
-		
+
 		$ids = explode('_', $id);
 		return 'http://facebook.com/permalink.php?story_fbid='.$ids[1].'&id='.$ids[0];
 	}
