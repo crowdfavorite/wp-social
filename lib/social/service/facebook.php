@@ -32,9 +32,13 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 */
 	public function broadcast($account, $message, array $args = array(), $post_id = null) {
 		if (has_post_thumbnail($post_id)) {
+            $post = get_post($post_id);
+            
 			$image = wp_get_attachment_image_src(get_post_thumbnail_id($post_id), 'single-post-thumbnail');
 			$args = $args + array(
-				'link' => $image[0]
+                'link' => get_post_permalink($post_id),
+                'title' => $post->post_title,
+				'picture' => $image[0],
 			);
 		}
 
