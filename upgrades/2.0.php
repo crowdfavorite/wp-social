@@ -48,8 +48,19 @@ wp_cache_flush();
 if (version_compare($installed_version, '2.0', '<')) {
 	// Global accounts
 	$accounts = get_option('social_accounts', array());
-	if (isset($accounts['facebook'])) {
-		$accounts['facebook'] = array();
+	if (count($accounts)) {
+		if (isset($accounts['facebook'])) {
+			$accounts['facebook'] = array();
+		}
+
+		if (isset($accounts['twitter'])) {
+			foreach ($accounts['twitter'] as $account_id => $account) {
+				if (!isset($account->universal)) {
+					$accounts['twitter'][$account_id]->universal = true;
+				}
+			}
+		}
+
 		update_option('social_accounts', $accounts);
 	}
 
@@ -70,13 +81,24 @@ if (version_compare($installed_version, '2.0', '<')) {
 	if (is_array($results)) {
 		foreach ($results as $result) {
 			$accounts = maybe_unserialize($result->meta_value);
-			if (is_array($accounts) and isset($accounts['facebook'])) {
-				$accounts['facebook'] = array();
-				update_user_meta($result->user_id, 'social_accounts', $accounts);
+			if (is_array($accounts)) {
+				if (isset($accounts['facebook'])) {
+					$accounts['facebook'] = array();
 
-				if (!in_array($result->user_id, $ids)) {
-					update_user_meta($result->user_id, 'social_2.0_upgrade', true);
+					if (!in_array($result->user_id, $ids)) {
+						update_user_meta($result->user_id, 'social_2.0_upgrade', true);
+					}
 				}
+
+				if (isset($accounts['twitter'])) {
+					foreach ($accounts['twitter'] as $account_id => $account) {
+						if (!isset($account->personal)) {
+						    $accounts['twitter'][$account_id]->personal = true;
+						}
+					}
+				}
+
+				update_user_meta($result->user_id, 'social_accounts', $accounts);
 			}
 		}
 	}

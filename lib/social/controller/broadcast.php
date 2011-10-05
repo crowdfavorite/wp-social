@@ -33,14 +33,14 @@ final class Social_Controller_Broadcast extends Social_Controller {
 		if ($this->request->post('social_action') !== null) {
 			foreach ($services as $key => $service) {
 				$content = $this->request->post('social_'.$key.'_content');
-                if (count($service->accounts()) and $this->request->post('social_'.$key.'_accounts') !== null) {
-                    if (empty($content)) {
-                        $errors[$key] = sprintf(__('Please enter some content for %s.', Social::$i18n), $service->title());
-                    }
-                    else if (strlen($content) > $service->max_broadcast_length()) {
-                        $errors[$key] = sprintf(__('Content for %s must not be longer than %s characters.', Social::$i18n), $service->title(), $service->max_broadcast_length());
-                    }
-                }
+				if (count($service->accounts()) and $this->request->post('social_'.$key.'_accounts') !== null) {
+					if (empty($content)) {
+						$errors[$key] = sprintf(__('Please enter some content for %s.', Social::$i18n), $service->title());
+					}
+					else if (strlen($content) > $service->max_broadcast_length()) {
+						$errors[$key] = sprintf(__('Content for %s must not be longer than %s characters.', Social::$i18n), $service->title(), $service->max_broadcast_length());
+					}
+				}
 
 				if ($this->request->post('social_'.$key.'_accounts') !== null) {
 					$accounts_selected = true;

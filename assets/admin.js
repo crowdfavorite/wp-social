@@ -1,12 +1,12 @@
 (function($) {
-	$(function () {
-		$('.social-collapsible').each(function () {
+	$(function() {
+		$('.social-collapsible').each(function() {
 			var $t = $(this);
-			$t.find('.social-title a').click(function (e) {
+			$t.find('.social-title a').click(function(e) {
 				$t.toggleClass('social-open');
 			});
 		});
-		
+
 		function counter($object, $counter, max) {
 			var content = $object.val();
 			$counter.html(max - content.length);
@@ -21,7 +21,7 @@
 		/**
 		 * Post Meta Box
 		 */
-		$('#social_meta_broadcast .social-toggle').click(function(){
+		$('#social_meta_broadcast .social-toggle').click(function() {
 			var $target = $(this).parent().find('.form-wrap');
 			var $textarea = $target.find('textarea');
 
@@ -33,10 +33,10 @@
 			}
 		});
 
-		$('textarea[id$="_preview"]').bind('change keyup paste', function(){
+		$('textarea[id$="_preview"]').bind('change keyup paste', function() {
 			if (typeof maxLength != 'undefined') {
 				var id = $(this).attr('id').split('_');
-				counter($(this), $('#'+id[0]+'_counter'), maxLength[id[0]]);
+				counter($(this), $('#' + id[0] + '_counter'), maxLength[id[0]]);
 			}
 		});
 
@@ -44,7 +44,7 @@
 		 * Import from URL
 		 */
 		var running_import = false;
-		$('#import_from_url').click(function(e){
+		$('#import_from_url').click(function(e) {
 			e.preventDefault();
 
 			if (!running_import) {
@@ -57,7 +57,7 @@
 
 				$.get($this.attr('href'), {
 					url: $('input[name=source_url]').val()
-				}, function(response){
+				}, function(response) {
 					running_import = false;
 					$('#import_from_url_loader').hide();
 					$this.removeAttr('disabled');
@@ -68,18 +68,18 @@
 			}
 		});
 
-        $('#social-source-url').keydown(function(e){
-            if (e.keyCode == 13) {
-                e.preventDefault();
-                $('#import_from_url').trigger('click');
-            }
-        });
+		$('#social-source-url').keydown(function(e) {
+			if (e.keyCode == 13) {
+				e.preventDefault();
+				$('#import_from_url').trigger('click');
+			}
+		});
 
 		/**
 		 * Manual Aggregation
 		 */
 		var running_aggregation = false;
-		$('#run_aggregation').click(function(e){
+		$('#run_aggregation').click(function(e) {
 			e.preventDefault();
 
 			if (!running_aggregation) {
@@ -89,7 +89,7 @@
 				$this.attr('disabled', 'disabled');
 				$('#run_aggregation_loader').show();
 
-				$.get($this.attr('href'), {}, function(response){
+				$.get($this.attr('href'), {}, function(response) {
 					running_aggregation = false;
 					$('#run_aggregation_loader').hide();
 					$this.removeAttr('disabled');
@@ -99,12 +99,12 @@
 			}
 		});
 		$('#aggregation_log .parent:not(:first)').hide();
-		$('#aggregation_log h5').live('click', function(){
-			$('#'+$(this).attr('id')+'-output').toggle();
+		$('#aggregation_log h5').live('click', function() {
+			$('#' + $(this).attr('id') + '-output').toggle();
 		});
 
 		var running_row_aggregation = [];
-		$('.row-actions .social_aggregation a').click(function(e){
+		$('.row-actions .social_aggregation a').click(function(e) {
 			e.preventDefault();
 			var rel = $(this).attr('rel');
 			if (!in_running_row_aggregation(rel)) {
@@ -115,14 +115,14 @@
 				$.get(
 					$this.attr('href'),
 					{
-                        render:'false',
-                        hide_li:'true'
-                    },
+						render: 'false',
+						hide_li: 'true'
+					},
 					function(response) {
 						remove_running_row_aggregation(rel);
 						$loader.hide();
 						$this.parent().find('.social-aggregation-results').remove();
-						$this.parent().append(' '+response.html).find('a').fadeIn();
+						$this.parent().append(' ' + response.html).find('a').fadeIn();
 					},
 					'json'
 				);
@@ -150,13 +150,12 @@
 		/**
 		 * Regenerate API Key
 		 */
-		 $('#social_regenerate_api_key').click(function(e){
+		$('#social_regenerate_api_key').click(function(e) {
 			e.preventDefault();
-			$.get($(this).attr('href'), {}, function(response){
+			$.get($(this).attr('href'), {}, function(response) {
 				$('.social_api_key').html(response);
 			});
 		});
-
 
 		/**
 		 * Dismissal of notices.
