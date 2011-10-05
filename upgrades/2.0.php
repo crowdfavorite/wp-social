@@ -86,9 +86,11 @@ if (version_compare($installed_version, '2.0', '<')) {
 	}
 
 	// Global accounts
+	$set_meta = false;
 	$accounts = get_option('social_accounts', array());
 	if (count($accounts)) {
 		if (isset($accounts['facebook'])) {
+			$set_meta = true;
 			$accounts['facebook'] = array();
 		}
 
@@ -113,8 +115,8 @@ if (version_compare($installed_version, '2.0', '<')) {
 			$accounts = maybe_unserialize($result->meta_value);
 			if (is_array($accounts)) {
 				if (isset($accounts['facebook'])) {
+					$set_meta = true;
 					$accounts['facebook'] = array();
-					update_user_meta($result->user_id, 'social_2.0_upgrade', true);
 				}
 
 				if (isset($accounts['twitter'])) {
@@ -126,6 +128,18 @@ if (version_compare($installed_version, '2.0', '<')) {
 				}
 
 				update_user_meta($result->user_id, 'social_accounts', $accounts);
+			}
+		}
+	}
+
+	if ($set_meta) {
+		$results = $wpdb->get_results("
+			SELECT ID
+			  FROM $wpdb->users
+		");
+		if (is_array($results)) {
+			foreach ($results as $result) {
+				update_user_meta($result->ID, 'social_2.0_upgrade', true);
 			}
 		}
 	}
