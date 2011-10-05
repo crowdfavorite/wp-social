@@ -101,7 +101,7 @@ final class Social_Controller_Settings extends Social_Controller {
 	 *
 	 * @return void
 	 */
-	public function action_clear_1_1_upgrade() {
+	public function action_clear_2_0_upgrade() {
 		delete_user_meta(get_current_user_id(), 'social_2.0_upgrade');
 	}
 

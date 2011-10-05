@@ -500,8 +500,8 @@ final class Social {
 		}
 
 		// 2.0 Upgrade?
-		$upgrade_1_1 = get_user_meta(get_current_user_id(), 'social_2.0_upgrade', true);
-		if (!empty($upgrade_1_1)) {
+		$upgrade_2_0 = get_user_meta(get_current_user_id(), 'social_2.0_upgrade', true);
+		if (!empty($upgrade_2_0)) {
 			if (current_user_can('manage_options')) {
 				$output = 'Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your <a href="%s">global</a> and <a href="%s">personal</a> accounts.';
 				$output = sprintf($output, esc_url(Social::settings_url()), esc_url(admin_url('profile.php#social-networks')));
@@ -511,7 +511,7 @@ final class Social {
 				$output = sprintf($output, esc_url(admin_url('profile.php#social-networks')));
 			}
 
-			$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=clear_1_1_upgrade')), 'social_dismiss');
+			$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=clear_2_0_upgrade')), 'social_dismiss');
 			echo '<div class="error"><p>'.$output.' '.$dismiss.'</p></div>';
 		}
 	}
