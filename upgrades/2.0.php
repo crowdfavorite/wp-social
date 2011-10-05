@@ -74,6 +74,13 @@ if (version_compare($installed_version, '2.0', '<')) {
 						$meta_value['twitter'][] = $id;
 					}
 				}
+
+				if (!empty($meta_value)) {
+					update_post_meta($result->post_id, '_social_aggregated_ids', $meta_value);
+				}
+				else {
+					delete_post_meta($result->post_id, '_social_aggregated_ids');
+			    }
 			}
 		}
 	}
