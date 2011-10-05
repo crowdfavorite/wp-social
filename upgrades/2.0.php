@@ -64,15 +64,6 @@ if (version_compare($installed_version, '2.0', '<')) {
 		update_option('social_accounts', $accounts);
 	}
 
-	// Personal accounts
-	$users = get_users(array('role' => 'subscriber'));
-	$ids = array(0);
-	if (is_array($users)) {
-		foreach ($users as $user) {
-			$ids[] = $user->ID;
-		}
-	}
-
 	$results = $wpdb->get_results("
 		SELECT user_id, meta_value
 		  FROM $wpdb->usermeta
@@ -84,10 +75,7 @@ if (version_compare($installed_version, '2.0', '<')) {
 			if (is_array($accounts)) {
 				if (isset($accounts['facebook'])) {
 					$accounts['facebook'] = array();
-
-					if (!in_array($result->user_id, $ids)) {
-						update_user_meta($result->user_id, 'social_2.0_upgrade', true);
-					}
+					update_user_meta($result->user_id, 'social_2.0_upgrade', true);
 				}
 
 				if (isset($accounts['twitter'])) {
