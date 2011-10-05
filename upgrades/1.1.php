@@ -160,13 +160,18 @@ if (is_array($results)) {
 	                    $_meta_value[$service_key][$account_id] = array();
 	                }
 
-	                foreach ($broadcasted as $id => $data) {
-	                    if ((int) $data) {
-	                        $_meta_value[$service_key][$account_id][$data] = '';
-	                    }
-	                    else {
-	                        $_meta_value[$service_key][$account_id][$id] = $data;
-	                    }
+	                if (is_array($broadcasted)) {
+		                foreach ($broadcasted as $id => $data) {
+		                    if ((int) $data) {
+		                        $_meta_value[$service_key][$account_id][$data] = '';
+		                    }
+		                    else {
+		                        $_meta_value[$service_key][$account_id][$id] = $data;
+		                    }
+		                }
+	                }
+	                else {
+		                $_meta_value[$service_key][$account_id][$broadcasted] = '';
 	                }
 	            }
 	        }
