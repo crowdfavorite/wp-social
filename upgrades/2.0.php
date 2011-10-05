@@ -19,9 +19,13 @@ $meta_keys = array(
 );
 if (count($meta_keys)) {
 	foreach ($meta_keys as $key) {
+		$new = '_'.$key;
+		if ($key == 'social_aggregated_replies') {
+			$new = '_social_aggregated_ids';
+		}
 		$wpdb->query("
 			UPDATE $wpdb->postmeta
-			   SET meta_key = '_$key'
+			   SET meta_key = '$new'
 			 WHERE meta_key = '$key'
 		");
 	}
