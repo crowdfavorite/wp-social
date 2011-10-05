@@ -80,10 +80,7 @@ final class Social_Response {
 	 */
 	public function deauthorized() {
 		$body = $this->body();
-		if ((isset($body->result) and $body->result == 'error') and
-		    isset($body->response) and
-		    $this->_service->deauthorized($body->response))
-		{
+		if ((isset($body->result) and $body->result == 'error') and isset($body->response) and $this->_service->deauthorized($body->response)) {
 			if ($this->_account->personal()) {
 				$url = Social::settings_url(array(), true);
 			}

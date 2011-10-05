@@ -1,6 +1,6 @@
 <?php if (!defined('SOCIAL_UPGRADE')) { die('Direct script access not allowed.'); }
 /**
- * Upgrades Social to 1.1.
+ * Upgrades Social to 2.0.
  */
 
 // Find old social_notify and update to _social_notify.
@@ -45,7 +45,7 @@ if (count($meta_keys)) {
 wp_cache_flush();
 
 // De-auth Facebook accounts for new permissions.
-if (version_compare($installed_version, '1.1', '<')) {
+if (version_compare($installed_version, '2.0', '<')) {
 	// Global accounts
 	$accounts = get_option('social_accounts', array());
 	if (isset($accounts['facebook'])) {
@@ -75,7 +75,7 @@ if (version_compare($installed_version, '1.1', '<')) {
 				update_user_meta($result->user_id, 'social_accounts', $accounts);
 
 				if (!in_array($result->user_id, $ids)) {
-					update_user_meta($result->user_id, 'social_1.1_upgrade', true);
+					update_user_meta($result->user_id, 'social_2.0_upgrade', true);
 				}
 			}
 		}

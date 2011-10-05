@@ -3,7 +3,7 @@
 Plugin Name: Social
 Plugin URI: http://mailchimp.com/social-plugin-for-wordpress/
 Description: Broadcast newly published posts and pull in discussions using integrations with Twitter and Facebook. Brought to you by <a href="http://mailchimp.com">MailChimp</a>.
-Version: 1.1
+Version: 2.0
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com/
 */
@@ -27,7 +27,7 @@ final class Social {
 	/**
 	 * @var  string  version number
 	 */
-	public static $version = '1.1';
+	public static $version = '2.0';
 
 	/**
 	 * @var  string  internationalization key
@@ -86,7 +86,9 @@ final class Social {
 	 * Handles the auto loading of classes.
 	 *
 	 * @static
+	 *
 	 * @param  string  $class
+	 *
 	 * @return bool
 	 */
 	public static function auto_load($class) {
@@ -193,7 +195,7 @@ final class Social {
 	public static function log($message, array $args = null) {
 		Social::$log->write($message, $args);
 	}
-	
+
 	/**
 	 * @var  bool  is Social enabled?
 	 */
@@ -222,7 +224,7 @@ final class Social {
 	 * Loading a service:
 	 *
 	 *     $twitter = Social::instance()->service('twitter');
-	 * 
+	 *
 	 * @param  string  $key    service key
 	 * @return Social_Service|Social_Service_Twitter|Social_Service_Facebook
 	 */
@@ -258,7 +260,7 @@ final class Social {
 			Social::option('install_date', current_time('timestamp', 1));
 			Social::option('system_cron_api_key', wp_generate_password(16, false));
 		}
-		
+
 		// Trigger upgrade?
 		$this->upgrade(Social::option('installed_version'));
 
@@ -396,7 +398,10 @@ final class Social {
 			__('Social', Social::$i18n),
 			'manage_options',
 			basename(SOCIAL_FILE),
-			array($this, 'admin_options_form')
+			array(
+				$this,
+				'admin_options_form'
+			)
 		);
 	}
 
@@ -404,7 +409,7 @@ final class Social {
 	 * Add Settings link to plugins - code from GD Star Ratings
 	 *
 	 * @wp-filter  plugin_action_links
-	 * @param  array  $links
+	 * @param  array   $links
 	 * @param  string  $file
 	 * @return array
 	 */
@@ -425,7 +430,7 @@ final class Social {
 	 * Handles the display of different messages for admin notices.
 	 *
 	 * @wp-action  admin_notices
-	 * @action admin_notices
+	 * @action     admin_notices
 	 */
 	public function admin_notices() {
 		if (current_user_can('manage_options') or current_user_can('publish_posts')) {
@@ -453,8 +458,8 @@ final class Social {
 			$error = Social::option('log_write_error');
 			if ($error == '1') {
 				echo '<div class="error"><p>'.
-					 sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_dismiss">[Dismiss]</a>', Social::$i18n), SOCIAL_PATH, esc_url(admin_url('?social_controller=settings&social_action=clear_log_write_error'))).
-					 '</p></div>';
+					sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_dismiss">[Dismiss]</a>', Social::$i18n), SOCIAL_PATH, esc_url(admin_url('?social_controller=settings&social_action=clear_log_write_error'))).
+					'</p></div>';
 			}
 
 			// Enable notice?
@@ -494,8 +499,8 @@ final class Social {
 			}
 		}
 
-		// 1.1 Upgrade?
-		$upgrade_1_1 = get_user_meta(get_current_user_id(), 'social_1.1_upgrade', true);
+		// 2.0 Upgrade?
+		$upgrade_1_1 = get_user_meta(get_current_user_id(), 'social_2.0_upgrade', true);
 		if (!empty($upgrade_1_1)) {
 			if (current_user_can('manage_options')) {
 				$output = 'Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your <a href="%s">global</a> and <a href="%s">personal</a> accounts.';
@@ -545,7 +550,10 @@ final class Social {
 		if ($post !== null) {
 			foreach ($this->services() as $service) {
 				if (count($service->accounts())) {
-					add_meta_box('social_meta_broadcast', __('Social Broadcasting', Social::$i18n), array($this, 'add_meta_box_broadcast'), 'post', 'side', 'high');
+					add_meta_box('social_meta_broadcast', __('Social Broadcasting', Social::$i18n), array(
+						$this,
+						'add_meta_box_broadcast'
+					), 'post', 'side', 'high');
 					break;
 				}
 			}
@@ -553,7 +561,10 @@ final class Social {
 			$fetch = Social::option('fetch_comments');
 			if ($this->_enabled and !empty($fetch)) {
 				if ($post->post_status == 'publish') {
-					add_meta_box('social_meta_aggregation_log', __('Social Comments', Social::$i18n), array($this, 'add_meta_box_log'), 'post', 'normal', 'core');
+					add_meta_box('social_meta_aggregation_log', __('Social Comments', Social::$i18n), array(
+						$this,
+						'add_meta_box_log'
+					), 'post', 'normal', 'core');
 				}
 			}
 		}
@@ -586,7 +597,7 @@ final class Social {
 					'accounts' => $accounts,
 					'services' => $this->services(),
 				));
-			break;
+				break;
 			case 'future':
 				$button = 'Edit';
 				$accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
@@ -594,14 +605,14 @@ final class Social {
 					'services' => $this->services(),
 					'accounts' => $accounts,
 				));
-			break;
+				break;
 			case 'publish':
 				$button = 'Broadcast';
 				$content = Social_View::factory('wp-admin/post/meta/broadcast/published', array(
 					'ids' => $broadcasted_ids,
 					'broadcasted' => !empty($broadcasted_ids),
 				));
-			break;
+				break;
 			default:
 				$notify = false;
 				if (get_post_meta($post->ID, '_social_notify', true) == '1') {
@@ -612,13 +623,13 @@ final class Social {
 					'post' => $post,
 					'notify' => $notify,
 				));
-			break;
+				break;
 		}
 
 		// Button
 		if (!empty($button)) {
 			$button = Social_View::factory('wp-admin/post/meta/broadcast/parts/button', array(
-                'broadcasted' => $broadcasted,
+				'broadcasted' => $broadcasted,
 				'button_text' => $button,
 			));
 		}
@@ -663,7 +674,8 @@ final class Social {
 	 */
 	public function redirect_post_location($location, $post_id) {
 		if ((isset($_POST['social_notify']) and $_POST['social_notify'] == '1') and
-		    (isset($_POST['visibility']) and $_POST['visibility'] !== 'private')) {
+			(isset($_POST['visibility']) and $_POST['visibility'] !== 'private')
+		) {
 			update_post_meta($post_id, '_social_notify', '1');
 			if (isset($_POST['publish']) or isset($_POST['social_broadcast'])) {
 				Social_Request::factory('broadcast/options')->post(array(
@@ -696,29 +708,31 @@ final class Social {
 				delete_post_meta($post->ID, '_social_'.$key.'_content');
 			}
 		}
-		else if ($new == 'publish') {
-			Social_Aggregation_Queue::factory()->add($post->ID)->save();
+		else {
+			if ($new == 'publish') {
+				Social_Aggregation_Queue::factory()->add($post->ID)->save();
 
-			// Sends previously saved broadcast information
-			if ($old == 'future') {
-				Social_Request::factory('broadcast/run')->query(array(
-					'post_ID' => $post->ID
-				))->execute();
+				// Sends previously saved broadcast information
+				if ($old == 'future') {
+					Social_Request::factory('broadcast/run')->query(array(
+						'post_ID' => $post->ID
+					))->execute();
+				}
 			}
 		}
 	}
 
-    /**
-     * Sets the broadcasted IDs for the post.
-     *
-     * @param  int     $post_id           post id
-     * @param  string  $service           service key
-     * @param  string  $broadcasted_id    broadcasted id
-     * @param  string  $message           broadcasted message
-     * @param  string  $account_id        account id
-     * @param  string  $account_username  broadcasted username
-     * @return void
-     */
+	/**
+	 * Sets the broadcasted IDs for the post.
+	 *
+	 * @param  int     $post_id           post id
+	 * @param  string  $service           service key
+	 * @param  string  $broadcasted_id    broadcasted id
+	 * @param  string  $message           broadcasted message
+	 * @param  string  $account_id        account id
+	 * @param  string  $account_username  broadcasted username
+	 * @return void
+	 */
 	public function add_broadcasted_id($post_id, $service, $broadcasted_id, $message, $account_id, $account_username) {
 		$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
 		if (empty($broadcasted_ids)) {
@@ -826,18 +840,18 @@ final class Social {
 		return $link;
 	}
 
-    /**
-     * Sets the user role.
-     *
-     * @wp-action set_user_role
-     * @param  int     $user_id
-     * @param  string  $role
-     */
-    public function set_user_role($user_id, $role) {
-        if (!empty($role)) {
-            delete_user_meta($user_id, 'social_commenter');
-        }
-    }
+	/**
+	 * Sets the user role.
+	 *
+	 * @wp-action set_user_role
+	 * @param  int     $user_id
+	 * @param  string  $role
+	 */
+	public function set_user_role($user_id, $role) {
+		if (!empty($role)) {
+			delete_user_meta($user_id, 'social_commenter');
+		}
+	}
 
 	/**
 	 * Show the disconnect link for social-based users.
@@ -866,27 +880,27 @@ final class Social {
 		return $link;
 	}
 
-    /**
-     * Increments the service comment counter.
-     *
-     * @static
-     * @param  array  $items
-     * @param  array  $groups
-     */
-    public static function add_social_items_count($items, &$groups) {
-        foreach ($items as $group => $_items) {
-            if ($group == 'parent') {
-                self::add_social_items_count($_items, $groups);
-            }
-            else {
-                if (!isset($groups['social-'.$group])) {
-                    $groups['social-'.$group] = 0;
-                }
+	/**
+	 * Increments the service comment counter.
+	 *
+	 * @static
+	 * @param  array  $items
+	 * @param  array  $groups
+	 */
+	public static function add_social_items_count($items, &$groups) {
+		foreach ($items as $group => $_items) {
+			if ($group == 'parent') {
+				self::add_social_items_count($_items, $groups);
+			}
+			else {
+				if (!isset($groups['social-'.$group])) {
+					$groups['social-'.$group] = 0;
+				}
 
-                $groups['social-'.$group] = $groups['social-'.$group] + count($_items);
-            }
-        }
-    }
+				$groups['social-'.$group] = $groups['social-'.$group] + count($_items);
+			}
+		}
+	}
 
 	/**
 	 * Overrides the default WordPress comments_template function.
@@ -1133,7 +1147,11 @@ final class Social {
 
 		$status_url = null;
 		$service = null;
-		if (!in_array($comment_type, apply_filters('social_ignored_comment_types', array('wordpress', 'pingback')))) {
+		if (!in_array($comment_type, apply_filters('social_ignored_comment_types', array(
+			'wordpress',
+			'pingback'
+		)))
+		) {
 			$service = $this->service($comment->comment_type);
 			if ($service !== false and $service->show_full_comment($comment->comment_type)) {
 				if ($status_url === null) {
@@ -1147,18 +1165,18 @@ final class Social {
 			}
 		}
 
-        // Social items?
-        $social_items = '';
-        if (!empty($comment->social_items)) {
-            $social_items = Social_View::factory('comment/social_item', array(
-                'items' => $comment->social_items,
-                'service' => $service,
-                'avatar_size' => array(
-                    'width' => 18,
-                    'height' => 18,
-                )
-            ));
-        }
+		// Social items?
+		$social_items = '';
+		if (!empty($comment->social_items)) {
+			$social_items = Social_View::factory('comment/social_item', array(
+				'items' => $comment->social_items,
+				'service' => $service,
+				'avatar_size' => array(
+					'width' => 18,
+					'height' => 18,
+				)
+			));
+		}
 
 		echo Social_View::factory('comment/comment', array(
 			'comment_type' => $comment_type,
@@ -1167,7 +1185,7 @@ final class Social {
 			'status_url' => $status_url,
 			'depth' => $depth,
 			'args' => $args,
-            'social_items' => $social_items,
+			'social_items' => $social_items,
 		));
 	}
 
@@ -1180,8 +1198,8 @@ final class Social {
 	 */
 	public function post_row_actions(array $actions, $post) {
 		if ($post->post_status == 'publish') {
-			$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', Social::$i18n), esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID) .
-			'<img src="'.esc_url(admin_url('images/wpspin_light.gif')).'" class="social_run_aggregation_loader" />';
+			$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', Social::$i18n), esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID).
+				'<img src="'.esc_url(admin_url('images/wpspin_light.gif')).'" class="social_run_aggregation_loader" />';
 		}
 		return $actions;
 	}
@@ -1193,7 +1211,7 @@ final class Social {
 	 */
 	public function admin_bar_menu() {
 		global $wp_admin_bar;
-		
+
 		$current_object = get_queried_object();
 
 		if (empty($current_object)) {
@@ -1202,9 +1220,9 @@ final class Social {
 
 		if (!empty($current_object->post_type)
 			and ($post_type_object = get_post_type_object($current_object->post_type))
-			and current_user_can($post_type_object->cap->edit_post, $current_object->ID)
-			and ($post_type_object->show_ui or 'attachment' == $current_object->post_type))
-		{
+				and current_user_can($post_type_object->cap->edit_post, $current_object->ID)
+					and ($post_type_object->show_ui or 'attachment' == $current_object->post_type)
+		) {
 			$wp_admin_bar->add_menu(array(
 				'parent' => 'comments',
 				'id' => 'social_find_comments',
@@ -1226,7 +1244,7 @@ final class Social {
 			global $wpdb; // Don't delete, this is used in upgrade files.
 
 			$upgrades = array(
-				SOCIAL_PATH.'upgrades/1.1.php',
+				SOCIAL_PATH.'upgrades/2.0.php',
 			);
 			$upgrades = apply_filters('social_upgrade_files', $upgrades);
 			foreach ($upgrades as $file) {
@@ -1265,7 +1283,7 @@ final class Social {
 
 	/**
 	 * Recursively applies wp_kses() to an array/stdClass.
-	 * 
+	 *
 	 * @param  mixed  $object
 	 * @return mixed
 	 */
@@ -1462,7 +1480,7 @@ add_action('social_cron_15', array($social, 'run_aggregation'));
 add_action('admin_menu', array($social, 'admin_menu'));
 
 // Filters
-add_filter('cron_schedules', array($social, 'cron_schedules'));
+add_filter('cron_schedules', array($social,'cron_schedules'));
 add_filter('plugin_action_links', array($social, 'add_settings_link'), 10, 2);
 add_filter('redirect_post_location', array($social, 'redirect_post_location'), 10, 2);
 add_filter('comments_template', array($social, 'comments_template'));

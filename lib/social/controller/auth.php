@@ -122,9 +122,9 @@ final class Social_Controller_Auth extends Social_Controller {
 				$this->social->remove_from_default_accounts($response['service'], $account->id());
 			}
 
-			// 1.1 Upgrade
+			// 2.0 Upgrade
 			if ($response['service'] == 'facebook') {
-				delete_user_meta(get_current_user_id(), 'social_1.1_upgrade');
+				delete_user_meta(get_current_user_id(), 'social_2.0_upgrade');
 			}
 
 			echo json_encode(array(

@@ -235,9 +235,10 @@ This is actually a bug in the WordPress core. This will be fixed in WordPress 3.
 
 == Changelog ==
 
-= 1.1 =
+= 2.0 =
 * Refactored Social completely.
 * Facebook Likes are now imported during comment aggregation.
+* Twitter retweets and Facebook Likes are now displayed under the broadcasted post.
 * Filter: social_broadcast_format now contains a third parameter, $service_key.
 * Filter: social_broadcast_permalink now contains a third parameter, $service_key.
 * Filter: social_format_content now contains a fourth parameter, $service_key.

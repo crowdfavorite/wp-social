@@ -11,20 +11,23 @@ ob_start();
 			<?php _e('Logging In...', Social::$i18n); ?>
 		</div>
 		<?php
-            if (comments_open()):
-			    if (get_option('comment_registration') and !is_user_logged_in()):
-        ?>
-				<p class="must-log-in"><?php printf(__('You must be <a href="%s">logged in</a> to post a comment.'), wp_login_url(apply_filters('the_permalink', get_permalink(get_the_ID())))); ?></p>
-	    <?php
-                    do_action('comment_form_must_log_in_after');
-			    else:
-			        echo Social_Comment_Form::instance(get_the_ID());
-			    endif;
-            else:
-                do_action('comment_form_comments_closed');
-        ?>
+			if (comments_open()) {
+				if (get_option('comment_registration') and !is_user_logged_in()) {
+		?>
+		<p class="must-log-in"><?php printf(__('You must be <a href="%s">logged in</a> to post a comment.'), wp_login_url(apply_filters('the_permalink', get_permalink(get_the_ID())))); ?></p>
+		<?php
+					do_action('comment_form_must_log_in_after');
+				}
+
+				echo Social_Comment_Form::instance(get_the_ID());
+			}
+			else {
+				do_action('comment_form_comments_closed');
+		?>
 		<p class="nocomments"><?php _e('Comments are closed.', Social::$i18n); ?></p>
-		<?php endif; ?>
+		<?php
+			}
+		?>
 	</div>
 <?php
 $form = ob_get_clean();
