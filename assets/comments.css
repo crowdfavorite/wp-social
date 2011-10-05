@@ -599,7 +599,7 @@ override submit styles in TwentyEleven theme */
 }
 
 #social .social-last-reply-when {
-    float: right;
+	float: right;
 	font-size: 11px;
 	font-style: italic;
 	margin-bottom: 4px;
@@ -797,10 +797,12 @@ override submit styles in TwentyEleven theme */
 .social-aggregation-spinner {
 	vertical-align: middle;
 }
+
 #wp-adminbar-comments-social {
 	position: absolute;
 	visibility: hidden;
 }
+
 .social-aggregation-results {
 	white-space: nowrap;
 }
@@ -809,13 +811,22 @@ override submit styles in TwentyEleven theme */
  * Social items display (retweets, likes, etc...)
  */
 #social .social-items-icon {
-    float: left;
-    margin: 2px 5px;
+	display: block;
+	float: left;
+	margin: 9px 7px 0 7px;
+	width: 14px;
 }
 
-#social .social-items-comments img {
-    float: left;
-    margin: 2px;
+#social .social-items.social-twitter .social-items-icon {
+	background-image: url('retweet.png');
+	height: 8px;
+}
+
+#social .social-items.social-facebook .social-items-icon {
+	background-image: url('like.png');
+	width: 13px;
+	margin: 6px 8px 0 7px;
+	height: 12px;
 }
 
 #social .social-items.social-comment-collapse {
@@ -823,20 +834,24 @@ override submit styles in TwentyEleven theme */
 	opacity: .3;
 }
 
+#social .social-items img {
+	margin: 0 2px;
+}
+
 #social .social-items-and-more {
-    float: left;
-    margin: 8px 0 0 5px;
-    font-size: 12px;
-    color: #666;
+	float: left;
+	margin: 8px 0 0 5px;
+	font-size: 12px;
+	color: #666;
 }
 
 #social .social-items-comment {
-    margin-top: 10px;
+	margin-top: 10px;
 }
 
 #social .social-items-comment .social-items-and-more {
-    font-size: 11px;
-    margin-top: 3px;
+	font-size: 11px;
+	margin-top: 3px;
 }
 
 .cf-clearfix {

@@ -49,7 +49,9 @@ final class Social_Twitter {
 
 		$comment_ids = array();
 		foreach ($comments as $comment) {
-			$comment_ids[] = $comment->comment_ID;
+			if ($comment->comment_type == 'social-twitter') {
+				$comment_ids[] = $comment->comment_ID;
+			}
 		}
 
 		$working_comments = $comments;
@@ -90,7 +92,7 @@ final class Social_Twitter {
 			// Store meta and comment hashses
 			foreach ($comments as $comment) {
 				if (is_object($comment)) {
-					if ($comment->comment_type == 'twitter') {
+					if ($comment->comment_type == 'social-twitter') {
 						foreach ($results as $result) {
 							if ($comment->comment_ID == $result->comment_id) {
 								if ($result->meta_key == 'social_raw_data') {
@@ -129,7 +131,7 @@ final class Social_Twitter {
 			// Loop through the comments again and see if they're a retweet of anything
 			foreach ($comments as $comment) {
 				if (is_object($comment)) {
-					if ($comment->comment_type == 'twitter') {
+					if ($comment->comment_type == 'social-twitter') {
 						// Match comments up to their parents, if they're a reply.
 						if (isset($comment->social_in_reply_to_status_id) and isset($in_reply_to_ids[$comment->social_in_reply_to_status_id])) {
 							$comment->comment_parent = $in_reply_to_ids[$comment->social_in_reply_to_status_id];
