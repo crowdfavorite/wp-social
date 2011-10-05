@@ -45,11 +45,39 @@ if (count($meta_keys)) {
 	}
 }
 
-// Flush the cache
-wp_cache_flush();
-
 // De-auth Facebook accounts for new permissions.
 if (version_compare($installed_version, '2.0', '<')) {
+	// Fix aggregated IDs
+	$results = $wpdb->get_results("
+		SELECT post_id, meta_value
+		  FROM $wpdb->postmeta
+		 WHERE meta_key = '_social_aggregated_ids'
+	");
+	if (is_array($results)) {
+		foreach ($results as $result) {
+			$result->meta_value = maybe_unserialize($meta->value);
+			if (is_array($result->meta_value)) {
+				$meta_value = array();
+				foreach ($result->meta_value as $id) {
+					if (strpos($id, '_') !== false) {
+						if (!isset($meta_value['facebook'])) {
+							$meta_value['facebook'] = array();
+						}
+
+						$meta_value['facebook'][] = $id;
+					}
+					else {
+						if (!isset($meta_value['twitter'])) {
+							$meta_value['twitter'] = array();
+						}
+
+						$meta_value['twitter'][] = $id;
+					}
+				}
+			}
+		}
+	}
+
 	// Global accounts
 	$accounts = get_option('social_accounts', array());
 	if (count($accounts)) {
@@ -139,7 +167,7 @@ if (version_compare($installed_version, '2.0', '<')) {
 		 WHERE m.meta_key = 'social_accounts'
 		   AND u.user_email LIKE '%@example.com'
     ");
-	if (is_array($results)) {
+	if (count($results)) {
 		foreach ($results as $result) {
 			update_user_meta($result->user_id, 'social_commenter', 'true');
 		}
@@ -196,3 +224,6 @@ if (version_compare($installed_version, '2.0', '<')) {
 		}
 	}
 }
+
+// Flush the cache
+wp_cache_flush();
