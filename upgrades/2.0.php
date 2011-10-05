@@ -55,7 +55,7 @@ if (version_compare($installed_version, '2.0', '<')) {
 	");
 	if (is_array($results)) {
 		foreach ($results as $result) {
-			$result->meta_value = maybe_unserialize($meta->value);
+			$result->meta_value = maybe_unserialize($result->meta_value);
 			if (is_array($result->meta_value)) {
 				$meta_value = array();
 				foreach ($result->meta_value as $id) {
