@@ -67,14 +67,16 @@ if (version_compare($installed_version, '1.1', '<')) {
 		  FROM $wpdb->usermeta
 		 WHERE meta_key = 'social_accounts'
 	");
-	foreach ($results as $result) {
-		$accounts = maybe_unserialize($result->meta_value);
-		if (is_array($accounts) and isset($accounts['facebook'])) {
-			$accounts['facebook'] = array();
-			update_user_meta($result->user_id, 'social_accounts', $accounts);
+	if (is_array($results)) {
+		foreach ($results as $result) {
+			$accounts = maybe_unserialize($result->meta_value);
+			if (is_array($accounts) and isset($accounts['facebook'])) {
+				$accounts['facebook'] = array();
+				update_user_meta($result->user_id, 'social_accounts', $accounts);
 
-			if (!in_array($result->user_id, $ids)) {
-				update_user_meta($result->user_id, 'social_1.1_upgrade', true);
+				if (!in_array($result->user_id, $ids)) {
+					update_user_meta($result->user_id, 'social_1.1_upgrade', true);
+				}
 			}
 		}
 	}
@@ -124,8 +126,10 @@ SELECT m.user_id
  WHERE m.meta_key = 'social_accounts'
    AND u.user_email LIKE '%@example.com'
 ");
-foreach ($results as $result) {
-	update_user_meta($result->user_id, 'social_commenter', 'true');
+if (is_array($results)) {
+	foreach ($results as $result) {
+		update_user_meta($result->user_id, 'social_commenter', 'true');
+	}
 }
 
 // Rename the XMLRPC option
@@ -141,33 +145,51 @@ SELECT meta_value, post_id
   FROM $wpdb->postmeta
  WHERE meta_key = '_social_broadcasted_ids'
 ");
-foreach ($results as $result) {
-    $meta_value = maybe_unserialize($result->meta_value);
-    if (is_array($meta_value)) {
-        $_meta_value = array();
-        foreach ($meta_value as $service_key => $accounts) {
-            if (!isset($_meta_value[$service_key])) {
-                $_meta_value[$service_key] = array();
-            }
+if (is_array($results)) {
+	foreach ($results as $result) {
+	    $meta_value = maybe_unserialize($result->meta_value);
+	    if (is_array($meta_value)) {
+	        $_meta_value = array();
+	        foreach ($meta_value as $service_key => $accounts) {
+	            if (!isset($_meta_value[$service_key])) {
+	                $_meta_value[$service_key] = array();
+	            }
 
-            foreach ($accounts as $account_id => $broadcasted) {
-                if (!isset($_meta_value[$service_key][$account_id])) {
-                    $_meta_value[$service_key][$account_id] = array();
-                }
+	            foreach ($accounts as $account_id => $broadcasted) {
+	                if (!isset($_meta_value[$service_key][$account_id])) {
+	                    $_meta_value[$service_key][$account_id] = array();
+	                }
 
-                foreach ($broadcasted as $id => $data) {
-                    if ((int) $data) {
-                        $_meta_value[$service_key][$account_id][$data] = '';
-                    }
-                    else {
-                        $_meta_value[$service_key][$account_id][$id] = $data;
-                    }
-                }
-            }
-        }
+	                foreach ($broadcasted as $id => $data) {
+	                    if ((int) $data) {
+	                        $_meta_value[$service_key][$account_id][$data] = '';
+	                    }
+	                    else {
+	                        $_meta_value[$service_key][$account_id][$id] = $data;
+	                    }
+	                }
+	            }
+	        }
 
-        if (!empty($_meta_value)) {
-            update_post_meta($result->post_id, '_social_broadcasted_ids', $_meta_value);
-        }
-    }
+	        if (!empty($_meta_value)) {
+	            update_post_meta($result->post_id, '_social_broadcasted_ids', $_meta_value);
+	        }
+	    }
+	}
+}
+
+// Fix the comment_types
+$results = $wpdb->get_results("
+SELECT comment_ID, comment_type
+  FROM $wpdb->comments
+ WHERE comment_type IN ('twitter', 'facebook')
+");
+if (is_array($results)) {
+	foreach ($results as $result) {
+	    $wpdb->query($wpdb->prepare("
+	        UPDATE $wpdb->comments
+	           SET comment_type = %s
+	         WHERE comment_ID = %s
+	    ", 'social-'.$result->comment_type, $result->comment_ID));
+	}
 }
