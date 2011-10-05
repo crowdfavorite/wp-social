@@ -177,19 +177,3 @@ if (is_array($results)) {
 	    }
 	}
 }
-
-// Fix the comment_types
-$results = $wpdb->get_results("
-SELECT comment_ID, comment_type
-  FROM $wpdb->comments
- WHERE comment_type IN ('twitter', 'facebook')
-");
-if (is_array($results)) {
-	foreach ($results as $result) {
-	    $wpdb->query($wpdb->prepare("
-	        UPDATE $wpdb->comments
-	           SET comment_type = %s
-	         WHERE comment_ID = %s
-	    ", 'social-'.$result->comment_type, $result->comment_ID));
-	}
-}
