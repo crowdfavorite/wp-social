@@ -65,7 +65,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				$url = 'https://graph.facebook.com/search?type=post&q='.$url;
 				Social::log('Searching by URL(s) for post #:post_id. (Query: :url)', array(
 					'post_id' => $post->ID,
-					'url' => $url
+					'url' => $url,
 				));
 				$response = wp_remote_get($url);
 				if (!is_wp_error($response)) {
@@ -91,7 +91,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				}
 				else {
 					Social::log('URL search failed for post #:post_id.', array(
-						'post_id' => $post->ID
+						'post_id' => $post->ID,
 					));
 				}
 			}
@@ -102,6 +102,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * Aggregates comments by the service's API.
 	 *
 	 * @param  object  $post
+	 *
 	 * @return array
 	 */
 	public function aggregate_by_api(&$post) {
@@ -236,16 +237,16 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 						'comment_author_url' => $url,
 						'comment_content' => $wpdb->escape('<a href="'.$url.'" target="_blank">'.$result->name.'</a> liked this on Facebook.'),
 						'comment_date' => current_time('mysql'),
-						'comment_date_gmt' => current_time('mysql', 1)
+						'comment_date_gmt' => current_time('mysql', 1),
 					));
 				}
 
 				if (count($commentdata)) {
 					$user_id = (isset($result->like) ? $result->id : $result->from->id);
 					$commentdata = array_merge($commentdata, array(
-					                                              'comment_post_ID' => $post->ID,
-					                                              'comment_author_email' => $this->_key.'.'.$user_id.'@example.com',
-					                                         ));
+						'comment_post_ID' => $post->ID,
+						'comment_author_email' => $this->_key.'.'.$user_id.'@example.com',
+					));
 					$commentdata['comment_approved'] = wp_allow_comment($commentdata);
 					$comment_id = wp_insert_comment($commentdata);
 

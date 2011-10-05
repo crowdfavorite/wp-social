@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Social
+ * @package    Social
  * @subpackage services
  */
 abstract class Social_Service {
@@ -53,7 +53,6 @@ abstract class Social_Service {
 		$proxy = Social::$api_url.$this->_key.'/authorize';
 		$url = apply_filters('social_authorize_url', $proxy, $this->_key);
 
-
 		$url = '?social_controller=auth&social_action=authorize&target='.urlencode($url);
 		if (is_admin()) {
 			if (defined('IS_PROFILE_PAGE')) {
@@ -72,10 +71,12 @@ abstract class Social_Service {
 	 * Returns the disconnect URL.
 	 *
 	 * @static
+	 *
 	 * @param  object  $account
 	 * @param  bool    $is_admin
 	 * @param  string  $before
 	 * @param  string  $after
+	 *
 	 * @return string
 	 */
 	public function disconnect_url($account, $is_admin = false, $before = '', $after = '') {
@@ -115,7 +116,7 @@ abstract class Social_Service {
 	 * Creates a WordPress user with the passed in account.
 	 *
 	 * @param  Social_Service_Account  $account
-	 * @param  string  $nonce
+	 * @param  string                  $nonce
 	 * @return int|bool
 	 */
 	public function create_user($account, $nonce = null) {
@@ -130,10 +131,10 @@ abstract class Social_Service {
 				if (get_option('users_can_register') == '1') {
 					$role = get_option('default_role');
 				}
-                else {
-                    // Set commenter flag
-                    update_user_meta($id, 'social_commenter', 'true');
-                }
+				else {
+					// Set commenter flag
+					update_user_meta($id, 'social_commenter', 'true');
+				}
 
 				$user = new WP_User($id);
 				$user->set_role($role);
@@ -307,31 +308,32 @@ abstract class Social_Service {
 					}
 					$url = apply_filters('social_broadcast_permalink', $url, $post, $this);
 					$content = esc_url($url);
-				break;
+					break;
 				case '{title}':
 					$content = $post->post_title;
-				break;
+					break;
 				case '{content}':
 					$content = strip_tags($post->post_content);
-                    $content = preg_replace('/\s+/', ' ', $content);
+					$content = preg_replace('/\s+/', ' ', $content);
 					$content = str_replace(array("\n", "\r", PHP_EOL), ' ', $content);
 					$content = str_replace('&nbsp;', ' ', $content);
-				break;
+					break;
 				case '{author}':
 					$user = get_userdata($post->post_author);
 					$content = $user->display_name;
-				break;
+					break;
 				case '{date}':
 					$content = get_date_from_gmt($post->post_date_gmt);
-				break;
+					break;
 			}
 
 			if (strlen($content) > $available) {
-				if (in_array($token, array('{date}', '{author}'))) {
+				if (in_array($token, array('{date}', '{author}'))
+				) {
 					$content = '';
 				}
 				else {
-					$content = substr($content, 0, ($available-3)).'...';
+					$content = substr($content, 0, ($available - 3)).'...';
 				}
 			}
 
@@ -384,16 +386,16 @@ abstract class Social_Service {
 					$url .= '#comment-'.$comment->comment_ID;
 					$url = apply_filters('social_comment_broadcast_permalink', $url, $comment, $this);
 					$content = esc_url($url);
-				break;
+					break;
 				case '{content}':
 					$content = strip_tags($comment->comment_content);
 					$content = str_replace(array("\n", "\r", PHP_EOL), '', $content);
 					$content = str_replace('&nbsp;', '', $content);
-				break;
+					break;
 			}
 
 			if (strlen($content) > $available) {
-				$content = substr($content, 0, ($available-3)).'...';
+				$content = substr($content, 0, ($available - 3)).'...';
 			}
 
 			$content = apply_filters('social_format_comment_content', $content, $comment, $format, $this);
@@ -416,9 +418,9 @@ abstract class Social_Service {
 	 * Handles the requests to the proxy.
 	 *
 	 * @param  Social_Service_Account|int  $account
-	 * @param  string  $api
-	 * @param  array   $args
-	 * @param  string  $method
+	 * @param  string                      $api
+	 * @param  array                       $args
+	 * @param  string                      $method
 	 * @return Social_Response|bool
 	 */
 	public function request($account, $api, array $args = array(), $method = 'GET') {
@@ -472,7 +474,8 @@ abstract class Social_Service {
 	 */
 	public function disconnect($id) {
 		if (!is_admin() or defined('IS_PROFILE_PAGE')) {
-			$accounts = get_user_meta(get_current_user_id(), 'social_accounts', true);;
+			$accounts = get_user_meta(get_current_user_id(), 'social_accounts', true);
+			;
 			if (isset($accounts[$this->_key][$id])) {
 				unset($accounts[$this->_key][$id]);
 				update_user_meta(get_current_user_id(), 'social_accounts', $accounts);
@@ -547,15 +550,43 @@ abstract class Social_Service {
 				'broadcasted_ids' => $broadcasted_ids,
 			);
 		}
-		
-        if (isset($post->broadcasted_ids[$this->_key])) {
-            foreach ($post->broadcasted_ids[$this->_key] as $account_id => $broadcasted) {
-                if (isset($broadcasted[$result_id])) {
-                    return true;
-                }
-            }
-        }
+
+		if (isset($post->broadcasted_ids[$this->_key])) {
+			foreach ($post->broadcasted_ids[$this->_key] as $account_id => $broadcasted) {
+				if (isset($broadcasted[$result_id])) {
+					return true;
+				}
+			}
+		}
 		return false;
+	}
+
+	/**
+	 * Builds the social item output.
+	 *
+	 * @param  object  $item         social item being rendered
+	 * @param  int     $count        current display count
+	 * @param  array   $avatar_size  array containing the width and height attributes
+	 * @return string
+	 */
+	public function social_item_output($item, $count, array $avatar_size = array()) {
+		$style = '';
+		if ($count >= 10) {
+			$style = ' style="display:none"';
+		}
+
+		$width = '24';
+		$height = '24';
+		if (isset($avatar_size['width'])) {
+			$width = $avatar_size['width'];
+		}
+		if (isset($avatar_size['height'])) {
+			$height = $avatar_size['height'];
+		}
+
+		$status_url = $this->status_url($item->comment_author, $item->social_status_id);
+		$image = sprintf('<img src="%s" width="%s" height="%s"%s />', $item->social_profile_image_url, $width, $height, $style);
+		return sprintf('<a href="%s">%s</a>', $status_url, $image);
 	}
 
 } // End Social_Service

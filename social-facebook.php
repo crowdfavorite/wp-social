@@ -71,9 +71,9 @@ final class Social_Facebook {
 	 */
 	public static function get_avatar_comment_types(array $types) {
 		return array_merge($types, array(
-		                                'social-facebook',
-		                                'social-facebook-like'
-		                           ));
+			'social-facebook',
+			'social-facebook-like'
+		));
 	}
 
 	/**
@@ -112,7 +112,62 @@ final class Social_Facebook {
 	 * @return array
 	 */
 	public static function comments_array(array $comments, $post_id) {
+		global $wpdb;
 
+		$comment_ids = array();
+		foreach ($comments as $comment) {
+			if (is_object($comment) and $comment->comment_type == 'social-facebook-like') {
+				$comment_ids[] = $comment->comment_ID;
+			}
+		}
+
+		if (count($comment_ids)) {
+			$results = $wpdb->get_results("
+				SELECT meta_key, meta_value, comment_id
+				  FROM $wpdb->commentmeta
+				 WHERE comment_id IN (".implode(',', $comment_ids).")
+				   AND meta_key = 'social_status_id'
+				    OR meta_key = 'social_profile_image_url'
+			");
+
+			$social_items = array();
+			if (isset($comments['social_items'])) {
+				$social_items = $comments['social_items'];
+			    unset($comments['social_items']);
+			}
+
+			foreach ($comments as $key => $comment) {
+				if (is_object($comment)) {
+					if ($comment->comment_type == 'social-facebook-like') {
+						foreach ($results as $result) {
+							if ($result->comment_id == $comment->comment_ID) {
+								$comment->{$result->meta_key} = $result->meta_value;
+							}
+						}
+						
+						if (!isset($social_items['facebook'])) {
+							$social_items['facebook'] = array();
+						}
+
+						$social_items['facebook'][] = $comment;
+					    unset($comments[$key]);
+					}
+				    else {
+					    $comments[$key] = $comment;
+				    }
+				}
+			    else {
+				    $comments[$key] = $comment;
+			    }
+			}
+
+			if (count($social_items)) {
+				sort($comments);
+			    $comments['social_items'] = $social_items;
+			}
+		}
+
+		return $comments;
 	}
 
 } // End Social_Facebook
@@ -125,6 +180,6 @@ add_filter('social_authorize_url', array('Social_Facebook', 'social_authorize_ur
 add_filter('social_comment_type_to_service', array('Social_Facebook', 'comment_type_to_service'));
 add_filter('get_avatar', array('Social_Facebook', 'get_avatar'), 10, 5);
 add_filter('get_avatar_comment_types', array('Social_Facebook', 'get_avatar_comment_types'));
-add_filter('social_comments_array', array('Social_Twitter', 'comments_array'), 10, 2);
+add_filter('social_comments_array', array('Social_Facebook', 'comments_array'), 10, 2);
 
 }
