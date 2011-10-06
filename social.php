@@ -948,10 +948,10 @@ final class Social {
 	public function get_avatar($avatar, $comment, $size, $default, $alt) {
 		$image = null;
 		if (is_object($comment)) {
-			$service = $this->service($comment->comment_type);
-			if ($service !== false) {
-				$image = get_comment_meta($comment->comment_ID, 'social_profile_image_url', true);
-			}
+			$image = get_comment_meta($comment->comment_ID, 'social_profile_image_url', true);
+			if (empty($image)) {
+				$image = null;
+		    }
 		}
 		else if ((is_string($comment) or is_int($comment)) and $default != 'force-wordpress') {
 			foreach ($this->services() as $key => $service) {

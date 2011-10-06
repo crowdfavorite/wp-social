@@ -829,6 +829,10 @@ override submit styles in TwentyEleven theme */
 	height: 12px;
 }
 
+#social .social-comment .social-items-icon {
+	margin-top: 6px;
+}
+
 #social .social-items.social-comment-collapse {
 	filter: alpha(opacity = 30);
 	opacity: .3;
