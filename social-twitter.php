@@ -68,13 +68,34 @@ final class Social_Twitter {
 			}
 
 			if (isset($broadcasted_ids['twitter'])) {
-				foreach ($broadcasted_ids['twitter'] as $broadcasted) {
+				$update_broadcasted = false;
+
+				foreach ($broadcasted_ids['twitter'] as $account_id => $broadcasted) {
 					foreach ($broadcasted as $id => $message) {
+						// Empty message? (pre-2.0 Twitter comment)
+						if (empty($message)) {
+							$twitter = Social::instance()->service('twitter');
+							if ($twitter !== false and count($twitter->accounts())) {
+								foreach ($twitter->accounts() as $account) {
+									$response = $twitter->request($account, 'statuses/show/'.$id);
+									if ($response !== false and isset($response->body()->response)) {
+										$update_broadcasted = true;
+										$message = $response->body()->response->text;
+										$broadcasted_ids['twitter'][$account_id][$id] = $message;
+									}
+								}
+							}
+						}
+
 						$hash = self::strip_retweet_data($message, false);
 						// This is stored as broadcasted and not the ID so we can easily store broadcasted retweets
 						// instead of attaching retweets to non-existent comments.
 						$comment_hashes[$hash] = 'broadcasted';
 					}
+				}
+
+				if ($update_broadcasted) {
+					update_post_meta($post_id, '_social_broadcasted_ids', $broadcasted_ids);
 				}
 			}
 
@@ -141,16 +162,14 @@ final class Social_Twitter {
 							if (isset($working_comments[$comment_hashes[$comment->social_retweet_hash]])) {
 								$working_comments[$comment_hashes[$comment->social_retweet_hash]]->social_items[] = $comment;
 							}
-							else {
-								if ($comment_hashes[$comment->social_retweet_hash] == 'broadcasted') {
-									$broadcasted_retweets[] = $comment;
-								}
+							else if ($comment_hashes[$comment->social_retweet_hash] == 'broadcasted') {
+								$broadcasted_retweets[] = $comment;
 							}
 						}
 					}
 				    else {
-					    $working_comments[] = $comment;
-				    }
+						$working_comments[] = $comment;
+					}
 				}
 			}
 
