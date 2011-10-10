@@ -842,20 +842,19 @@ override submit styles in TwentyEleven theme */
 	margin: 0 2px;
 }
 
-#social .social-items-and-more {
+#social .social-items-comments a {
 	float: left;
+}
+
+#social .social-items-and-more {
 	margin: 8px 0 0 5px;
 	font-size: 12px;
 	color: #666;
 }
 
-#social .social-items-comment {
-	margin-top: 10px;
-}
-
-#social .social-items-comment .social-items-and-more {
+#social .social-items-comments .social-items-and-more {
 	font-size: 11px;
-	margin-top: 3px;
+	margin-top: 4px;
 }
 
 .cf-clearfix {
