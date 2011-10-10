@@ -108,6 +108,7 @@ final class Social_Twitter {
 				    OR meta_key = 'social_status_id'
 				    OR meta_key = 'social_raw_data'
 				    OR meta_key = 'social_profile_image_url'
+				    OR meta_key = 'social_comment_type'
 			");
 
 			// Store meta and comment hashses

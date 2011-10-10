@@ -128,6 +128,7 @@ final class Social_Facebook {
 				 WHERE comment_id IN (".implode(',', $comment_ids).")
 				   AND meta_key = 'social_status_id'
 				    OR meta_key = 'social_profile_image_url'
+				    OR meta_key = 'social_comment_type'
 			");
 
 			$social_items = array();

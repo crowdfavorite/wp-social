@@ -810,11 +810,23 @@ override submit styles in TwentyEleven theme */
 /**
  * Social items display (retweets, likes, etc...)
  */
+#social-items-wrapper {
+	float: left;
+}
+
+#social .social-items {
+	clear: both;
+}
+
 #social .social-items-icon {
 	display: block;
 	float: left;
 	margin: 9px 7px 0 7px;
 	width: 14px;
+}
+
+#social .social-items-comments {
+	float: left;
 }
 
 #social .social-items.social-twitter .social-items-icon {

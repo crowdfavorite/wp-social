@@ -1131,6 +1131,56 @@ final class Social {
 	}
 
 	/**
+	 * Counts the different types of comments.
+	 *
+	 * @wp-filter social_comments_array
+	 * @static
+	 * @param  array  $comments
+	 * @param  int    $post_id
+	 * @return array
+	 */
+	public function comments_array(array $comments, $post_id) {
+		$groups = array();
+		if (isset($comments['social_groups'])) {
+			$groups = $comments['social_groups'];
+		}
+
+		foreach ($comments as $comment) {
+			if (is_object($comment)) {
+				if (isset($comment->social_comment_type)) {
+					$comment->comment_type = $comment->social_comment_type;
+				}
+				
+				if (empty($comment->comment_type)) {
+					$comment->comment_type = 'wordpress';
+				}
+
+				if (!isset($groups[$comment->comment_type])) {
+					$groups[$comment->comment_type] = 1;
+				}
+				else {
+					++$groups[$comment->comment_type];
+				}
+			}
+		}
+
+		if (isset($groups['social-facebook-like'])) {
+			if (!isset($groups['social-facebook'])) {
+				$groups['social-facebook'] = 0;
+			}
+
+			$groups['social-facebook'] = $groups['social-facebook'] + $groups['social-facebook-like'];
+		    unset($groups['social-facebook-like']);
+		}
+
+		if (count($groups)) {
+			$comments['social_groups'] = $groups;
+		}
+
+		return $comments;
+	}
+
+	/**
 	 * Displays a comment.
 	 *
 	 * @param  object  $comment  comment object
@@ -1489,6 +1539,7 @@ add_filter('get_avatar', array($social, 'get_avatar'), 10, 5);
 add_filter('register', array($social, 'register'));
 add_filter('loginout', array($social, 'loginout'));
 add_filter('post_row_actions', array($social, 'post_row_actions'), 10, 2);
+add_filter('social_comments_array', array($social, 'comments_array'), 100, 2);
 
 // Service filters
 add_filter('social_auto_load_class', array($social, 'auto_load_class'));
