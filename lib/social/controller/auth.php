@@ -87,7 +87,6 @@ final class Social_Controller_Auth extends Social_Controller {
 		$class = 'Social_Service_'.$response['service'].'_Account';
 		$account = new $class($account);
 
-		$service = $this->social->service($response['service'])->account($account);
 		$is_personal = false;
 		$is_admin = $this->request->query('is_admin');
 		if ($is_admin == 'true') {
@@ -108,9 +107,13 @@ final class Social_Controller_Auth extends Social_Controller {
 			}
 		}
 		else {
-			$user_id = $service->create_user($account, $nonce);
 			$account->personal(true);
 			$is_personal = true;
+		}
+
+		$service = $this->social->service($response['service'])->account($account);
+		if ($is_admin != 'true') {
+			$user_id = $service->create_user($account, $nonce);
 		}
 
 		if ($user_id !== false) {
