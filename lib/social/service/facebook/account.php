@@ -28,12 +28,10 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 *
 	 * @return object
 	 */
-	public function as_array() {
-		$array = parent::as_array();
-		$array += array(
-			'use_pages' => $this->_use_pages,
-		);
-		return $array;
+	public function as_object() {
+		$object = parent::as_object();
+		$object->use_pages = $this->_use_pages;
+		return $object;
 	}
 
 	/**

@@ -53,7 +53,7 @@ abstract class Social_Service_Account {
 	 *
 	 * @return object
 	 */
-	public function as_array() {
+	public function as_object() {
 		return (object) array(
 			'user' => $this->_user,
 			'keys' => $this->_keys,
