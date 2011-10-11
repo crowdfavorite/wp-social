@@ -147,6 +147,26 @@
 	left: 5px;
 }
 
+.social-accounts-item .name span {
+	position: relative;
+	top: -1px;
+	font-size: 11px;
+}
+
+.social-accounts-item .name span a {
+	font-weight: normal;
+}
+
+.social-accounts-item .social-facebook-pages {
+	display: none;
+}
+
+.social-accounts-item .social-facebook-pages-spinner {
+	display: none;
+	position: relative;
+	top: 3px;
+}
+
 .social-accounts .disconnect {
 	top: 11px;
 	right: 5px;

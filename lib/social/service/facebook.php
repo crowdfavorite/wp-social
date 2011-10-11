@@ -366,15 +366,11 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		$disconnect = $this->disconnect_url($account, true);
 		$name = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
 
-		// Facebook pages?
-		$pages = $this->get_pages($account);
-
 		return Social_View::factory('wp-admin/parts/facebook/auth_output', array(
 			'account' => $account,
 			'key' => $this->key(),
 			'name' => $name,
 			'disconnect' => $disconnect,
-			'pages' => $pages
 		));
 	}
 

@@ -107,4 +107,71 @@ final class Social_Controller_Settings extends Social_Controller {
 		delete_user_meta(get_current_user_id(), 'social_2.0_upgrade');
 	}
 
+	/**
+	 * Loads the account's Facebook pages.
+	 *
+	 * @return void
+	 */
+	public function action_get_facebook_pages() {
+		if (!$this->request->is_ajax()) {
+			wp_die('Oops, this method can only be accessed via an AJAX request');
+		}
+
+		$account_id = $this->request->query('account_id');
+		$service = $this->social->service('facebook');
+		if ($service !== false) {
+			$accounts = $service->accounts();
+			if (isset($accounts[$account_id])) {
+				$pages = $service->get_pages($accounts[$account_id]);
+				if (count($pages)) {
+					$html = Social_View::factory('wp-admin/parts/facebook/page/settings', array(
+						'account' => $accounts[$account_id],
+						'pages' => $pages
+					));
+					echo json_encode(array(
+						'result' => 'success',
+						'html' => $html->render()
+					));
+					exit;
+				}
+			}
+		}
+
+		echo json_encode(array('result' => 'error'));
+	}
+
+	/**
+	 * Save Facebook Pages
+	 *
+	 * @return void
+	 */
+	public function action_save_facebook_pages() {
+		if (!$this->request->is_ajax()) {
+			wp_die('Oops, this method can only be accessed via an AJAX request');
+		}
+
+		$account_id = $this->request->query('account_id');
+		$page_ids = $this->request->post('page_ids');
+
+		$service = $this->social->service('facebook');
+		if ($service !== false) {
+			$accounts = $service->accounts();
+			if (isset($accounts[$account_id])) {
+				$pages = $service->get_pages($accounts[$account_id]);
+				$accounts[$account_id]->pages(array());
+				foreach ($page_ids as $page_id) {
+					if (isset($pages[$page_id])) {
+						$accounts[$account_id]->page($pages[$page_id]);
+					}
+				}
+			}
+
+			foreach ($accounts as $account_id => $account) {
+				$accounts[$account_id] = $account->as_object();
+			}
+
+			$service->accounts($accounts)->save();
+		}
+	}
+
 } // End Social_Controller_Settings

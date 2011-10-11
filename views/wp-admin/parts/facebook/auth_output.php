@@ -1,27 +1,18 @@
 <li class="social-accounts-item">
+	<input type="hidden" name="social_save_url" value="<?php echo esc_url(admin_url('?social_controller=settings&social_action=save_facebook_pages&account_id='.$account->id())); ?>" />
 	<div class="social-<?php echo $key; ?>-icon"><i></i></div>
-	<span class="name"><?php echo $name; ?></span>
-	<span class="disconnect"><?php echo $disconnect; ?></span>
-	<?php
-		if (count($pages)) {
-			echo '<div class="social-facebook-pages">'
-			   . '    <h6>Account Pages</h6>'
-			   . '    <ul>';
-			foreach ($pages as $page) {
-				$checked = '';
-				if ($account->page($page->id) !== false) {
-					$checked = ' checked="checked"';
-				}
+	<span class="name">
+		<?php
+			echo $name;
 
-				echo '<li>'
-				   . '    <input type="checkbox" name="social_facebook_pages_'.$account->id().'[]" value="'.$page->id.'"'.$checked.' />'
-				   . '    <img src="http://graph.facebook.com/'.$page->id.'/picture" width="16" height="16" />'
-				   . '    <a href="http://facebook.com/'.$page->id.'" target="_blank">'.$page->name.'</a>'
-				   . '</li>';
+			if ($account->use_pages()) {
+				echo '<span> - <a href="'.esc_url(admin_url('?social_controller=settings&social_action=get_facebook_pages&account_id='.$account->id())).'" class="social-manage-facebook-pages">'.__('Manage Pages', Social::$i18n).'</a></span>';
+			    echo '<img src="'.esc_url(admin_url('images/wpspin_light.gif')).'" class="social-facebook-pages-spinner" />';
 			}
-
-			echo '    </ul>'
-			   . '</div>';
-		}
-	?>
+		?>
+	</span>
+	<span class="disconnect"><?php echo $disconnect; ?></span>
+	<?php if ($account->use_pages()): ?>
+	<div class="social-facebook-pages"></div>
+	<?php endif; ?>
 </li>
