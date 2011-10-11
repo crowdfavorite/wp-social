@@ -52,7 +52,14 @@ final class Social_View {
 	 * @return string
 	 */
 	public function __toString() {
-		return $this->render();
+		try {
+			return $this->render();
+		}
+		catch (Exception $e) {
+			// Log the exception
+			Social::log($e->getMessage());
+			return '';
+		}
 	}
 
 	/**
