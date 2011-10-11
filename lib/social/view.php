@@ -57,7 +57,7 @@ final class Social_View {
 		}
 		catch (Exception $e) {
 			// Log the exception
-			Social::log(print_r($e, true));
+			error_log(print_r($e, true));
 			return '';
 		}
 	}
