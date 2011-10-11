@@ -401,7 +401,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					foreach ($accounts as $account_id => $_account) {
 						if ($account_id == $account->id()) {
 							$_account->use_pages(false);
-							$_account->pages(array());
+							$_account->pages(array(), $is_profile);
 						}
 
 						$accounts[$account_id] = $account->as_object();
