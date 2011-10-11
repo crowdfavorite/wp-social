@@ -42,8 +42,8 @@ final class Social_Controller_Auth extends Social_Controller {
 
 			$proxy = add_query_arg(array(
 				'v' => '2',
-				'response_url' => urlencode(add_query_arg($args, $url)),
-				'id' => $id
+				'id' => $id,
+				'response_url' => urlencode(add_query_arg($args, $url))
 			), $proxy);
 
 			$proxy = apply_filters('social_proxy_url', $proxy);
@@ -100,6 +100,11 @@ final class Social_Controller_Auth extends Social_Controller {
 			}
 			else {
 				$account->universal(true);
+			}
+
+			$use_pages = $this->request->query('use_pages');
+			if ($use_pages == 'true') {
+				$account->use_pages(true);
 			}
 		}
 		else {

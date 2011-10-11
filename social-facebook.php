@@ -205,7 +205,14 @@ final class Social_Facebook {
 	public static function social_proxy_url($url) {
 		if (isset($_GET['use_pages']) and strpos($url, 'req_perms') !== false) {
 			$url = explode('req_perms=', $url);
-		    $url = $url[0].'req_perms=manage_pages,'.$url[1];
+			$url = $url[0].'req_perms=manage_pages,'.$url[1];
+
+			// Now add the query param to the response URL
+			$url = explode('response_url=', $url);
+			$response_url = add_query_arg(array(
+				'use_pages' => 'true'
+			), urldecode($url[1]));
+			$url = $url[0].'response_url='.urlencode($response_url);
 		}
 		return $url;
 	}
