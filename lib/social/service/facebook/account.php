@@ -30,7 +30,7 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 * @param  bool|null  $use_pages
 	 * @return Social_Service_Account|bool
 	 */
-	public function personal($use_pages = null) {
+	public function use_pages($use_pages = null) {
 		if ($use_pages === null) {
 			return $this->_use_pages;
 		}
