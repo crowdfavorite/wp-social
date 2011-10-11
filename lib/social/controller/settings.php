@@ -118,15 +118,17 @@ final class Social_Controller_Settings extends Social_Controller {
 		}
 
 		$account_id = $this->request->query('account_id');
+		$is_profile = ($this->request->query('profile') == 'true');
 		$service = $this->social->service('facebook');
 		if ($service !== false) {
 			$accounts = $service->accounts();
 			if (isset($accounts[$account_id])) {
-				$pages = $service->get_pages($accounts[$account_id]);
+				$pages = $service->get_pages($accounts[$account_id], $is_profile);
 				if (count($pages)) {
 					$html = Social_View::factory('wp-admin/parts/facebook/page/settings', array(
 						'account' => $accounts[$account_id],
-						'pages' => $pages
+						'pages' => $pages,
+						'is_profile' => $is_profile,
 					));
 					echo json_encode(array(
 						'result' => 'success',
@@ -151,17 +153,18 @@ final class Social_Controller_Settings extends Social_Controller {
 		}
 
 		$account_id = $this->request->query('account_id');
+		$is_profile = ($this->request->query('profile') == 'true');
 		$page_ids = $this->request->post('page_ids');
 
 		$service = $this->social->service('facebook');
 		if ($service !== false) {
 			$accounts = $service->accounts();
 			if (isset($accounts[$account_id])) {
-				$pages = $service->get_pages($accounts[$account_id]);
-				$accounts[$account_id]->pages(array());
+				$pages = $service->get_pages($accounts[$account_id], $is_profile);
+				$accounts[$account_id]->pages(array(), $is_profile);
 				foreach ($page_ids as $page_id) {
 					if (isset($pages[$page_id])) {
-						$accounts[$account_id]->page($pages[$page_id]);
+						$accounts[$account_id]->page($pages[$page_id], $is_profile);
 					}
 				}
 			}
@@ -170,7 +173,7 @@ final class Social_Controller_Settings extends Social_Controller {
 				$accounts[$account_id] = $account->as_object();
 			}
 
-			$service->accounts($accounts)->save();
+			$service->accounts($accounts)->save($is_profile);
 		}
 	}
 

@@ -1420,14 +1420,13 @@ final class Social {
 						if (count($_accounts) and isset($services[$key])) {
 							$this->_enabled = true;
 							$class = 'Social_Service_'.$key.'_Account';
-							foreach ($_accounts as $account) {
-								$account = new $class($account);
-								if (!$services[$key]->account_exists($account->id())) {
-									$this->_enabled = true;
-									$services[$key]->account($account);
+							foreach ($_accounts as $account_id => $account) {
+								if ($services[$key]->account_exists($account_id)) {
+									$account = $this->merge_accounts($services[$key]->account($account_id)->as_object(), $account);
 								}
-
-								$services[$key]->account($account->id())->personal(true);
+								$this->_enabled = true;
+								$account = new $class((object) $account);
+								$services[$key]->account($account);
 							}
 						}
 					}
@@ -1438,6 +1437,57 @@ final class Social {
 		}
 
 		return $services;
+	}
+
+	/**
+	 * Merges universal with personal account.
+	 *
+	 * @param  array  $arr1
+	 * @param  array  $arr2
+	 * @return object
+	 */
+	private function merge_accounts($arr1, $arr2) {
+		$result = array();
+		for ($i = 0; $i < 2; ++$i) {
+			$arr = (array) func_get_arg($i);
+
+			$is_assoc = $this->is_assoc($arr);
+
+			foreach ($arr as $key => $val) {
+				if (isset($result[$key])) {
+					if (is_array($val) and is_array($result[$key])) {
+						$result[$key] = $this->merge_accounts($result[$key], $val);
+					}
+					else if (is_object($val) and is_object($result[$key])) {
+						$result[$key] = (object) $this->merge_accounts($result[$key], $val);
+					}
+					else {
+						if ($is_assoc) {
+							$result[$key] = $val;
+						}
+						else if (!in_array($val, $result, true)) {
+							$result[] = $val;
+						}
+					}
+				}
+				else {
+					$result[$key] = $val;
+				}
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Checks to see if the array is an associative array.
+	 *
+	 * @param  array  $arr
+	 * @return bool
+	 */
+	private function is_assoc($arr) {
+		$keys = array_keys($arr);
+		return array_keys($keys) !== $keys;
 	}
 
 	/**

@@ -27,8 +27,14 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 			$this->_use_pages = true;
 		}
 
-	if (isset($account->pages)) {
+		if (isset($account->pages)) {
 			$this->_pages = $account->pages;
+		}
+		else {
+			$this->_pages = (object) array(
+				'personal' => array(),
+				'universal' => array()
+			);
 		}
 	}
 
@@ -115,15 +121,26 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 * Sets and gets the page.
 	 *
 	 * @param  object|int  $page
+	 * @param  bool        $is_profile
 	 * @return bool|Social_Service_Facebook_Account
 	 */
-	public function page($page) {
+	public function page($page, $is_profile = false) {
 		if (is_object($page)) {
-			$this->_pages[$page->id] = $page;
+			if ($is_profile) {
+				$this->_pages->personal[$page->id] = $page;
+			}
+			else {
+				$this->_pages->universal[$page->id] = $page;
+			}
 			return $this;
 		}
-		else if (isset($this->_pages[$page])) {
-			return $this->_pages[$page];
+		else {
+			if ($is_profile and isset($this->_pages->personal[$page])) {
+				return $this->_pages->personal[$page];
+			}
+			else if (!$is_profile and isset($this->_pages->universal[$page])) {
+				return $this->_pages->universal[$page];
+			}
 		}
 
 		return false;
@@ -133,20 +150,34 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 * Gets all of the pages.
 	 *
 	 * @param  array  $pages
+	 * @param  bool   $is_profile
 	 * @return array|Social_Service_Facebook_Account
 	 */
-	public function pages(array $pages = null) {
+	public function pages(array $pages = null, $is_profile = false) {
 		if ($pages === null) {
-			return $this->_pages;
+			if ($is_profile) {
+				return $this->_pages->personal;
+			}
+			else {
+				return $this->_pages->universal;
+			}
 		}
 
 		if (count($pages)) {
 			foreach ($pages as $_page) {
-				$this->_pages[$_page->id] = $_page;
+				if ($is_profile) {
+					$this->_pages->personal[$_page->id] = $_page;
+				}
+				else {
+					$this->_pages->universal[$_page->id] = $_page;
+				}
 			}
 		}
 		else {
-			$this->_pages = array();
+			$this->_pages = (object) array(
+				'personal' => array(),
+				'universal' => array()
+			);
 		}
 		
 		return $this;

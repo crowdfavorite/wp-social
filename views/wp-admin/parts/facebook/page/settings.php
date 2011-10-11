@@ -4,7 +4,7 @@
 		   . '<ul>';
 		foreach ($pages as $page) {
 			$checked = '';
-			if ($account->page($page->id) !== false) {
+			if ($account->page($page->id, $is_profile) !== false) {
 				$checked = ' checked="checked"';
 			}
 
