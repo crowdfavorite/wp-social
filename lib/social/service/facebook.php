@@ -388,11 +388,28 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		$pages = array();
 		if ($account->use_pages()) {
 			$response = $this->request($account, $account->id().'/accounts');
-			if ($response !== false and isset($response->body()->response) and isset($response->body()->response->data)) {
-				foreach ($response->body()->response->data as $item) {
-					if ($item->category != 'Application') {
-						$pages[$item->id] = $item;
+			if ($response !== false and isset($response->body()->response)) {
+				if (isset($response->body()->response->data)) {
+					foreach ($response->body()->response->data as $item) {
+						if ($item->category != 'Application') {
+							$pages[$item->id] = $item;
+						}
 					}
+				}
+			    else if ($response->body()->response == 'incorrect method') {
+					// Account no longer has page permissions.
+					$service = Social::instance()->service('facebook');
+					$accounts = $service->accounts();
+					foreach ($accounts as $account_id => $_account) {
+						if ($account_id == $account->id()) {
+							$_account->use_pages(false);
+							$_account->pages(array());
+						}
+
+						$accounts[$account_id] = $account->as_object();
+					}
+					
+					$service->accounts($accounts)->save();
 				}
 			}
 		}
