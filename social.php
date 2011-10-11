@@ -953,14 +953,6 @@ final class Social {
 				$image = null;
 		    }
 		}
-		else if ((is_string($comment) or is_int($comment)) and $default != 'force-wordpress') {
-			foreach ($this->services() as $key => $service) {
-				if (count($service->accounts())) {
-					$account = reset($service->accounts());
-					$image = $account->avatar();
-				}
-			}
-		}
 
 		if ($image !== null) {
 			$type = '';
