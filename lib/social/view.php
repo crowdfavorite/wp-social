@@ -53,12 +53,11 @@ final class Social_View {
 	 */
 	public function __toString() {
 		try {
-			$output = $this->render();
-			return $output;
+			return $this->render();
 		}
 		catch (Exception $e) {
 			// Log the exception
-			Social::log($e->getMessage());
+			Social::log(print_r($e, true));
 			return '';
 		}
 	}
