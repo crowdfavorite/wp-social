@@ -11,6 +11,11 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	protected $_use_pages = false;
 
 	/**
+	 * @var array
+	 */
+	protected $_pages = array();
+
+	/**
 	 * Sets the use pages flag.
 	 *
 	 * @param  object  $account
@@ -20,6 +25,10 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 
 		if (isset($account->use_pages)) {
 			$this->_use_pages = true;
+		}
+
+	if (isset($account->pages)) {
+			$this->_pages = $account->pages;
 		}
 	}
 
@@ -31,6 +40,7 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	public function as_object() {
 		$object = parent::as_object();
 		$object->use_pages = $this->_use_pages;
+		$object->pages = $this->_pages;
 		return $object;
 	}
 
@@ -99,6 +109,47 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 		}
 
 		return $this->_user->username;
+	}
+
+	/**
+	 * Sets and gets the page.
+	 *
+	 * @param  object|int  $page
+	 * @return bool|Social_Service_Facebook_Account
+	 */
+	public function page($page) {
+		if (is_object($page)) {
+			$this->_pages[$page->id] = $page;
+			return $this;
+		}
+		else if (isset($this->_pages[$page])) {
+			return $this->_pages[$page];
+		}
+
+		return false;
+	}
+
+	/**
+	 * Gets all of the pages.
+	 *
+	 * @param  array  $pages
+	 * @return array|Social_Service_Facebook_Account
+	 */
+	public function pages(array $pages = null) {
+		if ($pages === null) {
+			return $this->_pages;
+		}
+
+		if (count($pages)) {
+			foreach ($pages as $_page) {
+				$this->_pages[$_page->id] = $_page;
+			}
+		}
+		else {
+			$this->_pages = array();
+		}
+		
+		return $this;
 	}
 
 } // End Social_Service_Facebook_Account

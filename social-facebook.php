@@ -217,9 +217,44 @@ final class Social_Facebook {
 		return $url;
 	}
 
+	/**
+	 * Saves the Facebook pages.
+	 *
+	 * @wp-action social_settings_save
+	 * @static
+	 * @param  bool $is_personal
+	 */
+	public static function social_settings_save($is_personal = false) {
+		$service = Social::instance()->service('facebook');
+	    if ($service !== false) {
+			$accounts = $service->accounts();
+			if (count($accounts)) {
+				foreach ($accounts as $account_id => $account) {
+					if (isset($_POST['social_facebook_pages_'.$account->id()])) {
+						$pages = $service->get_pages($account);
+
+						$account->pages(array());
+						if (count($pages)) {
+							foreach ($_POST['social_facebook_pages_'.$account->id()] as $page_id) {
+								if (isset($pages[$page_id])) {
+									$accounts[$account_id] = $account->page($pages[$page_id])->as_object();
+								}
+							}
+						}
+					}
+				}
+
+				$service->accounts($accounts)->save($is_personal);
+			}
+	    }
+	}
+
 } // End Social_Facebook
 
 define('SOCIAL_FACEBOOK_FILE', __FILE__);
+
+// Actions
+add_action('social_settings_save', array('Social_Facebook', 'social_settings_save'));
 
 // Filters
 add_filter('social_register_service', array('Social_Facebook', 'register_service'));

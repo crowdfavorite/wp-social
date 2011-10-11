@@ -367,17 +367,36 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		$name = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
 
 		// Facebook pages?
-		$pages = array();
-		if ($account->use_pages()) {
-			$response = $this->request($account, 'accounts');
-		}
+		$pages = $this->get_pages($account);
 
 		return Social_View::factory('wp-admin/parts/facebook/auth_output', array(
 			'account' => $account,
 			'key' => $this->key(),
 			'name' => $name,
 			'disconnect' => $disconnect,
+			'pages' => $pages
 		));
+	}
+
+	/**
+	 * Loads the pages for the account.
+	 *
+	 * @param  Social_Service_Account  $account
+	 * @return array
+	 */
+	public function get_pages(Social_Service_Account $account) {
+		$pages = array();
+		if ($account->use_pages()) {
+			$response = $this->request($account, $account->id().'/accounts');
+			if ($response !== false and isset($response->body()->response) and isset($response->body()->response->data)) {
+				foreach ($response->body()->response->data as $item) {
+					if ($item->category != 'Application') {
+						$pages[$item->id] = $item;
+					}
+				}
+			}
+		}
+		return $pages;
 	}
 
 } // End Social_Service_Facebook

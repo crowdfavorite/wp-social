@@ -102,9 +102,14 @@
 	font-size: 16px;
 }
 
-.social-accounts li {
+.social-accounts ul ul {
+	border-top: 0;
+	font-size: 12px;
+}
+
+.social-accounts .social-accounts-item {
 	border-bottom: 1px solid #e5e5e5;
-	height: 30px;
+	min-height: 30px;
 	line-height: 30px;
 	margin: 0;
 	padding: 5px 5px 5px 30px;
@@ -114,6 +119,20 @@
 .social-accounts a {
 	font-weight: bold;
 	text-decoration: none;
+}
+
+.social-accounts ul h6 {
+	margin: 0;
+}
+
+.social-accounts ul ul a {
+	position: relative;
+	top: -2px;
+}
+
+.social-accounts ul ul input {
+	float: left;
+	margin-right: 5px;
 }
 
 .social-accounts .social-twitter-icon,
@@ -292,6 +311,10 @@
 
 .social-facebook-icon.big i {
 	background-position: -30px -82px;
+}
+
+.social-facebook-pages {
+	clear: both;
 }
 
 #social_meta_aggregation_log .inside {
