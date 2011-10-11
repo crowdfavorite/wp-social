@@ -167,5 +167,26 @@
 				$this.parent().parent().fadeOut();
 			});
 		});
+
+		/**
+		 * Facebook Pages support
+		 */
+		var originalHref = '';
+		$('#social-facebook-pages').click(function(){
+			var href = $('#facebook_signin').attr('href');
+
+			if (originalHref == '') {
+				originalHref = href;
+			}
+
+			if ($(this).is(':checked')) {
+				href += '&use_pages=true';
+			}
+			else {
+				href = originalHref;
+			}
+
+			$('#facebook_signin').attr('href', href);
+		});
 	});
 })(jQuery);

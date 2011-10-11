@@ -45,6 +45,8 @@ final class Social_Controller_Auth extends Social_Controller {
 				'response_url' => urlencode(add_query_arg($args, $url)),
 				'id' => $id
 			), $proxy);
+
+			$proxy = apply_filters('social_proxy_url', $proxy);
 		}
 
 		wp_redirect($proxy);

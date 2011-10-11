@@ -171,6 +171,45 @@ final class Social_Facebook {
 		return $comments;
 	}
 
+	/**
+	 * Adds the Facebook Pages checkbox to the button.
+	 *
+	 * @static
+	 * @param  string                   $button
+	 * @param  Social_Service_Facebook  $service
+	 * @param  bool                     $profile_page
+	 * @return string
+	 */
+	public static function social_service_button($button, $service, $profile_page = false) {
+		if ($service->key() == 'facebook') {
+			$label = '<label for="social-facebook-pages">'
+			       . '    <input type="checkbox" id="social-facebook-pages" value="true" />'
+			       . '    Connect with Pages support'
+			       . '</label>';
+
+			if (!$profile_page) {
+				$button = explode('</div>', $button);
+				$button = $button[0].$label.'</div>';
+			}
+		}
+		return $button;
+	}
+
+	/**
+	 * Adds the manage pages permission onto the URL.
+	 *
+	 * @static
+	 * @param  string  $url
+	 * @return array|string
+	 */
+	public static function social_proxy_url($url) {
+		if (isset($_GET['use_pages']) and strpos($url, 'req_perms') !== false) {
+			$url = explode('req_perms=', $url);
+		    $url = $url[0].'req_perms=manage_pages,'.$url[1];
+		}
+		return $url;
+	}
+
 } // End Social_Facebook
 
 define('SOCIAL_FACEBOOK_FILE', __FILE__);
@@ -182,5 +221,7 @@ add_filter('social_comment_type_to_service', array('Social_Facebook', 'comment_t
 add_filter('get_avatar', array('Social_Facebook', 'get_avatar'), 10, 5);
 add_filter('get_avatar_comment_types', array('Social_Facebook', 'get_avatar_comment_types'));
 add_filter('social_comments_array', array('Social_Facebook', 'comments_array'), 10, 2);
+add_filter('social_service_button', array('Social_Facebook', 'social_service_button'), 10, 3);
+add_filter('social_proxy_url', array('Social_Facebook', 'social_proxy_url'));
 
 }

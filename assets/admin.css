@@ -238,6 +238,23 @@
 	background-position: -150px -44px;
 }
 
+.social-connect-button {
+	clear: both;
+}
+
+.social-connect-button label {
+	float: left;
+	margin-top: 4px;
+}
+
+.social-connect-button label input {
+	margin-top: -2px;
+}
+
+.social-connect-button a {
+	float: left;
+}
+
 .social-settings-connect .social-twitter-icon,
 .social-settings-connect .social-facebook-icon {
 	display: block;

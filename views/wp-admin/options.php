@@ -40,10 +40,12 @@
 								}
 							}
 
-							$service_buttons .= '<a href="'.esc_url($service->authorize_url()).'" id="'.$key.'_signin" class="social-login" target="_blank"><span>'.sprintf(__('Sign in with %s.', Social::$i18n), $service->title()).'</span></a>';
+							$button = '<div class="social-connect-button cf-clearfix"><a href="'.esc_url($service->authorize_url()).'" id="'.$key.'_signin" class="social-login" target="_blank"><span>'.sprintf(__('Sign in with %s.', Social::$i18n), $service->title()).'</span></a></div>';
+							$button = apply_filters('social_service_button', $button, $service);
+							$service_buttons .= $button;
 						}
 
-						echo '<p>'.__('Before blog authors can broadcast to social networks you need to connect some accounts:', Social::$i18n).'</p>'
+						echo '<p">'.__('Before blog authors can broadcast to social networks you need to connect some accounts:', Social::$i18n).'</p>'
 						   . '<div>'.$service_buttons.'</div>'
 						   . '<p class="description">'.__('Connected accounts are available to all blog authors.', Social::$i18n).'</p>';
 
