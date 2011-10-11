@@ -5,22 +5,13 @@
 	foreach ($services as $key => $service) {
 		foreach ($service->accounts() as $account) {
 			if ($account->personal()) {
-				$profile_url = esc_url($account->url());
-				$profile_name = esc_html($account->name());
-
-				$name = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
-				$disconnect = $service->disconnect_url($account, true);
-				$items .= '
-					<li>
-						<div class="social-'.$key.'-icon"><i></i></div>
-						<span class="name">'.$name.'</span>
-						<span class="disconnect">'.$disconnect.'</span>
-					</li>
-				';
+				$items .= $service->auth_output($account);
 			}
 		}
 
-		$service_buttons .= '<a href="'.esc_url($service->authorize_url()).'" id="'.$key.'_signin" class="social-login" target="_blank"><span>'.sprintf(__('Sign in with %s', Social::$i18n), $service->title()).'</span></a>';
+		$button = '<div class="social-connect-button cf-clearfix"><a href="'.esc_url($service->authorize_url()).'" id="'.$key.'_signin" class="social-login" target="_blank"><span>'.sprintf(__('Sign in with %s.', Social::$i18n), $service->title()).'</span></a></div>';
+		$button = apply_filters('social_service_button', $button, $service);
+		$service_buttons .= $button;
 	}
 
 	echo '<div>'.$service_buttons.'</div>';
