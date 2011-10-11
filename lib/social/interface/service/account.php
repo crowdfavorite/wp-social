@@ -10,7 +10,7 @@ interface Social_Interface_Service_Account {
 	 *
 	 * @return object
 	 */
-	function as_array();
+	function as_object();
 
 	/**
 	 * Returns whether the account is public or not.
