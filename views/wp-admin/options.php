@@ -23,20 +23,7 @@
 							foreach ($service->accounts() as $account) {
 								if ($account->universal()) {
 									$have_accounts = true;
-
-									$profile_url = esc_url($account->url());
-									$profile_name = esc_html($account->name());
-									$disconnect = $service->disconnect_url($account, true);
-
-									$name = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
-
-									$items .= '
-										<li>
-											<div class="social-'.$key.'-icon"><i></i></div>
-											<span class="name">'.$name.'</span>
-											<span class="disconnect">'.$disconnect.'</span>
-										</li>
-									';
+									$items .= $service->auth_output($account);
 								}
 							}
 

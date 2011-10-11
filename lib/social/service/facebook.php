@@ -354,4 +354,30 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		return ($type !== 'social-facebook-like');
 	}
 
+	/**
+	 * Displays the auth item output.
+	 *
+	 * @param  Social_Service_Account  $account
+	 * @return Social_View
+	 */
+	public function auth_output(Social_Service_Account $account) {
+		$profile_url = esc_url($account->url());
+		$profile_name = esc_html($account->name());
+		$disconnect = $this->disconnect_url($account, true);
+		$name = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
+
+		// Facebook pages?
+		$pages = array();
+		if ($account->use_pages()) {
+			$response = $this->request($account, 'accounts');
+		}
+
+		return Social_View::factory('wp-admin/parts/facebook/auth_output', array(
+			'account' => $account,
+			'key' => $this->key(),
+			'name' => $name,
+			'disconnect' => $disconnect,
+		));
+	}
+
 } // End Social_Service_Facebook
