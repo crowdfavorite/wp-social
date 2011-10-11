@@ -205,7 +205,6 @@ abstract class Social_Service {
 					$current = array();
 				}
 				$current[$this->_key] = $accounts;
-				Social::log(print_r($current, true));
 				Social::option('accounts', $current);
 			}
 			else {

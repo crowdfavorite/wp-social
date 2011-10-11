@@ -24,6 +24,19 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	}
 
 	/**
+	 * Returns an array object of the account.
+	 *
+	 * @return object
+	 */
+	public function as_array() {
+		$array = parent::as_array();
+		$array += array(
+			'use_pages' => $this->_use_pages,
+		);
+		return $array;
+	}
+
+	/**
 	 * Returns whether the account uses pages as well.
 	 *
 	 * @abstract
