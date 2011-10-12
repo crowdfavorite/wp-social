@@ -33,17 +33,30 @@ final class Social_Controller_Broadcast extends Social_Controller {
 		if ($this->request->post('social_action') !== null) {
 			foreach ($services as $key => $service) {
 				$content = $this->request->post('social_'.$key.'_content');
-				if (count($service->accounts()) and $this->request->post('social_'.$key.'_accounts') !== null) {
-					if (empty($content)) {
-						$errors[$key] = sprintf(__('Please enter some content for %s.', Social::$i18n), $service->title());
+				if (count($service->accounts())) {
+					$run_checks = false;
+					if ($this->request->post('social_'.$key.'_accounts') !== null) {
+						$accounts_selected = true;
+						$run_checks = true;
 					}
-					else if (strlen($content) > $service->max_broadcast_length()) {
-						$errors[$key] = sprintf(__('Content for %s must not be longer than %s characters.', Social::$i18n), $service->title(), $service->max_broadcast_length());
+					else {
+						foreach ($service->accounts() as $account) {
+							if ($this->request->post('social_facebook_pages_'.$account->id()) !== null) {
+								$accounts_selected = true;
+								$run_checks = true;
+							    break;
+							}
+						}
 					}
-				}
 
-				if ($this->request->post('social_'.$key.'_accounts') !== null) {
-					$accounts_selected = true;
+					if ($run_checks) {
+						if (empty($content)) {
+							$errors[$key] = sprintf(__('Please enter some content for %s.', Social::$i18n), $service->title());
+						}
+						else if (strlen($content) > $service->max_broadcast_length()) {
+							$errors[$key] = sprintf(__('Content for %s must not be longer than %s characters.', Social::$i18n), $service->title(), $service->max_broadcast_length());
+						}
+					}
 				}
 			}
 
@@ -54,12 +67,13 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			if (!count($errors)) {
 				$broadcast_accounts = array();
 				foreach ($services as $key => $service) {
+					$store_meta = false;
 					if ($this->request->post('social_'.$key.'_accounts') !== null) {
 						$accounts = array();
 						foreach ($this->request->post('social_'.$key.'_accounts') as $account) {
 							$account = explode('|', $account);
 
-							$accounts[] = (object) array(
+							$accounts[$account[0]] = (object) array(
 								'id' => $account[0],
 								'universal' => isset($account[1]),
 							);
@@ -69,6 +83,42 @@ final class Social_Controller_Broadcast extends Social_Controller {
 							$broadcast_accounts[$key] = $accounts;
 						}
 
+						$store_meta = true;
+					}
+
+					// TODO move this logic to a WP filter to abstract it into the Facebook plugin
+					foreach ($service->accounts() as $account) {
+						$pages = $this->request->post('social_facebook_pages_'.$account->id());
+						if ($pages !== null) {
+							$universal_pages = $account->pages();
+							$personal_pages = $account->pages(null, true);
+							foreach ($pages as $page_id) {
+								if (!isset($broadcast_accounts[$key])) {
+									$broadcast_accounts[$key] = array();
+								}
+
+								if (!isset($broadcast_accounts[$key][$page_id])) {
+									if (isset($universal_pages[$page_id])) {
+										$store_meta = true;
+										$broadcast_accounts[$key][$page_id] = (object) array(
+											'id' => $page_id,
+											'universal' => true,
+											'page' => true,
+										);
+									}
+								    else if (isset($personal_pages[$page_id])) {
+										$broadcast_accounts[$key][$page_id] = (object) array(
+											'id' => $page_id,
+											'universal' => false,
+											'page' => true,
+										);
+									}
+								}
+							}
+						}
+					}
+
+					if ($store_meta) {
 						update_post_meta($post->ID, '_social_'.$key.'_content', $_POST['social_'.$key.'_content']);
 					}
 				}
