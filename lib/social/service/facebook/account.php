@@ -155,7 +155,16 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 */
 	public function pages(array $pages = null, $is_profile = false) {
 		if ($pages === null) {
-			if ($is_profile) {
+			if ($is_profile == 'combined') {
+				$pages = $this->_pages->personal;
+				foreach ($this->_pages->universal as $page) {
+					if (!isset($pages[$page->id])) {
+						$pages[$page->id] = $page;
+					}
+				}
+				return $pages;
+			}
+			else if ($is_profile) {
 				return $this->_pages->personal;
 			}
 			else {

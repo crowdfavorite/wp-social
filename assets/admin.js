@@ -234,5 +234,11 @@
 			});
 			$.post($parent.find('input[name=social_save_url]').val(), data);
 		});
+
+		$('.social-show-facebook-pages').click(function(e){
+			e.preventDefault();
+			$(this).parent().hide();
+			$(this).closest('.social-accounts-item').find('.social-facebook-pages').slideDown();
+		});
 	});
 })(jQuery);

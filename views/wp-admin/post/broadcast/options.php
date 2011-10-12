@@ -27,7 +27,7 @@
 <?php wp_nonce_field(); ?>
 <input type="hidden" name="post_ID" value="<?php echo $post->ID; ?>" />
 <input type="hidden" name="location" value="<?php echo $location; ?>" />
-<table class="form-table">
+<table class="form-table social-broadcast-options">
 <?php
 	$counters = array();
 	foreach ($services as $key => $service) {
@@ -59,45 +59,82 @@
 		</th>
 		<td>
 			<textarea id="<?php echo esc_attr($key.'_preview'); ?>" name="<?php echo esc_attr('social_'.$key.'_content'); ?>" class="social-preview-content" cols="40" rows="5"><?php echo stripslashes((isset($_POST['social_'.$key.'_content'])) ? $_POST['social_'.$key.'_content'] : esc_textarea($content)); ?></textarea><br/>
-			<strong><?php echo $heading; ?></strong><br/>
-			<?php
-				foreach ($accounts as $account):
-					$checked = true;
-					if (isset($_POST['social_'.$key.'_accounts'])) {
-						if (!in_array($account->id(), $_POST['social_'.$key.'_accounts']) and !in_array($account->id().'|true', $_POST['social_'.$key.'_accounts'])) {
-							$checked = false;
-						}
-					}
-					else if (count($errors) and !isset($_POST['social_'.$key.'_accounts'])) {
-						$checked = false;
-					}
-					else if (!empty($broadcasted_ids) and empty($default_accounts)) {
-						if (!isset($default_accounts[$key]) or (isset($default_accounts[$key]) and !in_array($account->id(), $default_accounts[$key]))) {
-							$checked = false;
-						}
-					}
-					else if (count($broadcasted_ids)) {
-						if (isset($_POST['social_action']) and isset($broadcasted_ids[$key]) and isset($broadcasted_ids[$key][$account->id()])) {
-							$checked = false;
-						}
-					}
-					else if (isset($_POST['social_broadcast'])) {
-						if ($_POST['social_broadcast'] == 'Edit') {
-							if (empty($broadcasted_ids) and empty($broadcast_accounts)) {
+
+			<div class="social-accounts">
+				<strong><?php echo $heading; ?></strong>
+				<ul>
+					<?php
+						foreach ($accounts as $account):
+							$checked = true;
+							if (isset($_POST['social_'.$key.'_accounts'])) {
+								if (!in_array($account->id(), $_POST['social_'.$key.'_accounts']) and !in_array($account->id().'|true', $_POST['social_'.$key.'_accounts'])) {
+									$checked = false;
+								}
+							}
+							else if (count($errors) and !isset($_POST['social_'.$key.'_accounts'])) {
 								$checked = false;
 							}
-						}
-					}
-					else if (!empty($broadcast_accounts) and (!isset($broadcast_accounts[$key]) or !isset($broadcast_accounts[$key][$account->id()]))) {
-						$checked = false;
-					}
-			?>
-			<label class="social-broadcastable" for="<?php echo esc_attr($key.$account->id()); ?>" style="cursor:pointer">
-				<input type="checkbox" name="<?php echo esc_attr('social_'.$key.'_accounts[]'); ?>" id="<?php echo esc_attr($key.$account->id()); ?>" value="<?php echo esc_attr($account->id().($account->universal() ? '|true' : '')); ?>"<?php echo ($checked ? ' checked="checked"' : ''); ?> />
-				<img src="<?php echo esc_attr($account->avatar()); ?>" width="24" height="24" />
-				<span><?php echo esc_html($account->name()); ?></span>
-			</label>
-			<?php endforeach; ?>
+							else if (!empty($broadcasted_ids) and empty($default_accounts)) {
+								if (!isset($default_accounts[$key]) or (isset($default_accounts[$key]) and !in_array($account->id(), $default_accounts[$key]))) {
+									$checked = false;
+								}
+							}
+							else if (count($broadcasted_ids)) {
+								if (isset($_POST['social_action']) and isset($broadcasted_ids[$key]) and isset($broadcasted_ids[$key][$account->id()])) {
+									$checked = false;
+								}
+							}
+							else if (isset($_POST['social_broadcast'])) {
+								if ($_POST['social_broadcast'] == 'Edit') {
+									if (empty($broadcasted_ids) and empty($broadcast_accounts)) {
+										$checked = false;
+									}
+								}
+							}
+							else if (!empty($broadcast_accounts) and (!isset($broadcast_accounts[$key]) or !isset($broadcast_accounts[$key][$account->id()]))) {
+								$checked = false;
+							}
+					?>
+					<li class="social-accounts-item">
+						<label class="social-broadcastable" for="<?php echo esc_attr($key.$account->id()); ?>" style="cursor:pointer">
+							<input type="checkbox" name="<?php echo esc_attr('social_'.$key.'_accounts[]'); ?>" id="<?php echo esc_attr($key.$account->id()); ?>" value="<?php echo esc_attr($account->id().($account->universal() ? '|true' : '')); ?>"<?php echo ($checked ? ' checked="checked"' : ''); ?> />
+							<img src="<?php echo esc_attr($account->avatar()); ?>" width="24" height="24" />
+							<span class="name">
+								<?php
+									echo esc_html($account->name());
+									if ($service->key() == 'facebook') {
+										// TODO if there are accounts checked, hide this.
+										$pages = $account->pages(null, 'combined');
+										if ($account->use_pages() and count($pages)) {
+											echo '<span> - <a href="#" class="social-show-facebook-pages">Show Pages</a></span>';
+										}
+									}
+								?>
+							</span>
+						</label>
+						<?php
+							if ($service->key() == 'facebook') {
+								if ($account->use_pages() and count($pages)) {
+									// TODO if there are accounts checked, show this.
+									echo '<div class="social-facebook-pages">'
+									   . '    <h5>Account Pages</h5>'
+									   . '    <ul>';
+									foreach ($pages as $page) {
+										echo '<li>'
+										   . '    <input type="checkbox" name="social_facebook_pages_'.$account->id().'[]" value="'.$page->id.'"'.$checked.' />'
+										   . '    <img src="http://graph.facebook.com/'.$page->id.'/picture" width="16" height="16" />'
+										   . '    <span>'.$page->name.'</span>'
+										   . '</li>';
+									}
+									echo '    </ul>'
+									   . '</div>';
+								}
+							}
+						?>
+					</li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
 		</td>
 	</tr>
 <?php
