@@ -37,12 +37,12 @@ final class Social_View {
 	 * @param  array   $data
 	 */
 	public function __construct($file = null, array $data = array()) {
-		if ($file !== null) {
-			$this->set_file($file);
-		}
-
 		if (empty($this->_data)) {
 			$this->_data = $data;
+		}
+		
+		if ($file !== null) {
+			$this->set_file($file);
 		}
 	}
 
@@ -120,7 +120,7 @@ final class Social_View {
 	 * @return void
 	 */
 	private function set_file($file) {
-		$file = apply_filters('social_view_set_file', $file);
+		$file = apply_filters('social_view_set_file', $file, $this->_data);
 		
 		if (file_exists($file)) {
 			$this->_file = $file;

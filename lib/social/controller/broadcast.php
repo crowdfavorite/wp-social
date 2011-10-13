@@ -217,22 +217,26 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			$service = $this->social->service($key);
 			if ($service) {
 				$message = null;
-				foreach ($accounts as $account) {
-					if ($account->universal != '1') {
+				foreach ($accounts as $_account) {
+					if ($_account->universal != '1') {
 						if ($personal_accounts === null) {
 							$personal_accounts = get_user_meta($post->post_author, 'social_accounts', true);
 						}
 
-						if (isset($personal_accounts[$key][$account->id])) {
+						if (isset($personal_accounts[$key][$_account->id])) {
 							$class = 'Social_Service_'.$key.'_Account';
-							$account = new $class($personal_accounts[$key][$account->id]);
+							$account = new $class($personal_accounts[$key][$_account->id]);
 						}
 						else {
 							$account = false;
 						}
 					}
 					else {
-						$account = $service->account($account->id);
+						$account = $service->account($_account->id);
+					}
+
+					if ($account == false) {
+						$account = apply_filters('social_get_broadcast_account', $_account, $post, $service);
 					}
 
 					if ($account !== false) {
@@ -320,7 +324,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 									$broadcasted_ids[$key] = array();
 								}
 
-								$this->social->add_broadcasted_id($post->ID, $key, $response->id(), $message, $account->id(), $account->username());
+								$this->social->add_broadcasted_id($post->ID, $key, $response->id(), $message, $account, $account->username());
 
 								do_action('social_broadcast_response', $response, $key);
 

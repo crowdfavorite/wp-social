@@ -226,7 +226,7 @@ final class Social_Facebook {
 	 */
 	public static function social_settings_save($is_personal = false) {
 		$service = Social::instance()->service('facebook');
-	    if ($service !== false) {
+		if ($service !== false) {
 			$accounts = $service->accounts();
 			if (count($accounts)) {
 				foreach ($accounts as $account_id => $account) {
@@ -246,7 +246,92 @@ final class Social_Facebook {
 
 				$service->accounts($accounts)->save($is_personal);
 			}
-	    }
+		}
+	}
+
+	/**
+	 * @static
+	 * @param  object                   $account
+	 * @param  WP_Post                  $post
+	 * @param  Social_Service_Facebook  $service
+	 *
+	 * @return object|bool
+	 */
+	public static function social_get_broadcast_account($account, $post, $service) {
+		if ($service->key() == 'facebook') {
+			// Load accounts
+			$found = false;
+			$accounts = $service->accounts();
+			foreach ($accounts as $_account) {
+				$pages = $_account->pages(null, 'combined');
+				if (isset($pages[$account->id])) {
+					$found = true;
+					$account = $_account->broadcast_page($pages[$account->id]);
+				}
+			}
+
+			if (!$found) {
+				$personal_accounts = get_user_meta($post->post_author, 'social_accounts', true);
+				if (isset($personal_accounts['facebook'])) {
+					foreach ($personal_accounts['facebook'] as $account_id => $_account) {
+						$_account = new Social_Service_Facebook_Account($_account);
+						$pages = $_account->pages(null, 'combined');
+						if (isset($pages[$account->id])) {
+							$found = true;
+							$account = $_account->broadcast_page($pages[$account->id]);
+						}
+					}
+				}
+			}
+
+			if ($found) {
+				return $account;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Stores the Facebook page data to the broadcasted ID.
+	 *
+	 * @static
+	 *
+	 * @param  array                            $data
+	 * @param  Social_Service_Facebook_Account  $account
+	 * @param  Social_Service_Facebook          $service
+	 * @param  int                              $post_id
+	 *
+	 * @return array
+	 */
+	public static function social_save_broadcasted_ids_data($data, $account, $service, $post_id) {
+		if ($service == 'facebook') {
+			$broadcast_page = $account->broadcast_page();
+			if ($broadcast_page !== null) {
+				$data['page'] = (object) array(
+					'id' => $broadcast_page->id,
+					'name' => $broadcast_page->name
+				);
+			}
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Filter to change the view for Facebook Pages
+	 *
+	 * @static
+	 * @param  string  $file
+	 * @param  array   $data
+	 * @return string
+	 */
+	public static function social_view_set_file($file, $data) {
+		if ($file == 'wp-admin/post/meta/broadcast/parts/account' and isset($data['data']['page'])) {
+			$file = 'wp-admin/post/meta/broadcast/parts/facebook/page';
+		}
+
+		return $file;
 	}
 
 } // End Social_Facebook
@@ -265,5 +350,8 @@ add_filter('get_avatar_comment_types', array('Social_Facebook', 'get_avatar_comm
 add_filter('social_comments_array', array('Social_Facebook', 'comments_array'), 10, 2);
 add_filter('social_service_button', array('Social_Facebook', 'social_service_button'), 10, 3);
 add_filter('social_proxy_url', array('Social_Facebook', 'social_proxy_url'));
+add_filter('social_get_broadcast_account', array('Social_Facebook', 'social_get_broadcast_account'), 10, 3);
+add_filter('social_save_broadcasted_ids_data', array('Social_Facebook', 'social_save_broadcasted_ids_data'), 10, 4);
+add_filter('social_view_set_file', array('Social_Facebook', 'social_view_set_file'), 10, 2);
 
 }

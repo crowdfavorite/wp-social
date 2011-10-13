@@ -11,9 +11,14 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	protected $_use_pages = false;
 
 	/**
-	 * @var array
+	 * @var  array
 	 */
 	protected $_pages = array();
+
+	/**
+	 * @var  object  broadcast page
+	 */
+	protected $_broadcast_page = null;
 
 	/**
 	 * Sets the use pages flag.
@@ -189,6 +194,21 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 			);
 		}
 		
+		return $this;
+	}
+
+	/**
+	 * Sets and gets the page to broadcast to.
+	 *
+	 * @param  object  $page
+	 * @return object|Social_Service_Facebook_Account
+	 */
+	public function broadcast_page($page = null) {
+		if ($page === null) {
+			return $this->_broadcast_page;
+		}
+
+		$this->_broadcast_page = $page;
 		return $this;
 	}
 

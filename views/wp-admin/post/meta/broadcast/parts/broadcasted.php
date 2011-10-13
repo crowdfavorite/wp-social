@@ -22,7 +22,8 @@ if (is_array($ids) and count($ids)) {
 						$output .= Social_View::factory('wp-admin/post/meta/broadcast/parts/account', array(
 							'account' => $account,
 							'service' => $service,
-							'broadcasted_id' => $broadcasted_id
+							'broadcasted_id' => $broadcasted_id,
+							'data' => $data
 						));
 					}
 				}

@@ -729,11 +729,11 @@ final class Social {
 	 * @param  string  $service           service key
 	 * @param  string  $broadcasted_id    broadcasted id
 	 * @param  string  $message           broadcasted message
-	 * @param  string  $account_id        account id
+	 * @param  Social_Service_Facebook_Account|Social_Service_Twitter_Account  $account        account
 	 * @param  string  $account_username  broadcasted username
 	 * @return void
 	 */
-	public function add_broadcasted_id($post_id, $service, $broadcasted_id, $message, $account_id, $account_username) {
+	public function add_broadcasted_id($post_id, $service, $broadcasted_id, $message, $account, $account_username) {
 		$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
 		if (empty($broadcasted_ids)) {
 			$broadcasted_ids = array();
@@ -743,12 +743,16 @@ final class Social {
 			$broadcasted_ids[$service] = array();
 		}
 
-		if (!isset($broadcasted_ids[$service][$account_id])) {
-			$broadcasted_ids[$service][$account_id] = array();
+		if (!isset($broadcasted_ids[$service][$account->id()])) {
+			$broadcasted_ids[$service][$account->id()] = array();
 		}
 
-		if (!isset($broadcasted_ids[$service][$account_id][$broadcasted_id])) {
-			$broadcasted_ids[$service][$account_id][$broadcasted_id] = $message;
+		if (!isset($broadcasted_ids[$service][$account->id()][$broadcasted_id])) {
+			$data = array(
+				'message' => $message,
+			);
+			$data = apply_filters('social_save_broadcasted_ids_data', $data, $account, $service, $post_id);
+			$broadcasted_ids[$service][$account->id()][$broadcasted_id] = $data;
 			update_post_meta($post_id, '_social_broadcasted_ids', $broadcasted_ids);
 		}
 	}

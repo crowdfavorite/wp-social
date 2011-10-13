@@ -24,10 +24,10 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	/**
 	 * Broadcasts the message to the specified account. Returns the broadcasted ID.
 	 *
-	 * @param  Social_Service_Account  $account  account to broadcast to
-	 * @param  string                  $message  message to broadcast
-	 * @param  array                   $args     extra arguments to pass to the request
-	 * @param  int                     $post_id  post ID being broadcasted
+	 * @param  Social_Service_Facebook_Account|object  $account  account to broadcast to
+	 * @param  string                                  $message  message to broadcast
+	 * @param  array                                   $args     extra arguments to pass to the request
+	 * @param  int                                     $post_id  post ID being broadcasted
 	 *
 	 * @return Social_Response
 	 */
@@ -47,6 +47,16 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		$args = $args + array(
 			'message' => $message,
 		);
+
+		// Set access token?
+		$broadcast_account = $account->broadcast_page();
+		if ($broadcast_account !== null) {
+			$args = $args + array(
+				'access_token' => $broadcast_account->access_token,
+				'page_id' => $broadcast_account->id,
+			);
+		}
+
 		$args = apply_filters($this->key().'_broadcast_args', $args, $post_id);
 		return $this->request($account, 'feed', $args, 'POST');
 	}
