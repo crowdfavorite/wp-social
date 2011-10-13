@@ -958,6 +958,8 @@ final class Social {
 			if (is_object($comment)) {
 				$type = $comment->comment_type;
 			}
+
+			$image = esc_url($image);
 			return "<img alt='{$alt}' src='{$image}' class='avatar avatar-{$size} photo {$type}' height='{$size}' width='{$size}' />";
 		}
 
