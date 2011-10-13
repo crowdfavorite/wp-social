@@ -327,21 +327,31 @@ final class Social_Facebook {
 	 * @return string
 	 */
 	public static function social_view_set_file($file, $data) {
-		if (isset($data['service']) and $data['service']->key() == 'facebook' and !$data['account'] instanceof Social_Service_Account) {
-			if (!isset($data['data'])) {
-				$data['data'] = array();
-			}
-
-			if (!isset($data['data']['page'])) {
-				$data['data']['page'] = (object) array(
-					'id' => $data['account']->id,
-					'name' => $data['account']->name
-				);
-			}
+		if (isset($data['service']) and
+			$data['service']->key() == 'facebook' and
+			(isset($data['data']) and isset($data['data']['page'])) or
+			(isset($data['account']) and !$data['account'] instanceof Social_Service_Account))
+		{
 			$file = 'wp-admin/post/meta/broadcast/parts/facebook/page';
 		}
 
 		return $file;
+	}
+
+	public static function social_view_data($data, $file) {
+		if ($file == 'wp-admin/post/meta/broadcast/parts/facebook/page') {
+			if (isset($data['data']) and isset($data['data']['page'])) {
+				$data['account'] = $data['data']['page'];
+			}
+			else {
+				$data['account'] = (object) array(
+					'id' => $data['account']->id(),
+					'name' => $data['account']->username()
+				);
+			}
+		}
+
+		return $data;
 	}
 
 	/**
@@ -378,6 +388,7 @@ add_filter('social_proxy_url', array('Social_Facebook', 'social_proxy_url'));
 add_filter('social_get_broadcast_account', array('Social_Facebook', 'social_get_broadcast_account'), 10, 3);
 add_filter('social_save_broadcasted_ids_data', array('Social_Facebook', 'social_save_broadcasted_ids_data'), 10, 4);
 add_filter('social_view_set_file', array('Social_Facebook', 'social_view_set_file'), 10, 2);
+add_filter('social_view_data', array('Social_Facebook', 'social_view_data'), 10, 2);
 add_filter('social_merge_accounts', array('Social_Facebook', 'social_merge_accounts'), 10, 2);
 
 }

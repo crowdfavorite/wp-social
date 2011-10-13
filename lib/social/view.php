@@ -102,7 +102,7 @@ final class Social_View {
 		extract($this->_data, EXTR_SKIP);
 		ob_start();
 		try {
-			include $this->_file;
+			include $this->path($this->_file);
 		}
 		catch (Exception $e) {
 			ob_end_clean();
@@ -126,15 +126,24 @@ final class Social_View {
 			$this->_file = $file;
 		}
 		else {
-			$view = SOCIAL_PATH.'views/'.$file.'.php';
-			if (file_exists($view)) {
-				$this->_file = $view;
+			if (file_exists($this->path($file))) {
+				$this->_file = $file;
 			}
 		}
 
 		if ($this->_file === null) {
 			throw new Exception(sprintf(__('View %s does not exist.', 'social'), $file));
 		}
+	}
+
+	/**
+	 * Builds the absolute URL path to the view.
+	 *
+	 * @param  string  $file
+	 * @return string
+	 */
+	private function path($file) {
+		return SOCIAL_PATH.'views/'.$file.'.php';
 	}
 
 } // End Social_View
