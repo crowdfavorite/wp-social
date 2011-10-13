@@ -72,8 +72,19 @@
 										$checked = false;
 									}
 								}
-								else if (count($errors) and !isset($_POST['social_'.$key.'_accounts'])) {
-									$checked = false;
+								else if (count($errors)) {
+									if (!isset($_POST['social_'.$key.'_accounts'])) {
+										$checked = false;
+									}
+
+									if ($key == 'facebook' and isset($_POST['social_facebook_pages_'.$account->id()])) {
+										$pages = $account->pages(null, 'combined');
+										foreach ($pages as $page) {
+											if (in_array($page->id, $_POST['social_facebook_pages_'.$account->id()])) {
+												$checked_pages[] = $page->id;
+											}
+										}
+									}
 								}
 								else if (!empty($broadcasted_ids) and empty($default_accounts)) {
 									if (!isset($default_accounts[$key]) or (isset($default_accounts[$key]) and !in_array($account->id(), $default_accounts[$key]))) {
