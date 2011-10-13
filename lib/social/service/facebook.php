@@ -394,7 +394,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 */
 	public function get_pages(Social_Service_Account $account, $is_profile = false) {
 		$pages = array();
-		if ($account->use_pages()) {
+		if ($account->use_pages() or $account->use_pages(true)) {
 			$response = $this->request($account, $account->id().'/accounts');
 			if ($response !== false and isset($response->body()->response)) {
 				if (isset($response->body()->response->data)) {
@@ -410,7 +410,8 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					$accounts = $service->accounts();
 					foreach ($accounts as $account_id => $_account) {
 						if ($account_id == $account->id()) {
-							$_account->use_pages(false);
+							$_account->use_pages(false, false);
+							$_account->use_pages(true, false);
 							$_account->pages(array(), $is_profile);
 						}
 

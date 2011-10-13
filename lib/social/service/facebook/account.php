@@ -6,14 +6,19 @@
 final class Social_Service_Facebook_Account extends Social_Service_Account implements Social_Interface_Service_Account {
 
 	/**
-	 * @var  bool  use pages flag
-	 */
-	protected $_use_pages = false;
-
-	/**
 	 * @var  array
 	 */
 	protected $_pages = array();
+
+	/**
+	 * @var  bool
+	 */
+	protected $_use_personal_pages = false;
+
+	/**
+	 * @var  bool
+	 */
+	protected $_use_universal_pages = false;
 
 	/**
 	 * @var  object  broadcast page
@@ -50,7 +55,8 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 */
 	public function as_object() {
 		$object = parent::as_object();
-		$object->use_pages = $this->_use_pages;
+		$object->use_personal_pages = $this->_use_personal_pages;
+		$object->use_universal_pages = $this->_use_universal_pages;
 		$object->pages = $this->_pages;
 		return $object;
 	}
@@ -59,15 +65,26 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 * Returns whether the account uses pages as well.
 	 *
 	 * @abstract
+	 * @param  bool       $personal check
 	 * @param  bool|null  $use_pages
 	 * @return Social_Service_Account|bool
 	 */
-	public function use_pages($use_pages = null) {
+	public function use_pages($personal = false, $use_pages = null) {
 		if ($use_pages === null) {
-			return $this->_use_pages;
+			if ($personal) {
+				return $this->_use_personal_pages;
+			}
+			
+			return $this->_use_universal_pages;
 		}
 
-		$this->_use_pages = $use_pages;
+		if ($personal) {
+			$this->_use_personal_pages = $use_pages;
+		}
+		else {
+			$this->_use_universal_pages = $use_pages;
+		}
+
 		return $this;
 	}
 

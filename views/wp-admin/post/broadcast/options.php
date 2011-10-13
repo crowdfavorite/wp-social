@@ -139,7 +139,7 @@
 										if ($service->key() == 'facebook' and empty($checked_pages)) {
 											// TODO if there are accounts checked, hide this.
 											$pages = $account->pages(null, 'combined');
-											if ($account->use_pages() and count($pages)) {
+											if (($account->use_pages() or $account->use_pages(true)) and count($pages)) {
 												echo '<span> - <a href="#" class="social-show-facebook-pages">Show Pages</a></span>';
 											}
 										}
@@ -148,7 +148,7 @@
 							</label>
 							<?php
 								if ($service->key() == 'facebook') {
-									if ($account->use_pages() and count($pages)) {
+									if (($account->use_pages() or $account->use_pages(true)) and count($pages)) {
 										// TODO if there are accounts checked, show this.
 										echo '<div class="social-facebook-pages"'.(!empty($checked_pages) ? ' style="display:block"' : '').'>'
 											.'    <h5>Account Pages</h5>'

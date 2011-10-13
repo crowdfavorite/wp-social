@@ -104,7 +104,7 @@ final class Social_Controller_Auth extends Social_Controller {
 
 			$use_pages = $this->request->query('use_pages');
 			if ($use_pages == 'true') {
-				$account->use_pages(true);
+				$account->use_pages($is_personal, true);
 			}
 		}
 		else {
