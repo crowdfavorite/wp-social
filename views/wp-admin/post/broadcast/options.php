@@ -66,6 +66,7 @@
 					<?php
 						foreach ($accounts as $account):
 							$checked = true;
+							$checked_pages = array();
 							if (isset($_POST['social_'.$key.'_accounts'])) {
 								if (!in_array($account->id(), $_POST['social_'.$key.'_accounts']) and !in_array($account->id().'|true', $_POST['social_'.$key.'_accounts'])) {
 									$checked = false;
@@ -89,6 +90,28 @@
 									if (empty($broadcasted_ids) and empty($broadcast_accounts)) {
 										$checked = false;
 									}
+									else if (isset($broadcast_accounts[$key])) {
+										$found = false;
+										foreach ($broadcast_accounts[$key] as $account_id => $data) {
+											if ($key == 'facebook') {
+												if ($account_id == $account->id()) {
+													$found = true;
+												}
+
+												$pages = $account->pages(null, 'combined');
+												foreach ($pages as $page) {
+													if ($page->id == $account_id) {
+														$checked_pages[] = $page->id;
+														break;
+													}
+												}
+											}
+										}
+
+										if (!$found) {
+											$checked = false;
+										}
+									}
 								}
 							}
 							else if (!empty($broadcast_accounts) and (!isset($broadcast_accounts[$key]) or !isset($broadcast_accounts[$key][$account->id()]))) {
@@ -102,7 +125,7 @@
 							<span class="name">
 								<?php
 									echo esc_html($account->name());
-									if ($service->key() == 'facebook') {
+									if ($service->key() == 'facebook' and empty($checked_pages)) {
 										// TODO if there are accounts checked, hide this.
 										$pages = $account->pages(null, 'combined');
 										if ($account->use_pages() and count($pages)) {
@@ -116,15 +139,23 @@
 							if ($service->key() == 'facebook') {
 								if ($account->use_pages() and count($pages)) {
 									// TODO if there are accounts checked, show this.
-									echo '<div class="social-facebook-pages">'
+									echo '<div class="social-facebook-pages"'.(!empty($checked_pages) ? ' style="display:block"' : '').'>'
 									   . '    <h5>Account Pages</h5>'
 									   . '    <ul>';
 									foreach ($pages as $page) {
+										$_checked = $checked;
+										if (!empty($checked_pages)) {
+											if (in_array($page->id, $checked_pages)) {
+												$checked = ' checked="checked"';
+											}
+										}
 										echo '<li>'
 										   . '    <input type="checkbox" name="social_facebook_pages_'.$account->id().'[]" value="'.$page->id.'"'.$checked.' />'
 										   . '    <img src="http://graph.facebook.com/'.$page->id.'/picture" width="16" height="16" />'
 										   . '    <span>'.$page->name.'</span>'
 										   . '</li>';
+
+										$checked = $_checked;
 									}
 									echo '    </ul>'
 									   . '</div>';
