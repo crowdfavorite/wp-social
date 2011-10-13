@@ -78,10 +78,10 @@ final class Social_CRON {
 	public function display_cron_lock_write_error() {
 		$upload_dir = wp_upload_dir();
 		if (isset($upload_dir['basedir'])) {
-			$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', Social::$i18n), SOCIAL_PATH, $upload_dir['basedir']);
+			$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', 'social'), SOCIAL_PATH, $upload_dir['basedir']);
 		}
 		else {
-			$message = sprintf(__('Social requires that %s is writable for CRON jobs.', Social::$i18n), SOCIAL_PATH);
+			$message = sprintf(__('Social requires that %s is writable for CRON jobs.', 'social'), SOCIAL_PATH);
 		}
 		echo '<div class="error"><p>'.esc_html($message).'</p></div>';
 	}

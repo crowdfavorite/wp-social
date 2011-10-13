@@ -30,11 +30,6 @@ final class Social {
 	public static $version = '2.0';
 
 	/**
-	 * @var  string  internationalization key
-	 */
-	public static $i18n = 'social';
-
-	/**
 	 * @var  string  CRON lock directory.
 	 */
 	public static $cron_lock_dir = null;
@@ -105,7 +100,7 @@ final class Social {
 				return false;
 			}
 			catch (Exception $e) {
-				Social::log(sprintf(__('Failed to auto load class %s.', Social::$i18n), $class));
+				Social::log(sprintf(__('Failed to auto load class %s.', 'social'), $class));
 			}
 		}
 
@@ -117,18 +112,18 @@ final class Social {
 	 *
 	 * Format:
 	 *
-	 *     {key} => __('Description', Social::$i18n)
+	 *     {key} => __('Description', 'social')
 	 *
 	 * @static
 	 * @return array
 	 */
 	public static function broadcast_tokens() {
 		$defaults = array(
-			'{url}' => __('Blog post\'s permalink', Social::$i18n),
-			'{title}' => __('Blog post\'s title', Social::$i18n),
-			'{content}' => __('Blog post\'s content', Social::$i18n),
-			'{date}' => __('Blog post\'s date', Social::$i18n),
-			'{author}' => __('Blog post\'s author', Social::$i18n),
+			'{url}' => __('Blog post\'s permalink', 'social'),
+			'{title}' => __('Blog post\'s title', 'social'),
+			'{content}' => __('Blog post\'s content', 'social'),
+			'{date}' => __('Blog post\'s date', 'social'),
+			'{author}' => __('Blog post\'s author', 'social'),
 		);
 		return apply_filters('social_broadcast_tokens', $defaults);
 	}
@@ -138,15 +133,15 @@ final class Social {
 	 *
 	 * Format:
 	 *
-	 *     {key} => __('Description', Social::$i18n)
+	 *     {key} => __('Description', 'social')
 	 *
 	 * @static
 	 * @return mixed
 	 */
 	public static function comment_broadcast_tokens() {
 		$defaults = array(
-			'{content}' => __('Comment\'s content', Social::$i18n),
-			'{url}' => __('Comment\'s permalink', Social::$i18n),
+			'{content}' => __('Comment\'s content', 'social'),
+			'{url}' => __('Comment\'s permalink', 'social'),
 		);
 		return apply_filters('social_comment_broadcast_tokens', $defaults);
 	}
@@ -249,7 +244,7 @@ final class Social {
 	public function init() {
 		if (version_compare(PHP_VERSION, '5.2.4', '<')) {
 			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
-			wp_die(__("Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers.", Social::$i18n));
+			wp_die(__("Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers.", 'social'));
 		}
 
 		// Set the logger
@@ -394,8 +389,8 @@ final class Social {
 	 */
 	public function admin_menu() {
 		add_options_page(
-			__('Social Options', Social::$i18n),
-			__('Social', Social::$i18n),
+			__('Social Options', 'social'),
+			__('Social', 'social'),
 			'manage_options',
 			basename(SOCIAL_FILE),
 			array(
@@ -435,7 +430,7 @@ final class Social {
 	public function admin_notices() {
 		if (current_user_can('manage_options') or current_user_can('publish_posts')) {
 			if (!$this->_enabled) {
-				$message = sprintf(__('Social will not run until you update your <a href="%s">settings</a>.', Social::$i18n), esc_url(Social::settings_url()));
+				$message = sprintf(__('Social will not run until you update your <a href="%s">settings</a>.', 'social'), esc_url(Social::settings_url()));
 				echo '<div class="error"><p>'.$message.'</p></div>';
 			}
 
@@ -444,10 +439,10 @@ final class Social {
 				if (Social::option('cron_lock_error') !== null) {
 					$upload_dir = wp_upload_dir();
 					if (isset($upload_dir['basedir'])) {
-						$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', Social::$i18n), SOCIAL_PATH, $upload_dir['basedir']);
+						$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', 'social'), SOCIAL_PATH, $upload_dir['basedir']);
 					}
 					else {
-						$message = sprintf(__('Social requires that %s is writable for CRON jobs.', Social::$i18n), SOCIAL_PATH);
+						$message = sprintf(__('Social requires that %s is writable for CRON jobs.', 'social'), SOCIAL_PATH);
 					}
 
 					echo '<div class="error"><p>'.esc_html($message).'</p></div>';
@@ -458,15 +453,15 @@ final class Social {
 			$error = Social::option('log_write_error');
 			if ($error == '1') {
 				echo '<div class="error"><p>'.
-					sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_dismiss">[Dismiss]</a>', Social::$i18n), SOCIAL_PATH, esc_url(admin_url('?social_controller=settings&social_action=clear_log_write_error'))).
+					sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_dismiss">[Dismiss]</a>', 'social'), SOCIAL_PATH, esc_url(admin_url('?social_controller=settings&social_action=clear_log_write_error'))).
 					'</p></div>';
 			}
 
 			// Enable notice?
 			$suppress_enable_notice = get_user_meta(get_current_user_id(), 'social_suppress_enable_notice', true);
 			if (empty($suppress_enable_notice)) {
-				$message = __('When you enable Social, users will be created in your system and given the "%s" as specified in your <a href="%s">Settings</a>. Users that are created by Social and only have Subscriber permissions will be prevented from accessing the admin side of WordPress.', Social::$i18n);
-				$dismiss = sprintf(__('<a href="%s" class="social_dismiss">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=suppress_enable_notice')));
+				$message = __('When you enable Social, users will be created in your system and given the "%s" as specified in your <a href="%s">Settings</a>. Users that are created by Social and only have Subscriber permissions will be prevented from accessing the admin side of WordPress.', 'social');
+				$dismiss = sprintf(__('<a href="%s" class="social_dismiss">[Dismiss]</a>', 'social'), esc_url(admin_url('?social_controller=settings&social_action=suppress_enable_notice')));
 				$message = sprintf($message, get_option('default_role'), esc_url(admin_url('options-general.php')));
 				echo '<div class="updated"><p>'.$message.' '.$dismiss.'</p></div>';
 			}
@@ -477,7 +472,7 @@ final class Social {
 		if (!empty($deauthed)) {
 			foreach ($deauthed as $service => $data) {
 				foreach ($data as $id => $message) {
-					$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=clear_deauth&id='.$id.'&service='.$service)), 'social_dismiss');
+					$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', 'social'), esc_url(admin_url('?social_controller=settings&social_action=clear_deauth&id='.$id.'&service='.$service)), 'social_dismiss');
 					echo '<div class="error"><p>'.esc_html($message).' '.$dismiss.'</p></div>';
 				}
 			}
@@ -511,7 +506,7 @@ final class Social {
 				$output = sprintf($output, esc_url(admin_url('profile.php#social-networks')));
 			}
 
-			$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', Social::$i18n), esc_url(admin_url('?social_controller=settings&social_action=clear_2_0_upgrade')), 'social_dismiss');
+			$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', 'social'), esc_url(admin_url('?social_controller=settings&social_action=clear_2_0_upgrade')), 'social_dismiss');
 			echo '<div class="error"><p>'.$output.' '.$dismiss.'</p></div>';
 		}
 	}
@@ -550,7 +545,7 @@ final class Social {
 		if ($post !== null) {
 			foreach ($this->services() as $service) {
 				if (count($service->accounts())) {
-					add_meta_box('social_meta_broadcast', __('Social Broadcasting', Social::$i18n), array(
+					add_meta_box('social_meta_broadcast', __('Social Broadcasting', 'social'), array(
 						$this,
 						'add_meta_box_broadcast'
 					), 'post', 'side', 'high');
@@ -561,7 +556,7 @@ final class Social {
 			$fetch = Social::option('fetch_comments');
 			if ($this->_enabled and !empty($fetch)) {
 				if ($post->post_status == 'publish') {
-					add_meta_box('social_meta_aggregation_log', __('Social Comments', Social::$i18n), array(
+					add_meta_box('social_meta_aggregation_log', __('Social Comments', 'social'), array(
 						$this,
 						'add_meta_box_log'
 					), 'post', 'normal', 'core');
@@ -652,7 +647,7 @@ final class Social {
 
 		$next_run = get_post_meta($post->ID, '_social_aggregation_next_run', true);
 		if (empty($next_run)) {
-			$next_run = __('Not Scheduled', Social::$i18n);
+			$next_run = __('Not Scheduled', 'social');
 		}
 		else {
 			$next_run = date(get_option('date_format').' '.get_option('time_format'), ((int) $next_run + (get_option('gmt_offset') * 3600)));
@@ -989,18 +984,18 @@ final class Social {
 								update_comment_meta($comment_ID, 'social_to_broadcast', $_POST['social_post_account']);
 							}
 							else {
-								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s.', Social::$i18n), $comment_ID, $service->title(), $account->id()));
+								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s.', 'social'), $comment_ID, $service->title(), $account->id()));
 								$id = $service->broadcast($account, $output)->id();
 								if ($id === false) {
 									wp_delete_comment($comment_ID);
-									$message = sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', Social::$i18n), $comment_ID, $service->title(), $account->id());
+									$message = sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_ID, $service->title(), $account->id());
 
 									Social::log($message);
 									wp_die($message);
 								}
 								$this->set_comment_aggregated_id($comment_ID, $service->key(), $id);
 								update_comment_meta($comment_ID, 'social_status_id', $id);
-								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', Social::$i18n), $comment_ID, $service->title(), $account->id()));
+								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', 'social'), $comment_ID, $service->title(), $account->id()));
 							}
 						}
 
@@ -1013,7 +1008,7 @@ final class Social {
 							$comment->comment_author_url = $account->url();
 							wp_update_comment(get_object_vars($comment));
 						}
-						Social::log(sprintf(__('Comment #%s saved.', Social::$i18n), $comment_ID));
+						Social::log(sprintf(__('Comment #%s saved.', 'social'), $comment_ID));
 						break;
 					}
 				}
@@ -1062,17 +1057,17 @@ final class Social {
 							}
 
 							if ($account !== null) {
-								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s.', Social::$i18n), $comment_id, $service->title(), $account->id()));
+								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s.', 'social'), $comment_id, $service->title(), $account->id()));
 								$comment = get_comment($comment_id);
 								$output = $service->format_comment_content($comment, Social::option('comment_broadcast_format'));
 								$id = $service->broadcast($account, $output)->id();
 								if ($id === false) {
 									wp_delete_comment($comment_id);
-									Social::log(sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', Social::$i18n), $comment_id, $service->title(), $account->id()));
+									Social::log(sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_id, $service->title(), $account->id()));
 								}
 								$this->set_comment_aggregated_id($comment_id, $service->key(), $id);
 								update_comment_meta($comment_id, 'social_status_id', $id);
-								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', Social::$i18n), $comment_id, $service->title(), $account->id()));
+								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', 'social'), $comment_id, $service->title(), $account->id()));
 							}
 						}
 					}
@@ -1244,7 +1239,7 @@ final class Social {
 	 */
 	public function post_row_actions(array $actions, $post) {
 		if ($post->post_status == 'publish') {
-			$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', Social::$i18n), esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID).
+			$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', 'social'), esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID).
 				'<img src="'.esc_url(admin_url('images/wpspin_light.gif')).'" class="social_run_aggregation_loader" />';
 		}
 		return $actions;
@@ -1272,7 +1267,7 @@ final class Social {
 			$wp_admin_bar->add_menu(array(
 				'parent' => 'comments',
 				'id' => 'social_find_comments',
-				'title' => __('Find Social Comments', Social::$i18n).'<img src="'.esc_url(admin_url('images/wpspin_dark.gif')).'" class="social-aggregation-spinner" style="display: none;" />',
+				'title' => __('Find Social Comments', 'social').'<img src="'.esc_url(admin_url('images/wpspin_dark.gif')).'" class="social-aggregation-spinner" style="display: none;" />',
 				'href' => esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run')),
 			));
 		}

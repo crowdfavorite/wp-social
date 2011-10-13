@@ -51,17 +51,17 @@ final class Social_Controller_Broadcast extends Social_Controller {
 
 					if ($run_checks) {
 						if (empty($content)) {
-							$errors[$key] = sprintf(__('Please enter some content for %s.', Social::$i18n), $service->title());
+							$errors[$key] = sprintf(__('Please enter some content for %s.', 'social'), $service->title());
 						}
 						else if (strlen($content) > $service->max_broadcast_length()) {
-							$errors[$key] = sprintf(__('Content for %s must not be longer than %s characters.', Social::$i18n), $service->title(), $service->max_broadcast_length());
+							$errors[$key] = sprintf(__('Content for %s must not be longer than %s characters.', 'social'), $service->title(), $service->max_broadcast_length());
 						}
 					}
 				}
 			}
 
 			if (!in_array($post->post_status, array('future', 'pending')) and !$accounts_selected and !isset($errors['rebroadcast'])) {
-				$errors['rebroadcast'] = __('Please select at least one account to broadcast to.', Social::$i18n);
+				$errors['rebroadcast'] = __('Please select at least one account to broadcast to.', 'social');
 			}
 
 			if (!count($errors)) {
@@ -420,7 +420,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			'post' => $post,
 		));
 
-		$subject = sprintf(__('%s: Failed to broadcast post with Social.', Social::$i18n), get_bloginfo('name'));
+		$subject = sprintf(__('%s: Failed to broadcast post with Social.', 'social'), get_bloginfo('name'));
 
 		wp_mail($author->user_email, $subject, $message);
 	}

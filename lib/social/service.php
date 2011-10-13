@@ -93,7 +93,7 @@ abstract class Social_Service {
 				$personal = true;
 			}
 			$url = Social::settings_url($params, $personal);
-			$text = '<span title="'.__('Disconnect', Social::$i18n).'" class="social-disconnect social-ir">'.__('Disconnect', Social::$i18n).'</span>';
+			$text = '<span title="'.__('Disconnect', 'social').'" class="social-disconnect social-ir">'.__('Disconnect', 'social').'</span>';
 		}
 		else {
 			foreach ($params as $key => $value) {
@@ -106,7 +106,7 @@ abstract class Social_Service {
 			}
 
 			$url = add_query_arg($params, site_url());
-			$text = __('Disconnect', Social::$i18n);
+			$text = __('Disconnect', 'social');
 		}
 
 		return sprintf('%s<a href="%s">%s</a>%s', $before, esc_url($url), $text, $after);

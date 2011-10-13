@@ -1,6 +1,6 @@
 <?php
 	if (empty($log)) {
-		echo '<p>'.__('Aggregation has not been run for this post yet.', Social::$i18n).'</p>';
+		echo '<p>'.__('Aggregation has not been run for this post yet.', 'social').'</p>';
 	}
 	else {
 		$i = 0;
@@ -11,10 +11,10 @@
 
 			$output .= '<h5 id="log-'.$i.'">'.date(get_option('date_format').' '.get_option('time_format'), ($timestamp + (get_option('gmt_offset') * 3600))).' (';
 			if (isset($_log->manual) and $_log->manual) { // isset() check for legacy support
-				$output .= __('Manual Aggregation', Social::$i18n);
+				$output .= __('Manual Aggregation', 'social');
 			}
 			else {
-				$output .= __('Automatic Aggregation', Social::$i18n);
+				$output .= __('Automatic Aggregation', 'social');
 			}
 			$output .= ')</h5><ul id="log-'.$i.'-output" class="parent">';
 
@@ -56,18 +56,18 @@
 										$output .= '<a href="'.esc_url($link).'" target="_blank">#'.$item->id.'</a>';
 										switch ($type) {
 											case 'reply':
-												$output .= ' ('.__('Reply Search', Social::$i18n).')';
+												$output .= ' ('.__('Reply Search', 'social').')';
 											break;
 											case 'url':
-												$output .= ' ('.__('URL Search', Social::$i18n).')';
+												$output .= ' ('.__('URL Search', 'social').')';
 											break;
 											default:
-												$output .= ' ('.__(esc_html($type), Social::$i18n).')';
+												$output .= ' ('.__(esc_html($type), 'social').')';
 											break;
 										}
 
 										if ($item->ignored) {
-											$output .= ' ('.__('Existing Comment', Social::$i18n).')';
+											$output .= ' ('.__('Existing Comment', 'social').')';
 										}
 									}
 									else {
@@ -84,7 +84,7 @@
 				}
 			}
 			else {
-				$output .= '<li style="list-style:none"><p>'.__('No results found.', Social::$i18n).'</p></li>';
+				$output .= '<li style="list-style:none"><p>'.__('No results found.', 'social').'</p></li>';
 			}
 			$output .= '</ul>';
 		}

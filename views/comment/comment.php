@@ -17,7 +17,7 @@
 				}
 
 				if ($depth > 1) {
-					echo '<span class="social-replied social-imr">'.__('replied:', Social::$i18n).'</span>';
+					echo '<span class="social-replied social-imr">'.__('replied:', 'social').'</span>';
 				}
 			?>
 		</div>
@@ -25,14 +25,14 @@
 		<div class="social-comment-meta">
 			<span class="social-posted-from">
 				<?php if ($status_url !== null): ?>
-				<a href="<?php echo esc_url($status_url); ?>" title="<?php _e(sprintf('View on %s', $service->title()), Social::$i18n); ?>" target="_blank">
+				<a href="<?php echo esc_url($status_url); ?>" title="<?php _e(sprintf('View on %s', $service->title()), 'social'); ?>" target="_blank">
 				<?php endif; ?>
-				<span><?php _e('View', Social::$i18n); ?></span>
+				<span><?php _e('View', 'social'); ?></span>
 				<?php if ($status_url !== null): ?>
 				</a>
 				<?php endif; ?>
 			</span>
-			<a href="<?php echo esc_url(get_comment_link(get_comment_ID())); ?>" class="social-posted-when" target="_blank"><?php esc_html(printf(__('%s ago', Social::$i18n), human_time_diff(strtotime($comment->comment_date_gmt)))); ?></a>
+			<a href="<?php echo esc_url(get_comment_link(get_comment_ID())); ?>" class="social-posted-when" target="_blank"><?php esc_html(printf(__('%s ago', 'social'), human_time_diff(strtotime($comment->comment_date_gmt)))); ?></a>
 		</div>
 	</div>
 	<div class="social-comment-body">
@@ -45,7 +45,7 @@
 	<div class="social-actions entry-meta">
 		<?php
             comment_reply_link(array_merge($args, array('depth' => $depth, 'max_depth' => $args['max_depth'])));
-            edit_comment_link(__('Edit', Social::$i18n), '<span class="comment-edit-link"> &middot; ', '</span>');
+            edit_comment_link(__('Edit', 'social'), '<span class="comment-edit-link"> &middot; ', '</span>');
 
             if (!empty($social_items)) {
                 echo '<div class="social-items-comment">'.$social_items.'</div>';

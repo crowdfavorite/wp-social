@@ -294,7 +294,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 */
 	public function aggregation_row($type, $item, $username, $id) {
 		if ($type == 'like') {
-			return sprintf(__('Found %s additional likes.', Social::$i18n), $item->data['total']);
+			return sprintf(__('Found %s additional likes.', 'social'), $item->data['total']);
 		}
 		return '';
 	}

@@ -229,25 +229,25 @@ final class Social_Comment_Form {
 		$req = get_option('require_name_email');
 
 		$fields = array(
-			'author' => $this->to_input_group(__('Name', Social::$i18n), 'author', $commenter['comment_author'], $req),
-			'email' => $this->to_input_group(__('Email', Social::$i18n), 'email', $commenter['comment_author_email'], $req, __('Not published', Social::$i18n)),
-			'url' => $this->to_input_group(__('Website', Social::$i18n), 'url', $commenter['comment_author_url'])
+			'author' => $this->to_input_group(__('Name', 'social'), 'author', $commenter['comment_author'], $req),
+			'email' => $this->to_input_group(__('Email', 'social'), 'email', $commenter['comment_author_email'], $req, __('Not published', 'social')),
+			'url' => $this->to_input_group(__('Website', 'social'), 'url', $commenter['comment_author_url'])
 		);
 
 		$args = array(
-			'label_submit' => __('Post It', Social::$i18n),
-			'title_reply' => __('Profile', Social::$i18n),
-			'title_reply_to' => __('Post a Reply to %s', Social::$i18n),
-			'cancel_reply_link' => __('cancel', Social::$i18n),
+			'label_submit' => __('Post It', 'social'),
+			'title_reply' => __('Profile', 'social'),
+			'title_reply_to' => __('Post a Reply to %s', 'social'),
+			'cancel_reply_link' => __('cancel', 'social'),
 			'comment_notes_after' => '',
 			'comment_notes_before' => '',
 			'fields' => $fields,
-			'comment_field' => $this->to_textarea_group(__('Comment', Social::$i18n), 'comment', '', true, 'textarea')
+			'comment_field' => $this->to_textarea_group(__('Comment', 'social'), 'comment', '', true, 'textarea')
 		);
 
 		if ($this->is_logged_in) {
 			$override = array(
-				'title_reply' => __('Post a Comment', Social::$i18n)
+				'title_reply' => __('Post a Comment', 'social')
 			);
 			$args = array_merge($args, $override);
 		}
@@ -277,7 +277,7 @@ final class Social_Comment_Form {
 
 		if ($this->is_logged_in) {
 			if (current_user_can('manage_options')) {
-				$text = sprintf(__('Also post to %s', Social::$i18n), '<span></span>');
+				$text = sprintf(__('Also post to %s', 'social'), '<span></span>');
 				$post_to = $this->to_tag('label', $checkbox.' '.$text, $label_base, array('style' => 'display:none;'));
 			}
 			else {
@@ -305,10 +305,10 @@ final class Social_Comment_Form {
 	 */
 	public function before() {
 		if ($this->is_logged_in) {
-			$tab = __('Post a Comment', Social::$i18n);
+			$tab = __('Post a Comment', 'social');
 		}
 		else {
-			$tab = __('Profile', Social::$i18n);
+			$tab = __('Profile', 'social');
 		}
 
 		echo Social_View::factory('comment/before', array(

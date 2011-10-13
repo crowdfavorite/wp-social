@@ -7,7 +7,7 @@ if (is_array($ids) and count($ids)) {
 			if (!$header_shown) {
 				$header_shown = true;
 				echo '<p class="mar-top-none">'
-				   . __('This post has been broadcasted to the following accounts. You may broadcast to more accounts by clicking on the "Broadcast" button above.', Social::$i18n)
+				   . __('This post has been broadcasted to the following accounts. You may broadcast to more accounts by clicking on the "Broadcast" button above.', 'social')
 				   . '</p>';
 			}
 

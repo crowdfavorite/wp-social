@@ -11,7 +11,7 @@
 	?>
 </head>
 <body>
-<h1 id="logo"><?php _e('Social Broadcasting Options', Social::$i18n); ?></h1>
+<h1 id="logo"><?php _e('Social Broadcasting Options', 'social'); ?></h1>
 <?php if (count($errors)): ?>
 <div id="social_error">
 	<?php
@@ -21,7 +21,7 @@
 	?>
 </div>
 <?php endif; ?>
-<p><?php __('You have chosen to broadcast this blog post to your social accounts. Use the form below to edit your broadcasted messages.', Social::$i18n); ?></p>
+<p><?php __('You have chosen to broadcast this blog post to your social accounts. Use the form below to edit your broadcasted messages.', 'social'); ?></p>
 
 <form id="setup" method="post" action="<?php echo esc_url(admin_url('post.php?social_controller=broadcast&social_action=options')); ?>">
 <?php wp_nonce_field(); ?>
@@ -48,13 +48,13 @@
 
 		$accounts = $service->accounts();
 		$total_accounts = count($accounts);
-		$heading = sprintf(__('Publish to %s:', Social::$i18n), ($total_accounts == '1' ? 'this account' : 'these accounts'));
+		$heading = sprintf(__('Publish to %s:', 'social'), ($total_accounts == '1' ? 'this account' : 'these accounts'));
 
 		if ($total_accounts) {
 ?>
 	<tr>
 		<th scope="row">
-			<label for="<?php echo esc_attr($key.'_preview'); ?>"><?php _e($service->title(), Social::$i18n); ?></label><br/>
+			<label for="<?php echo esc_attr($key.'_preview'); ?>"><?php _e($service->title(), 'social'); ?></label><br/>
 			<span id="<?php echo esc_attr($key.'_counter'); ?>" class="social-preview-counter<?php echo ($counter < 0 ? ' social-counter-limit' : ''); ?>"><?php echo $counter; ?></span>
 		</th>
 		<td>
@@ -143,7 +143,7 @@
 ?>
 </table>
 <p class="step">
-	<input type="submit" name="social_action" value="<?php _e($step_text, Social::$i18n); ?>" class="button" />
+	<input type="submit" name="social_action" value="<?php _e($step_text, 'social'); ?>" class="button" />
 	<a href="<?php echo esc_url(get_edit_post_link($post->ID, 'url')); ?>" class="button">Cancel</a>
 </p>
 </form>

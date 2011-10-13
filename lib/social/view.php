@@ -95,7 +95,7 @@ final class Social_View {
 		}
 
 		if (empty($this->_file)) {
-			throw new Exception(__('You must set a file to be used before rendering.', Social::$i18n));
+			throw new Exception(__('You must set a file to be used before rendering.', 'social'));
 		}
 
 		$this->_data = apply_filters('social_view_data', $this->_data, $this->_file);
@@ -133,7 +133,7 @@ final class Social_View {
 		}
 
 		if ($this->_file === null) {
-			throw new Exception(sprintf(__('View %s does not exist.', Social::$i18n), $file));
+			throw new Exception(sprintf(__('View %s does not exist.', 'social'), $file));
 		}
 	}
 

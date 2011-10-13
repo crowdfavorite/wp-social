@@ -12,7 +12,7 @@ if ($is_profile) {
 			echo $name;
 
 			if ($account->use_pages()) {
-				echo '<span> - <a href="'.esc_url(admin_url('?social_controller=settings&social_action=get_facebook_pages&account_id='.$account->id().$profile)).'" class="social-manage-facebook-pages">'.__('Manage Pages', Social::$i18n).'</a></span>';
+				echo '<span> - <a href="'.esc_url(admin_url('?social_controller=settings&social_action=get_facebook_pages&account_id='.$account->id().$profile)).'" class="social-manage-facebook-pages">'.__('Manage Pages', 'social').'</a></span>';
 			    echo '<img src="'.esc_url(admin_url('images/wpspin_light.gif')).'" class="social-facebook-pages-spinner" />';
 			}
 		?>
