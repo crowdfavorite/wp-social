@@ -1,6 +1,6 @@
 <?php
-$avatar = esc_attr('http://graph.facebook.com/'.$data['page']->id.'/picture');
-$name = esc_html($data['page']->name);
+$avatar = esc_attr('http://graph.facebook.com/'.$account->id.'/picture');
+$name = esc_html($account->name);
 ?>
 <li style="clear:both;">
 	<img src="<?php echo $avatar; ?>" width="24" height="24" style="float:left;" />

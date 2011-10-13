@@ -327,8 +327,21 @@ final class Social_Facebook {
 	 * @return string
 	 */
 	public static function social_view_set_file($file, $data) {
-		if ($file == 'wp-admin/post/meta/broadcast/parts/account' and isset($data['data']['page'])) {
-			$file = 'wp-admin/post/meta/broadcast/parts/facebook/page';
+		if (isset($data['service']) and $data['service']->key() == 'facebook') {
+			$_account = $data['service']->account($data['account']->id);
+			if ($_account == false) {
+				if (!isset($data['data'])) {
+					$data['data'] = array();
+				}
+
+				if (!isset($data['data']['page'])) {
+					$data['data']['page'] = (object) array(
+						'id' => $data['account']->id,
+						'name' => $data['account']->name
+					);
+				}
+				$file = 'wp-admin/post/meta/broadcast/parts/facebook/page';
+			}
 		}
 
 		return $file;

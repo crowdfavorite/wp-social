@@ -102,6 +102,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 										$store_meta = true;
 										$broadcast_accounts[$key][$page_id] = (object) array(
 											'id' => $page_id,
+											'name' => $universal_pages[$page_id]->name,
 											'universal' => true,
 											'page' => true,
 										);
@@ -109,6 +110,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 								    else if (isset($personal_pages[$page_id])) {
 										$broadcast_accounts[$key][$page_id] = (object) array(
 											'id' => $page_id,
+											'name' => $universal_pages[$page_id]->name,
 											'universal' => false,
 											'page' => true,
 										);

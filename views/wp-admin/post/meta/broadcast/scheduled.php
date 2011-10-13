@@ -14,12 +14,10 @@ else {
 
 			$output = '';
 			foreach ($_accounts as $account) {
-				if (($account = $service->account($account->id)) !== false) {
-					$output .= Social_View::factory('wp-admin/post/meta/broadcast/parts/account', array(
-						'account' => $account,
-						'service' => $service
-					));
-				}
+				$output .= Social_View::factory('wp-admin/post/meta/broadcast/parts/account', array(
+					'account' => $account,
+					'service' => $service
+				));
 			}
 
 			if (!empty($output)) {
