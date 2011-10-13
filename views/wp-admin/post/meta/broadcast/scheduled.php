@@ -14,6 +14,11 @@ else {
 
 			$output = '';
 			foreach ($_accounts as $account) {
+				$_account = $service->account($account->id);
+				if ($_account !== false) {
+					$account = $_account;
+				}
+				
 				$output .= Social_View::factory('wp-admin/post/meta/broadcast/parts/account', array(
 					'account' => $account,
 					'service' => $service
