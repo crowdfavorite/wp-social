@@ -81,7 +81,9 @@ final class Social_Twitter {
 									if ($response !== false and isset($response->body()->response)) {
 										$update_broadcasted = true;
 										$message = $response->body()->response->text;
-										$broadcasted_ids['twitter'][$account_id][$id] = $message;
+										$broadcasted_ids['twitter'][$account_id][$id] = array(
+											'message' => $message
+										);
 									}
 								}
 							}

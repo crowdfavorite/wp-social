@@ -225,7 +225,9 @@ if (version_compare($installed_version, '2.0', '<')) {
 						if (is_array($broadcasted)) {
 							foreach ($broadcasted as $id => $data) {
 								if ((int) $data) {
-									$_meta_value[$service_key][$account_id][$data] = '';
+									$_meta_value[$service_key][$account_id][$data] = array(
+										'message' => ''
+									);
 								}
 								else {
 									$_meta_value[$service_key][$account_id][$id] = $data;
@@ -233,7 +235,9 @@ if (version_compare($installed_version, '2.0', '<')) {
 							}
 						}
 						else {
-							$_meta_value[$service_key][$account_id][$broadcasted] = '';
+							$_meta_value[$service_key][$account_id][$broadcasted] = array(
+								'message' => ''
+							);
 						}
 					}
 				}
