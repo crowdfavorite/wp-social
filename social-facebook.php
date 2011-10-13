@@ -344,6 +344,21 @@ final class Social_Facebook {
 		return $file;
 	}
 
+	/**
+	 * Merges the personal pages into the universal account.
+	 *
+	 * @static
+	 * @param  object  $universal
+	 * @param  object  $personal
+	 * @return object
+	 */
+	public static function social_merge_accounts($universal, $personal) {
+		// Merge pages
+		$universal->pages->personal = $personal->pages->personal;
+		$universal->use_personal_pages = $personal->use_personal_pages;
+		return $universal;
+	}
+
 } // End Social_Facebook
 
 define('SOCIAL_FACEBOOK_FILE', __FILE__);
@@ -363,5 +378,6 @@ add_filter('social_proxy_url', array('Social_Facebook', 'social_proxy_url'));
 add_filter('social_get_broadcast_account', array('Social_Facebook', 'social_get_broadcast_account'), 10, 3);
 add_filter('social_save_broadcasted_ids_data', array('Social_Facebook', 'social_save_broadcasted_ids_data'), 10, 4);
 add_filter('social_view_set_file', array('Social_Facebook', 'social_view_set_file'), 10, 2);
+add_filter('social_merge_accounts', array('Social_Facebook', 'social_merge_accounts'), 10, 2);
 
 }

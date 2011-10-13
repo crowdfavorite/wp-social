@@ -1446,36 +1446,8 @@ final class Social {
 	 * @return object
 	 */
 	private function merge_accounts($arr1, $arr2) {
-		$result = array();
-		for ($i = 0; $i < 2; ++$i) {
-			$arr = (array) func_get_arg($i);
-
-			$is_assoc = $this->is_assoc($arr);
-
-			foreach ($arr as $key => $val) {
-				if (isset($result[$key])) {
-					if (is_array($val) and is_array($result[$key])) {
-						$result[$key] = $this->merge_accounts($result[$key], $val);
-					}
-					else if (is_object($val) and is_object($result[$key])) {
-						$result[$key] = (object) $this->merge_accounts($result[$key], $val);
-					}
-					else {
-						if ($is_assoc) {
-							$result[$key] = $val;
-						}
-						else if (!in_array($val, $result, true)) {
-							$result[] = $val;
-						}
-					}
-				}
-				else {
-					$result[$key] = $val;
-				}
-			}
-		}
-
-		return $result;
+		$arr1->personal = true;
+		return apply_filters('social_merge_accounts', $arr1, $arr2);
 	}
 
 	/**
