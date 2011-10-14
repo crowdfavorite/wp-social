@@ -123,7 +123,7 @@ final class Social_Controller_Settings extends Social_Controller {
 		if ($service !== false) {
 			$accounts = $service->accounts();
 			if (isset($accounts[$account_id])) {
-				$pages = $service->get_pages($accounts[$account_id], $is_profile);
+				$pages = $service->get_pages($accounts[$account_id], $is_profile,false);
 				if (count($pages)) {
 					$html = Social_View::factory('wp-admin/parts/facebook/page/settings', array(
 						'account' => $accounts[$account_id],

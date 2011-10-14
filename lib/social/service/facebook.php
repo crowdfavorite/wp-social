@@ -390,9 +390,10 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 *
 	 * @param  Social_Service_Account  $account
 	 * @param  bool                    $is_profile
+	 * @param  bool                    $save
 	 * @return array
 	 */
-	public function get_pages(Social_Service_Account $account, $is_profile = false) {
+	public function get_pages(Social_Service_Account $account, $is_profile = false, $save = true) {
 		$pages = array();
 		if ($account->use_pages() or $account->use_pages(true)) {
 			$response = $this->request($account, $account->id().'/accounts');
@@ -417,8 +418,10 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 
 						$accounts[$account_id] = $account->as_object();
 					}
-					
-					$service->accounts($accounts)->save($is_profile);
+
+					if ($save) {
+						$service->accounts($accounts)->save($is_profile);
+					}
 				}
 			}
 		}
