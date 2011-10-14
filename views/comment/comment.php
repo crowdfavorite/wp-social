@@ -32,7 +32,7 @@
 				</a>
 				<?php endif; ?>
 			</span>
-			<a href="<?php echo esc_url(get_comment_link(get_comment_ID())); ?>" class="social-posted-when" target="_blank"><?php printf(esc_html__('%s ago', 'social'), human_time_diff(strtotime($comment->comment_date_gmt))); ?></a>
+			<a href="<?php echo esc_url(get_comment_link(get_comment_ID())); ?>" class="social-posted-when" target="_blank"><?php echo esc_html(printf(__('%s ago', 'social'), human_time_diff(strtotime($comment->comment_date_gmt)))); ?></a>
 		</div>
 	</div>
 	<div class="social-comment-body">
