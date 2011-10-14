@@ -71,9 +71,9 @@ final class Social_Twitter {
 				$update_broadcasted = false;
 
 				foreach ($broadcasted_ids['twitter'] as $account_id => $broadcasted) {
-					foreach ($broadcasted as $id => $message) {
+					foreach ($broadcasted as $id => $data) {
 						// Empty message? (pre-2.0 Twitter comment)
-						if (empty($message)) {
+						if (empty($data['message'])) {
 							$twitter = Social::instance()->service('twitter');
 							if ($twitter !== false and count($twitter->accounts())) {
 								foreach ($twitter->accounts() as $account) {
@@ -89,7 +89,7 @@ final class Social_Twitter {
 							}
 						}
 
-						$hash = self::strip_retweet_data($message, false);
+						$hash = self::strip_retweet_data($data['message'], false);
 						// This is stored as broadcasted and not the ID so we can easily store broadcasted retweets
 						// instead of attaching retweets to non-existent comments.
 						$comment_hashes[$hash] = 'broadcasted';
