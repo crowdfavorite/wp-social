@@ -222,7 +222,7 @@
 				}
 				else {
 					$spinner.hide();
-					$(this).html(data.html).fadeIn();
+					$this.parent().html(' - '+data.html).fadeIn();
 				}
 			}, 'json');
 		});
