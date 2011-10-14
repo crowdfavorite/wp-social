@@ -950,7 +950,14 @@ final class Social {
 			$image = get_comment_meta($comment->comment_ID, 'social_profile_image_url', true);
 			if (empty($image)) {
 				$image = null;
-		    }
+			}
+		}
+		else {
+			// Commenter?
+			$social_avatar = get_user_meta($comment, 'social_avatar', true);
+			if (!empty($social_avatar)) {
+				$image = $social_avatar;
+			}
 		}
 
 		if ($image !== null) {
