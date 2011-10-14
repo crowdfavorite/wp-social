@@ -111,6 +111,9 @@ final class Social_Controller_Auth extends Social_Controller {
 			$user_id = $service->create_user($account, $nonce);
 			$account->personal(true);
 			$is_personal = true;
+
+			// Store avatar
+			update_user_meta($user_id, 'social_avatar', $account->avatar());
 		}
 
 		if ($user_id !== false) {

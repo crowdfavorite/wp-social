@@ -136,9 +136,6 @@ abstract class Social_Service {
 					update_user_meta($id, 'social_commenter', 'true');
 				}
 
-				// Store avatar
-				update_user_meta($id, 'social_avatar', $account->avatar());
-
 				$user = new WP_User($id);
 				$user->set_role($role);
 				$user->show_admin_bar_front = 'false';
