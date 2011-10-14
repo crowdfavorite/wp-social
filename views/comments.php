@@ -53,6 +53,31 @@ ob_start();
 				}
 			}
 
+			$last_reply_time = 0;
+			if (isset($comments[(count($comments) - 1)])) {
+				$last_reply_time = strtotime($comments[(count($comments) - 1)]->comment_date_gmt);
+			}
+			else if (count($social_items)) {
+				$latest_item = null;
+				foreach ($social_items as $service => $items) {
+					foreach ($items as $comment) {
+						if ($latest_item === null) {
+							$latest_item = strtotime($comment->comment_date_gmt);
+						}
+						else {
+							$time = strtotime($comment->comment_date_gmt);
+							if ($time > $latest_item) {
+								$latest_item = $time;
+							}
+						}
+					}
+				}
+
+				if ($latest_item !== null) {
+					$last_reply_time = $latest_item;
+				}
+			}
+
 			Social::add_social_items_count($social_items, $groups);
 		?>
 		<ul class="social-nav social-clearfix">
@@ -67,8 +92,8 @@ ob_start();
 		<div id="social-comments-tab-all" class="social-tabs-panel social-tabs-first-panel">
 			<div id="comments" class="social-comments">
 				<?php
-					if (count($comments)) {
-						echo '<div class="social-last-reply-when">'.sprintf(__('Last reply was %s ago', 'social'), human_time_diff(strtotime($comments[(count($comments)-1)]->comment_date_gmt))).'</div>';
+					if ($last_reply_time) {
+						echo '<div class="social-last-reply-when">'.sprintf(__('Last reply was %s ago', 'social'), human_time_diff($last_reply_time)).'</div>';
 					}
 
 					if (count($social_items)) {
