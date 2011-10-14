@@ -221,7 +221,8 @@
 					$this.parent().hide();
 				}
 				else {
-					$this.fadeIn();
+					$spinner.hide();
+					$(this).html(data.html).fadeIn();
 				}
 			}, 'json');
 		});

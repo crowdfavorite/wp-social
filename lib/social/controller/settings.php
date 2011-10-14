@@ -139,7 +139,11 @@ final class Social_Controller_Settings extends Social_Controller {
 			}
 		}
 
-		echo json_encode(array('result' => 'error'));
+		echo json_encode(array(
+			'result' => 'error',
+			'html' => 'No Pages Found'
+		));
+		exit;
 	}
 
 	/**
