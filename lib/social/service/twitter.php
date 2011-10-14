@@ -271,10 +271,10 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	public function aggregation_row($type, $item, $username, $id) {
 		if ($type == 'retweet') {
 			$link = $this->status_url($username, $id);
-			$output = '<a href="'.$link.'" target="_blank">#'.$item->id.'</a> ('.__('Retweet Search', Social::$i18n).')';
+			$output = '<a href="'.$link.'" target="_blank">#'.$item->id.'</a> ('.__('Retweet Search', 'social').')';
 
 			if ($item->ignored) {
-				$output .= ' ('.__('Existing Comment', Social::$i18n).')';
+				$output .= ' ('.__('Existing Comment', 'social').')';
 			}
 
 			return $output;

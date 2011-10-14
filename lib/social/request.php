@@ -193,11 +193,11 @@ final class Social_Request {
 				$controller->{$action}();
 			}
 			else {
-				throw new Exception(sprintf(__('Invalid action %s called on controller %s.', Social::$i18n), $this->action(), $this->controller()));
+				throw new Exception(sprintf(__('Invalid action %s called on controller %s.', 'social'), $this->action(), $this->controller()));
 			}
 		}
 		else {
-			throw new Exception(sprintf(__('Controller %s does not exist.', Social::$i18n), 'Social_Controller_'.$this->controller()));
+			throw new Exception(sprintf(__('Controller %s does not exist.', 'social'), 'Social_Controller_'.$this->controller()));
 		}
 
 		return $this;

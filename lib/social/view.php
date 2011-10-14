@@ -37,12 +37,12 @@ final class Social_View {
 	 * @param  array   $data
 	 */
 	public function __construct($file = null, array $data = array()) {
-		if ($file !== null) {
-			$this->set_file($file);
-		}
-
 		if (empty($this->_data)) {
 			$this->_data = $data;
+		}
+		
+		if ($file !== null) {
+			$this->set_file($file);
 		}
 	}
 
@@ -52,7 +52,14 @@ final class Social_View {
 	 * @return string
 	 */
 	public function __toString() {
-		return $this->render();
+		try {
+			return $this->render();
+		}
+		catch (Exception $e) {
+			// Log the exception
+			error_log(print_r($e, true));
+			return '';
+		}
 	}
 
 	/**
@@ -88,14 +95,14 @@ final class Social_View {
 		}
 
 		if (empty($this->_file)) {
-			throw new Exception(__('You must set a file to be used before rendering.', Social::$i18n));
+			throw new Exception(__('You must set a file to be used before rendering.', 'social'));
 		}
 
 		$this->_data = apply_filters('social_view_data', $this->_data, $this->_file);
 		extract($this->_data, EXTR_SKIP);
 		ob_start();
 		try {
-			include $this->_file;
+			include $this->path($this->_file);
 		}
 		catch (Exception $e) {
 			ob_end_clean();
@@ -113,21 +120,30 @@ final class Social_View {
 	 * @return void
 	 */
 	private function set_file($file) {
-		$file = apply_filters('social_view_set_file', $file);
+		$file = apply_filters('social_view_set_file', $file, $this->_data);
 		
 		if (file_exists($file)) {
 			$this->_file = $file;
 		}
 		else {
-			$view = SOCIAL_PATH.'views/'.$file.'.php';
-			if (file_exists($view)) {
-				$this->_file = $view;
+			if (file_exists($this->path($file))) {
+				$this->_file = $file;
 			}
 		}
 
 		if ($this->_file === null) {
-			throw new Exception(sprintf(__('View %s does not exist.', Social::$i18n), $file));
+			throw new Exception(sprintf(__('View %s does not exist.', 'social'), $file));
 		}
+	}
+
+	/**
+	 * Builds the absolute URL path to the view.
+	 *
+	 * @param  string  $file
+	 * @return string
+	 */
+	private function path($file) {
+		return SOCIAL_PATH.'views/'.$file.'.php';
 	}
 
 } // End Social_View

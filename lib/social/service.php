@@ -93,7 +93,7 @@ abstract class Social_Service {
 				$personal = true;
 			}
 			$url = Social::settings_url($params, $personal);
-			$text = '<span title="'.__('Disconnect', Social::$i18n).'" class="social-disconnect social-ir">'.__('Disconnect', Social::$i18n).'</span>';
+			$text = '<span title="'.__('Disconnect', 'social').'" class="social-disconnect social-ir">'.__('Disconnect', 'social').'</span>';
 		}
 		else {
 			foreach ($params as $key => $value) {
@@ -106,7 +106,7 @@ abstract class Social_Service {
 			}
 
 			$url = add_query_arg($params, site_url());
-			$text = __('Disconnect', Social::$i18n);
+			$text = __('Disconnect', 'social');
 		}
 
 		return sprintf('%s<a href="%s">%s</a>%s', $before, esc_url($url), $text, $after);
@@ -175,7 +175,7 @@ abstract class Social_Service {
 		if ($personal) {
 			foreach ($this->_accounts AS $account) {
 				if ($account->personal()) {
-					$accounts[$account->id()] = $account->as_array();
+					$accounts[$account->id()] = $account->as_object();
 				}
 
 				$account->universal(false);
@@ -193,16 +193,19 @@ abstract class Social_Service {
 		else {
 			foreach ($this->_accounts AS $account) {
 				if ($account->universal()) {
-					$accounts[$account->id()] = $account->as_array();
+					$accounts[$account->id()] = $account->as_object();
 				}
 
 				$account->personal(false);
 			}
 
 			if (count($accounts)) {
-				$current = get_option('social_accounts', array());
+				$current = Social::option('accounts');
+				if ($current == null) {
+					$current = array();
+				}
 				$current[$this->_key] = $accounts;
-				update_option('social_accounts', $current);
+				Social::option('accounts', $current);
 			}
 			else {
 				delete_option('social_accounts');
@@ -587,6 +590,26 @@ abstract class Social_Service {
 		$status_url = $this->status_url($item->comment_author, $item->social_status_id);
 		$image = sprintf('<img src="%s" width="%s" height="%s"%s />', $item->social_profile_image_url, $width, $height, $style);
 		return sprintf('<a href="%s">%s</a>', $status_url, $image);
+	}
+
+	/**
+	 * Displays the auth item output.
+	 *
+	 * @param  Social_Service_Account  $account
+	 * @return Social_View
+	 */
+	public function auth_output(Social_Service_Account $account) {
+		$profile_url = esc_url($account->url());
+		$profile_name = esc_html($account->name());
+		$disconnect = $this->disconnect_url($account, true);
+		$name = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
+
+		return Social_View::factory('wp-admin/parts/auth_output', array(
+			'account' => $account,
+			'key' => $this->key(),
+			'name' => $name,
+			'disconnect' => $disconnect,
+		));
 	}
 
 } // End Social_Service

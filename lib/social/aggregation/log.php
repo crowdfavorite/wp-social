@@ -57,7 +57,7 @@ final class Social_Aggregation_Log {
 
 		$post = get_post($this->_post_id);
 		if ($post === null) {
-			throw new Exception(sprintf(__('Social failed to initialize the Aggregation_Log for post #%s.', Social::$i18n), $this->_post_id));
+			throw new Exception(sprintf(__('Social failed to initialize the Aggregation_Log for post #%s.', 'social'), $this->_post_id));
 		}
 
 		// Load the current log for the post

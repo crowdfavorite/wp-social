@@ -121,7 +121,7 @@ final class Social_Controller_Aggregation extends Social_Controller {
 				if (!isset($_GET['hide_li']) or $_GET['hide_li'] == 'false') {
 					$html = '<li id="wp-adminbar-comments-social">';
 				}
-				$html .= '<a href="'.$link.'"><span class="social-aggregation-results">'.sprintf(__('(%s New)', Social::$i18n), $total).'</span></a>';
+				$html .= '<a href="'.$link.'"><span class="social-aggregation-results">'.sprintf(__('(%s New)', 'social'), $total).'</span></a>';
 				if (!isset($_GET['hide_li']) or $_GET['hide_li'] == 'false') {
 					$html .= '</li>';
 				}

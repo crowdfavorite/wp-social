@@ -24,10 +24,10 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	/**
 	 * Broadcasts the message to the specified account. Returns the broadcasted ID.
 	 *
-	 * @param  Social_Service_Account  $account  account to broadcast to
-	 * @param  string                  $message  message to broadcast
-	 * @param  array                   $args     extra arguments to pass to the request
-	 * @param  int                     $post_id  post ID being broadcasted
+	 * @param  Social_Service_Facebook_Account|object  $account  account to broadcast to
+	 * @param  string                                  $message  message to broadcast
+	 * @param  array                                   $args     extra arguments to pass to the request
+	 * @param  int                                     $post_id  post ID being broadcasted
 	 *
 	 * @return Social_Response
 	 */
@@ -47,6 +47,16 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		$args = $args + array(
 			'message' => $message,
 		);
+
+		// Set access token?
+		$broadcast_account = $account->broadcast_page();
+		if ($broadcast_account !== null) {
+			$args = $args + array(
+				'access_token' => $broadcast_account->access_token,
+				'page_id' => $broadcast_account->id,
+			);
+		}
+
 		$args = apply_filters($this->key().'_broadcast_args', $args, $post_id);
 		return $this->request($account, 'feed', $args, 'POST');
 	}
@@ -284,7 +294,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 */
 	public function aggregation_row($type, $item, $username, $id) {
 		if ($type == 'like') {
-			return sprintf(__('Found %s additional likes.', Social::$i18n), $item->data['total']);
+			return sprintf(__('Found %s additional likes.', 'social'), $item->data['total']);
 		}
 		return '';
 	}
@@ -352,6 +362,67 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 */
 	public function show_full_comment($type) {
 		return ($type !== 'social-facebook-like');
+	}
+
+	/**
+	 * Displays the auth item output.
+	 *
+	 * @param  Social_Service_Account  $account
+	 * @return Social_View
+	 */
+	public function auth_output(Social_Service_Account $account) {
+		$profile_url = esc_url($account->url());
+		$profile_name = esc_html($account->name());
+		$disconnect = $this->disconnect_url($account, true);
+		$name = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
+
+		return Social_View::factory('wp-admin/parts/facebook/auth_output', array(
+			'account' => $account,
+			'key' => $this->key(),
+			'name' => $name,
+			'disconnect' => $disconnect,
+			'is_profile' => defined('IS_PROFILE_PAGE'),
+		));
+	}
+
+	/**
+	 * Loads the pages for the account.
+	 *
+	 * @param  Social_Service_Account  $account
+	 * @param  bool                    $is_profile
+	 * @return array
+	 */
+	public function get_pages(Social_Service_Account $account, $is_profile = false) {
+		$pages = array();
+		if ($account->use_pages() or $account->use_pages(true)) {
+			$response = $this->request($account, $account->id().'/accounts');
+			if ($response !== false and isset($response->body()->response)) {
+				if (isset($response->body()->response->data)) {
+					foreach ($response->body()->response->data as $item) {
+						if ($item->category != 'Application') {
+							$pages[$item->id] = $item;
+						}
+					}
+				}
+			    else if ($response->body()->response == 'incorrect method') {
+					// Account no longer has page permissions.
+					$service = Social::instance()->service('facebook');
+					$accounts = $service->accounts();
+					foreach ($accounts as $account_id => $_account) {
+						if ($account_id == $account->id()) {
+							$_account->use_pages(false, false);
+							$_account->use_pages(true, false);
+							$_account->pages(array(), $is_profile);
+						}
+
+						$accounts[$account_id] = $account->as_object();
+					}
+					
+					$service->accounts($accounts)->save($is_profile);
+				}
+			}
+		}
+		return $pages;
 	}
 
 } // End Social_Service_Facebook

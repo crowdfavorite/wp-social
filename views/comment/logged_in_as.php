@@ -6,12 +6,12 @@
 	<p class="social-input-row">
 		<?php if (count($accounts)) { ?>
 		<select class="social-select" id="post_accounts" name="social_post_account">
-			<option value=""><?php _e('WordPress Account', Social::$i18n); ?></option>
+			<option value=""><?php _e('WordPress Account', 'social'); ?></option>
 			<?php
 				foreach ($accounts as $key => $_accounts) {
 					$service = $services[$key];
 					if (count($_accounts)) {
-						echo '<optgroup label="'.__(ucfirst($key), Social::$i18n).'">';
+						echo '<optgroup label="'.__(ucfirst($key), 'social').'">';
 						foreach ($_accounts as $account) {
 							echo '<option value="'.$account->id().'" rel="'.$account->avatar().'">'.$account->name().'</option>';
 						}
@@ -24,7 +24,7 @@
 			}
 			else {
 				echo '<input type="hidden" name="social_post_account" value="" />';
-				printf(__('Logged in as <a href="%1$s">%2$s</a>.', Social::$i18n), admin_url('profile.php'), $current_user->display_name);
+				printf(__('Logged in as <a href="%1$s">%2$s</a>.', 'social'), admin_url('profile.php'), $current_user->display_name);
 			}
 		?>
 		<small class="social-psst">(<?php echo wp_loginout(null, false); ?>)</small>

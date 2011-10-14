@@ -1,12 +1,12 @@
 <?php
 if (empty($accounts)) {
 	echo '<p class=="mar-top-none">'
-	   . __('This post is scheduled to be published at a later date. However, it is not scheduled to be broadcasted to any of your social accounts.', Social::$i18n)
+	   . __('This post is scheduled to be published at a later date. However, it is not scheduled to be broadcasted to any of your social accounts.', 'social')
 	   . '</p>';
 }
 else {
 	echo '<p class="mar-top-none">'
-	   . __('This post is scheduled to be broadcasted to the following accounts.', Social::$i18n)
+	   . __('This post is scheduled to be broadcasted to the following accounts.', 'social')
 	   . '</p>';
 	foreach ($accounts as $service => $_accounts) {
 		if (isset($services[$service])) {
@@ -14,12 +14,15 @@ else {
 
 			$output = '';
 			foreach ($_accounts as $account) {
-				if (($account = $service->account($account->id)) !== false) {
-					$output .= Social_View::factory('wp-admin/post/meta/broadcast/parts/account', array(
-						'account' => $account,
-						'service' => $service
-					));
+				$_account = $service->account($account->id);
+				if ($_account !== false) {
+					$account = $_account;
 				}
+				
+				$output .= Social_View::factory('wp-admin/post/meta/broadcast/parts/account', array(
+					'account' => $account,
+					'service' => $service
+				));
 			}
 
 			if (!empty($output)) {

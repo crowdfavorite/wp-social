@@ -3,12 +3,12 @@
 ob_start();
 ?>
 	<?php if (post_password_required()): ?>
-	<p class="nopassword"><?php _e('This post is password protected. Enter the password to view any comments.', Social::$i18n); ?></p>
+	<p class="nopassword"><?php _e('This post is password protected. Enter the password to view any comments.', 'social'); ?></p>
 	<?php else: ?>
 	<div class="social-post">
 		<div id="loading" style="display:none">
 			<input type="hidden" id="reload_url" value="<?php echo esc_url(site_url('?social_controller=auth&social_action=reload_form&redirect_to='.get_permalink(get_the_ID()).'&post_id='.get_the_ID())); ?>" />
-			<?php _e('Logging In...', Social::$i18n); ?>
+			<?php _e('Logging In...', 'social'); ?>
 		</div>
 		<?php
 			if (comments_open()) {
@@ -24,7 +24,7 @@ ob_start();
 			else {
 				do_action('comment_form_comments_closed');
 		?>
-		<p class="nocomments"><?php _e('Comments are closed.', Social::$i18n); ?></p>
+		<p class="nocomments"><?php _e('Comments are closed.', 'social'); ?></p>
 		<?php
 			}
 		?>
@@ -56,11 +56,11 @@ ob_start();
 			Social::add_social_items_count($social_items, $groups);
 		?>
 		<ul class="social-nav social-clearfix">
-			<li class="social-all social-tab-main<?php echo (!isset($_GET['social_tab']) ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-all"><span><?php comments_number(__('0 Replies', Social::$i18n), __('1 Reply', Social::$i18n), __('% Replies', Social::$i18n)); ?></span></a></li>
-			<li class="social-wordpress<?php echo ((isset($_GET['social_tab']) and $_GET['social_tab'] == 'social-wordpress') ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-wordpress"><span><?php printf(_n('1 Comment', '%1$s Comments', (isset($groups['wordpress']) ? $groups['wordpress'] : 0), Social::$i18n), (isset($groups['wordpress']) ? $groups['wordpress'] : 0)); ?></span></a></li>
-			<li class="social-twitter<?php echo ((isset($_GET['social_tab']) and $_GET['social_tab'] == 'social-twitter') ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-twitter"><span><?php printf(_n('1 Tweet', '%1$s Tweets', (isset($groups['social-twitter']) ? $groups['social-twitter'] : 0), Social::$i18n), (isset($groups['social-twitter']) ? $groups['social-twitter'] : 0)); ?></span></a></li>
-			<li class="social-facebook<?php echo ((isset($_GET['social_tab']) and $_GET['social_tab'] == 'social-facebook') ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-facebook"><span><?php printf(_n('1 Facebook', '%1$s Facebook', (isset($groups['social-facebook']) ? $groups['social-facebook'] : 0), Social::$i18n), (isset($groups['social-facebook']) ? $groups['social-facebook'] : 0)); ?></span></a></li>
-			<li class="social-pingback<?php echo ((isset($_GET['social_tab']) and $_GET['social_tab'] == 'social-pingback') ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-pingback"><span><?php printf(_n('1 Pingback', '%1$s Pingbacks', (isset($groups['pingback']) ? $groups['pingback'] : 0), Social::$i18n), (isset($groups['pingback']) ? $groups['pingback'] : 0)); ?></span></a></li>
+			<li class="social-all social-tab-main<?php echo (!isset($_GET['social_tab']) ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-all"><span><?php comments_number(__('0 Replies', 'social'), __('1 Reply', 'social'), __('% Replies', 'social')); ?></span></a></li>
+			<li class="social-wordpress<?php echo ((isset($_GET['social_tab']) and $_GET['social_tab'] == 'social-wordpress') ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-wordpress"><span><?php printf(_n('1 Comment', '%1$s Comments', (isset($groups['wordpress']) ? $groups['wordpress'] : 0), 'social'), (isset($groups['wordpress']) ? $groups['wordpress'] : 0)); ?></span></a></li>
+			<li class="social-twitter<?php echo ((isset($_GET['social_tab']) and $_GET['social_tab'] == 'social-twitter') ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-twitter"><span><?php printf(_n('1 Tweet', '%1$s Tweets', (isset($groups['social-twitter']) ? $groups['social-twitter'] : 0), 'social'), (isset($groups['social-twitter']) ? $groups['social-twitter'] : 0)); ?></span></a></li>
+			<li class="social-facebook<?php echo ((isset($_GET['social_tab']) and $_GET['social_tab'] == 'social-facebook') ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-facebook"><span><?php printf(_n('1 Facebook', '%1$s Facebook', (isset($groups['social-facebook']) ? $groups['social-facebook'] : 0), 'social'), (isset($groups['social-facebook']) ? $groups['social-facebook'] : 0)); ?></span></a></li>
+			<li class="social-pingback<?php echo ((isset($_GET['social_tab']) and $_GET['social_tab'] == 'social-pingback') ? ' social-current-tab' : ''); ?>"><a href="#" rel="social-pingback"><span><?php printf(_n('1 Pingback', '%1$s Pingbacks', (isset($groups['pingback']) ? $groups['pingback'] : 0), 'social'), (isset($groups['pingback']) ? $groups['pingback'] : 0)); ?></span></a></li>
 		</ul>
 
 		<!-- panel items -->
@@ -68,7 +68,7 @@ ob_start();
 			<div id="comments" class="social-comments">
 				<?php
 					if (count($comments)) {
-						echo '<div class="social-last-reply-when">'.sprintf(__('Last reply was %s ago', Social::$i18n), human_time_diff(strtotime($comments[(count($comments)-1)]->comment_date_gmt))).'</div>';
+						echo '<div class="social-last-reply-when">'.sprintf(__('Last reply was %s ago', 'social'), human_time_diff(strtotime($comments[(count($comments)-1)]->comment_date_gmt))).'</div>';
 					}
 
 					if (count($social_items)) {
@@ -96,9 +96,9 @@ ob_start();
 
 				<?php if (get_comment_pages_count() > 1 and get_option('page_comments')): ?>
 				<nav id="comment-nav-below">
-					<h1 class="assistive-text"><?php _e('Comment navigation', Social::$i18n); ?></h1>
-					<div class="nav-previous"><?php previous_comments_link(__('&larr; Older Comments', Social::$i18n)); ?></div>
-					<div class="nav-next"><?php next_comments_link(__('Newer Comments &rarr;', Social::$i18n)); ?></div>
+					<h1 class="assistive-text"><?php _e('Comment navigation', 'social'); ?></h1>
+					<div class="nav-previous"><?php previous_comments_link(__('&larr; Older Comments', 'social')); ?></div>
+					<div class="nav-next"><?php next_comments_link(__('Newer Comments &rarr;', 'social')); ?></div>
 				</nav>
 				<?php endif; ?>
 			</div>

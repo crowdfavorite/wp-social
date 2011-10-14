@@ -1,12 +1,12 @@
 <?php
 if (empty($accounts)) {
 	echo '<p class=="mar-top-none">'
-	   . __('This post will not be broadcasted to any of your social accounts.', Social::$i18n)
+	   . __('This post will not be broadcasted to any of your social accounts.', 'social')
 	   . '</p>';
 }
 else {
 	echo '<p class="mar-top-none">'
-	   . __('This post will be broadcasted to the following accounts.', Social::$i18n)
+	   . __('This post will be broadcasted to the following accounts.', 'social')
 	   . '</p>';
 
 	foreach ($accounts as $service => $_accounts) {
