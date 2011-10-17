@@ -100,12 +100,24 @@
 
 					if (prevLink !== null) {
 						var _prevLink = prevLink.split('#comments');
-						$prevLink.attr('href', _prevLink[0] + '&social_tab=' + className + '#comments');
+						if (_prevLink.indexOf('?') == -1) {
+							_prevLink[0] = _prevLink[0] + '?';
+						}
+						else {
+							_prevLink[0] = _prevLink[0] + '&';
+						}
+						$prevLink.attr('href', _prevLink[0] + 'social_tab=' + className + '#comments');
 					}
 
 					if (nextLink !== null) {
 						var _nextLink = nextLink.split('#comments');
-						$nextLink.attr('href', _nextLink[0] + '&social_tab=' + className + '#comments');
+						if (_nextLink.indexOf('?') == -1) {
+							_nextLink[0] = _nextLink[0] + '?';
+						}
+						else {
+							_nextLink[0] = _nextLink[0] + '&';
+						}
+						$nextLink.attr('href', _nextLink[0] + 'social_tab=' + className + '#comments');
 					}
 				}
 			});
