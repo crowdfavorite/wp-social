@@ -7,6 +7,12 @@
  */
 final class Social_Controller_CRON extends Social_Controller {
 
+	public function __construct(Social_Request $request) {
+		parent::__construct($request);
+
+		// Social system cron?
+	}
+
 	/**
 	 * Handles the CRON 15 logic.
 	 *

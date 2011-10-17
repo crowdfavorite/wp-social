@@ -153,7 +153,7 @@ final class Social_Controller_Settings extends Social_Controller {
 	 */
 	public function action_save_facebook_pages() {
 		if (!$this->request->is_ajax()) {
-			wp_die('Oops, this method can only be accessed via an AJAX request');
+			wp_die('Oops, this method can only be accessed via an AJAX request.');
 		}
 
 		$account_id = $this->request->query('account_id');
@@ -179,6 +179,22 @@ final class Social_Controller_Settings extends Social_Controller {
 
 			$service->accounts($accounts)->save($is_profile);
 		}
+	}
+
+	/**
+	 * Regenerates the API key.
+	 * 
+	 * @return void
+	 */
+	public function action_regenerate_api_key() {
+		if (!$this->request->is_ajax()) {
+			wp_die('Oops, this method can only be accessed via an AJAX request.');
+		}
+
+		$key = wp_generate_password(16, false);
+		Social::option('system_cron_api_key', $key, true);
+		echo $key;
+		exit;
 	}
 
 } // End Social_Controller_Settings
