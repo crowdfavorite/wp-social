@@ -11,6 +11,17 @@ final class Social_Controller_CRON extends Social_Controller {
 		parent::__construct($request);
 
 		// Social system cron?
+		if (Social::option('fetch_comments') == '2') {
+			$api_key = $this->request->query('api_key');
+			if ($api_key != Social::option('system_cron_api_key')) {
+				wp_die('Oops, you have provided an invalid API key.');
+				exit;
+			}
+		}
+		else if (!$this->nonce_verified) {
+			wp_die('Oops, invalid request.');
+			exit;
+		}
 	}
 
 	/**

@@ -237,11 +237,13 @@ final class Social_Facebook {
 						if (count($pages)) {
 							foreach ($_POST['social_facebook_pages_'.$account->id()] as $page_id) {
 								if (isset($pages[$page_id])) {
-									$accounts[$account_id] = $account->page($pages[$page_id])->as_object();
+									$accounts[$account_id] = $account->page($pages[$page_id]);
 								}
 							}
 						}
 					}
+
+					$accounts[$account_id] = $accounts[$account_id]->as_object();
 				}
 
 				$service->accounts($accounts)->save($is_personal);

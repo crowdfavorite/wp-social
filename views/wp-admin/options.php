@@ -164,7 +164,7 @@
 											</dd>
 										</dl>
 										<p><?php _e('For your system CRON to run correctly, make sure it is pointing towards a URL that looks something like the following:', 'social'); ?></p>
-										<code><?php echo esc_url(site_url('?'.'social_cron=cron_15&api_key='.Social::option('system_cron_api_key'))); ?></code>
+										<code><?php echo esc_url(site_url('?social_controller=cron&social_action=cron_15&api_key='.Social::option('system_cron_api_key'))); ?></code>
 										<?php endif; ?>
 									</div>
 								</li>

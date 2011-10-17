@@ -17,6 +17,11 @@ abstract class Social_Controller {
 	protected $social;
 
 	/**
+	 * @var  bool
+	 */
+	protected $nonce_verified = false;
+
+	/**
 	 * Initializes the controller with the request and Social objects. Also verifies
 	 * the NONCE if it is on the request.
 	 *
@@ -27,9 +32,13 @@ abstract class Social_Controller {
 		$this->social = Social::instance();
 
 		$nonce = $request->query('_wpnonce');
-		if ($nonce !== null and !wp_verify_nonce($nonce, $this->request->action())) {
-			wp_die('Oops, please try again.');
-			exit;
+		if ($nonce !== null) {
+			if (!wp_verify_nonce($nonce, $this->request->action())) {
+				wp_die('Oops, please try again.');
+				exit;
+			}
+
+			$this->nonce_verified = true;
 		}
 	}
 

@@ -135,7 +135,7 @@ If you want to run system CRON jobs and disable Social's built in CRON jobs then
 1. Go to Social's settings page.
 2. Disable Social's internal CRON mechanism by selecting "Yes" under "Disable Internal CRON Mechanism" and clicking on "Save Settings".
 3. Now you should have an API key that you'll find under "API Key" under "Disable Internal CRON Mechanism". Use this API key for the "api_key" parameter on the URL your system CRON fires.
-	- An example system CRON could run `http://example.com/?social_cron=cron_15&api_key=your_api_key_here`
+	- An example system CRON could run `http://example.com/?social_controller=cron&social_action=cron_15&api_key=your_api_key_here`
 
 = How can I hook into a CRON for extra functionality? =
 

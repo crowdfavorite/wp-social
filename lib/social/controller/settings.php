@@ -183,7 +183,7 @@ final class Social_Controller_Settings extends Social_Controller {
 
 	/**
 	 * Regenerates the API key.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function action_regenerate_api_key() {
