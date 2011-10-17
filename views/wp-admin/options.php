@@ -57,7 +57,7 @@
 						<?php
 							$accounts = Social::option('default_accounts');
 							foreach ($services as $key => $service) {
-								foreach ($service->accounts() as $key => $account) {
+								foreach ($service->accounts() as $account_id => $account) {
 									if ($key != 'pages') {
 										if ($account->universal()) {
 

@@ -533,9 +533,49 @@ final class Social {
 	 * @return void
 	 */
 	public function show_user_profile($profileuser) {
+		$default_accounts = get_user_meta($profileuser->ID, 'social_default_accounts', true);
+		if (empty($default_accounts)) {
+			$default_accounts = array();
+		}
 		echo Social_View::factory('wp-admin/profile', array(
+			'default_accounts' => $default_accounts,
 			'services' => $this->services()
 		));
+	}
+
+	/**
+	 * Saves the default accounts for the user.
+	 *
+	 * @wp-action personal_options_update
+	 * @param  int  $user_id
+	 * @return void
+	 */
+	public function personal_options_update($user_id) {
+		// Store the default accounts
+		$accounts = array();
+		if (is_array($_POST['social_default_accounts'])) {
+			foreach ($_POST['social_default_accounts'] as $account) {
+				$account = explode('|', $account);
+				$accounts[$account[0]][] = $account[1];
+			}
+		}
+
+		// TODO abstract this to the facebook plugin
+		if (is_array($_POST['social_default_pages'])) {
+			if (!isset($accounts['facebook'])) {
+				$accounts['facebook'] = array(
+					'pages' => array()
+				);
+			}
+			$accounts['facebook']['pages'] = $_POST['social_default_pages'];
+		}
+
+		if (count($accounts)) {
+			update_user_meta($user_id, 'social_default_accounts', $accounts);
+		}
+		else {
+			delete_user_meta($user_id, 'social_default_accounts');
+		}
 	}
 
 	/**
@@ -1587,6 +1627,7 @@ add_action('social_cron_15', array($social, 'run_aggregation'));
 
 // Admin Actions
 add_action('admin_menu', array($social, 'admin_menu'));
+add_action('personal_options_update', array($social, 'personal_options_update'));
 
 // Filters
 add_filter('cron_schedules', array($social,'cron_schedules'));

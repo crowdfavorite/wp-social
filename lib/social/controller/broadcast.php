@@ -173,7 +173,36 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			}
 		}
 
-		$default_accounts = apply_filters('social_default_accounts', Social::option('default_accounts'), $post);
+		$default_accounts = Social::option('default_accounts');
+		$author_default_accounts = get_user_meta($post->post_author, 'social_default_accounts', true);
+		if (is_array($author_default_accounts)) {
+			foreach ($author_default_accounts as $service_key => $accounts) {
+				if (!isset($default_accounts[$service_key])) {
+					$default_accounts[$service_key] = $accounts;
+				}
+				else {
+					foreach ($accounts as $key => $account) {
+						if ($key === 'pages') {
+							if (!isset($default_accounts[$key]['pages'])) {
+								$default_accounts[$key]['pages'] = $account;
+							}
+							else {
+								foreach ($account as $page_id) {
+									if (!in_array($page_id, $default_accounts[$key]['pages'])) {
+										$default_accounts[$key]['pages'][] = $page_id;
+									}
+								}
+							}
+						}
+						else {
+							$default_accounts[$service_key][$key] = $account;
+						}
+					}
+				}
+			}
+		}
+		$default_accounts = apply_filters('social_default_accounts', $default_accounts, $post);
+
 		echo Social_View::factory('wp-admin/post/broadcast/options', array(
 			'errors' => $errors,
 			'services' => $services,

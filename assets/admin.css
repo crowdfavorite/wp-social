@@ -121,6 +121,10 @@
 	text-decoration: none;
 }
 
+#social-default-accounts.profile-page {
+	max-width: 60em;
+}
+
 .social-accounts ul h5,
 .social-accounts ul h6,
 #social-default-accounts li h5 {
