@@ -714,7 +714,7 @@ final class Social {
 			}
 
 			// Sends previously saved broadcast information
-			if (in_array($old, array('pending', 'future'))) {
+			if ($old == 'future' and $new != 'future') {
 				Social_Request::factory('broadcast/run')->query(array(
 					'post_ID' => $post->ID
 				))->execute();

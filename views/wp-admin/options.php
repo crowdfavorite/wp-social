@@ -71,7 +71,9 @@
 										echo esc_html($account->name());
 										if ($service->key() == 'facebook') {
 											$pages = $account->pages(null, 'combined');
-											if ((!isset($accounts['pages']) or !isset($accounts['pages'][$account->id()])) and
+											if ((!isset($accounts['facebook']) and
+												!isset($accounts['facebook']['pages']) and
+												!isset($accounts['facebook']['pages'][$account->id()])) and
 												($account->use_pages() or $account->use_pages(true)) and count($pages)) {
 												echo '<span> - <a href="#" class="social-show-facebook-pages">Show Pages</a></span>';
 											}
@@ -82,14 +84,15 @@
 							<?php
 								if ($service->key() == 'facebook') {
 									if ($account->use_pages() and count($pages)) {
-										echo '<div class="social-facebook-pages"'.((isset($accounts['pages']) and isset($accounts['pages'][$account->id()])) ? ' style="display:block"' : '').'>'
+										echo '<div class="social-facebook-pages"'.((isset($accounts['facebook']) and isset($accounts['facebook']['pages']) and isset($accounts['facebook']['pages'][$account->id()])) ? ' style="display:block"' : '').'>'
 											.'    <h5>Account Pages</h5>'
 											.'    <ul>';
 										foreach ($pages as $page) {
 											$checked = '';
-											if (isset($accounts['pages']) and
-												isset($accounts['pages'][$account->id()]) and
-												in_array($page->id, $accounts['pages'][$account->id()]))
+											if (isset($accounts['facebook']) and
+												isset($accounts['facebook']['pages']) and
+												isset($accounts['facebook']['pages'][$account->id()]) and
+												in_array($page->id, $accounts['facebook']['pages'][$account->id()]))
 											{
 												$checked = ' checked="checked"';
 											}

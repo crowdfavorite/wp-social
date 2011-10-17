@@ -218,6 +218,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 		if (empty($broadcasted_ids)) {
 			$broadcasted_ids = array();
 		}
+
 		foreach ($broadcast_accounts as $key => $accounts) {
 			$service = $this->social->service($key);
 			if ($service) {

@@ -37,7 +37,7 @@ final class Social_Controller_Settings extends Social_Controller {
 						'pages' => array()
 					);
 				}
-				$accounts['pages'] = $this->request->post('social_default_pages');
+				$accounts['facebook']['pages'] = $this->request->post('social_default_pages');
 			}
 
 			if (count($accounts)) {
