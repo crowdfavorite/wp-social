@@ -478,9 +478,13 @@ abstract class Social_Service {
 	public function disconnect($id) {
 		if (!is_admin() or defined('IS_PROFILE_PAGE')) {
 			$accounts = get_user_meta(get_current_user_id(), 'social_accounts', true);
-			;
 			if (isset($accounts[$this->_key][$id])) {
-				unset($accounts[$this->_key][$id]);
+				if (defined('IS_PROFILE_PAGE')) {
+					unset($accounts[$this->_key][$id]);
+				}
+				else {
+					unset($accounts[$this->_key][$id]->user);
+				}
 				update_user_meta(get_current_user_id(), 'social_accounts', $accounts);
 			}
 		}
