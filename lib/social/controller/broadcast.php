@@ -41,7 +41,8 @@ final class Social_Controller_Broadcast extends Social_Controller {
 					}
 					else {
 						foreach ($service->accounts() as $account) {
-							if ($this->request->post('social_facebook_pages_'.$account->id()) !== null) {
+							$pages = $this->request->post('social_facebook_pages');
+							if ($pages !== null and isset($pages[$account->id()])) {
 								$accounts_selected = true;
 								$run_checks = true;
 							    break;
@@ -211,8 +212,8 @@ final class Social_Controller_Broadcast extends Social_Controller {
 
 		// Load content to broadcast (accounts, broadcast message, etc)
 		$personal_accounts = null;
-		$broadcast_accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
 		$errored_accounts = false;
+		$broadcast_accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
 		$broadcasted_ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
 		if (empty($broadcasted_ids)) {
 			$broadcasted_ids = array();

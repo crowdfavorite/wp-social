@@ -1351,11 +1351,17 @@ final class Social {
 			$ids = array_values($defaults[$service]);
 			if (in_array($id, $ids)) {
 				$_ids = array();
-				foreach ($ids as $id) {
-					if ($id != $_GET['id']) {
-						$_ids[] = $id;
+				foreach ($ids as $_id) {
+					if ($_id != $id) {
+						$_ids[] = $_id;
 					}
 				}
+
+				// TODO abstract this to the Facebook plugin
+				if (isset($ids['pages']) and isset($ids['pages'][$id])) {
+					unset($ids['pages'][$id]);
+				}
+
 				$defaults[$_GET['service']] = $_ids;
 				Social::option('default_accounts', $defaults);
 			}

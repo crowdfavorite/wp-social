@@ -30,7 +30,13 @@ final class Social_Controller_Settings extends Social_Controller {
 				}
 			}
 
+			// TODO abstract this to the facebook plugin
 			if (is_array($this->request->post('social_default_pages'))) {
+				if (!isset($accounts['facebook'])) {
+					$accounts['facebook'] = array(
+						'pages' => array()
+					);
+				}
 				$accounts['pages'] = $this->request->post('social_default_pages');
 			}
 
