@@ -107,7 +107,11 @@ ob_start();
 								));
 							}
 						}
-                        echo '</div><div class="cf-clearfix"></div>';
+						echo '</div>';
+					}
+
+					if ($last_reply_time or count($social_items)) {
+						echo '<div class="cf-clearfix"></div>';
 					}
 				?>
 				<ol class="social-commentlist">
