@@ -86,34 +86,36 @@ final class Social_Controller_Broadcast extends Social_Controller {
 						$store_meta = true;
 					}
 
-					// TODO move this logic to a WP filter to abstract it into the Facebook plugin
-					foreach ($service->accounts() as $account) {
-						$pages = $this->request->post('social_facebook_pages_'.$account->id());
-						if ($pages !== null) {
-							$universal_pages = $account->pages();
-							$personal_pages = $account->pages(null, true);
-							foreach ($pages as $page_id) {
-								if (!isset($broadcast_accounts[$key])) {
-									$broadcast_accounts[$key] = array();
-								}
-
-								if (!isset($broadcast_accounts[$key][$page_id])) {
-									if (isset($universal_pages[$page_id])) {
-										$store_meta = true;
-										$broadcast_accounts[$key][$page_id] = (object) array(
-											'id' => $page_id,
-											'name' => $universal_pages[$page_id]->name,
-											'universal' => true,
-											'page' => true,
-										);
+					// TODO abstract to Facebook plugin.
+					$pages = $this->request->post('social_facebook_pages');
+					if (is_array($pages)) {
+						foreach ($service->accounts() as $account) {
+							if (isset($pages[$account->id()])) {
+								$universal_pages = $account->pages();
+								$personal_pages = $account->pages(null, true);
+								foreach ($pages[$account->id()] as $page_id) {
+									if (!isset($broadcast_accounts[$key])) {
+										$broadcast_accounts[$key] = array();
 									}
-								    else if (isset($personal_pages[$page_id])) {
-										$broadcast_accounts[$key][$page_id] = (object) array(
-											'id' => $page_id,
-											'name' => $universal_pages[$page_id]->name,
-											'universal' => false,
-											'page' => true,
-										);
+
+									if (!isset($broadcast_accounts[$key][$page_id])) {
+										if (isset($universal_pages[$page_id])) {
+											$store_meta = true;
+											$broadcast_accounts[$key][$page_id] = (object) array(
+												'id' => $page_id,
+												'name' => $universal_pages[$page_id]->name,
+												'universal' => true,
+												'page' => true,
+											);
+										}
+									    else if (isset($personal_pages[$page_id])) {
+											$broadcast_accounts[$key][$page_id] = (object) array(
+												'id' => $page_id,
+												'name' => $universal_pages[$page_id]->name,
+												'universal' => false,
+												'page' => true,
+											);
+										}
 									}
 								}
 							}

@@ -22,12 +22,19 @@ final class Social_Controller_Settings extends Social_Controller {
 			}
 
 			// Store the default accounts
+			$accounts = array();
 			if (is_array($this->request->post('social_default_accounts'))) {
-				$accounts = array();
 				foreach ($this->request->post('social_default_accounts') as $account) {
 					$account = explode('|', $account);
 					$accounts[$account[0]][] = $account[1];
 				}
+			}
+
+			if (is_array($this->request->post('social_default_pages'))) {
+				$accounts['pages'] = $this->request->post('social_default_pages');
+			}
+
+			if (count($accounts)) {
 				Social::option('default_accounts', $accounts);
 			}
 			else {

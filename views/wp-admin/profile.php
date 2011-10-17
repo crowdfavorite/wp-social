@@ -18,7 +18,7 @@
 
 	if ($items) {
 ?>
-<div class="social-accounts">
+<div id="social-accounts" class="social-accounts">
 	<b><?php _e('Connected accounts:', 'social'); ?></b>
 	<ul>
 		<?php echo $items; ?>

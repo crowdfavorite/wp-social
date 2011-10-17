@@ -38,7 +38,7 @@
 
 						if (!empty($items)) {
 							echo '
-								<div class="social-accounts">
+								<div id="social-accounts" class="social-accounts">
 									<strong>'.__('Connected accounts:', 'social').'</strong>
 									<ul>
 										'.$items.'
@@ -53,21 +53,60 @@
 			<tr>
 				<th><?php _e('Default accounts', 'social'); ?></th>
 				<td>
-					<ul id="social-default-accounts" class="social-broadcastables">
+					<ul id="social-default-accounts">
 						<?php
 							$accounts = Social::option('default_accounts');
 							foreach ($services as $key => $service) {
-								foreach ($service->accounts() as $account) {
-									if ($account->universal()) {
+								foreach ($service->accounts() as $key => $account) {
+									if ($key != 'pages') {
+										if ($account->universal()) {
+
 						?>
-						<li>
+						<li class="social-accounts-item">
 							<label class="social-broadcastable" for="<?php echo esc_attr($key.$account->id()); ?>" style="cursor:pointer">
 								<input type="checkbox" name="social_default_accounts[]" id="<?php echo esc_attr($key.$account->id()); ?>" value="<?php echo esc_attr($key.'|'.$account->id()); ?>"<?php echo ((isset($accounts[$key]) and in_array($account->id(), array_values($accounts[$key]))) ? ' checked="checked"' : ''); ?> />
 								<img src="<?php echo esc_attr($account->avatar()); ?>" width="24" height="24" />
-								<span><?php echo esc_html($account->name()); ?></span>
+								<span class="name">
+									<?php
+										echo esc_html($account->name());
+										if ($service->key() == 'facebook') {
+											$pages = $account->pages(null, 'combined');
+											if ((!isset($accounts['pages']) or !isset($accounts['pages'][$account->id()])) and
+												($account->use_pages() or $account->use_pages(true)) and count($pages)) {
+												echo '<span> - <a href="#" class="social-show-facebook-pages">Show Pages</a></span>';
+											}
+										}
+									?>
+								</span>
 							</label>
+							<?php
+								if ($service->key() == 'facebook') {
+									if ($account->use_pages() and count($pages)) {
+										echo '<div class="social-facebook-pages"'.((isset($accounts['pages']) and isset($accounts['pages'][$account->id()])) ? ' style="display:block"' : '').'>'
+											.'    <h5>Account Pages</h5>'
+											.'    <ul>';
+										foreach ($pages as $page) {
+											$checked = '';
+											if (isset($accounts['pages']) and
+												isset($accounts['pages'][$account->id()]) and
+												in_array($page->id, $accounts['pages'][$account->id()]))
+											{
+												$checked = ' checked="checked"';
+											}
+											echo '<li>'
+												.'    <input type="checkbox" name="social_default_pages['.$account->id().'][]" value="'.$page->id.'"'.$checked.' />'
+												.'    <img src="http://graph.facebook.com/'.$page->id.'/picture" width="16" height="16" />'
+												.'    <span>'.$page->name.'</span>'
+												.'</li>';
+										}
+										echo '    </ul>'
+											.'</div>';
+									}
+								}
+							?>
 						</li>
 						<?php
+										}
 									}
 								}
 							}

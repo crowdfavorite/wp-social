@@ -67,66 +67,80 @@
 							foreach ($accounts as $account) {
 								$checked = true;
 								$checked_pages = array();
-								if (isset($_POST['social_'.$key.'_accounts'])) {
-									if (!in_array($account->id(), $_POST['social_'.$key.'_accounts']) and !in_array($account->id().'|true', $_POST['social_'.$key.'_accounts'])) {
+								if (!empty($default_accounts) and !isset($_POST['social_broadcast']) and !isset($_POST['social_'.$key.'_accounts'])) {
+									if (!in_array($account->id(), $default_accounts)) {
 										$checked = false;
+									}
+									
+									if ($key == 'facebook') {
+										$pages = $account->pages(null, 'combined');
+										if (isset($default_accounts['pages']) and isset($default_accounts['pages'][$account->id()])) {
+											$checked_pages[$account->id()] = $default_accounts['pages'][$account->id()];
+										}
 									}
 								}
-								else if (count($errors)) {
-									if (!isset($_POST['social_'.$key.'_accounts'])) {
-										$checked = false;
+								else {
+									if (isset($_POST['social_'.$key.'_accounts'])) {
+										if (!in_array($account->id(), $_POST['social_'.$key.'_accounts']) and !in_array($account->id().'|true', $_POST['social_'.$key.'_accounts'])) {
+											$checked = false;
+										}
 									}
+									else if (count($errors)) {
+										if (!isset($_POST['social_'.$key.'_accounts'])) {
+											$checked = false;
+										}
 
-									if ($key == 'facebook' and isset($_POST['social_facebook_pages_'.$account->id()])) {
-										$pages = $account->pages(null, 'combined');
-										foreach ($pages as $page) {
-											if (in_array($page->id, $_POST['social_facebook_pages_'.$account->id()])) {
-												$checked_pages[] = $page->id;
+										if ($key == 'facebook' and isset($_POST['social_facebook_pages_'.$account->id()])) {
+											$pages = $account->pages(null, 'combined');
+											foreach ($pages as $page) {
+												if (in_array($page->id, $_POST['social_facebook_pages_'.$account->id()])) {
+													$checked_pages[] = $page->id;
+												}
 											}
 										}
 									}
-								}
-								else if (!empty($broadcasted_ids) and empty($default_accounts)) {
-									if (!isset($default_accounts[$key]) or (isset($default_accounts[$key]) and !in_array($account->id(), $default_accounts[$key]))) {
-										$checked = false;
-									}
-								}
-								else if (count($broadcasted_ids)) {
-									if (isset($_POST['social_action']) and isset($broadcasted_ids[$key]) and isset($broadcasted_ids[$key][$account->id()])) {
-										$checked = false;
-									}
-								}
-								else if (isset($_POST['social_broadcast'])) {
-									if ($_POST['social_broadcast'] == 'Edit') {
-										if (empty($broadcasted_ids) and empty($broadcast_accounts)) {
+									else if (!empty($broadcasted_ids) and empty($default_accounts)) {
+										if (!isset($default_accounts[$key]) or (isset($default_accounts[$key]) and !in_array($account->id(), $default_accounts[$key]))) {
 											$checked = false;
 										}
-										else if (isset($broadcast_accounts[$key])) {
-											$found = false;
-											foreach ($broadcast_accounts[$key] as $account_id => $data) {
-												if ($key == 'facebook') {
-													if ($account_id == $account->id()) {
-														$found = true;
-													}
+									}
+									else if (count($broadcasted_ids)) {
+										if (isset($_POST['social_action']) and isset($broadcasted_ids[$key]) and isset($broadcasted_ids[$key][$account->id()])) {
+											$checked = false;
+										}
+									}
+									else if (isset($_POST['social_broadcast'])) {
+										if ($_POST['social_broadcast'] == 'Edit') {
+											if (empty($broadcasted_ids) and empty($broadcast_accounts)) {
+												$checked = false;
+											}
+											else if (isset($broadcast_accounts[$key])) {
+												$found = false;
+												foreach ($broadcast_accounts[$key] as $account_id => $data) {
+													if ($key == 'facebook') {
+														if ($account_id == $account->id()) {
+															$found = true;
+														}
 
-													$pages = $account->pages(null, 'combined');
-													foreach ($pages as $page) {
-														if ($page->id == $account_id) {
-															$checked_pages[] = $page->id;
-															break;
+														$pages = $account->pages(null, 'combined');
+														foreach ($pages as $page) {
+															if ($page->id == $account_id) {
+																$checked_pages[$account->id()][] = $page->id;
+																break;
+															}
 														}
 													}
 												}
-											}
 
-											if (!$found) {
-												$checked = false;
+												if (!$found) {
+													$checked = false;
+												}
 											}
 										}
 									}
-								}
-								else if (!empty($broadcast_accounts) and (!isset($broadcast_accounts[$key]) or !isset($broadcast_accounts[$key][$account->id()]))) {
-									$checked = false;
+									else if (!empty($broadcast_accounts) and (!isset($broadcast_accounts[$key]) or !isset($broadcast_accounts[$key][$account->id()]))) {
+										$checked = false;
+									}
 								}
 						?>
 						<li class="social-accounts-item">
@@ -137,7 +151,6 @@
 									<?php
 										echo esc_html($account->name());
 										if ($service->key() == 'facebook' and empty($checked_pages)) {
-											// TODO if there are accounts checked, hide this.
 											$pages = $account->pages(null, 'combined');
 											if (($account->use_pages() or $account->use_pages(true)) and count($pages)) {
 												echo '<span> - <a href="#" class="social-show-facebook-pages">Show Pages</a></span>';
@@ -149,19 +162,18 @@
 							<?php
 								if ($service->key() == 'facebook') {
 									if (($account->use_pages() or $account->use_pages(true)) and count($pages)) {
-										// TODO if there are accounts checked, show this.
 										echo '<div class="social-facebook-pages"'.(!empty($checked_pages) ? ' style="display:block"' : '').'>'
 											.'    <h5>Account Pages</h5>'
 											.'    <ul>';
 										foreach ($pages as $page) {
 											$_checked = $checked;
 											if (!empty($checked_pages)) {
-												if (in_array($page->id, $checked_pages)) {
+												if (in_array($page->id, $checked_pages[$account->id()])) {
 													$checked = ' checked="checked"';
 												}
 											}
 											echo '<li>'
-												.'    <input type="checkbox" name="social_facebook_pages_'.$account->id().'[]" value="'.$page->id.'"'.$checked.' />'
+												.'    <input type="checkbox" name="social_facebook_pages['.$account->id().'][]" value="'.$page->id.'"'.$checked.' />'
 												.'    <img src="http://graph.facebook.com/'.$page->id.'/picture" width="16" height="16" />'
 												.'    <span>'.$page->name.'</span>'
 												.'</li>';

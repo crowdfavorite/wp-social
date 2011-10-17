@@ -227,7 +227,7 @@
 			}, 'json');
 		});
 
-		$('.social-facebook-pages input[type=checkbox]').live('change', function(){
+		$('#social-accounts .social-facebook-pages input[type=checkbox]').live('change', function(){
 			var $parent = $(this).closest('.social-accounts-item');
 			var data = { 'page_ids[]' : [] };
 			$parent.find('input[type=checkbox]:checked').each(function(){

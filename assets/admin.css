@@ -122,7 +122,8 @@
 }
 
 .social-accounts ul h5,
-.social-accounts ul h6 {
+.social-accounts ul h6,
+#social-default-accounts li h5 {
 	margin: 0;
 }
 
@@ -182,28 +183,35 @@
 	padding: 0;
 }
 
-.social-broadcast-options .social-facebook-pages {
+.social-broadcast-options .social-facebook-pages,
+#social-default-accounts .social-facebook-pages {
 	margin-left: 45px;
 }
 
-.social-broadcast-options .social-facebook-pages ul {
+.social-broadcast-options .social-facebook-pages ul,
+#social-default-accounts .social-facebook-pages ul {
 	margin-bottom: 10px;
 }
 
-.social-broadcast-options .social-facebook-pages li {
+.social-broadcast-options .social-facebook-pages li,
+#social-default-accounts .social-facebook-pages li {
 	margin-bottom: 2px;
 }
 
 .social-broadcast-options .social-facebook-pages img,
-.social-broadcast-options .social-accounts-item span {
+#social-default-accounts .social-facebook-pages img,
+.social-broadcast-options .social-accounts-item span,
+#social-default-accounts .social-facebook-pages span {
 	position: relative;
 }
 
-.social-broadcast-options .social-facebook-pages img {
+.social-broadcast-options .social-facebook-pages img,
+#social-default-accounts .social-facebook-pages img {
 	top: 2px;
 }
 
-.social-broadcast-options .social-facebook-pages span {
+.social-broadcast-options .social-facebook-pages span,
+#social-default-accounts .social-facebook-pages span {
 	top: -1px;
 }
 
@@ -238,6 +246,14 @@
 .social-broadcastable input,
 .social-broadcastable img {
 	vertical-align: middle;
+}
+
+#social-default-accounts .name span {
+	top: 0;
+}
+
+#social-default-accounts .name a {
+	text-decoration: none;
 }
 
 .social-login span {
