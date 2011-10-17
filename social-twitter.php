@@ -177,7 +177,6 @@ final class Social_Twitter {
 			}
 
 			// Merge social items
-			sort($working_comments);
 			$working_comments['social_items'] = array();
 			if (isset($comments['social_items'])) {
 				$working_comments['social_items'] = $comments['social_items'];

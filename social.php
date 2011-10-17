@@ -1176,6 +1176,29 @@ final class Social {
 			}
 		}
 
+		// Reorder the comments by their time
+		$times = array();
+		foreach ($comments as $comment) {
+			if (is_object($comment)) {
+				$times[strtotime($comment->comment_date_gmt)] = $comment->comment_ID;
+			}
+		}
+		ksort($times);
+
+		$_comments = array();
+		while (count($times)) {
+			foreach ($times as $timestamp => $id) {
+				foreach ($comments as $key => $comment) {
+					if (is_object($comment) and $comment->comment_ID == $id) {
+						$_comments[] = $comment;
+						unset($comments[$key]);
+						unset($times[$timestamp]);
+					}
+				}
+			}
+		}
+		$comments = array_merge($comments, $_comments);
+
 		if (isset($groups['social-facebook-like'])) {
 			if (!isset($groups['social-facebook'])) {
 				$groups['social-facebook'] = 0;

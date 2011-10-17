@@ -134,7 +134,7 @@ final class Social_Facebook {
 			$social_items = array();
 			if (isset($comments['social_items'])) {
 				$social_items = $comments['social_items'];
-			    unset($comments['social_items']);
+				unset($comments['social_items']);
 			}
 
 			foreach ($comments as $key => $comment) {
@@ -151,7 +151,7 @@ final class Social_Facebook {
 						}
 
 						$social_items['facebook'][] = $comment;
-					    unset($comments[$key]);
+						unset($comments[$key]);
 					}
 				    else {
 					    $comments[$key] = $comment;
@@ -163,8 +163,7 @@ final class Social_Facebook {
 			}
 
 			if (count($social_items)) {
-				sort($comments);
-			    $comments['social_items'] = $social_items;
+				$comments['social_items'] = $social_items;
 			}
 		}
 
