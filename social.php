@@ -438,14 +438,19 @@ final class Social {
 				// CRON Lock
 				if (Social::option('cron_lock_error') !== null) {
 					$upload_dir = wp_upload_dir();
-					if (isset($upload_dir['basedir'])) {
-						$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', 'social'), SOCIAL_PATH, $upload_dir['basedir']);
+					if (is_writeable(SOCIAL_PATH) or (isset($upload_dir['basedir']) and is_writeable($upload_dir['basedir']))) {
+						delete_option('social_cron_lock_error');
 					}
 					else {
-						$message = sprintf(__('Social requires that %s is writable for CRON jobs.', 'social'), SOCIAL_PATH);
-					}
+						if (isset($upload_dir['basedir'])) {
+							$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', 'social'), SOCIAL_PATH, $upload_dir['basedir']);
+						}
+						else {
+							$message = sprintf(__('Social requires that %s is writable for CRON jobs.', 'social'), SOCIAL_PATH);
+						}
 
-					echo '<div class="error"><p>'.esc_html($message).'</p></div>';
+						echo '<div class="error"><p>'.esc_html($message).'</p></div>';
+					}
 				}
 			}
 
