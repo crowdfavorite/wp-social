@@ -340,12 +340,20 @@ final class Social_Facebook {
 		return $file;
 	}
 
+	/**
+	 * Sets the Social view data.
+	 *
+	 * @static
+	 * @param  array   $data
+	 * @param  string  $file
+	 * @return array
+	 */
 	public static function social_view_data($data, $file) {
 		if ($file == 'wp-admin/post/meta/broadcast/parts/facebook/page') {
 			if (isset($data['data']) and isset($data['data']['page'])) {
 				$data['account'] = $data['data']['page'];
 			}
-			else {
+			else if ($data['account'] instanceof Social_Service_Account) {
 				$data['account'] = (object) array(
 					'id' => $data['account']->id(),
 					'name' => $data['account']->username()
