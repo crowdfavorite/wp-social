@@ -111,17 +111,14 @@
 									}
 									else if (isset($_POST['social_broadcast'])) {
 										if ($_POST['social_broadcast'] == 'Edit') {
-											if (empty($broadcasted_ids) and empty($broadcast_accounts)) {
-												$checked = false;
-											}
-											else if (isset($broadcast_accounts[$key])) {
+											if (!empty($broadcast_accounts) and isset($broadcast_accounts[$key])) {
 												$found = false;
 												foreach ($broadcast_accounts[$key] as $account_id => $data) {
-													if ($key == 'facebook') {
-														if ($account_id == $account->id()) {
-															$found = true;
-														}
+													if ($account_id == $account->id()) {
+														$found = true;
+													}
 
+													if ($key == 'facebook') {
 														$pages = $account->pages(null, 'combined');
 														foreach ($pages as $page) {
 															if ($page->id == $account_id) {
@@ -135,6 +132,9 @@
 												if (!$found) {
 													$checked = false;
 												}
+											}
+											else if (empty($broadcasted_ids)) {
+												$checked = false;
 											}
 										}
 									}
