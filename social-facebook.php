@@ -328,6 +328,7 @@ final class Social_Facebook {
 	 */
 	public static function social_view_set_file($file, $data) {
 		if (isset($data['service']) and
+			$data['service'] != false and
 			$data['service']->key() == 'facebook' and
 			(isset($data['data']) and isset($data['data']['page'])) or
 			(isset($data['account']) and !$data['account'] instanceof Social_Service_Account))

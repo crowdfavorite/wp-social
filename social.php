@@ -1155,9 +1155,16 @@ final class Social {
 				if (isset($comment->social_comment_type)) {
 					$comment->comment_type = $comment->social_comment_type;
 				}
-				
-				if (empty($comment->comment_type)) {
-					$comment->comment_type = 'wordpress';
+				else {
+					$comment_type = get_comment_meta($comment->comment_ID, 'social_comment_type', true);
+					if (empty($comment_type)) {
+						$comment_type = (empty($comment->comment_type) ? 'wordpress' : $comment->comment_type);
+					}
+					$comment->comment_type = $comment_type;
+				}
+
+				if (strpos($comment->comment_type, 'social-') === false and $this->service($comment->comment_type) !== false) {
+					$comment->comment_type = 'social-'.$comment->comment_type;
 				}
 
 				if (!isset($groups[$comment->comment_type])) {
@@ -1193,16 +1200,12 @@ final class Social {
 	 * @param  int     $depth
 	 */
 	public function comment($comment, array $args = array(), $depth = 0) {
-		$comment_type = get_comment_meta($comment->comment_ID, 'social_comment_type', true);
-		if (empty($comment_type)) {
-			$comment_type = (empty($comment->comment_type) ? 'wordpress' : $comment->comment_type);
-		}
-		$comment->comment_type = $comment_type;
 		$GLOBALS['comment'] = $comment;
 
 		$status_url = null;
 		$service = null;
-		if (!in_array($comment_type, apply_filters('social_ignored_comment_types', array(
+		$comment_type = $comment->comment_type;
+		if (!in_array($comment->comment_type, apply_filters('social_ignored_comment_types', array(
 			'wordpress',
 			'pingback'
 		)))

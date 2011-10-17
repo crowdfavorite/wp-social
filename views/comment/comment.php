@@ -1,3 +1,8 @@
+<?php
+	if (strpos($comment_type, 'social-') === false) {
+		$comment_type = 'social-'.$comment_type;
+	}
+?>
 <li <?php comment_class('social-comment social-clearfix '.$comment_type); ?> id="li-comment-<?php comment_ID(); ?>">
 <div class="social-comment-inner social-clearfix" id="comment-<?php comment_ID(); ?>">
 	<div class="social-comment-header">
@@ -12,7 +17,7 @@
 					break;
 				}
 
-				if ($service === null or $service->show_full_comment($comment->comment_type)) {
+				if (!$service instanceof Social_Service or $service->show_full_comment($comment->comment_type)) {
 					printf('<cite class="social-fn fn">%s</cite>', get_comment_author_link());
 				}
 
@@ -41,7 +46,7 @@
 		<?php endif; ?>
 		<?php esc_html(comment_text()); ?>
 	</div>
-	<?php if ($service === null or $service->show_full_comment($comment->comment_type)): ?>
+	<?php if (!$service instanceof Social_Service or $service->show_full_comment($comment->comment_type)): ?>
 	<div class="social-actions entry-meta">
 		<?php
             comment_reply_link(array_merge($args, array('depth' => $depth, 'max_depth' => $args['max_depth'])));
