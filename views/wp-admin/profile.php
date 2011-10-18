@@ -42,12 +42,8 @@
 					<?php
 					echo esc_html($account->name());
 					if ($service->key() == 'facebook') {
-						$pages = $account->pages(null, 'combined');
-						if ((!isset($default_accounts['facebook']) and
-							 !isset($default_accounts['facebook']['pages']) and
-							 !isset($default_accounts['facebook']['pages'][$account->id()])) and
-							($account->use_pages() or $account->use_pages(true)) and count($pages)
-						) {
+						$pages = $account->pages(null, true);
+						if ($account->use_pages(true) and count($pages)) {
 							echo '<span> - <a href="#" class="social-show-facebook-pages">Show Pages</a></span>';
 						}
 					}
@@ -56,8 +52,8 @@
 		</label>
 		<?php
 			if ($service->key() == 'facebook') {
-				if ($account->use_pages() and count($pages)) {
-					echo '<div class="social-facebook-pages"'.((isset($default_accounts['facebook']) and isset($default_accounts['facebook']['pages']) and isset($default_accounts['facebook']['pages'][$account->id()])) ? ' style="display:block"' : '').'>'
+				if ($account->use_pages(true) and count($pages)) {
+					echo '<div class="social-facebook-pages">'
 						.'    <h5>Account Pages</h5>'
 						.'    <ul>';
 					foreach ($pages as $page) {

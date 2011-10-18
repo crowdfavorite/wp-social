@@ -1395,25 +1395,35 @@ final class Social {
 	 * @return void
 	 */
 	public function remove_from_default_accounts($service, $id) {
-		$defaults = Social::option('default_accounts');
+		if (defined('IS_PROFILE_PAGE')) {
+			$defaults = get_user_meta(get_current_user_id(), 'social_default_accounts', true);
+		}
+		else {
+			$defaults = Social::option('default_accounts');
+		}
+
 		if (!empty($defaults) and isset($defaults[$service])) {
-			$ids = array_values($defaults[$service]);
-			if (in_array($id, $ids)) {
-				$_ids = array();
-				foreach ($ids as $_id) {
-					if ($_id != $id) {
-						$_ids[] = $_id;
+			$_ids = array();
+			foreach ($defaults[$service] as $key => $_id) {
+				if ($_id != $id) {
+					$_ids[$key] = $_id;
+				}
+			}
+
+			// TODO abstract this to the Facebook plugin
+			if ($service == 'facebook' and isset($_ids['pages'])) {
+				$pages = $_ids['pages'];
+				unset($_ids['pages']);
+				sort($_ids);
+				foreach ($pages as $account_id => $account_pages) {
+					if ($account_id != $id) {
+						$_ids['pages'][$account_id] = $account_pages;
 					}
 				}
-
-				// TODO abstract this to the Facebook plugin
-				if (isset($ids['pages']) and isset($ids['pages'][$id])) {
-					unset($ids['pages'][$id]);
-				}
-
-				$defaults[$_GET['service']] = $_ids;
-				Social::option('default_accounts', $defaults);
 			}
+
+			$defaults[$service] = $_ids;
+			Social::option('default_accounts', $defaults);
 		}
 	}
 
@@ -1515,7 +1525,7 @@ final class Social {
 							$this->_enabled = true;
 							$class = 'Social_Service_'.$key.'_Account';
 							foreach ($_accounts as $account_id => $account) {
-								if ($services[$key]->account_exists($account_id)) {
+								if ($services[$key]->account_exists($account_id) and !defined('IS_PROFILE_PAGE')) {
 									$account = $this->merge_accounts($services[$key]->account($account_id)->as_object(), $account);
 								}
 								$this->_enabled = true;
