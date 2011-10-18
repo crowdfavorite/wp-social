@@ -657,7 +657,7 @@ final class Social {
 					));
 					break;
 				default:
-					if ($post->post_status == 'draft' and count($broadcasted_ids)) {
+					if ($post->post_status == 'draft' and !empty($broadcasted_ids)) {
 						$content = '';
 					}
 					else {
