@@ -623,47 +623,56 @@ final class Social {
 		if (!empty($broadcasted_ids)) {
 			$broadcasted = Social_View::factory('wp-admin/post/meta/broadcast/parts/broadcasted', array(
 				'services' => $this->services(),
-				'ids' => $broadcasted_ids
+				'ids' => $broadcasted_ids,
+				'post' => $post,
 			));
 		}
 
 		// Content
 		$button = '';
-		switch ($post->post_status) {
-			case 'pending':
-				$button = 'Edit';
-				$accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
-				$content = Social_View::factory('wp-admin/post/meta/broadcast/pending', array(
-					'accounts' => $accounts,
-					'services' => $this->services(),
-				));
-				break;
-			case 'future':
-				$button = 'Edit';
-				$accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
-				$content = Social_View::factory('wp-admin/post/meta/broadcast/scheduled', array(
-					'services' => $this->services(),
-					'accounts' => $accounts,
-				));
-				break;
-			case 'publish':
-				$button = 'Broadcast';
-				$content = Social_View::factory('wp-admin/post/meta/broadcast/published', array(
-					'ids' => $broadcasted_ids,
-					'broadcasted' => !empty($broadcasted_ids),
-				));
-				break;
-			default:
-				$notify = false;
-				if (get_post_meta($post->ID, '_social_notify', true) == '1') {
-					$notify = true;
-				}
+		$content = '';
+		if ($post->post_status != 'private') {
+			switch ($post->post_status) {
+				case 'pending':
+					$button = 'Edit';
+					$accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
+					$content = Social_View::factory('wp-admin/post/meta/broadcast/pending', array(
+						'accounts' => $accounts,
+						'services' => $this->services(),
+					));
+					break;
+				case 'future':
+					$button = 'Edit';
+					$accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
+					$content = Social_View::factory('wp-admin/post/meta/broadcast/scheduled', array(
+						'services' => $this->services(),
+						'accounts' => $accounts,
+					));
+					break;
+				case 'publish':
+					$button = 'Broadcast';
+					$content = Social_View::factory('wp-admin/post/meta/broadcast/published', array(
+						'ids' => $broadcasted_ids,
+						'broadcasted' => !empty($broadcasted_ids),
+					));
+					break;
+				default:
+					if ($post->post_status == 'draft' and count($broadcasted_ids)) {
+						$content = '';
+					}
+					else {
+						$notify = false;
+						if (get_post_meta($post->ID, '_social_notify', true) == '1') {
+							$notify = true;
+						}
 
-				$content = Social_View::factory('wp-admin/post/meta/broadcast/default', array(
-					'post' => $post,
-					'notify' => $notify,
-				));
-				break;
+						$content = Social_View::factory('wp-admin/post/meta/broadcast/default', array(
+							'post' => $post,
+							'notify' => $notify,
+						));
+					}
+					break;
+			}
 		}
 
 		// Button
