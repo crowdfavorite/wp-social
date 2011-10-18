@@ -34,11 +34,11 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 		parent::__construct($account);
 
 		if (isset($account->use_personal_pages)) {
-			$this->_use_personal_pages = $account->use_personal_pages;
+			$this->_use_personal_pages = (bool) $account->use_personal_pages;
 		}
 
 		if (isset($account->use_universal_pages)) {
-			$this->_use_universal_pages = $account->use_universal_pages;
+			$this->_use_universal_pages = (bool) $account->use_universal_pages;
 		}
 
 		if (isset($account->pages)) {
@@ -211,10 +211,12 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 			}
 		}
 		else {
-			$this->_pages = (object) array(
-				'personal' => array(),
-				'universal' => array()
-			);
+			if ($is_profile) {
+				$this->_pages->personal = array();
+			}
+			else {
+				$this->_pages->universal = array();
+			}
 		}
 		
 		return $this;

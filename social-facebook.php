@@ -242,6 +242,17 @@ final class Social_Facebook {
 						}
 					}
 
+					if (defined('IS_PROFILE_PAGE')) {
+						$accounts[$account_id]->universal(false);
+						$accounts[$account_id]->use_pages(false, false);
+						$accounts[$account_id]->pages(array(), false);
+					}
+					else {
+						$accounts[$account_id]->personal(false);
+						$accounts[$account_id]->use_pages(true, false);
+						$accounts[$account_id]->pages(array(), true);
+					}
+
 					$accounts[$account_id] = $accounts[$account_id]->as_object();
 				}
 

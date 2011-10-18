@@ -173,6 +173,10 @@ final class Social_Controller_Settings extends Social_Controller {
 		$is_profile = ($this->request->query('profile') == 'true');
 		$page_ids = $this->request->post('page_ids');
 
+		if ($is_profile and !defined('IS_PROFILE_PAGE')) {
+			define('IS_PROFILE_PAGE', true);
+		}
+
 		$service = $this->social->service('facebook');
 		if ($service !== false) {
 			$accounts = $service->accounts();
