@@ -288,86 +288,88 @@ final class Social_Controller_Broadcast extends Social_Controller {
 							));
 							
 							$response = $service->broadcast($account, $message, array(), $post->ID);
-							if ($response->limit_reached()) {
-								if (!isset($errored_accounts[$key])) {
-									$errored_accounts[$key] = array();
+							if ($response !== false) {
+								if ($response->limit_reached()) {
+									if (!isset($errored_accounts[$key])) {
+										$errored_accounts[$key] = array();
+									}
+
+									$reason = 'Rate limit reached.';
+									$errored_accounts[$key][] = (object) array(
+										'account' => $account,
+										'reason' => $reason,
+									);
+									Social::log('Broadcasting to :username, account #:id FAILED. Reason: :reason', array(
+										'id' => $account->id(),
+										'username' => $account->name(),
+										'reason' => $reason,
+									));
 								}
+								else if ($response->duplicate_status()) {
+									if (!isset($errored_accounts[$key])) {
+										$errored_accounts[$key] = array();
+									}
 
-								$reason = 'Rate limit reached.';
-								$errored_accounts[$key][] = (object) array(
-									'account' => $account,
-									'reason' => $reason,
-								);
-								Social::log('Broadcasting to :username, account #:id FAILED. Reason: :reason', array(
-									'id' => $account->id(),
-									'username' => $account->name(),
-									'reason' => $reason,
-								));
-							}
-							else if ($response->duplicate_status()) {
-								if (!isset($errored_accounts[$key])) {
-									$errored_accounts[$key] = array();
+									$reason = 'Duplicate status.';
+									$errored_accounts[$key][] = (object) array(
+										'account' => $account,
+										'reason' => $reason,
+									);
+									Social::log('Broadcasting to :username, account #:id FAILED. Reason: :reason', array(
+										'id' => $account->id(),
+										'username' => $account->name(),
+										'reason' => $reason,
+									));
 								}
+								else if ($response->deauthorized()) {
+									if (!isset($errored_accounts[$key])) {
+										$errored_accounts[$key] = array();
+									}
 
-								$reason = 'Duplicate status.';
-								$errored_accounts[$key][] = (object) array(
-									'account' => $account,
-									'reason' => $reason,
-								);
-								Social::log('Broadcasting to :username, account #:id FAILED. Reason: :reason', array(
-									'id' => $account->id(),
-									'username' => $account->name(),
-									'reason' => $reason,
-								));
-							}
-							else if ($response->deauthorized()) {
-								if (!isset($errored_accounts[$key])) {
-									$errored_accounts[$key] = array();
+									$reason = 'Account deauthorized.';
+									$errored_accounts[$key][] = (object) array(
+										'account' => $account,
+										'reason' => $reason,
+										'deauthed' => true,
+									);
+									Social::log('Broadcasting to :username, account #:id FAILED. Reason: :reason', array(
+										'id' => $account->id(),
+										'username' => $account->name(),
+										'reason' => $reason,
+									));
 								}
+								else if ($response->general_error()) {
+									if (!isset($errored_accounts[$key])) {
+										$errored_accounts[$key] = array();
+									}
 
-								$reason = 'Account deauthorized.';
-								$errored_accounts[$key][] = (object) array(
-									'account' => $account,
-									'reason' => $reason,
-									'deauthed' => true,
-								);
-								Social::log('Broadcasting to :username, account #:id FAILED. Reason: :reason', array(
-									'id' => $account->id(),
-									'username' => $account->name(),
-									'reason' => $reason,
-								));
-							}
-							else if ($response->general_error()) {
-								if (!isset($errored_accounts[$key])) {
-									$errored_accounts[$key] = array();
+									$reason = 'Unknown error.';
+									$errored_accounts[$key][] = (object) array(
+										'account' => $account,
+										'reason' => $reason,
+									);
+									Social::log('Broadcasting to :username, account #:id FAILED. Reason: :reason'."\n\n".'Response:'."\n\n".':response', array(
+										'id' => $account->id(),
+										'username' => $account->name(),
+										'reason' => $reason,
+										'response' => print_r($response, true),
+									));
 								}
+								else {
+									if (!isset($broadcasted_ids[$key])) {
+										$broadcasted_ids[$key] = array();
+									}
 
-								$reason = 'Unknown error.';
-								$errored_accounts[$key][] = (object) array(
-									'account' => $account,
-									'reason' => $reason,
-								);
-								Social::log('Broadcasting to :username, account #:id FAILED. Reason: :reason'."\n\n".'Response:'."\n\n".':response', array(
-									'id' => $account->id(),
-									'username' => $account->name(),
-									'reason' => $reason,
-									'response' => print_r($response, true),	
-								));
-							}
-							else {
-								if (!isset($broadcasted_ids[$key])) {
-									$broadcasted_ids[$key] = array();
+									$this->social->add_broadcasted_id($post->ID, $key, $response->id(), $message, $account, $account->username());
+
+									do_action('social_broadcast_response', $response, $key);
+
+									Social::log('Broadcasting to :username, account #:id COMPLETE. (:service)', array(
+										'id' => $account->id(),
+										'username' => $account->name(),
+										'service' => $service->title(),
+									));
 								}
-
-								$this->social->add_broadcasted_id($post->ID, $key, $response->id(), $message, $account, $account->username());
-
-								do_action('social_broadcast_response', $response, $key);
-
-								Social::log('Broadcasting to :username, account #:id COMPLETE. (:service)', array(
-									'id' => $account->id(),
-									'username' => $account->name(),
-									'service' => $service->title(),
-								));
 							}
 						}
 					}

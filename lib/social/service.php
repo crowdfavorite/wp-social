@@ -454,6 +454,9 @@ abstract class Social_Service {
 				}
 				return Social_Response::factory($this, $request, $account);
 			}
+			else {
+				Social::log('Service::request() error: '.$request->get_error_message());
+			}
 		}
 
 		return false;
