@@ -170,21 +170,21 @@
 			<div class="social-content">
 				<table id="social-advanced" class="form-table">
 					<tr>
-						<th><?php _e('Fetch new comments&hellip;', 'social'); ?></th>
+						<th><?php _e('Fetch new comments', 'social'); ?></th>
 						<td>
 							<ul>
-								<li>
-									<label for="fetch_comments_never">
-										<input type="radio" name="social_fetch_comments" value="0" id="fetch_comments_never" style="position:relative;top:-1px"<?php echo !in_array(Social::option('fetch_comments'), array('1', '2')) ? ' checked="checked"' : ''; ?> />
-										<?php _e('Never', 'social'); ?>
-										<span class="description"><?php _e('(disables fetching of comments)', 'social'); ?></span>
-									</label>
-								</li>
 								<li>
 									<label for="fetch_comments_auto">
 										<input type="radio" name="social_fetch_comments" value="1" id="fetch_comments_auto" style="position:relative;top:-1px"<?php echo Social::option('fetch_comments') == '1' ? ' checked="checked"' : ''; ?> />
 										<?php _e('Automatically', 'social'); ?>
 										<span class="description"><?php _e('(easiest)', 'social'); ?></span>
+									</label>
+								</li>
+								<li>
+									<label for="fetch_comments_never">
+										<input type="radio" name="social_fetch_comments" value="0" id="fetch_comments_never" style="position:relative;top:-1px"<?php echo !in_array(Social::option('fetch_comments'), array('1', '2')) ? ' checked="checked"' : ''; ?> />
+										<?php _e('Never', 'social'); ?>
+										<span class="description"><?php _e('(disables fetching of comments)', 'social'); ?></span>
 									</label>
 								</li>
 								<li>
