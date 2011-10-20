@@ -80,7 +80,8 @@ final class Social_Controller_Auth extends Social_Controller {
 		$response = $this->request->post('response');
 		$account = (object) array(
 			'keys' => (object) $response['keys'],
-			'user' => (object) $response['user'],
+			// Need to run stripslashses_deep due to Sopresto adding slashses on the data they send us.
+			'user' => (object) stripslashses_deep($response['user']),
 		);
 		$account->user = $this->social->kses($account->user);
 
