@@ -77,11 +77,10 @@ final class Social_Controller_Auth extends Social_Controller {
 
 		Social::log('Authorizing with nonce :nonce.', array('nonce' => $nonce));
 
-		$response = $this->request->post('response');
+		$response = stripslashes_deep($this->request->post('response'));
 		$account = (object) array(
 			'keys' => (object) $response['keys'],
-			// Need to run stripslashes_deep due to Sopresto adding slashses on the data they send us.
-			'user' => (object) stripslashes_deep($response['user']),
+			'user' => (object) $response['user'],
 		);
 		$account->user = $this->social->kses($account->user);
 

@@ -450,7 +450,8 @@ abstract class Social_Service {
 			if (!is_wp_error($request)) {
 				$request['body'] = apply_filters('social_response_body', $request['body'], $this->_key);
 				if (is_string($request['body'])) {
-					$request['body'] = json_decode($request['body']);
+					// Need to apply stripslashes_deep to the response as Sopresto is adding slashses
+					$request['body'] = stripslashes_deep(json_decode($request['body']));
 				}
 				return Social_Response::factory($this, $request, $account);
 			}
