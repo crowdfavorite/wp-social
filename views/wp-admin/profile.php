@@ -66,8 +66,8 @@
 							$checked = ' checked="checked"';
 						}
 						echo '<li>'
-							.'    <input type="checkbox" name="social_default_pages['.esc_attr($account->id()).'][]" value="'.esc_attr($page->id.'"'.$checked).' />'
-							.'    <img src="http://graph.facebook.com/'.esc_attr($page->id).'/picture" width="16" height="16" />'
+							.'    <input type="checkbox" name="social_default_pages['.esc_attr($account->id()).'][]" value="'.esc_attr($page->id).'"'.$checked.' />'
+							.'    <img src="'.esc_url($service->page_image_url($page)).'" width="16" height="16" />'
 							.'    <span>'.esc_html($page->name).'</span>'
 							.'</li>';
 					}

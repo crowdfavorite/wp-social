@@ -11,9 +11,9 @@
 				foreach ($accounts as $key => $_accounts) {
 					$service = $services[$key];
 					if (count($_accounts)) {
-						echo '<optgroup label="'.__(ucfirst($key), 'social').'">';
+						echo '<optgroup label="'.esc_attr(__(ucfirst($key), 'social')).'">';
 						foreach ($_accounts as $account) {
-							echo '<option value="'.$account->id().'" rel="'.$account->avatar().'">'.$account->name().'</option>';
+							echo '<option value="'.esc_attr($account->id()).'" rel="'.esc_attr($account->avatar()).'">'.esc_html($account->name()).'</option>';
 						}
 						echo '</optgroup>';
 					}
@@ -24,7 +24,7 @@
 			}
 			else {
 				echo '<input type="hidden" name="social_post_account" value="" />';
-				printf(__('Logged in as <a href="%1$s">%2$s</a>.', 'social'), admin_url('profile.php'), $current_user->display_name);
+				printf(__('Logged in as <a href="%1$s">%2$s</a>.', 'social'), esc_url(admin_url('profile.php')), esc_html($current_user->display_name));
 			}
 		?>
 		<small class="social-psst">(<?php echo wp_loginout(null, false); ?>)</small>
@@ -45,7 +45,7 @@
 			<small class="social-psst"><?php echo $service->disconnect_url($account); ?></small>
 		</span>
 	</p>
-	<input type="hidden" name="social_post_account" value="<?php echo $account->id(); ?>" />
+	<input type="hidden" name="social_post_account" value="<?php echo esc_attr($account->id()); ?>" />
 	<?php
 					}
 				}

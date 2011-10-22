@@ -27,7 +27,7 @@
 								}
 							}
 
-							$button = '<div class="social-connect-button cf-clearfix"><a href="'.esc_url($service->authorize_url()).'" id="'.$key.'_signin" class="social-login" target="_blank"><span>'.sprintf(__('Sign in with %s.', 'social'), $service->title()).'</span></a></div>';
+							$button = '<div class="social-connect-button cf-clearfix"><a href="'.esc_url($service->authorize_url()).'" id="'.esc_attr($key).'_signin" class="social-login" target="_blank"><span>'.sprintf(__('Sign in with %s.', 'social'), esc_html($service->title())).'</span></a></div>';
 							$button = apply_filters('social_service_button', $button, $service);
 							$service_buttons .= $button;
 						}
@@ -72,7 +72,7 @@
 										if ($service->key() == 'facebook') {
 											$pages = $account->pages(null, false);
 											if ($account->use_pages() and count($pages)) {
-												echo '<span> - <a href="#" class="social-show-facebook-pages">Show Pages</a></span>';
+												echo '<span> - <a href="#" class="social-show-facebook-pages">'.__('Show Pages', 'social').'</a></span>';
 											}
 										}
 									?>
@@ -94,9 +94,9 @@
 												$checked = ' checked="checked"';
 											}
 											echo '<li>'
-												.'    <input type="checkbox" name="social_default_pages['.$account->id().'][]" value="'.$page->id.'"'.$checked.' />'
-												.'    <img src="http://graph.facebook.com/'.$page->id.'/picture" width="16" height="16" />'
-												.'    <span>'.$page->name.'</span>'
+												.'    <input type="checkbox" name="social_default_pages['.esc_attr($account->id()).'][]" value="'.esc_attr($page->id).'"'.$checked.' />'
+												.'    <img src="http://graph.facebook.com/'.esc_attr($page->id).'/picture" width="16" height="16" />'
+												.'    <span>'.esc_html($page->name).'</span>'
 												.'</li>';
 										}
 										echo '    </ul>'

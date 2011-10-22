@@ -9,9 +9,9 @@
 			}
 
 			echo '<li>'
-			   . '    <input type="checkbox" name="social_facebook_pages_'.$account->id().'[]" value="'.$page->id.'"'.$checked.' />'
-			   . '    <img src="http://graph.facebook.com/'.$page->id.'/picture" width="16" height="16" />'
-			   . '    <a href="http://facebook.com/'.$page->id.'" target="_blank">'.$page->name.'</a>'
+			   . '    <input type="checkbox" name="social_facebook_pages_'.esc_attr($account->id()).'[]" value="'.esc_attr($page->id).'"'.$checked.' />'
+			   . '    <img src="'.esc_url($service->page_image_url($page)).'" width="16" height="16" />'
+			   . '    <a href="http://facebook.com/'.esc_attr($page->id).'" target="_blank">'.esc_html($page->name).'</a>'
 			   . '</li>';
 		}
 

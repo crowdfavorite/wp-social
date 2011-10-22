@@ -428,4 +428,14 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		return $pages;
 	}
 
+	/**
+	 * Builds the page's image URL.
+	 *
+	 * @param  object  $account
+	 * @return string
+	 */
+	public function page_image_url($account) {
+		return apply_filters('social_facebook_page_image_url', 'http://graph.facebook.com/'.$account->id.'/picture', $account);
+	}
+
 } // End Social_Service_Facebook

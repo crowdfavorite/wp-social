@@ -153,7 +153,7 @@
 										if ($service->key() == 'facebook' and empty($checked_pages)) {
 											$pages = $account->pages(null, 'combined');
 											if (($account->use_pages() or $account->use_pages(true)) and count($pages)) {
-												echo '<span> - <a href="#" class="social-show-facebook-pages">Show Pages</a></span>';
+												echo '<span> - <a href="#" class="social-show-facebook-pages">'.__('Show Pages', 'social').'</a></span>';
 											}
 										}
 									?>
@@ -173,9 +173,9 @@
 												}
 											}
 											echo '<li>'
-												.'    <input type="checkbox" name="social_facebook_pages['.$account->id().'][]" value="'.$page->id.'"'.$checked.' />'
-												.'    <img src="http://graph.facebook.com/'.$page->id.'/picture" width="16" height="16" />'
-												.'    <span>'.$page->name.'</span>'
+												.'    <input type="checkbox" name="social_facebook_pages['.esc_attr($account->id()).'][]" value="'.esc_attr($page->id).'"'.$checked.' />'
+												.'    <img src="'.esc_url($service->page_image_url($page)).'" width="16" height="16" />'
+												.'    <span>'.esc_html($page->name).'</span>'
 												.'</li>';
 
 											$checked = $_checked;

@@ -1,5 +1,5 @@
 <?php
-$avatar = esc_attr('http://graph.facebook.com/'.$account->id.'/picture');
+$avatar = esc_url($service->page_image_url($account));
 $name = esc_html($account->name);
 ?>
 <li style="clear:both;">
@@ -8,7 +8,7 @@ $name = esc_html($account->name);
 		<?php
 			echo $name;
 			if (isset($broadcasted_id)) {
-				echo ' <a href="'.esc_url($service->status_url(null, $broadcasted_id)).'" target="_blank">View</a>';
+				echo ' <a href="'.esc_url($service->status_url(null, $broadcasted_id)).'" target="_blank">'.__('View', 'social').'</a>';
 			}
 		?>
 	</span>
