@@ -92,7 +92,7 @@ final class Social_Response {
 			if (!isset($deauthorized[$this->_service->key()])) {
 				$deauthorized[$this->_service->key()] = array();
 			}
-			$deauthorized[$this->_service->key()][$this->_account->id()] = sprintf(__('Unable to publish to %s with account %s. Please <a href="%">re-authorize</a> this account.', 'social'), $this->_service->title(), $this->_account->name(), $url);
+			$deauthorized[$this->_service->key()][$this->_account->id()] = sprintf(__('Unable to publish to %s with account %s. Please <a href="%">re-authorize</a> this account.', 'social'), esc_html($this->_service->title()), esc_html($this->_account->name()), esc_url($url));
 			update_option('social_deauthorized', $deauthorized);
 
 			$this->_service->remove_account($this->_account)->save();

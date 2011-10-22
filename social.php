@@ -443,10 +443,10 @@ final class Social {
 					}
 					else {
 						if (isset($upload_dir['basedir'])) {
-							$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', 'social'), SOCIAL_PATH, $upload_dir['basedir']);
+							$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', 'social'), esc_html(SOCIAL_PATH), esc_html($upload_dir['basedir']));
 						}
 						else {
-							$message = sprintf(__('Social requires that %s is writable for CRON jobs.', 'social'), SOCIAL_PATH);
+							$message = sprintf(__('Social requires that %s is writable for CRON jobs.', 'social'), esc_html(SOCIAL_PATH));
 						}
 
 						echo '<div class="error"><p>'.esc_html($message).'</p></div>';
@@ -458,7 +458,7 @@ final class Social {
 			$error = Social::option('log_write_error');
 			if ($error == '1') {
 				echo '<div class="error"><p>'.
-					sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_dismiss">[Dismiss]</a>', 'social'), SOCIAL_PATH, esc_url(admin_url('?social_controller=settings&social_action=clear_log_write_error'))).
+					sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_dismiss">[Dismiss]</a>', 'social'), esc_html(SOCIAL_PATH), esc_url(admin_url('?social_controller=settings&social_action=clear_log_write_error'))).
 					'</p></div>';
 			}
 
@@ -504,11 +504,11 @@ final class Social {
 		if (!empty($upgrade_2_0)) {
 			if (current_user_can('manage_options')) {
 				$output = 'Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your <a href="%s">global</a> and <a href="%s">personal</a> accounts.';
-				$output = sprintf($output, esc_url(Social::settings_url()), esc_url(admin_url('profile.php#social-networks')));
+				$output = sprintf(__($output, 'social'), esc_url(Social::settings_url()), esc_url(admin_url('profile.php#social-networks')));
 			}
 			else {
 				$output = 'Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your <a href="%s">personal</a> accounts.';
-				$output = sprintf($output, esc_url(admin_url('profile.php#social-networks')));
+				$output = sprintf(__($output, 'social'), esc_url(admin_url('profile.php#social-networks')));
 			}
 
 			$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', 'social'), esc_url(admin_url('?social_controller=settings&social_action=clear_2_0_upgrade')), 'social_dismiss');
@@ -926,8 +926,8 @@ final class Social {
 			}
 		}
 		else {
-			$link = explode('>'.__('Log in'), $link);
-			$link = $link[0].' id="social_login">'.__('Log in').$link[1];
+			$link = explode('>'.__('Log in', 'social'), $link);
+			$link = $link[0].' id="social_login">'.__('Log in', 'social').$link[1];
 		}
 
 		return $link;

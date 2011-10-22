@@ -28,25 +28,25 @@
 <h3><?php _e('Default Accounts', 'social'); ?></h3>
 <p><?php _e('These are the accounts that will be selected by default when broadcasting.', 'social'); ?></p>
 <ul id="social-default-accounts" class="profile-page">
-<?php
+	<?php
 		foreach ($services as $key => $service) {
 			foreach ($service->accounts() as $account_id => $account) {
 				if ($key != 'pages') {
 					if ($account->personal()) {
-?>
+	?>
 	<li class="social-accounts-item">
 		<label class="social-broadcastable" for="<?php echo esc_attr($key.$account->id()); ?>" style="cursor:pointer">
 			<input type="checkbox" name="social_default_accounts[]" id="<?php echo esc_attr($key.$account->id()); ?>" value="<?php echo esc_attr($key.'|'.$account->id()); ?>"<?php echo ((isset($default_accounts[$key]) and in_array($account->id(), array_values($default_accounts[$key]))) ? ' checked="checked"' : ''); ?> />
 			<img src="<?php echo esc_url($account->avatar()); ?>" width="24" height="24" />
 			<span class="name">
 				<?php
-				echo esc_html($account->name());
-				if ($service->key() == 'facebook') {
-					$pages = $account->pages(null, true);
-					if ($account->use_pages(true) and count($pages)) {
-						echo '<span> - <a href="#" class="social-show-facebook-pages">'.__('Show Pages', 'social').'</a></span>';
+					echo esc_html($account->name());
+					if ($service->key() == 'facebook') {
+						$pages = $account->pages(null, true);
+						if ($account->use_pages(true) and count($pages)) {
+							echo '<span> - <a href="#" class="social-show-facebook-pages">'.__('Show Pages', 'social').'</a></span>';
+						}
 					}
-				}
 				?>
 			</span>
 		</label>
@@ -77,12 +77,12 @@
 			}
 		?>
 	</li>
-<?php
+	<?php
 					}
 				}
 			}
 		}
-?>
+	?>
 </ul>
 <?php
 	}
