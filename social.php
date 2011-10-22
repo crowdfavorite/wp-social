@@ -503,12 +503,12 @@ final class Social {
 		$upgrade_2_0 = get_user_meta(get_current_user_id(), 'social_2.0_upgrade', true);
 		if (!empty($upgrade_2_0)) {
 			if (current_user_can('manage_options')) {
-				$output = 'Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your <a href="%s">global</a> and <a href="%s">personal</a> accounts.';
-				$output = sprintf(__($output, 'social'), esc_url(Social::settings_url()), esc_url(admin_url('profile.php#social-networks')));
+				$output = __('Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your <a href="%s">global</a> and <a href="%s">personal</a> accounts.', 'social');
+				$output = sprintf($output, esc_url(Social::settings_url()), esc_url(admin_url('profile.php#social-networks')));
 			}
 			else {
-				$output = 'Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your <a href="%s">personal</a> accounts.';
-				$output = sprintf(__($output, 'social'), esc_url(admin_url('profile.php#social-networks')));
+				$output = __('Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your <a href="%s">personal</a> accounts.', 'social');
+				$output = sprintf($output, esc_url(admin_url('profile.php#social-networks')));
 			}
 
 			$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', 'social'), esc_url(admin_url('?social_controller=settings&social_action=clear_2_0_upgrade')), 'social_dismiss');
