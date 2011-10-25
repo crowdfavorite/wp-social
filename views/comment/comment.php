@@ -3,7 +3,7 @@
 		$comment_type = 'social-'.$comment_type;
 	}
 ?>
-<li <?php comment_class('social-comment social-clearfix '.$comment_type); ?> id="li-comment-<?php comment_ID(); ?>">
+<li <?php comment_class('social-comment social-clearfix '.esc_attr($comment_type)); ?> id="li-comment-<?php comment_ID(); ?>">
 <div class="social-comment-inner social-clearfix" id="comment-<?php comment_ID(); ?>">
 	<div class="social-comment-header">
 		<div class="social-comment-author vcard">
@@ -44,7 +44,7 @@
 		<?php if ($comment->comment_approved == '0'): ?>
 		<em class="comment-awaiting-moderation"><?php _e('Your comment is awaiting moderation.', 'social'); ?></em><br />
 		<?php endif; ?>
-		<?php esc_html(comment_text()); ?>
+		<?php comment_text(); ?>
 	</div>
 	<?php if (!$service instanceof Social_Service or $service->show_full_comment($comment->comment_type)): ?>
 	<div class="social-actions entry-meta">
