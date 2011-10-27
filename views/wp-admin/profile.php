@@ -35,7 +35,7 @@
 					if ($account->personal()) {
 	?>
 	<li class="social-accounts-item">
-		<label class="social-broadcastable" for="<?php echo esc_attr($key.$account->id()); ?>" style="cursor:pointer">
+		<label class="social-broadcastable" for="<?php echo esc_attr($key.$account->id()); ?>">
 			<input type="checkbox" name="social_default_accounts[]" id="<?php echo esc_attr($key.$account->id()); ?>" value="<?php echo esc_attr($key.'|'.$account->id()); ?>"<?php echo ((isset($default_accounts[$key]) and in_array($account->id(), array_values($default_accounts[$key]))) ? ' checked="checked"' : ''); ?> />
 			<img src="<?php echo esc_url($account->avatar()); ?>" width="24" height="24" />
 			<span class="name">

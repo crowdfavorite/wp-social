@@ -237,6 +237,7 @@
 	height: 24px;
 	line-height: 24px;
 	padding: 5px 10px;
+	cursor: pointer;
 }
 
 .social-broadcastable:hover {
