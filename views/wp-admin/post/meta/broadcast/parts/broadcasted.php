@@ -7,7 +7,7 @@ if (is_array($ids) and count($ids)) {
 			if (!$header_shown) {
 				$header_shown = true;
 				$message = __('Broadcasted To', 'social');
-				echo '<h3>'.$message.'</h3>';
+				echo '<h4>'.$message.'</h4>';
 			}
 
 			$output = '';
@@ -29,7 +29,7 @@ if (is_array($ids) and count($ids)) {
 			}
 
 			if (!empty($output)) {
-				echo '<h4>'.$service->title().'</h4><ul style="margin:0 0 25px 0;">'.$output.'</ul>';
+				echo $service->title().'<ul style="margin:0 0 25px 0;">'.$output.'</ul>';
 			}
 		}
 	}
