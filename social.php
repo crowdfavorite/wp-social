@@ -143,7 +143,6 @@ final class Social {
 			'{author}' => __('Blog post\'s author', 'social'),
 		);
 
-		get_post();
 		return apply_filters('social_broadcast_tokens', $defaults);
 	}
 
