@@ -6,20 +6,15 @@ if (is_array($ids) and count($ids)) {
 			$broadcasted = true;
 			if (!$header_shown) {
 				$header_shown = true;
-				if (!in_array($post->post_status, array('draft', 'private'))) {
-					$message = __('This post has been broadcasted to the following accounts. You may broadcast to more accounts by clicking on the "Broadcast" button above.', 'social');
-				}
-				else {
-					$message = __('This post has been broadcasted to the following accounts.', 'social');
-				}
-				echo '<p class="mar-top-none">'.$message.'</p>';
+				$message = __('Broadcasted To', 'social');
+				echo '<h3>'.$message.'</h3>';
 			}
 
 			$output = '';
 			foreach ($ids[$key] as $user_id => $broadcasted) {
 				if (($account = $service->account($user_id)) !== false) {
 					if (empty($output)) {
-						$accounts_output = '<h4>'.$service->title().'</h4><ul style="margin:0 0 25px 0;">';
+						$accounts_output = $service->title().'<ul style="margin:0 0 25px 0;">';
 					}
 
 					foreach ($broadcasted as $broadcasted_id => $data) {
