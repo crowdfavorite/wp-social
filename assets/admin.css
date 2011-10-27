@@ -340,13 +340,14 @@
 	clear: both;
 }
 
+.social-connect-button input,
 .social-connect-button label {
 	float: left;
-	margin-top: 4px;
+	margin: 8px 0 0 5px;
 }
 
-.social-connect-button label input {
-	margin-top: -2px;
+.social-connect-button label {
+	margin-top: 4px;
 }
 
 .social-connect-button a {

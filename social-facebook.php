@@ -181,10 +181,8 @@ final class Social_Facebook {
 	 */
 	public static function social_service_button($button, $service, $profile_page = false) {
 		if ($service->key() == 'facebook') {
-			$label = '<label for="social-facebook-pages">'
-			       . '    <input type="checkbox" id="social-facebook-pages" value="true" />'
-			       . '    Connect with Pages support'
-			       . '</label>';
+			$label = '<input type="checkbox" id="social-facebook-pages" value="true" />'
+			       . '<label for="social-facebook-pages">'.__('Connect with Pages support', 'social').'</label>';
 
 			if (!$profile_page) {
 				$button = explode('</div>', $button);
