@@ -429,8 +429,8 @@ final class Social {
 	 */
 	public function admin_notices() {
 		if (current_user_can('manage_options') or current_user_can('publish_posts')) {
-			if (!$this->_enabled) {
-				$message = sprintf(__('Social will not run until you update your <a href="%s">settings</a>.', 'social'), esc_url(Social::settings_url()));
+			if (!$this->_enabled and (!isset($_GET['page']) or $_GET['page'] != basename(SOCIAL_FILE))) {
+				$message = sprintf(__('Social will not run until you <a href="%s">add an account</a>.', 'social'), esc_url(Social::settings_url()));
 				echo '<div class="error"><p>'.$message.'</p></div>';
 			}
 

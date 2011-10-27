@@ -163,7 +163,7 @@
 		</table>
 		<?php
 			$fetch = Social::option('fetch_comments');
-			$toggle = (!empty($fetch) or Social::option('debug') == '1') ? ' social-open' : '';
+			$toggle = ((!empty($fetch) and $fetch != '1') or Social::option('debug') == '1') ? ' social-open' : '';
 		?>
 		<div class="social-collapsible<?php echo $toggle; ?>">
 			<h3 class="social-title"><a href="#social-advanced"><?php _e('Advanced Options', 'social'); ?></a></h3>
