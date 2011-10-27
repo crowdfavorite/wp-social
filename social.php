@@ -118,13 +118,32 @@ final class Social {
 	 * @return array
 	 */
 	public static function broadcast_tokens() {
+		global $wpdb;
+		$post = $wpdb->get_row("
+			SELECT ID, post_date_gmt
+			  FROM $wpdb->posts
+			 WHERE post_type = 'post'
+			   AND post_status NOT IN ('draft', 'pending', 'auto-draft')
+			 LIMIT 1
+		");
+		if (!$post) {
+			$date = get_date_from_gmt(current_time('mysql', true));
+			$url = site_url('?p=1');
+		}
+		else {
+			$url = get_permalink($post->ID);
+			$date = get_date_from_gmt($post->post_date_gmt);
+		}
+
 		$defaults = array(
-			'{url}' => __('Blog post\'s permalink', 'social'),
+			'{url}' => sprintf(__('Blog post\'s permalink (Example: %s)', 'social'), $url),
 			'{title}' => __('Blog post\'s title', 'social'),
 			'{content}' => __('Blog post\'s content', 'social'),
-			'{date}' => __('Blog post\'s date', 'social'),
+			'{date}' => sprintf(__('Blog post\'s date (Example: %s)', 'social'), $date),
 			'{author}' => __('Blog post\'s author', 'social'),
 		);
+
+		get_post();
 		return apply_filters('social_broadcast_tokens', $defaults);
 	}
 
