@@ -14,7 +14,7 @@ final class Social_Controller_Auth extends Social_Controller {
 		$proxy = urldecode($this->request->query('target'));
 		if (strpos($proxy, Social::$api_url) !== false) {
 			$id = wp_create_nonce('social_authentication');
-			$url = site_url();
+			$url = trailingslashit(site_url());
 			$args = array(
 				'social_controller' => 'auth',
 				'social_action' => 'authorized',
