@@ -781,6 +781,10 @@ final class Social {
 		}
 		else {
 			if ($new == 'publish') {
+				if (defined('XMLRPC_REQUEST')) {
+					$this->xmlrpc_publish_post($post);
+				}
+
 				Social_Aggregation_Queue::factory()->add($post->ID)->save();
 			}
 
@@ -796,13 +800,10 @@ final class Social {
 	/**
 	 * Broadcasts the post on XML RPC requests.
 	 *
-	 * @wp-action xmlrpc_publish_post
-	 * @wp-action app_publish_post
-	 * @param  int  $post_id
+	 * @param  object  $post
 	 * @return void
 	 */
-	public function xmlrpc_publish_post($post_id) {
-		$post = get_post($post_id);
+	public function xmlrpc_publish_post($post) {
 		if ($post and Social::option('broadcast_by_default') == '1') {
 			Social::log('Broadcasting triggered by XML-RPC.');
 
@@ -871,11 +872,7 @@ final class Social {
 
 			if (count($broadcast_accounts)) {
 				Social::log('There are default accounts, running broadcast');
-
 				update_post_meta($post->ID, '_social_broadcast_accounts', $broadcast_accounts);
-				Social_Request::factory('broadcast/run')->query(array(
-					'post_ID' => $post->ID
-				))->execute();
 			}
 		}
 	}
@@ -1774,8 +1771,6 @@ add_action('comment_post', array($social, 'comment_post'));
 add_action('wp_set_comment_status', array($social, 'wp_set_comment_status'), 10, 3);
 add_action('admin_notices', array($social, 'admin_notices'));
 add_action('transition_post_status', array($social, 'transition_post_status'), 10, 3);
-add_action('xmlrpc_publish_post', array($social, 'xmlrpc_publish_post'));
-add_action('app_publish_post', array($social, 'xmlrpc_publish_post'));
 add_action('show_user_profile', array($social, 'show_user_profile'));
 add_action('do_meta_boxes', array($social, 'do_meta_boxes'));
 add_action('delete_post', array($social, 'delete_post'));
