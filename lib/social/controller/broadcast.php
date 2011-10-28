@@ -220,9 +220,12 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			$broadcasted_ids = array();
 		}
 
+		Social::log('About to start broadcasting.');
 		foreach ($broadcast_accounts as $key => $accounts) {
+			Social::log('Loading service :service', array('service' => $key));
 			$service = $this->social->service($key);
 			if ($service) {
+				Social::log('Found service :service', array('service' => $key));
 				$message = null;
 				foreach ($accounts as $_account) {
 					if ($_account->universal != '1') {
