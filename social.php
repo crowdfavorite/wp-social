@@ -803,6 +803,7 @@ final class Social {
 	public function xmlrpc_publish_post($post_id) {
 		$post = get_post($post_id);
 		if ($post and Social::option('broadcast_by_default') == '1') {
+			Social::log(print_r($post, true));
 			Social::log('Broadcasting triggered by XML-RPC.');
 
 			$broadcast_accounts = array();
