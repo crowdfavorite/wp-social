@@ -223,7 +223,7 @@
 							<span class="description"><?php _e('(nerds only)', 'social'); ?></span>
 						</th>
 						<td>
-							<p style="margin-top:0"><?php _e('If you turn debug on, Social will save additional information in the social/log.txt file. Not recommended for production environments.', 'social'); ?></p>
+							<p style="margin-top:0"><?php _e('If you turn debug on, Social will save additional information in the social/debug_log.txt file. Not recommended for production environments.', 'social'); ?></p>
 							<ul>
 								<li>
 									<label for="debug_mode_no">
