@@ -36,16 +36,26 @@
 						   . '<div>'.$service_buttons.'</div>'
 						   . '<p class="description">'.__('Connected accounts are available to all blog authors.', 'social').'</p>';
 
+						echo '
+						<div id="social-accounts" class="social-accounts">
+							<strong>'.__('Connected accounts:', 'social').'</strong>
+							<ul>
+						';
 						if (!empty($items)) {
+							echo $items;
+						}
+						else {
 							echo '
-								<div id="social-accounts" class="social-accounts">
-									<strong>'.__('Connected accounts:', 'social').'</strong>
-									<ul>
-										'.$items.'
-									</ul>
-								</div>
+							<li class="social-accounts-item">
+								<div class="social-facebook-icon"><i></i></div>
+								<span class="name">'.__('John Doe', 'social').'</span>
+							</li>
 							';
 						}
+						echo '
+							</ul>
+						</div>
+						';
 					?>
 				</td>
 			</tr>

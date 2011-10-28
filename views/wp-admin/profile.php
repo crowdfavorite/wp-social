@@ -16,15 +16,25 @@
 
 	echo '<div>'.$service_buttons.'</div>';
 
-	if (!empty($items)) {
 ?>
 <div id="social-accounts" class="social-accounts">
 	<strong><?php _e('Connected accounts:', 'social'); ?></strong>
 	<ul>
-		<?php echo $items; ?>
+		<?php
+			if (!empty($items)) {
+				echo $items;
+			}
+			else {
+		?>
+		<li class="social-accounts-item">
+			<div class="social-facebook-icon"><i></i></div>
+			<span class="name"><?php _e('John Doe', 'social'); ?></span>
+		</li>
+		<?php } ?>
 	</ul>
 </div>
 
+<?php if (!empty($items)) { ?>
 <h3><?php _e('Default Accounts', 'social'); ?></h3>
 <p><?php _e('These are the accounts that will be selected by default when broadcasting.', 'social'); ?></p>
 <ul id="social-default-accounts" class="profile-page">
