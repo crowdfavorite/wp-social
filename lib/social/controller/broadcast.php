@@ -188,12 +188,12 @@ final class Social_Controller_Broadcast extends Social_Controller {
 		exit;
 	}
 
-    /**
-     * Broadcasts a post to the services.
-     *
-     * @param  int|WP_Post  $post_id  post id or post object
-     * @return void
-     */
+	/**
+	 * Broadcasts a post to the services.
+	 *
+	 * @param  int|WP_Post  $post_id  post id or post object
+	 * @return void
+	 */
 	public function action_run($post_id = null) {
 		if ($post_id === null) {
 			$post_id = intval($this->request->query('post_ID'));
