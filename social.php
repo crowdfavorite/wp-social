@@ -797,6 +797,7 @@ final class Social {
 	 * Broadcasts the post on XML RPC requests.
 	 *
 	 * @wp-action xmlrpc_publish_post
+	 * @wp-action app_publish_post
 	 * @param  int  $post_id
 	 * @return void
 	 */
@@ -1774,6 +1775,7 @@ add_action('wp_set_comment_status', array($social, 'wp_set_comment_status'), 10,
 add_action('admin_notices', array($social, 'admin_notices'));
 add_action('transition_post_status', array($social, 'transition_post_status'), 10, 3);
 add_action('xmlrpc_publish_post', array($social, 'xmlrpc_publish_post'));
+add_action('app_publish_post', array($social, 'xmlrpc_publish_post'));
 add_action('show_user_profile', array($social, 'show_user_profile'));
 add_action('do_meta_boxes', array($social, 'do_meta_boxes'));
 add_action('delete_post', array($social, 'delete_post'));
