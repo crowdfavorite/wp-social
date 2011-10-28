@@ -121,6 +121,14 @@
 	text-decoration: none;
 }
 
+#social-broadcast-by-default {
+	margin-right: 5px;
+}
+
+#social-default-accounts {
+	margin-top: 0;
+}
+
 #social-default-accounts.profile-page {
 	max-width: 60em;
 }

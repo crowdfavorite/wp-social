@@ -21,6 +21,13 @@ final class Social_Controller_Settings extends Social_Controller {
 				delete_option('social_log_write_error');
 			}
 
+			if (isset($_POST['social_broadcast_by_default'])) {
+				Social::option('broadcast_by_default', $_POST['social_broadcast_by_default']);
+			}
+			else {
+				delete_option('social_broadcast_by_default');
+			}
+
 			// Store the default accounts
 			$accounts = array();
 			if (is_array($this->request->post('social_default_accounts'))) {

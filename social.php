@@ -56,6 +56,7 @@ final class Social {
 		'twitter_anywhere_api_key' => null,
 		'system_cron_api_key' => null,
 		'fetch_comments' => '1',
+		'broadcast_by_default' => '0',
 	);
 
 	/**
@@ -683,6 +684,9 @@ final class Social {
 						if (get_post_meta($post->ID, '_social_notify', true) == '1') {
 							$notify = true;
 						}
+						else if (Social::option('broadcast_by_default') == '1') {
+							$notify = true;
+						}
 
 						$content = Social_View::factory('wp-admin/post/meta/broadcast/default', array(
 							'post' => $post,
@@ -787,6 +791,130 @@ final class Social {
 				))->execute();
 			}
 		}
+	}
+
+	/**
+	 * Broadcasts the post on XML RPC requests.
+	 *
+	 * @wp-action xmlrpc_publish_post
+	 * @param  int  $post_id
+	 * @return void
+	 */
+	public function xmlrpc_publish_post($post_id) {
+		$post = get_post($post_id);
+		if ($post and Social::option('broadcast_by_default') == '1') {
+			Social::log('Broadcasting triggered by XML-RPC.');
+
+			$broadcast_accounts = array();
+			foreach ($this->default_accounts($post) as $service_key => $accounts) {
+				$service = $this->service($service_key);
+				if ($service !== false) {
+					foreach ($accounts as $key => $id) {
+						// TODO abstract this to the Facebook plugin
+						if ($service_key == 'facebook' and $key === 'pages') {
+							foreach ($id as $account_id => $pages) {
+								$account = $service->account($account_id);
+
+								// TODO This could use some DRY love
+								$universal_pages = $account->pages();
+								$personal_pages = $account->pages(null, true);
+
+								foreach ($pages as $page_id) {
+									if (!isset($broadcast_accounts[$service_key])) {
+										$broadcast_accounts[$service_key] = array();
+									}
+
+									if (!isset($broadcast_accounts[$service_key][$page_id])) {
+										if (isset($universal_pages[$page_id])) {
+											$broadcast_accounts[$service_key][$page_id] = (object) array(
+												'id' => $page_id,
+												'name' => $universal_pages[$page_id]->name,
+												'universal' => true,
+												'page' => true,
+											);
+										}
+										else if (isset($personal_pages[$page_id])) {
+											$broadcast_accounts[$service_key][$page_id] = (object) array(
+												'id' => $page_id,
+												'name' => $personal_pages[$page_id]->name,
+												'universal' => false,
+												'page' => true,
+											);
+										}
+									}
+								}
+							}
+						}
+						else {
+							$account = $service->account($id);
+							if ($account !== false) {
+								if (!isset($broadcast_accounts[$service_key])) {
+									$broadcast_accounts[$service_key] = array();
+								}
+
+								$broadcast_accounts[$service_key][$account->id()] = (object) array(
+									'id' => $account->id(),
+									'universal' => $account->universal()
+								);
+							}
+						}
+					}
+
+					// Content
+					if (isset($broadcast_accounts[$service_key])) {
+						$content = $service->format_content($post, Social::option('broadcast_format'));
+						update_post_meta($post->ID, '_social_'.$service_key.'_content', $content);
+					}
+				}
+			}
+
+			if (count($broadcast_accounts)) {
+				Social::log('There are default accounts, running broadcast');
+
+				update_post_meta($post->ID, '_social_broadcast_accounts', $broadcast_accounts);
+				Social_Request::factory('broadcast/run')->query(array(
+					'post_ID' => $post->ID
+				))->execute();
+			}
+		}
+	}
+
+	/**
+	 * Loads the default accounts for the post.
+	 *
+	 * @param  object  $post
+	 * @return array
+	 */
+	public function default_accounts($post) {
+		$default_accounts = Social::option('default_accounts');
+		$author_default_accounts = get_user_meta($post->post_author, 'social_default_accounts', true);
+		if (is_array($author_default_accounts)) {
+			foreach ($author_default_accounts as $service_key => $accounts) {
+				if (!isset($default_accounts[$service_key])) {
+					$default_accounts[$service_key] = $accounts;
+				}
+				else {
+					foreach ($accounts as $key => $account) {
+						if ($key === 'pages') {
+							if (!isset($default_accounts[$key]['pages'])) {
+								$default_accounts[$key]['pages'] = $account;
+							}
+							else {
+								foreach ($account as $page_id) {
+									if (!in_array($page_id, $default_accounts[$key]['pages'])) {
+										$default_accounts[$key]['pages'][] = $page_id;
+									}
+								}
+							}
+						}
+						else {
+							$default_accounts[$service_key][$key] = $account;
+						}
+					}
+				}
+			}
+		}
+		return apply_filters('social_default_accounts', $default_accounts, $post);
 	}
 
 	/**
@@ -1645,6 +1773,7 @@ add_action('comment_post', array($social, 'comment_post'));
 add_action('wp_set_comment_status', array($social, 'wp_set_comment_status'), 10, 3);
 add_action('admin_notices', array($social, 'admin_notices'));
 add_action('transition_post_status', array($social, 'transition_post_status'), 10, 3);
+add_action('xmlrpc_publish_post', array($social, 'xmlrpc_publish_post'));
 add_action('show_user_profile', array($social, 'show_user_profile'));
 add_action('do_meta_boxes', array($social, 'do_meta_boxes'));
 add_action('delete_post', array($social, 'delete_post'));

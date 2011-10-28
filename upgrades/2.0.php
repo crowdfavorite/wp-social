@@ -248,6 +248,9 @@ if (version_compare($installed_version, '2.0', '<')) {
 			}
 		}
 	}
+
+	// Add broadcast by default
+	Social::option('broadcast_by_default', '1');
 }
 
 // Flush the cache
