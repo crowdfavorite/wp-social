@@ -782,7 +782,7 @@ final class Social {
 		else {
 			$xmlrpc = false;
 			if ($new == 'publish') {
-				if (defined('XMLRPC_REQUEST')) {
+				if (defined('XMLRPC_REQUEST') and $old != 'publish') {
 					$xmlrpc = true;
 					$this->xmlrpc_publish_post($post);
 				}
