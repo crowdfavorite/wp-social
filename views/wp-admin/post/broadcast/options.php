@@ -174,7 +174,7 @@
 											}
 											echo '<li>'
 												.'    <input type="checkbox" name="social_facebook_pages['.esc_attr($account->id()).'][]" value="'.esc_attr($page->id).'"'.$checked.' />'
-												.'    <img src="'.esc_url($service->page_image_url($page)).'" width="16" height="16" />'
+												.'    <img src="'.esc_url($service->page_image_url($page)).'" width="24" height="24" />'
 												.'    <span>'.esc_html($page->name).'</span>'
 												.'</li>';
 

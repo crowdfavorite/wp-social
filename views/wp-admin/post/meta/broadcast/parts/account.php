@@ -2,9 +2,9 @@
 $avatar = esc_url($account->avatar());
 $name = esc_html($account->name());
 ?>
-<li style="clear:both;">
-	<img src="<?php echo $avatar; ?>" width="24" height="24" style="float:left;" />
-	<span style="position:relative;top:5px;left:5px;">
+<li>
+	<img src="<?php echo $avatar; ?>" width="24" height="24" />
+	<span>
 		<?php
 			echo $name;
 			if (isset($broadcasted_id)) {

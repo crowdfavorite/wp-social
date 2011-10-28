@@ -14,7 +14,7 @@ if (is_array($ids) and count($ids)) {
 			foreach ($ids[$key] as $user_id => $broadcasted) {
 				if (($account = $service->account($user_id)) !== false) {
 					if (empty($output)) {
-						$accounts_output = $service->title().'<ul style="margin:0 0 25px 0;">';
+						$accounts_output = $service->title().'<ul class="social-broadcasted">';
 					}
 
 					foreach ($broadcasted as $broadcasted_id => $data) {
@@ -29,7 +29,7 @@ if (is_array($ids) and count($ids)) {
 			}
 
 			if (!empty($output)) {
-				echo $service->title().'<ul style="margin:0 0 25px 0;">'.$output.'</ul>';
+				echo $service->title().'<ul class="social-broadcasted">'.$output.'</ul>';
 			}
 		}
 	}

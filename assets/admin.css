@@ -137,7 +137,6 @@
 }
 
 .social-accounts ul ul input {
-	float: left;
 	margin-right: 5px;
 }
 
@@ -202,20 +201,16 @@
 	margin-bottom: 2px;
 }
 
-.social-broadcast-options .social-facebook-pages img,
-#social-default-accounts .social-facebook-pages img,
-.social-broadcast-options .social-accounts-item span,
-#social-default-accounts .social-facebook-pages span {
+.social-facebook-pages img,
+.social-accounts-item span {
 	position: relative;
 }
 
-.social-broadcast-options .social-facebook-pages img,
-#social-default-accounts .social-facebook-pages img {
-	top: 2px;
+.social-facebook-pages img {
+	top: 6px;
 }
 
-.social-broadcast-options .social-facebook-pages span,
-#social-default-accounts .social-facebook-pages span {
+.social-facebook-pages span {
 	top: -1px;
 }
 
@@ -420,6 +415,25 @@
 .social-meta-box-block h4 span {
 	font-size: 11px;
 	font-weight: normal;
+}
+
+.social-broadcasted {
+	margin-bottom: 25px!important;
+}
+
+.social-broadcasted li {
+	clear: both;
+}
+
+.social-broadcasted li img {
+	float: left;
+	margin-bottom: 1px;
+}
+
+.social-broadcasted li span {
+	position: relative;
+	top: 5px;
+	left: 5px;
 }
 
 .mar-top-none {
