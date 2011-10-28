@@ -471,6 +471,15 @@ final class Social {
 						echo '<div class="error"><p>'.esc_html($message).'</p></div>';
 					}
 				}
+
+				// Enable notice?
+				$suppress_enable_notice = get_user_meta(get_current_user_id(), 'social_suppress_enable_notice', true);
+				if (empty($suppress_enable_notice)) {
+					$message = __('When you enable Social, users will be created in your system and given the "%s" as specified in your <a href="%s">Settings</a>. Users that are created by Social and only have Subscriber permissions will be prevented from accessing the admin side of WordPress.', 'social');
+					$dismiss = sprintf(__('<a href="%s" class="social_dismiss">[Dismiss]</a>', 'social'), esc_url(admin_url('?social_controller=settings&social_action=suppress_enable_notice')));
+					$message = sprintf($message, get_option('default_role'), esc_url(admin_url('options-general.php')));
+					echo '<div class="updated"><p>'.$message.' '.$dismiss.'</p></div>';
+				}
 			}
 
 			// Log write error
@@ -479,15 +488,6 @@ final class Social {
 				echo '<div class="error"><p>'.
 					sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_dismiss">[Dismiss]</a>', 'social'), esc_html(SOCIAL_PATH), esc_url(admin_url('?social_controller=settings&social_action=clear_log_write_error'))).
 					'</p></div>';
-			}
-
-			// Enable notice?
-			$suppress_enable_notice = get_user_meta(get_current_user_id(), 'social_suppress_enable_notice', true);
-			if (empty($suppress_enable_notice)) {
-				$message = __('When you enable Social, users will be created in your system and given the "%s" as specified in your <a href="%s">Settings</a>. Users that are created by Social and only have Subscriber permissions will be prevented from accessing the admin side of WordPress.', 'social');
-				$dismiss = sprintf(__('<a href="%s" class="social_dismiss">[Dismiss]</a>', 'social'), esc_url(admin_url('?social_controller=settings&social_action=suppress_enable_notice')));
-				$message = sprintf($message, get_option('default_role'), esc_url(admin_url('options-general.php')));
-				echo '<div class="updated"><p>'.$message.' '.$dismiss.'</p></div>';
 			}
 		}
 
