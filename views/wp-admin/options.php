@@ -63,8 +63,11 @@
 			<tr>
 				<th><?php _e('Broadcasting is on by default', 'social'); ?></th>
 				<td>
-					<input type="checkbox" name="social_broadcast_by_default" id="social-broadcast-by-default" value="1"<?php checked('1', Social::option('broadcast_by_default'), true); ?>
-					<label for="social-broadcast-by-default"><?php _e('Yes', 'social'); ?></label>
+					<input type="radio" name="social_broadcast_by_default" id="social-broadcast-by-default-yes" value="1"<?php checked('1', Social::option('broadcast_by_default'), true); ?>
+					<label for="social-broadcast-by-default-yes"><?php _e('Yes', 'social'); ?></label>
+
+					<input type="radio" name="social_broadcast_by_default" id="social-broadcast-by-default-no" value="0"<?php checked('0', Social::option('broadcast_by_default'), true); ?>
+					<label for="social-broadcast-by-default-no"><?php _e('No', 'social'); ?></label>
 				</td>
 			</tr>
 			<tr>

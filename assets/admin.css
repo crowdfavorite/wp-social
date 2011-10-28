@@ -121,8 +121,13 @@
 	text-decoration: none;
 }
 
-#social-broadcast-by-default {
-	margin-right: 5px;
+#social-broadcast-by-default-yes,
+#social-broadcast-by-default-no {
+	margin: 0 5px;
+}
+
+#social-broadcast-by-default-no {
+	margin-left: 15px;
 }
 
 #social-default-accounts {
