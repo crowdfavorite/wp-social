@@ -47,14 +47,15 @@
 		<?php comment_text(); ?>
 	</div>
 	<?php if (!$service instanceof Social_Service or $service->show_full_comment($comment->comment_type)): ?>
+	<?php
+		if (!empty($social_items)) {
+	        echo '<div class="social-items-comment">'.$social_items.'</div>';
+	    }
+	?>
 	<div class="social-actions entry-meta">
 		<?php
             comment_reply_link(array_merge($args, array('depth' => $depth, 'max_depth' => $args['max_depth'])));
             edit_comment_link(__('Edit', 'social'), '<span class="comment-edit-link"> &middot; ', '</span>');
-
-            if (!empty($social_items)) {
-                echo '<div class="social-items-comment">'.$social_items.'</div>';
-            }
         ?>
 	</div>
 	<?php endif; ?>
