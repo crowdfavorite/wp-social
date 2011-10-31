@@ -791,7 +791,7 @@ final class Social {
 			}
 
 			// Sends previously saved broadcast information
-			if ($xmlrpc or ($old == 'future' and $new != 'future')) {
+			if ($xmlrpc or ($old == 'future' and !in_array($new, array('future', 'draft')))) {
 				Social_Request::factory('broadcast/run')->query(array(
 					'post_ID' => $post->ID
 				))->execute();
