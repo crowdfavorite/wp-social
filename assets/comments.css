@@ -829,6 +829,10 @@ override submit styles in TwentyEleven theme */
 	float: left;
 }
 
+#social .social-items-comment {
+	margin: 6px 0;
+}
+
 #social .social-items.social-twitter .social-items-icon {
 	background-image: url('retweet.png');
 	height: 8px;
