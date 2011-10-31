@@ -26,7 +26,7 @@ else {
 			}
 
 			if (!empty($output)) {
-				echo '<h4>'.$service->title().'</h4><ul style="margin:0 0 25px;">'.$output.'</ul>';
+				echo '<h4>'.$service->title().'</h4><ul class="social-broadcasted">'.$output.'</ul>';
 			}
 		}
 	}

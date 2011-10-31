@@ -436,6 +436,7 @@
 
 .social-broadcasted li {
 	clear: both;
+	height: 24px;
 }
 
 .social-broadcasted li img {
@@ -444,9 +445,9 @@
 }
 
 .social-broadcasted li span {
-	position: relative;
-	top: 5px;
-	left: 5px;
+	height: 24px;
+	line-height: 24px;
+	margin-left: 5px;
 }
 
 .mar-top-none {
