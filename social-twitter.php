@@ -105,8 +105,7 @@ final class Social_Twitter {
 			$results = $wpdb->get_results("
 				SELECT meta_key, meta_value, comment_id
 				  FROM $wpdb->commentmeta
-				 WHERE comment_id IN (".implode(',', $comment_ids).")
-				   AND meta_key = 'social_in_reply_to_status_id'
+				 WHERE meta_key = 'social_in_reply_to_status_id'
 				    OR meta_key = 'social_status_id'
 				    OR meta_key = 'social_raw_data'
 				    OR meta_key = 'social_profile_image_url'
@@ -116,25 +115,37 @@ final class Social_Twitter {
 			// Store meta and comment hashses
 			foreach ($comments as $comment) {
 				if (is_object($comment)) {
-					if ($comment->comment_type == 'social-twitter') {
-						foreach ($results as $result) {
-							if ($comment->comment_ID == $result->comment_id) {
-								if ($result->meta_key == 'social_raw_data') {
-									$result->meta_value = json_decode(base64_decode($result->meta_value));
+					foreach ($results as $result) {
+						if ($comment->comment_ID == $result->comment_id) {
+							$comment->{$result->meta_key} = $result->meta_value;
+
+							if ($result->meta_key == 'social_raw_data') {
+								$result->meta_value = json_decode(base64_decode($result->meta_value));
+							}
+							else {
+								if ($result->meta_key == 'social_status_id') {
+									$in_reply_to_ids[$result->meta_value] = $result->comment_id;
 								}
-								else {
-									if ($result->meta_key == 'social_status_id') {
-										$in_reply_to_ids[$result->meta_value] = $result->comment_id;
+							}
+						}
+					}
+
+					// Comment a retweet?
+					if ($comment->comment_type == 'social-twitter' or $comment->social_comment_type == 'social-twitter') {
+						if (substr($comment->comment_content, 0, 4) != 'RT @') {
+							if (isset($comment->social_status_id)) {
+								if (!isset($comment->social_raw_data)) {
+									// Attempt to obtain the raw data.
+									$response = wp_remote_get('http://api.twitter.com/1/statuses/show/'.$comment->social_status_id.'.json');
+									if (!is_wp_error($response) and isset($response['body'])) {
+										$body = json_decode($response['body']);
+										if ($body !== null) {
+											$comment->social_raw_data = $body;
+											update_comment_meta($comment->comment_ID, 'social_raw_data', base64_encode($response['body']));
+										}
 									}
 								}
 
-								$comment->{$result->meta_key} = $result->meta_value;
-							}
-						}
-
-						// Comment a retweet?
-						if (substr($comment->comment_content, 0, 4) != 'RT @') {
-							if (isset($comment->social_status_id)) {
 								// Hash
 								if (isset($comment->social_raw_data)) {
 									$hash = self::build_retweet_hash($comment->comment_content, false);
@@ -155,7 +166,7 @@ final class Social_Twitter {
 			// Loop through the comments again and see if they're a retweet of anything
 			foreach ($comments as $comment) {
 				if (is_object($comment)) {
-					if ($comment->comment_type == 'social-twitter') {
+					if ($comment->comment_type == 'social-twitter' or $comment->social_comment_type == 'social-twitter') {
 						// Match comments up to their parents, if they're a reply.
 						if (isset($comment->social_in_reply_to_status_id) and isset($in_reply_to_ids[$comment->social_in_reply_to_status_id])) {
 							$comment->comment_parent = $in_reply_to_ids[$comment->social_in_reply_to_status_id];

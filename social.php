@@ -1194,16 +1194,17 @@ final class Social {
 							}
 							else {
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s.', 'social'), $comment_ID, $service->title(), $account->id()));
-								$id = $service->broadcast($account, $output)->id();
-								if ($id === false) {
+								$response = $service->broadcast($account, $output);
+								if ($response->id() === false) {
 									wp_delete_comment($comment_ID);
 									$message = sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_ID, $service->title(), $account->id());
 
 									Social::log($message);
 									wp_die($message);
 								}
-								$this->set_comment_aggregated_id($comment_ID, $service->key(), $id);
-								update_comment_meta($comment_ID, 'social_status_id', $id);
+								$this->set_comment_aggregated_id($comment_ID, $service->key(), $response->id());
+								update_comment_meta($comment_ID, 'social_status_id', $response->id());
+								update_comment_meta($comment_ID, 'social_raw_data', base64_encode(json_encode($response->body())));
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', 'social'), $comment_ID, $service->title(), $account->id()));
 							}
 						}
@@ -1269,13 +1270,14 @@ final class Social {
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s.', 'social'), $comment_id, $service->title(), $account->id()));
 								$comment = get_comment($comment_id);
 								$output = $service->format_comment_content($comment, Social::option('comment_broadcast_format'));
-								$id = $service->broadcast($account, $output)->id();
-								if ($id === false) {
+								$response = $service->broadcast($account, $output);
+								if ($response->id() === false) {
 									wp_delete_comment($comment_id);
 									Social::log(sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_id, $service->title(), $account->id()));
 								}
-								$this->set_comment_aggregated_id($comment_id, $service->key(), $id);
-								update_comment_meta($comment_id, 'social_status_id', $id);
+								$this->set_comment_aggregated_id($comment_id, $service->key(), $response->id());
+								update_comment_meta($comment_id, 'social_status_id', $response->id());
+								update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($response->body())));
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', 'social'), $comment_id, $service->title(), $account->id()));
 							}
 						}
