@@ -94,7 +94,7 @@ final class Social_Controller_Aggregation extends Social_Controller {
 			// Re-add to the queue?
 			$queue = Social_Aggregation_Queue::factory();
 			if (!$queue->find($post->ID)) {
-				$queue->add($post->ID, '24hour');
+				$queue->add($post->ID, '24hour')->save();
 			}
 
 			$log = Social_Aggregation_Log::instance($post->ID);

@@ -251,6 +251,22 @@ if (version_compare($installed_version, '2.0', '<')) {
 
 	// Add broadcast by default
 	Social::option('broadcast_by_default', '1');
+
+	// Reschedule posts for aggregation
+	$results = $wpdb->get_results("
+		SELECT post_id
+		  FROM $wpdb->postmeta
+		 WHERE meta_key = '_social_broadcasted_ids'
+	");
+	if ($results !== null) {
+		$queue = Social_Aggregation_Queue::factory();
+		foreach ($results as $result) {
+			if (!$queue->find($result->post_id)) {
+				$queue->add($result->post_id);
+			}
+		}
+		$queue->save();
+	}
 }
 
 // Flush the cache
