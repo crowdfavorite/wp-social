@@ -161,7 +161,11 @@ final class Social_Controller_Auth extends Social_Controller {
 		$service_key = $this->request->query('service');
 		$personal = false;
 		if (defined('IS_PROFILE_PAGE')) {
+			Social::log('Disconnecting a personal account #:id', array('id' => $id));
 			$personal = true;
+		}
+		else {
+			Social::log('Disconnecting a universal account #:id', array('id' => $id));
 		}
 
 		$this->social->service($service_key)->disconnect($id);
