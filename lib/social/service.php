@@ -489,6 +489,11 @@ abstract class Social_Service {
 				else {
 					unset($accounts[$this->_key][$id]->user);
 				}
+
+				if (!count($accounts[$this->_key])) {
+					unset($accounts[$this->_key]);
+				}
+
 				update_user_meta(get_current_user_id(), 'social_accounts', $accounts);
 			}
 		}
