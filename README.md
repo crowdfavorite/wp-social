@@ -226,6 +226,10 @@ This is actually a bug in the WordPress core. This will be fixed in WordPress 3.
 
 Connect your social account and after that you can add/remove your default broadcast accounts under the Social Settings Page and from your user profile page (Users/Your Profile).
 
+**Why can't I set up my social accounts on my local WordPress site?**
+
+Accounts can not be authorized on local environments, unless your local environment is publicly accessible via DNS.
+
 
 ## Screenshots=
 
