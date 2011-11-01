@@ -907,7 +907,7 @@ final class Social {
 							}
 						}
 						else {
-							$default_accounts[$service_key][$key] = $account;
+							$default_accounts[$service_key][] = $account;
 						}
 					}
 				}
