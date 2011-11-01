@@ -1578,7 +1578,12 @@ final class Social {
 				unset($defaults[$service]);
 			}
 			Social::log('New default accounts: :accounts', array('accounts' => print_r($defaults, true)));
-			Social::option('default_accounts', $defaults);
+			if (defined('IS_PROFILE_PAGE')) {
+				update_user_meta(get_current_user_id(), 'social_default_accounts', $defaults);
+			}
+			else {
+				Social::option('default_accounts', $defaults);
+			}
 		}
 	}
 
