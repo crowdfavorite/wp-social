@@ -475,9 +475,8 @@ final class Social {
 				// Enable notice?
 				$suppress_enable_notice = get_user_meta(get_current_user_id(), 'social_suppress_enable_notice', true);
 				if (empty($suppress_enable_notice)) {
-					$message = __('When you enable Social, users will be created in your system and given the "%s" as specified in your <a href="%s">Settings</a>. Users that are created by Social and only have Subscriber permissions will be prevented from accessing the admin side of WordPress.', 'social');
+					$message = __('When you enable Social, users will be created in your system without a role and will be prevented from accessing the admin side of WordPress until an administrator updates the users role (Users/All Users/Edit User).', 'social');
 					$dismiss = sprintf(__('<a href="%s" class="social_dismiss">[Dismiss]</a>', 'social'), esc_url(admin_url('?social_controller=settings&social_action=suppress_enable_notice')));
-					$message = sprintf($message, get_option('default_role'), esc_url(admin_url('options-general.php')));
 					echo '<div class="updated"><p>'.$message.' '.$dismiss.'</p></div>';
 				}
 			}
