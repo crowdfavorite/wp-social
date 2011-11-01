@@ -162,13 +162,10 @@ final class Social_Controller_Auth extends Social_Controller {
 		$personal = false;
 		if (defined('IS_PROFILE_PAGE')) {
 			$personal = true;
-			$service = $this->social->service($service_key);
 		}
-		else {
-			$service = $this->social->service($service_key);
-			$this->social->remove_from_default_accounts($service_key, $id);
-		}
-		$service->disconnect($id);
+
+		$this->social->service($service_key)->disconnect($id);
+		$this->social->remove_from_default_accounts($service_key, $id);
 
 		if (is_admin()) {
 			wp_redirect(Social::settings_url(array(), $personal));
