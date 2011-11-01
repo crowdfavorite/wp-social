@@ -339,6 +339,22 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	}
 
 	/**
+	 * Returns the response message.
+	 *
+	 * @param  object  $body
+	 * @param  string  $default
+	 *
+	 * @return mixed
+	 */
+	public function response_message($body, $default) {
+		if (isset($body->response) and isset($body->response->message)) {
+			return $body->response->message;
+		}
+
+		return $default;
+	}
+
+	/**
 	 * Returns the status URL to a broadcasted item.
 	 *
 	 * @param  string      $username

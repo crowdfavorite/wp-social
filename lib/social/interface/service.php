@@ -168,6 +168,16 @@ interface Social_Interface_Service {
 	function response_id_key();
 
 	/**
+	 * Returns the response message.
+	 *
+	 * @abstract
+	 * @param  object  $body
+	 * @param  string  $default
+	 * @return string
+	 */
+	function response_message($body, $default);
+
+	/**
 	 * Returns the status URL to a broadcasted item.
 	 *
 	 * @abstract

@@ -392,6 +392,21 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	}
 
 	/**
+	 * Returns the response message.
+	 *
+	 * @param  object  $body
+	 * @param  string  $default
+	 * @return mixed
+	 */
+	public function response_message($body, $default) {
+		if (isset($body->response) and isset($body->response->text)) {
+			return $body->response->text;
+		}
+
+		return $default;
+	}
+
+	/**
 	 * Returns the status URL to a broadcasted item.
 	 *
 	 * @param  string      $username

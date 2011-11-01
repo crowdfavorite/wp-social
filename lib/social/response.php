@@ -20,7 +20,7 @@ final class Social_Response {
 	}
 
 	/**
-	 * @var  Social_Service  service object
+	 * @var  Social_Service|Social_Service_Facebook|Social_Service_Twitter  service object
 	 */
 	private $_service = null;
 
@@ -141,6 +141,16 @@ final class Social_Response {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Returns the response message.
+	 *
+	 * @param  string  $default  default message to use
+	 * @return mixed
+	 */
+	public function message($default) {
+		return $this->_service->response_message($this->body(), $default);
 	}
 
 } // End Social_Response
