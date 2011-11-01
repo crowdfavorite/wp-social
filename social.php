@@ -1543,6 +1543,7 @@ final class Social {
 	 * @return void
 	 */
 	public function remove_from_default_accounts($service, $id) {
+		Social::log('Removing from default accounts #:id', array('id' => $id));
 		if (defined('IS_PROFILE_PAGE')) {
 			$defaults = get_user_meta(get_current_user_id(), 'social_default_accounts', true);
 		}
@@ -1551,6 +1552,8 @@ final class Social {
 		}
 
 		if (!empty($defaults) and isset($defaults[$service])) {
+			Social::log('Old default accounts: :accounts', array('accounts' => print_r($defaults, true)));
+
 			$_ids = array();
 			foreach ($defaults[$service] as $key => $_id) {
 				if ($_id != $id) {
@@ -1571,6 +1574,10 @@ final class Social {
 			}
 
 			$defaults[$service] = $_ids;
+			if (!count($defaults[$service])) {
+				unset($defaults[$service]);
+			}
+			Social::log('New default accounts: :accounts', array('accounts' => print_r($defaults, true)));
 			Social::option('default_accounts', $defaults);
 		}
 	}
