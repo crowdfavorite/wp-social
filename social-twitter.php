@@ -89,7 +89,7 @@ final class Social_Twitter {
 							}
 						}
 
-						$hash = self::strip_retweet_data($data['message'], false);
+						$hash = self::build_retweet_hash($data['message'], false);
 						// This is stored as broadcasted and not the ID so we can easily store broadcasted retweets
 						// instead of attaching retweets to non-existent comments.
 						$comment_hashes[$hash] = 'broadcasted';
@@ -137,7 +137,7 @@ final class Social_Twitter {
 							if (isset($comment->social_status_id)) {
 								// Hash
 								if (isset($comment->social_raw_data)) {
-									$hash = self::strip_retweet_data($comment->comment_content, false);
+									$hash = self::build_retweet_hash($comment->comment_content, false);
 									$comment_hashes[$hash] = $comment->social_status_id;
 								}
 
@@ -146,7 +146,7 @@ final class Social_Twitter {
 							}
 						}
 						else {
-							$comment->social_retweet_hash = self::strip_retweet_data($comment->comment_content);
+							$comment->social_retweet_hash = self::build_retweet_hash($comment->comment_content);
 						}
 					}
 				}
@@ -211,7 +211,7 @@ final class Social_Twitter {
 	 * @param  bool    $retweet   is this a reply comment?
 	 * @return string
 	 */
-	private static function strip_retweet_data($text, $retweet = true) {
+	private static function build_retweet_hash($text, $retweet = true) {
 		$text = explode(' ', trim($text));
 		$content = '';
 		foreach ($text as $_content) {
