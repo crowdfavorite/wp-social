@@ -296,7 +296,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 										'reason' => $reason,
 									));
 								}
-								else if ($response->deauthorized()) {
+								else if ($response->deauthorized() or $response->deauthorized(true)) {
 									if (!isset($errored_accounts[$key])) {
 										$errored_accounts[$key] = array();
 									}

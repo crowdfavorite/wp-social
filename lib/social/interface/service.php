@@ -155,9 +155,10 @@ interface Social_Interface_Service {
 	 *
 	 * @abstract
 	 * @param  string  $response
+	 * @param  bool    $check_invalid_key
 	 * @return bool
 	 */
-	function deauthorized($response);
+	function deauthorized($response, $check_invalid_key = false);
 
 	/**
 	 * Returns the key to use on the request response to pull the ID.

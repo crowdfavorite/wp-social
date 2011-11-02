@@ -323,10 +323,14 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * Checks the response to see if the account has been deauthorized.
 	 *
 	 * @param  string  $response
+	 * @param  bool    $check_invalid_key
 	 * @return bool
 	 */
-	public function deauthorized($response) {
-		return ($response == 'Error validating access token');
+	public function deauthorized($response, $check_invalid_key = false) {
+		if (($check_invalid_key and $response = 'invalid key') or $response == 'Error validating access token') {
+			return true;
+		}
+		return false;
 	}
 
 	/**

@@ -105,7 +105,7 @@
 										}
 									}
 									else if (count($broadcasted_ids)) {
-										if (isset($_POST['social_action']) and isset($broadcasted_ids[$key]) and isset($broadcasted_ids[$key][$account->id()])) {
+										if (isset($_POST['social_action']) or (isset($_POST['social_broadcast'])) and isset($broadcasted_ids[$key]) and isset($broadcasted_ids[$key][$account->id()])) {
 											$checked = false;
 										}
 									}

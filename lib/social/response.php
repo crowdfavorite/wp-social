@@ -76,11 +76,12 @@ final class Social_Response {
 	/**
 	 * Checks to see if the broadcasting account has been deauthorized.
 	 *
+	 * @param  bool  $check_invalid_key
 	 * @return bool
 	 */
-	public function deauthorized() {
+	public function deauthorized($check_invalid_key = FALSE) {
 		$body = $this->body();
-		if ((isset($body->result) and $body->result == 'error') and isset($body->response) and $this->_service->deauthorized($body->response)) {
+		if ((isset($body->result) and $body->result == 'error') and isset($body->response) and $this->_service->deauthorized($body->response, $check_invalid_key)) {
 			if ($this->_account->personal()) {
 				$url = Social::settings_url(array(), true);
 			}

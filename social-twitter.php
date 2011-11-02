@@ -46,6 +46,7 @@ final class Social_Twitter {
 	 */
 	public static function comments_array(array $comments, $post_id) {
 		global $wpdb;
+		$post = get_post($post_id);
 
 		$comment_ids = array();
 		foreach ($comments as $comment) {
@@ -71,24 +72,7 @@ final class Social_Twitter {
 				$update_broadcasted = false;
 
 				foreach ($broadcasted_ids['twitter'] as $account_id => $broadcasted) {
-					foreach ($broadcasted as $id => $data) {
-						// Empty message? (pre-2.0 Twitter comment)
-						if (empty($data['message'])) {
-							$twitter = Social::instance()->service('twitter');
-							if ($twitter !== false and count($twitter->accounts())) {
-								foreach ($twitter->accounts() as $account) {
-									$response = $twitter->request($account, 'statuses/show/'.$id);
-									if ($response !== false and isset($response->body()->response)) {
-										$update_broadcasted = true;
-										$message = $response->body()->response->text;
-										$broadcasted_ids['twitter'][$account_id][$id] = array(
-											'message' => $message
-										);
-									}
-								}
-							}
-						}
-
+					foreach ($broadcasted as $data) {
 						$hash = self::build_retweet_hash($data['message'], false);
 						// This is stored as broadcasted and not the ID so we can easily store broadcasted retweets
 						// instead of attaching retweets to non-existent comments.
@@ -140,8 +124,13 @@ final class Social_Twitter {
 									if (!is_wp_error($response) and isset($response['body'])) {
 										$body = json_decode($response['body']);
 										if ($body !== null) {
-											$comment->social_raw_data = $body;
-											update_comment_meta($comment->comment_ID, 'social_raw_data', base64_encode($response['body']));
+											$raw = array();
+											if (!isset($body->error)) {
+												$raw = $body;
+											}
+
+											$comment->social_raw_data = $raw;
+											update_comment_meta($comment->comment_ID, 'social_raw_data', base64_encode(json_encode($raw)));
 										}
 									}
 								}

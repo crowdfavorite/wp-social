@@ -225,8 +225,21 @@ if (version_compare($installed_version, '2.0', '<')) {
 						if (is_array($broadcasted)) {
 							foreach ($broadcasted as $id => $data) {
 								if ((int) $data) {
+									$message = '';
+									$twitter = Social::instance()->service('twitter');
+									if ($twitter !== false and count($twitter->accounts())) {
+										foreach ($twitter->accounts() as $account) {
+											$response = $twitter->request($account, 'statuses/show/'.$id);
+											if ($response !== false and isset($response->body()->response)) {
+												if (isset($response->body()->response->text)) {
+													$message = $response->body()->response->text;
+												}
+											}
+										}
+									}
+
 									$_meta_value[$service_key][$account_id][$data] = array(
-										'message' => ''
+										'message' => $message
 									);
 								}
 								else {
