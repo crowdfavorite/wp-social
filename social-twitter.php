@@ -131,7 +131,7 @@ final class Social_Twitter {
 					}
 
 					// Comment a retweet?
-					if ($comment->comment_type == 'social-twitter' or $comment->social_comment_type == 'social-twitter') {
+					if ($comment->comment_type == 'social-twitter' or (isset($comment->social_comment_type) and $comment->social_comment_type == 'social-twitter')) {
 						if (substr($comment->comment_content, 0, 4) != 'RT @') {
 							if (isset($comment->social_status_id)) {
 								if (!isset($comment->social_raw_data)) {
@@ -166,7 +166,7 @@ final class Social_Twitter {
 			// Loop through the comments again and see if they're a retweet of anything
 			foreach ($comments as $comment) {
 				if (is_object($comment)) {
-					if ($comment->comment_type == 'social-twitter' or $comment->social_comment_type == 'social-twitter') {
+					if ($comment->comment_type == 'social-twitter' or (isset($comment->social_comment_type) and $comment->social_comment_type == 'social-twitter')) {
 						// Match comments up to their parents, if they're a reply.
 						if (isset($comment->social_in_reply_to_status_id) and isset($in_reply_to_ids[$comment->social_in_reply_to_status_id])) {
 							$comment->comment_parent = $in_reply_to_ids[$comment->social_in_reply_to_status_id];
