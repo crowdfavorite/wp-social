@@ -291,7 +291,8 @@
 			$('.social-items-and-more').click(function(e) {
 				e.preventDefault();
 
-				$(this).hide().parent().find('img').show();
+				$(this).parent().find('a').show();
+				$(this).hide();
 			});
 		}
 	});
