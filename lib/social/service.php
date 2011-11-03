@@ -601,8 +601,8 @@ abstract class Social_Service {
 		}
 
 		$status_url = $this->status_url($item->comment_author, $item->social_status_id);
-		$image = sprintf('<img src="%s" width="%s" height="%s" title="%s" />', esc_url($item->social_profile_image_url), esc_attr($width), esc_attr($height), esc_attr($item->comment_author));
-		return sprintf('<a href="%s"%s>%s</a>', esc_url($status_url), $style, $image);
+		$image = sprintf('<img src="%s" width="%s" height="%s" alt="%s" />', esc_url($item->social_profile_image_url), esc_attr($width), esc_attr($height), esc_attr($item->comment_author));
+		return sprintf('<a href="%s" title="%s"%s>%s</a>', esc_url($status_url), esc_attr($item->comment_author), $style, $image);
 	}
 
 	/**
