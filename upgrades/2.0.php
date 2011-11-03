@@ -203,8 +203,10 @@ if (version_compare($installed_version, '2.0', '<')) {
 
 	// Fix the broadcasted IDs format
 	$results = $wpdb->get_results("
-		SELECT meta_value, post_id
-		  FROM $wpdb->postmeta
+		SELECT pm.meta_value, pm.post_id, p.post_content
+		  FROM $wpdb->postmeta AS pm
+		  JOIN $wpdb->posts AS p
+		    ON pm.post_id = p.ID
 		 WHERE meta_key = '_social_broadcasted_ids'
     ");
 	if (is_array($results)) {
@@ -225,21 +227,8 @@ if (version_compare($installed_version, '2.0', '<')) {
 						if (is_array($broadcasted)) {
 							foreach ($broadcasted as $id => $data) {
 								if ((int) $data) {
-									$message = '';
-									$twitter = Social::instance()->service('twitter');
-									if ($twitter !== false and count($twitter->accounts())) {
-										foreach ($twitter->accounts() as $account) {
-											$response = $twitter->request($account, 'statuses/show/'.$id);
-											if ($response !== false and isset($response->body()->response)) {
-												if (isset($response->body()->response->text)) {
-													$message = $response->body()->response->text;
-												}
-											}
-										}
-									}
-
 									$_meta_value[$service_key][$account_id][$data] = array(
-										'message' => $message
+										'message' => ''
 									);
 								}
 								else {

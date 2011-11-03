@@ -73,10 +73,15 @@ final class Social_Twitter {
 
 				foreach ($broadcasted_ids['twitter'] as $account_id => $broadcasted) {
 					foreach ($broadcasted as $data) {
-						$hash = self::build_retweet_hash($data['message'], false);
-						// This is stored as broadcasted and not the ID so we can easily store broadcasted retweets
-						// instead of attaching retweets to non-existent comments.
-						$comment_hashes[$hash] = 'broadcasted';
+						if (empty($data['message'])) {
+							// TODO submit background POST here to get message
+						}
+						else {
+							$hash = self::build_retweet_hash($data['message'], false);
+							// This is stored as broadcasted and not the ID so we can easily store broadcasted retweets
+							// instead of attaching retweets to non-existent comments.
+							$comment_hashes[$hash] = 'broadcasted';
+						}
 					}
 				}
 
@@ -118,26 +123,9 @@ final class Social_Twitter {
 					if ($comment->comment_type == 'social-twitter' or (isset($comment->social_comment_type) and $comment->social_comment_type == 'social-twitter')) {
 						if (substr($comment->comment_content, 0, 4) != 'RT @') {
 							if (isset($comment->social_status_id)) {
-								if (!isset($comment->social_raw_data)) {
-									// Attempt to obtain the raw data.
-									$response = wp_remote_get('http://api.twitter.com/1/statuses/show/'.$comment->social_status_id.'.json');
-									if (!is_wp_error($response) and isset($response['body'])) {
-										$body = json_decode($response['body']);
-										if ($body !== null) {
-											$raw = array();
-											if (!isset($body->error)) {
-												$raw = $body;
-											}
-
-											$comment->social_raw_data = $raw;
-											update_comment_meta($comment->comment_ID, 'social_raw_data', base64_encode(json_encode($raw)));
-										}
-									}
-								}
-
 								// Hash
-								if (isset($comment->social_raw_data)) {
-									$hash = self::build_retweet_hash($comment->comment_content, false);
+								if (isset($comment->social_raw_data) and isset($comment->social_raw_data->text)) {
+									$hash = self::build_retweet_hash($comment->social_raw_data->text, false);
 									$comment_hashes[$hash] = $comment->social_status_id;
 								}
 
