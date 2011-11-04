@@ -167,7 +167,7 @@ final class Social_Controller_Aggregation extends Social_Controller {
 						foreach ($accounts as $account) {
 							// Run the request to the find Tweet
 							$response = $service->request($account, 'statuses/show/'.$broadcasted_id);
-							if ($response !== false and !isset($response->body()->response->error)) {
+							if ($response !== false and $response->body()->result != 'error') {
 								$recovered = $service->recovered_meta($post_id, $broadcasted_id, $response->body()->response);
 							}
 						}
