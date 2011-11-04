@@ -72,12 +72,18 @@ final class Social_Twitter {
 				$update_broadcasted = false;
 
 				foreach ($broadcasted_ids['twitter'] as $account_id => $broadcasted) {
-					foreach ($broadcasted as $data) {
+					foreach ($broadcasted as $id => $data) {
 						if (empty($data['message'])) {
-							wp_remote_get(wp_nonce_url(site_url('?social_controller=aggregation&social_action=retrieve_twitter_content')))
+							//wp_remote_get(wp_nonce_url(site_url('?social_controller=aggregation&social_action=retrieve_twitter_content&broadcasted_id='.$id.'&post_id='.$post_id)));
+							Social_Request::factory('aggregation/retrieve_twitter_content')->query(array(
+								'broadcasted_id' => $id,
+								'post_id' => $post_id
+							))->execute();
 						}
 						else {
-							$hash = self::build_retweet_hash($data['message'], false);
+							$data['message'] = json_decode(base64_decode($data['message']));
+
+							$hash = self::build_retweet_hash($data['message']->text, false);
 							// This is stored as broadcasted and not the ID so we can easily store broadcasted retweets
 							// instead of attaching retweets to non-existent comments.
 							$comment_hashes[$hash] = 'broadcasted';
@@ -192,6 +198,26 @@ final class Social_Twitter {
 	}
 
 	/**
+	 * Sets the raw data for the broadcasted post.
+	 *
+	 * @wp-filter social_broadcast_response
+	 * @static
+	 * @param  array                   $data
+	 * @param  Social_Service_Account  $account
+	 * @param  string                  $service_key
+	 * @param  int                     $post_id
+	 * @param  Social_Response         $response
+	 * @return array
+	 */
+	public static function social_save_broadcasted_ids_data(array $data, Social_Service_Account $account, $service_key, $post_id, Social_Response $response) {
+		if ($service_key == 'twitter') {
+			$data['message'] = base64_encode(json_encode($response->body()->response));
+		}
+
+		return $data;
+	}
+
+	/**
 	 * Strips extra retweet data before comparing.
 	 *
 	 * @static
@@ -263,6 +289,7 @@ define('SOCIAL_TWITTER_FILE', __FILE__);
 add_filter('social_register_service', array('Social_Twitter', 'register_service'));
 add_filter('get_avatar_comment_types', array('Social_Twitter', 'get_avatar_comment_types'));
 add_filter('social_comments_array', array('Social_Twitter', 'comments_array'), 10, 2);
+add_filter('social_save_broadcasted_ids_data', array('Social_Twitter', 'social_save_broadcasted_ids_data'), 10, 5);
 add_action('wp_enqueue_scripts', array('Social_Twitter', 'enqueue_assets'));
 
 }

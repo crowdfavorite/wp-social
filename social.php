@@ -920,15 +920,15 @@ final class Social {
 	/**
 	 * Sets the broadcasted IDs for the post.
 	 *
-	 * @param  int     $post_id           post id
-	 * @param  string  $service           service key
-	 * @param  string  $broadcasted_id    broadcasted id
-	 * @param  string  $message           broadcasted message
-	 * @param  Social_Service_Facebook_Account|Social_Service_Twitter_Account  $account        account
-	 * @param  string  $account_username  broadcasted username
+	 * @param  int  $post_id  post id
+	 * @param  string  $service  service key
+	 * @param  string  $broadcasted_id  broadcasted id
+	 * @param  string  $message  broadcasted message
+	 * @param  Social_Service_Account  $account  account
+	 * @param  Social_Response  $response  response object
 	 * @return void
 	 */
-	public function add_broadcasted_id($post_id, $service, $broadcasted_id, $message, $account, $account_username) {
+	public function add_broadcasted_id($post_id, $service, $broadcasted_id, $message, $account, Social_Response $response = null) {
 		$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
 		if (empty($broadcasted_ids)) {
 			$broadcasted_ids = array();
@@ -946,7 +946,7 @@ final class Social {
 			$data = array(
 				'message' => $message,
 			);
-			$data = apply_filters('social_save_broadcasted_ids_data', $data, $account, $service, $post_id);
+			$data = apply_filters('social_save_broadcasted_ids_data', $data, $account, $service, $post_id, $response);
 			$broadcasted_ids[$service][$account->id()][$broadcasted_id] = $data;
 			update_post_meta($post_id, '_social_broadcasted_ids', $broadcasted_ids);
 		}
@@ -1204,7 +1204,7 @@ final class Social {
 								}
 								$this->set_comment_aggregated_id($comment_ID, $service->key(), $response->id());
 								update_comment_meta($comment_ID, 'social_status_id', $response->id());
-								update_comment_meta($comment_ID, 'social_raw_data', base64_encode(json_encode($response->body())));
+								update_comment_meta($comment_ID, 'social_raw_data', base64_encode(json_encode($response->body()->response)));
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', 'social'), $comment_ID, $service->title(), $account->id()));
 							}
 						}

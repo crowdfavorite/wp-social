@@ -143,4 +143,52 @@ final class Social_Controller_Aggregation extends Social_Controller {
 		}
 	}
 
+	/**
+	 * Retrieves missing Twitter content.
+	 *
+	 * @return void
+	 */
+	public function action_retrieve_twitter_content() {
+		$broadcasted_id = $this->request->query('broadcasted_id');
+		if ($broadcasted_id === null) {
+			exit;
+		}
+
+		$post_id = $this->request->query('post_id');
+		if ($post_id !== null) {
+			$recovered = false;
+			$run = get_post_meta('_social_run_twitter_retrieval', true);
+			if (empty($run) or (int) $run <= current_time('timestamp', 1)) {
+				// Do we have accounts to use?
+				$service = Social::instance()->service('twitter');
+				if ($service !== false) {
+					$accounts = $service->accounts();
+					if (count($accounts)) {
+						foreach ($accounts as $account) {
+							// Run the request to the find Tweet
+							$response = $service->request($account, 'statuses/show/'.$broadcasted_id);
+							if ($response !== false and !isset($response->body()->response->error)) {
+								$recovered = $service->recovered_meta($post_id, $broadcasted_id, $response->body()->response);
+							}
+						}
+					}
+					else {
+						$response = wp_remote_get('http://api.twitter.com/1/statuses/show/'.$broadcasted_id.'.json');
+						if (!is_wp_error($response) and !isset($response->error)) {
+							$recovered = $service->recovered_meta($post_id, $broadcasted_id, $response);
+						}
+					}
+				}
+			}
+
+			if (!$recovered) {
+				// Something went wrong, retry again in 15 minutes.
+				update_post_meta($post_id, '_social_run_twitter_retrieval', (current_time('timestamp', 1) + 54000));
+			}
+			else if (!empty($run)) {
+				delete_post_meta($post_id, '_social_run_twitter_retrieval');
+			}
+		}
+	}
+
 } // End Social_Controller_Aggregation

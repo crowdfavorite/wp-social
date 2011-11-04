@@ -422,6 +422,33 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	}
 
 	/**
+	 * Stores the recovered meta.
+	 *
+	 * @param  int     $post_id
+	 * @param  int     $broadcasted_id
+	 * @param  object  $response
+	 * @return bool
+	 */
+	public function recovered_meta($post_id, $broadcasted_id, $response) {
+		// Load the broadcasted IDs meta
+		$broadcasted = get_post_meta($post_id, '_social_broadcasted_ids', true);
+		foreach ($broadcasted['twitter'] as $account_id => $broadcasted_items) {
+			// Loop through the broadcasted items until we find a match.
+			foreach ($broadcasted_items as $id => $data) {
+				if ($broadcasted_id == $id) {
+					// Store the recovered data.
+					$data['message'] = base64_encode(json_encode($response));
+					$broadcasted['twitter'][$account_id][$id] = $data;
+					update_post_meta($post_id, '_social_broadcasted_ids', $broadcasted);
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Hack to fix the "Twitpocalypse" bug on 32-bit systems.
 	 *
 	 * @static
