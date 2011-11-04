@@ -1684,7 +1684,7 @@ final class Social {
 							$class = 'Social_Service_'.$key.'_Account';
 							foreach ($_accounts as $account_id => $account) {
 								if ($services[$key]->account_exists($account_id) and !defined('IS_PROFILE_PAGE')) {
-									$account = $this->merge_accounts($services[$key]->account($account_id)->as_object(), $account);
+									$account = $this->merge_accounts($services[$key]->account($account_id)->as_object(), $account, $key);
 								}
 								$this->_enabled = true;
 								$account = new $class((object) $account);
@@ -1704,13 +1704,14 @@ final class Social {
 	/**
 	 * Merges universal with personal account.
 	 *
-	 * @param  array  $arr1
-	 * @param  array  $arr2
+	 * @param  array   $arr1
+	 * @param  array   $arr2
+	 * @param  string  $service_key
 	 * @return object
 	 */
-	private function merge_accounts($arr1, $arr2) {
+	private function merge_accounts($arr1, $arr2, $service_key) {
 		$arr1->personal = true;
-		return apply_filters('social_merge_accounts', $arr1, $arr2);
+		return apply_filters('social_merge_accounts', $arr1, $arr2, $service_key);
 	}
 
 	/**

@@ -379,18 +379,13 @@ final class Social_Facebook {
 	 * @static
 	 * @param  object  $universal
 	 * @param  object  $personal
+	 * @param  string  $service_key
 	 * @return object
 	 */
-	public static function social_merge_accounts($universal, $personal) {
+	public static function social_merge_accounts($universal, $personal, $service_key) {
 		// Merge pages
-		if (isset($universal->pages) and isset($personal->pages)) {
+		if ($service_key == 'facebook') {
 			$universal->pages->personal = $personal->pages->personal;
-			$universal->use_personal_pages = $personal->use_personal_pages;
-		}
-		else if (isset($personal->pages) and !isset($universal->pages)) {
-			$universal->pages = (object) array(
-				'personal' => $personal->pages->personal
-			);
 			$universal->use_personal_pages = $personal->use_personal_pages;
 		}
 		return $universal;
@@ -416,6 +411,6 @@ add_filter('social_get_broadcast_account', array('Social_Facebook', 'social_get_
 add_filter('social_save_broadcasted_ids_data', array('Social_Facebook', 'social_save_broadcasted_ids_data'), 10, 4);
 add_filter('social_view_set_file', array('Social_Facebook', 'social_view_set_file'), 10, 2);
 add_filter('social_view_data', array('Social_Facebook', 'social_view_data'), 10, 2);
-add_filter('social_merge_accounts', array('Social_Facebook', 'social_merge_accounts'), 10, 2);
+add_filter('social_merge_accounts', array('Social_Facebook', 'social_merge_accounts'), 10, 3);
 
 }
