@@ -335,7 +335,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 										$broadcasted_ids[$key] = array();
 									}
 
-									$this->social->add_broadcasted_id($post->ID, $key, $response->id(), $response->message($message), $account, $account->username(), $response);
+									$this->social->add_broadcasted_id($post->ID, $key, $response->id(), $response->message($message), $account, $response);
 									do_action('social_broadcast_response', $response, $key, $post);
 
 									Social::log('Broadcasting to :username, account #:id COMPLETE. (:service)', array(
