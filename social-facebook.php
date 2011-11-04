@@ -383,8 +383,16 @@ final class Social_Facebook {
 	 */
 	public static function social_merge_accounts($universal, $personal) {
 		// Merge pages
-		$universal->pages->personal = $personal->pages->personal;
-		$universal->use_personal_pages = $personal->use_personal_pages;
+		if (isset($universal->pages) and isset($personal->pages)) {
+			$universal->pages->personal = $personal->pages->personal;
+			$universal->use_personal_pages = $personal->use_personal_pages;
+		}
+		else if (isset($personal->pages) and !isset($universal->pages)) {
+			$universal->pages = (object) array(
+				'personal' => $personal->pages->personal
+			);
+			$universal->use_personal_pages = $personal->use_personal_pages;
+		}
 		return $universal;
 	}
 
