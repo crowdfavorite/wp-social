@@ -74,7 +74,7 @@ final class Social_Twitter {
 				foreach ($broadcasted_ids['twitter'] as $account_id => $broadcasted) {
 					foreach ($broadcasted as $data) {
 						if (empty($data['message'])) {
-							// TODO submit background POST here to get message
+							wp_remote_get(wp_nonce_url(site_url('?social_controller=aggregation&social_action=retrieve_twitter_content')))
 						}
 						else {
 							$hash = self::build_retweet_hash($data['message'], false);
