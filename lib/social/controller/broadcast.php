@@ -269,7 +269,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 										$errored_accounts[$key] = array();
 									}
 
-									$reason = 'Rate limit reached.';
+									$reason = __('Rate limit reached', 'social');
 									$errored_accounts[$key][] = (object) array(
 										'account' => $account,
 										'reason' => $reason,
@@ -285,7 +285,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 										$errored_accounts[$key] = array();
 									}
 
-									$reason = 'Duplicate status.';
+									$reason = __('Duplicate status', 'social');
 									$errored_accounts[$key][] = (object) array(
 										'account' => $account,
 										'reason' => $reason,
@@ -301,7 +301,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 										$errored_accounts[$key] = array();
 									}
 
-									$reason = 'Account deauthorized.';
+									$reason = __('Account deauthorized', 'social');
 									$errored_accounts[$key][] = (object) array(
 										'account' => $account,
 										'reason' => $reason,

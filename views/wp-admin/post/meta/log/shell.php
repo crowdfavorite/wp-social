@@ -1,6 +1,6 @@
 <div class="social-meta-box-block">
 	<h4><?php _e('Add Tweet by URL', 'social'); ?></h4>
-	<p><?php _e('Want to add a tweet? Enter the URL of the tweet here and Social will add it as a comment.', 'social'); ?></p>
+	<p><?php _e('Enter the URL of the tweet to add it as a comment.', 'social'); ?></p>
 	
 	<p>
 		<input type="text" id="social-source-url" name="source_url" style="width:350px" />
@@ -14,9 +14,8 @@
 <div class="social-meta-box-block cf-clearfix">
 	<h4>
 		<?php _e('Manual Refresh', 'social'); ?>
-		<span>(<?php echo sprintf(__('Automatic aggregation scheduled for approximately: %s', 'social'), $next_run); ?>)</span>
+		<span>(<?php echo sprintf(__('Next automatic run: %s', 'social'), $next_run); ?>)</span>
 	</h4>
-	<p><?php _e('Manually run the comment aggregation and Social will look for mentions of this post on Facebook and Twitter.', 'social'); ?></p>
 
 	<p class="submit" style="clear:both;float:none;padding:0;">
 		<a href="<?php echo esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')); ?>" id="run_aggregation" class="button" style="float:left;margin-bottom:10px;"><?php _e('Find Social Comments', 'social'); ?></a>

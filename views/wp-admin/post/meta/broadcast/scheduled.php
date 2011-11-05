@@ -1,3 +1,4 @@
+<div class="misc-pub-section">
 <?php
 if (empty($accounts)) {
 	echo '<p class=="mar-top-none">'
@@ -5,9 +6,7 @@ if (empty($accounts)) {
 	   . '</p>';
 }
 else {
-	echo '<p class="mar-top-none">'
-	   . __('This post is scheduled to be broadcasted to the following accounts.', 'social')
-	   . '</p>';
+	echo '<h4>'. __('Scheduled for:', 'social').'</h4>';
 	foreach ($accounts as $service => $_accounts) {
 		if (isset($services[$service])) {
 			$service = $services[$service];
@@ -26,8 +25,10 @@ else {
 			}
 
 			if (!empty($output)) {
-				echo '<h4>'.$service->title().'</h4><ul class="social-broadcasted">'.$output.'</ul>';
+				echo '<ul class="social-broadcasted">'.$output.'</ul>';
 			}
 		}
 	}
 }
+?>
+</div>

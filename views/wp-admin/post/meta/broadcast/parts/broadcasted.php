@@ -1,3 +1,4 @@
+<div class="misc-pub-section">
 <?php
 $header_shown = false;
 if (is_array($ids) and count($ids)) {
@@ -6,19 +7,18 @@ if (is_array($ids) and count($ids)) {
 			$broadcasted = true;
 			if (!$header_shown) {
 				$header_shown = true;
-				$message = __('Broadcasted To', 'social');
-				echo '<h4>'.$message.'</h4>';
+				echo '<h4>'.__('Sent to:', 'social').'</h4>';
 			}
 
-			$output = '';
+			$broadcasts = array();
 			foreach ($ids[$key] as $user_id => $broadcasted) {
 				if (($account = $service->account($user_id)) !== false) {
 					if (empty($output)) {
-						$accounts_output = $service->title().'<ul class="social-broadcasted">';
+						$accounts_output = '<ul class="social-broadcasted">';
 					}
 
 					foreach ($broadcasted as $broadcasted_id => $data) {
-						$output .= Social_View::factory('wp-admin/post/meta/broadcast/parts/account', array(
+						$broadcasts[] = Social_View::factory('wp-admin/post/meta/broadcast/parts/account', array(
 							'account' => $account,
 							'service' => $service,
 							'broadcasted_id' => $broadcasted_id,
@@ -28,9 +28,11 @@ if (is_array($ids) and count($ids)) {
 				}
 			}
 
-			if (!empty($output)) {
-				echo $service->title().'<ul class="social-broadcasted">'.$output.'</ul>';
+			if (count($broadcasts)) {
+				echo '<ul class="social-broadcasted">'.implode("\n", $broadcasts).'</ul>';
 			}
 		}
 	}
 }
+?>
+</div>
