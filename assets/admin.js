@@ -4,6 +4,7 @@
 			var $t = $(this);
 			$t.find('.social-title a').click(function(e) {
 				$t.toggleClass('social-open');
+				e.preventDefault();
 			});
 		});
 
