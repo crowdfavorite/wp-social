@@ -26,7 +26,7 @@ if (count($accounts_connected)) {
 else {
 ?>
 		<li class="social-accounts-item none">
-			<div class="social-facebook-icon"><i style="background: url(http://www.gravatar.com/avatar/a06082e4f876182b547f635d945e744e?s=16&d=mm);"></i></div>
+			<div class="social-facebook-icon"><i style="background: url(http://www.gravatar.com/avatar/a06082e4f876182b547f635d945e744e?s=16&d=mm) no-repeat;"></i></div>
 			<span class="name"><?php _e('No Accounts', 'social'); ?></span>
 		</li>
 <?php

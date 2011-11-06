@@ -42,7 +42,7 @@
 						else {
 							echo '
 							<li class="social-accounts-item none">
-								<div class="social-facebook-icon"><i style="background: url(http://www.gravatar.com/avatar/a06082e4f876182b547f635d945e744e?s=16&d=mm);"></i></div>
+								<div class="social-facebook-icon"><i style="background: url(http://www.gravatar.com/avatar/a06082e4f876182b547f635d945e744e?s=16&d=mm) no-repeat;"></i></div>
 								<span class="name">'.__('No Accounts', 'social').'</span>
 							</li>
 							';
