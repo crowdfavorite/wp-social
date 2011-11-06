@@ -483,6 +483,7 @@ abstract class Social_Service {
 		if (!is_admin() or defined('IS_PROFILE_PAGE')) {
 			$accounts = get_user_meta(get_current_user_id(), 'social_accounts', true);
 			if (isset($accounts[$this->_key][$id])) {
+				$disconnected_account = $accounts[$this->_key][$id]; // passed to action below
 				if (defined('IS_PROFILE_PAGE')) {
 					unset($accounts[$this->_key][$id]);
 				}
@@ -500,6 +501,7 @@ abstract class Social_Service {
 		else {
 			$accounts = Social::option('accounts');
 			if (isset($accounts[$this->_key][$id])) {
+				$disconnected_account = $accounts[$this->_key][$id]; // passed to action below
 				unset($accounts[$this->_key][$id]);
 
 				if (!count($accounts[$this->_key])) {
@@ -509,6 +511,7 @@ abstract class Social_Service {
 				Social::option('accounts', $accounts);
 			}
 		}
+		do_action('social_account_disconnected', $disconnected_account);
 	}
 
 	/**
