@@ -118,28 +118,24 @@ final class Social {
 	 */
 	public static function broadcast_tokens() {
 		global $wpdb;
-		$post = $wpdb->get_row("
-			SELECT ID, post_date_gmt
-			  FROM $wpdb->posts
-			 WHERE post_type = 'post'
-			   AND post_status NOT IN ('draft', 'pending', 'auto-draft')
-			 LIMIT 1
-		");
-		if (!$post) {
-			$date = get_date_from_gmt(current_time('mysql', true));
-			$url = site_url('?p=1');
+		$query = new WP_Query(array(
+			'posts_per_page' => 1
+		));
+		if (count($query->posts) && $post = $query->posts[0]) {
+			$url = wp_get_shortlink($post->ID);
+			$date = get_date_from_gmt($post->post_date_gmt);
 		}
 		else {
-			$url = get_permalink($post->ID);
-			$date = get_date_from_gmt($post->post_date_gmt);
+			$url = site_url('?p=123');
+			$date = get_date_from_gmt(current_time('mysql', true));
 		}
 
 		$defaults = array(
-			'{url}' => sprintf(__('Blog post\'s permalink (Example: %s)', 'social'), $url),
-			'{title}' => __('Blog post\'s title', 'social'),
-			'{content}' => __('Blog post\'s content', 'social'),
-			'{date}' => sprintf(__('Blog post\'s date (Example: %s)', 'social'), $date),
-			'{author}' => __('Blog post\'s author', 'social'),
+			'{url}' => sprintf(__('Example: %s', 'social'), $url),
+			'{title}' => '',
+			'{content}' => '',
+			'{date}' => sprintf(__('Example: %s', 'social'), $date),
+			'{author}' => '',
 		);
 
 		return apply_filters('social_broadcast_tokens', $defaults);
@@ -157,8 +153,8 @@ final class Social {
 	 */
 	public static function comment_broadcast_tokens() {
 		$defaults = array(
-			'{content}' => __('Comment\'s content', 'social'),
-			'{url}' => __('Comment\'s permalink', 'social'),
+			'{content}' => '',
+			'{url}' => '',
 		);
 		return apply_filters('social_comment_broadcast_tokens', $defaults);
 	}

@@ -145,8 +145,13 @@
 					<div class="description">
 						<?php _e('Tokens:', 'social'); ?>
 						<ul>
-							<?php foreach (Social::broadcast_tokens() as $token => $description): ?>
-							<li><b><?php echo esc_html($token); ?></b> - <?php echo esc_html($description); ?></li>
+							<?php 
+							foreach (Social::broadcast_tokens() as $token => $description): 
+								if (!empty($description)) {
+									$description = ' - '.$description;
+								}
+							?>
+							<li><b><?php echo esc_html($token); ?></b><?php echo esc_html($description); ?></li>
 							<?php endforeach; ?>
 						</ul>
 					</div>
@@ -163,8 +168,13 @@
 					<div class="description">
 						<?php _e('Tokens:', 'social'); ?>
 						<ul>
-							<?php foreach (Social::comment_broadcast_tokens() as $token => $description): ?>
-							<li><b><?php echo esc_html($token); ?></b> - <?php echo esc_html($description); ?></li>
+							<?php 
+							foreach (Social::comment_broadcast_tokens() as $token => $description): 
+								if (!empty($description)) {
+									$description = ' - '.$description;
+								}
+							?>
+							<li><b><?php echo esc_html($token); ?></b><?php echo esc_html($description); ?></li>
 							<?php endforeach; ?>
 						</ul>
 					</div>
