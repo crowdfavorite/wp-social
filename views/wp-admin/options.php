@@ -32,13 +32,8 @@
 							$service_buttons .= $button;
 						}
 
-						echo '<p">'.__('Before blog authors can broadcast to social networks you need to connect some accounts:', 'social').'</p>'
-						   . '<div>'.$service_buttons.'</div>'
-						   . '<p class="description">'.__('Connected accounts are available to all blog authors.', 'social').'</p>';
-
 						echo '
 						<div id="social-accounts" class="social-accounts">
-							<strong>'.__('Connected accounts:', 'social').'</strong>
 							<ul>
 						';
 						if (!empty($items)) {
@@ -46,9 +41,9 @@
 						}
 						else {
 							echo '
-							<li class="social-accounts-item">
-								<div class="social-facebook-icon"><i></i></div>
-								<span class="name">'.__('John Doe', 'social').'</span>
+							<li class="social-accounts-item none">
+								<div class="social-facebook-icon"><i style="background: url(http://www.gravatar.com/avatar/a06082e4f876182b547f635d945e744e?s=16&d=mm);"></i></div>
+								<span class="name">'.__('No Accounts', 'social').'</span>
 							</li>
 							';
 						}
@@ -56,6 +51,9 @@
 							</ul>
 						</div>
 						';
+						echo '<div>'.$service_buttons.'</div>'
+						   . '<p class="description">'.__('Connected accounts are available to all blog authors.', 'social').'</p>';
+
 					?>
 				</td>
 			</tr>

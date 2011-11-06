@@ -96,10 +96,14 @@
 	margin: 10px 0;
 	max-width: 60em;
 }
+.social-view .form-table .social-accounts {
+	margin-top: 0;
+}
 
 .social-accounts ul {
 	border-top: 1px solid #e5e5e5;
 	font-size: 16px;
+	margin-top: 0;
 }
 
 .social-accounts ul ul {
@@ -169,6 +173,9 @@
 	position: relative;
 	top: -1px;
 	font-size: 11px;
+}
+.social-accounts-item.none {
+	color: #999;
 }
 
 .social-accounts-item .name span a {
