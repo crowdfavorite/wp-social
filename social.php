@@ -1271,7 +1271,7 @@ final class Social {
 								}
 								$this->set_comment_aggregated_id($comment_id, $service->key(), $response->id());
 								update_comment_meta($comment_id, 'social_status_id', $response->id());
-								update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($response->body())));
+								update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($response->body()->response)));
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', 'social'), $comment_id, $service->title(), $account->id()));
 							}
 						}

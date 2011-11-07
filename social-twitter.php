@@ -107,19 +107,20 @@ final class Social_Twitter {
 			");
 
 			// Store meta and comment hashses
-			foreach ($comments as $comment) {
+			foreach ($comments as $id => $comment) {
 				if (is_object($comment)) {
 					foreach ($results as $result) {
 						if ($comment->comment_ID == $result->comment_id) {
-							$comment->{$result->meta_key} = $result->meta_value;
-
 							if ($result->meta_key == 'social_raw_data') {
 								$result->meta_value = json_decode(base64_decode($result->meta_value));
+								$comments[$id]->social_raw_data = $result->meta_value;
 							}
 							else {
 								if ($result->meta_key == 'social_status_id') {
 									$in_reply_to_ids[$result->meta_value] = $result->comment_id;
 								}
+
+								$comment->{$result->meta_key} = $result->meta_value;
 							}
 						}
 					}
