@@ -318,7 +318,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 										$errored_accounts[$key] = array();
 									}
 
-									$reason = 'Unknown error.';
+									$reason = $response->body()->response;
 									$errored_accounts[$key][] = (object) array(
 										'account' => $account,
 										'reason' => $reason,
