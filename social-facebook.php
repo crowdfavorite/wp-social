@@ -303,19 +303,19 @@ final class Social_Facebook {
 	}
 
 	/**
-	 * Stores the Facebook page data to the broadcasted ID.
+	 * Sets the raw data for the broadcasted post.
 	 *
+	 * @wp-filter social_broadcast_response
 	 * @static
-	 *
-	 * @param  array                            $data
-	 * @param  Social_Service_Facebook_Account  $account
-	 * @param  Social_Service_Facebook          $service
-	 * @param  int                              $post_id
-	 *
+	 * @param  array                   $data
+	 * @param  Social_Service_Account  $account
+	 * @param  string                  $service_key
+	 * @param  int                     $post_id
+	 * @param  Social_Response         $response
 	 * @return array
 	 */
-	public static function social_save_broadcasted_ids_data($data, $account, $service, $post_id) {
-		if ($service == 'facebook') {
+	public static function social_save_broadcasted_ids_data(array $data, Social_Service_Account $account, $service_key, $post_id, Social_Response $response) {
+		if ($service_key == 'facebook') {
 			$broadcast_page = $account->broadcast_page();
 			if ($broadcast_page !== null) {
 				$data['page'] = (object) array(
@@ -323,6 +323,10 @@ final class Social_Facebook {
 					'name' => $broadcast_page->name
 				);
 			}
+
+			$data['account'] = (object) array(
+				'user' => $account->as_object()->user
+			);
 		}
 
 		return $data;
@@ -408,7 +412,7 @@ add_filter('social_comments_array', array('Social_Facebook', 'comments_array'), 
 add_filter('social_service_button', array('Social_Facebook', 'social_service_button'), 10, 3);
 add_filter('social_proxy_url', array('Social_Facebook', 'social_proxy_url'));
 add_filter('social_get_broadcast_account', array('Social_Facebook', 'social_get_broadcast_account'), 10, 3);
-add_filter('social_save_broadcasted_ids_data', array('Social_Facebook', 'social_save_broadcasted_ids_data'), 10, 4);
+add_filter('social_save_broadcasted_ids_data', array('Social_Facebook', 'social_save_broadcasted_ids_data'), 10, 5);
 add_filter('social_view_set_file', array('Social_Facebook', 'social_view_set_file'), 10, 2);
 add_filter('social_view_data', array('Social_Facebook', 'social_view_data'), 10, 2);
 add_filter('social_merge_accounts', array('Social_Facebook', 'social_merge_accounts'), 10, 3);
