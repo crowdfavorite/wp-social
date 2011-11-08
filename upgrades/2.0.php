@@ -240,20 +240,12 @@ if (Social_CRON::instance('upgrade')->lock()) {
 										'meta_value' => print_r($_meta_value, true)
 									));
 
-									if ((int) $data) {
-										Social::log('BROKEN CODE: Old broadcast data (#:id): :data', array(
-											'id' => $id,
-											'data' => $data
-										));
+									if (is_scalar($data)) {
 										$_meta_value[$service_key][$account_id][$data] = array(
 											'message' => ''
 										);
 									}
 									else {
-										/*Social::log('Old broadcast data (#:id): :data', array(
-											'id' => $id,
-											'data' => print_r($data, true),
-										));*/
 										$_meta_value[$service_key][$account_id][$id] = $data;
 									}
 								}
