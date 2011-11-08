@@ -13,4 +13,4 @@ echo wordwrap(__('Please login and reauthenticate the above accounts if you wish
 _e('Global accounts:', 'social')."\n";
 echo esc_url(Social::settings_url())."\n\n";
 _e('Personal accounts:', 'social')."\n";
-echo esc_url(admin_url('profile.php#social-networks'))."\n\n";
+echo esc_url(admin_url('profile.php#social-accounts'))."\n\n";

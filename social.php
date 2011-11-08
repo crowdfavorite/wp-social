@@ -443,7 +443,7 @@ final class Social {
 	public function admin_notices() {
 		if (current_user_can('manage_options') or current_user_can('publish_posts')) {
 			if (!$this->_enabled and (!isset($_GET['page']) or $_GET['page'] != basename(SOCIAL_FILE))) {
-				$message = sprintf(__('Social will not run until you <a href="%s">add an account</a>.', 'social'), esc_url(Social::settings_url()));
+				$message = sprintf(__('To start using Social, please <a href="%s">add an account</a>.', 'social'), esc_url(Social::settings_url()));
 				echo '<div class="error"><p>'.$message.'</p></div>';
 			}
 
@@ -469,7 +469,7 @@ final class Social {
 				// Enable notice?
 				$suppress_enable_notice = get_user_meta(get_current_user_id(), 'social_suppress_enable_notice', true);
 				if (empty($suppress_enable_notice)) {
-					$message = __('When you enable Social, users will be created in your system without a role and will be prevented from accessing the admin side of WordPress until an administrator updates the users role (Users/All Users/Edit User).', 'social');
+					$message = __('When you enable Social, users will be created when they log in with Facebook or Twitter to comment. These users are created without a role and will be prevented from accessing the admin side of WordPress until an administrator edits the user to give them a role.', 'social');
 					$dismiss = sprintf(__('<a href="%s" class="social_dismiss">[Dismiss]</a>', 'social'), esc_url(admin_url('?social_controller=settings&social_action=suppress_enable_notice')));
 					echo '<div class="updated"><p>'.$message.' '.$dismiss.'</p></div>';
 				}
@@ -515,11 +515,11 @@ final class Social {
 		$upgrade_2_0 = get_user_meta(get_current_user_id(), 'social_2.0_upgrade', true);
 		if (!empty($upgrade_2_0)) {
 			if (current_user_can('manage_options')) {
-				$output = __('Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your <a href="%s">global</a> and <a href="%s">personal</a> accounts.', 'social');
-				$output = sprintf($output, esc_url(Social::settings_url()), esc_url(admin_url('profile.php#social-networks')));
+				$output = __('Social needs to re-authorize your Facebook account(s). Please re-connect your <a href="%s">global</a> and <a href="%s">personal</a> accounts.', 'social');
+				$output = sprintf($output, esc_url(Social::settings_url()), esc_url(admin_url('profile.php#social-accounts')));
 			}
 			else {
-				$output = __('Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your <a href="%s">personal</a> accounts.', 'social');
+				$output = __('Social needs to re-authorize your Facebook account(s).. Please re-connect your <a href="%s">personal</a> accounts.', 'social');
 				$output = sprintf($output, esc_url(admin_url('profile.php#social-networks')));
 			}
 

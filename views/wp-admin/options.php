@@ -52,7 +52,7 @@
 						</div>
 						';
 						echo '<div>'.$service_buttons.'</div>'
-						   . '<p class="description">'.__('Connected accounts are available to all blog authors.', 'social').'</p>';
+						   . '<p class="description">'.sprintf(__('Connected accounts are available to all blog authors. Add accounts that only you can use in <a href="%s">your profile</a>.', 'social'), admin_url('profile.php#social-accounts')).'</p>';
 
 					?>
 				</td>
