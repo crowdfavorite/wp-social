@@ -136,7 +136,7 @@ final class Social_CRON {
 	 *
 	 * @return bool
 	 */
-	private function lock() {
+	public function lock() {
 		$locked = false;
 		$file = trailingslashit($this->_cron_lock_dir).$this->_key.'.txt';
 
@@ -169,7 +169,7 @@ final class Social_CRON {
 	 *
 	 * @return bool
 	 */
-	private function unlock() {
+	public function unlock() {
 		$unlocked = false;
 		$file = trailingslashit($this->_cron_lock_dir).$this->_key.'.txt';
 
