@@ -284,6 +284,7 @@ final class Social_Comment_Form {
 				$post_to = '';
 				foreach (Social::instance()->services() as $key => $service) {
 					if (count($service->accounts())) {
+						Social::log(print_r($service->accounts(), true));
 						foreach ($service->accounts() as $account) {
 							if ($account->personal()) {
 								$text = sprintf(__('Also post to %s'), $service->title());
