@@ -353,6 +353,12 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 				}
 			}
 		}
+		else {
+			Social::log('Something when wrong... -- ID: :id -- URL: :url', array(
+				'id' => $id,
+				'url' => $url
+			));
+		}
 
 		unset($post->broadcasted_ids);
 	}
