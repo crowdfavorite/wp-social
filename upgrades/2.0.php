@@ -4,7 +4,7 @@
  */
 
 if (Social_CRON::instance('upgrade')->lock()) {
-	
+
 	// Find old social_notify and update to _social_notify.
 	$meta_keys = array(
 		'social_aggregated_replies',
@@ -263,10 +263,16 @@ if (Social_CRON::instance('upgrade')->lock()) {
 			 WHERE meta_key = '_social_broadcasted_ids'
 		");
 		if ($results !== null) {
+			$count = 0;
 			$queue = Social_Aggregation_Queue::factory();
 			foreach ($results as $result) {
 				if (!$queue->find($result->post_id)) {
 					$queue->add($result->post_id);
+				}
+
+				++$count;
+				if ($count >= 50) {
+					break;
 				}
 			}
 			$queue->save();
