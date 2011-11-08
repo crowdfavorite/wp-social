@@ -443,7 +443,7 @@ final class Social {
 	public function admin_notices() {
 		if (current_user_can('manage_options') or current_user_can('publish_posts')) {
 			if (!$this->_enabled and (!isset($_GET['page']) or $_GET['page'] != basename(SOCIAL_FILE))) {
-				$message = sprintf(__('Social will not run until you <a href="%s">add an account</a>.', 'social'), esc_url(Social::settings_url()));
+				$message = sprintf(__('To start using Social, please <a href="%s">add an account</a>.', 'social'), esc_url(Social::settings_url()));
 				echo '<div class="error"><p>'.$message.'</p></div>';
 			}
 
@@ -516,7 +516,7 @@ final class Social {
 		if (!empty($upgrade_2_0)) {
 			if (current_user_can('manage_options')) {
 				$output = __('Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your <a href="%s">global</a> and <a href="%s">personal</a> accounts.', 'social');
-				$output = sprintf($output, esc_url(Social::settings_url()), esc_url(admin_url('profile.php#social-networks')));
+				$output = sprintf($output, esc_url(Social::settings_url()), esc_url(admin_url('profile.php#social-accounts')));
 			}
 			else {
 				$output = __('Social needs to re-authorize in order to post to Facebook on your behalf. Please reconnect your <a href="%s">personal</a> accounts.', 'social');

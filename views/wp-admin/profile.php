@@ -15,8 +15,8 @@ foreach ($services as $key => $service) {
 }
 
 ?>
-<h3 id="social-networks"><?php _e('My Social Accounts', 'social'); ?></h3>
-<p><?php _e('Other authors cannot broadcast to these accounts.', 'social'); ?></p>
+<h3 id="social-accounts"><?php _e('My Social Accounts', 'social'); ?></h3>
+<p><?php _e('Only I can broadcast to these accounts.', 'social'); ?></p>
 <div id="social-accounts" class="social-accounts">
 	<ul>
 <?php
