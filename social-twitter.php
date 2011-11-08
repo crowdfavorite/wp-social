@@ -46,7 +46,6 @@ final class Social_Twitter {
 	 */
 	public static function comments_array(array $comments, $post_id) {
 		global $wpdb;
-		$post = get_post($post_id);
 
 		$comment_ids = array();
 		foreach ($comments as $comment) {
@@ -162,6 +161,9 @@ final class Social_Twitter {
 							else if ($comment_hashes[$comment->social_retweet_hash] == 'broadcasted') {
 								$broadcasted_retweets[] = $comment;
 							}
+						}
+						else if (!isset($working_comments[$comment->social_retweet_hash])) {
+							$working_comments[$comment->social_retweet_hash] = $comment;
 						}
 					}
 				    else {
