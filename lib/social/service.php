@@ -570,6 +570,7 @@ abstract class Social_Service {
 		if (isset($post->broadcasted_ids[$this->_key])) {
 			foreach ($post->broadcasted_ids[$this->_key] as $account_id => $broadcasted) {
 				if (isset($broadcasted[$result_id])) {
+					Social::log('This is the original broadcast. (:result_id)', array('result_id' => $result_id));
 					return true;
 				}
 			}

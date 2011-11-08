@@ -197,6 +197,11 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 				$class = 'Social_Service_'.$this->_key.'_Account';
 				$account = new $class($account);
 
+				Social::log('Saving #:result_id for account :account_id.', array(
+					'result_id' => $result->id,
+					'account_id' => $account->id()
+				));
+
 				$commentdata = array(
 					'comment_post_ID' => $post->ID,
 					'comment_type' => 'social-'.$this->_key,
