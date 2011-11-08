@@ -289,6 +289,7 @@ final class Social_Comment_Form {
 								$text = sprintf(__('Also post to %s'), $service->title());
 								$post_to .= $this->to_tag('label', $checkbox . ' ' . $text, $label_base);
 							}
+							break;
 						}
 					}
 				}
