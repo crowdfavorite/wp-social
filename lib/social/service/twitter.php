@@ -307,7 +307,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		if (!empty($id) and !$this->is_original_broadcast($post, $id)) {
 			Social::log('Importing tweet. -- ID: :id -- URL: :url', array(
 				'id' => $id,
-				'url' => $url
+				'url' => implode('/', $url)
 			));
 			$url = 'http://api.twitter.com/1/statuses/show.json?id='.$id;
 			$request = wp_remote_get($url);
@@ -355,6 +355,11 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 					}
 					$logger->save(true);
 				}
+				else {
+					Social::log('Something went wrong... -- :response', array(
+						'response' => print_r($response, true)
+					));
+				}
 			}
 			else {
 				Social::log('Something went wrong... -- :response', array(
@@ -365,7 +370,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		else {
 			Social::log('Something went wrong... -- ID: :id -- URL: :url', array(
 				'id' => $id,
-				'url' => $url
+				'url' => implode('/', $url)
 			));
 		}
 
