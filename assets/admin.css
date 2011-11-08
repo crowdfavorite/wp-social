@@ -491,6 +491,11 @@
 	margin: 0 0 10px;
 }
 
+#social-import-error {
+	display: none;
+	color: #f00;
+}
+
 #aggregation_log {
 	margin-bottom: 10px;
 }
