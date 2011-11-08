@@ -241,7 +241,7 @@ if (Social_CRON::instance('upgrade')->lock()) {
 									));
 
 									if ((int) $data) {
-										Social::log('Old broadcast data (#:id): :data', array(
+										Social::log('BROKEN CODE: Old broadcast data (#:id): :data', array(
 											'id' => $id,
 											'data' => $data
 										));
@@ -250,10 +250,10 @@ if (Social_CRON::instance('upgrade')->lock()) {
 										);
 									}
 									else {
-										Social::log('Old broadcast data (#:id): :data', array(
+										/*Social::log('Old broadcast data (#:id): :data', array(
 											'id' => $id,
 											'data' => print_r($data, true),
-										));
+										));*/
 										$_meta_value[$service_key][$account_id][$id] = $data;
 									}
 								}
