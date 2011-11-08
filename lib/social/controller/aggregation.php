@@ -31,8 +31,7 @@ final class Social_Controller_Aggregation extends Social_Controller {
 		// Get URLs to query
 		$url = wp_get_shortlink($post->ID);
 		if (empty($url)) {
-			$url = 'http://cf.awellis.me/?p='.$post->ID;
-			//$url = site_url('?p='.$post->ID);
+			$url = site_url('?p='.$post->ID);
 		}
 		$urls = array(
 			urlencode($url)
