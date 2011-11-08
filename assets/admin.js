@@ -55,16 +55,22 @@
 				$this.attr('disabled', 'disabled');
 				$('input[name=source_url]').attr('disabled', 'disabled');
 				$('#import_from_url_loader').show();
+				$('#social-import-error').hide();
 
 				$.get($this.attr('href'), {
 					url: $('input[name=source_url]').val()
 				}, function(response) {
 					running_import = false;
 					$('#import_from_url_loader').hide();
-					$this.removeAttr('disabled');
 					$('input[name=source_url]').removeAttr('disabled').val('');
-
-					$('#aggregation_log').hide().html(response).find('.parent:not(:first)').hide().end().fadeIn();
+					$this.removeAttr('disabled');
+					if (response == 'protected') {
+						$('#social-import-error').html('Protected Tweet').fadeIn();
+					} else if (response == 'invalid') {
+						$('#social-import-error').html('Invalid URL.').fadeIn();
+					} else {
+						$('#aggregation_log').hide().html(response).find('.parent:not(:first)').hide().end().fadeIn();
+					}
 				});
 			}
 		});

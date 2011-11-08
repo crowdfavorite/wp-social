@@ -292,7 +292,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 *
 	 * @param  int     $post_id
 	 * @param  string  $url
-	 * @return void
+	 * @return bool|string
 	 */
 	public function import_tweet_by_url($post_id, $url) {
 		$post = get_post($post_id);
@@ -302,6 +302,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 			$post->broadcasted_ids = array();
 		}
 
+		$invalid = false;
 		$url = explode('/', $url);
 		$id = end($url);
 		if (!empty($id) and !$this->is_original_broadcast($post, $id)) {
@@ -359,12 +360,18 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 					Social::log('Something went wrong... -- :response', array(
 						'response' => print_r($response, true)
 					));
+
+					if (isset($response->error) and $response->error == 'Sorry, you are not authorized to see this status.') {
+						return 'protected';
+					}
 				}
 			}
 			else {
 				Social::log('Something went wrong... -- :response', array(
 					'response' => print_r($request, true)
 				));
+
+				$invalid = true;
 			}
 		}
 		else {
@@ -372,9 +379,16 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 				'id' => $id,
 				'url' => implode('/', $url)
 			));
+
+			$invalid = true;
+		}
+		unset($post->broadcasted_ids);
+
+		if ($invalid) {
+			return 'invalid';
 		}
 
-		unset($post->broadcasted_ids);
+		return true;
 	}
 
 	/**
