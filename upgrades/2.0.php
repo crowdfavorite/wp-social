@@ -215,6 +215,10 @@ if (Social_CRON::instance('upgrade')->lock()) {
 			foreach ($results as $result) {
 				$meta_value = maybe_unserialize($result->meta_value);
 				if (is_array($meta_value)) {
+					Social::log('Old meta value for post #:post_id: :meta_value', array(
+						'post_id' => $result->post_id,
+						'meta_value' => print_r($meta_value, true)
+					));
 					$_meta_value = array();
 					foreach ($meta_value as $service_key => $accounts) {
 						if (!isset($_meta_value[$service_key])) {
@@ -222,18 +226,34 @@ if (Social_CRON::instance('upgrade')->lock()) {
 						}
 
 						foreach ($accounts as $account_id => $broadcasted) {
+							Social::log('Checking account #:account_id (:service).', array(
+								'account_id' => $account_id,
+								'service' => $service_key
+							));
 							if (!isset($_meta_value[$service_key][$account_id])) {
 								$_meta_value[$service_key][$account_id] = array();
 							}
 
 							if (is_array($broadcasted)) {
 								foreach ($broadcasted as $id => $data) {
+									Social::log('Current Meta Value: :meta_value', array(
+										'meta_value' => print_r($_meta_value, true)
+									));
+
 									if ((int) $data) {
+										Social::log('Old broadcast data (#:id): :data', array(
+											'id' => $id,
+											'data' => $data
+										));
 										$_meta_value[$service_key][$account_id][$data] = array(
 											'message' => ''
 										);
 									}
 									else {
+										Social::log('Old broadcast data (#:id): :data', array(
+											'id' => $id,
+											'data' => print_r($data, true),
+										));
 										$_meta_value[$service_key][$account_id][$id] = $data;
 									}
 								}
@@ -249,6 +269,11 @@ if (Social_CRON::instance('upgrade')->lock()) {
 					if (!empty($_meta_value)) {
 						update_post_meta($result->post_id, '_social_broadcasted_ids', $_meta_value);
 					}
+
+					Social::log('New meta value for post #:post_id: :meta_value', array(
+						'post_id' => $result->post_id,
+						'meta_value' => print_r($_meta_value, true)
+					));
 				}
 			}
 		}

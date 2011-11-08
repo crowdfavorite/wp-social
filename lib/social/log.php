@@ -65,10 +65,10 @@ final class Social_Log {
 		}
 
 		if (is_writable($this->_file)) {
-			error_log('[SOCIAL] '.$message."\n", 3, $this->_file);
+			error_log('[SOCIAL - '.current_time('mysql').'] '.$message."\n", 3, $this->_file);
 		}
 		else {
-			error_log('[SOCIAL] '.$message);
+			error_log('[SOCIAL - '.current_time('mysql').'] '.$message);
 		}
 	}
 
