@@ -361,8 +361,13 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						'response' => print_r($response, true)
 					));
 
-					if (isset($response->error) and $response->error == 'Sorry, you are not authorized to see this status.') {
-						return 'protected';
+					if (isset($response->error)) {
+						if ($response->error == 'Sorry, you are not authorized to see this status.') {
+							return 'protected';
+						}
+						else {
+							$invalid = true;
+						}
 					}
 				}
 			}
