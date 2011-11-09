@@ -444,6 +444,10 @@
 	font-weight: normal;
 }
 
+#social-broadcast-meta-private p {
+	margin: auto;
+}
+
 .mar-top-none {
 	margin-top: 0 !important;
 }

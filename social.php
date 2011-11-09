@@ -667,10 +667,6 @@ final class Social {
 						break;
 					case 'publish':
 						$button = 'Broadcast';
-						$content = Social_View::factory('wp-admin/post/meta/broadcast/published', array(
-							'ids' => $broadcasted_ids,
-							'broadcasted' => !empty($broadcasted_ids),
-						));
 						break;
 					default:
 						if ($post->post_status == 'draft' and !empty($broadcasted_ids)) {
@@ -692,6 +688,9 @@ final class Social {
 						}
 						break;
 				}
+			}
+			else {
+				$content = Social_View::factory('wp-admin/post/meta/broadcast/private');
 			}
 
 			// Button
