@@ -80,9 +80,7 @@ final class Social_Twitter {
 							));
 						}
 						else {
-							$data['message'] = json_decode(base64_decode($data['message']));
-
-							$hash = self::build_retweet_hash($data['message']->text, false);
+							$hash = self::build_retweet_hash($data['message'], false);
 							// This is stored as broadcasted and not the ID so we can easily store broadcasted retweets
 							// instead of attaching retweets to non-existent comments.
 							$comment_hashes[$hash] = 'broadcasted';
