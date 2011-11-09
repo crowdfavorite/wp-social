@@ -1691,7 +1691,7 @@ final class Social {
 							foreach ($_accounts as $account_id => $account) {
 								// TODO Shouldn't have to do this. Fix later.
 								$account->universal = '0';
-								
+
 								if ($services[$key]->account_exists($account_id) and !defined('IS_PROFILE_PAGE')) {
 									$account = $this->merge_accounts($services[$key]->account($account_id)->as_object(), $account, $key);
 								}
