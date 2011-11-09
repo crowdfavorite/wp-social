@@ -80,7 +80,7 @@ final class Social_Twitter {
 							));
 						}
 						else {
-							$hash = self::build_retweet_hash($data['message'], false);
+							$hash = self::build_retweet_hash($data['message']);
 							// This is stored as broadcasted and not the ID so we can easily store broadcasted retweets
 							// instead of attaching retweets to non-existent comments.
 							$comment_hashes[$hash] = 'broadcasted';
@@ -127,15 +127,16 @@ final class Social_Twitter {
 					if ($comment->comment_type == 'social-twitter' or (isset($comment->social_comment_type) and $comment->social_comment_type == 'social-twitter')) {
 						// Hash
 						if (isset($comment->social_raw_data) and isset($comment->social_raw_data->text)) {
-							$hash = self::build_retweet_hash($comment->social_raw_data->text, false);
+							$hash = self::build_retweet_hash($comment->social_raw_data->text);
 						}
 						else {
 							$hash = self::build_retweet_hash($comment->comment_content);
 						}
-						$comment->social_retweet_hash = $hash;
+						$comments[$id]->social_retweet_hash = $hash;
 
 						if (substr($comment->comment_content, 0, 4) != 'RT @') {
 							if (isset($comment->social_status_id)) {
+								$working_comments[$comment->social_status_id] = $comment;
 								$comment_hashes[$hash] = $comment->social_status_id;
 								$comment->social_items = array();
 							}
@@ -153,12 +154,14 @@ final class Social_Twitter {
 							$comment->comment_parent = $in_reply_to_ids[$comment->social_in_reply_to_status_id];
 						}
 
-						if (isset($comment_hashes[$comment->social_retweet_hash]) and $comment_hashes[$comment->social_retweet_hash] != $comment->social_status_id) {
-							if (isset($working_comments[$comment_hashes[$comment->social_retweet_hash]])) {
-								$working_comments[$comment_hashes[$comment->social_retweet_hash]]->social_items[] = $comment;
-							}
-							else if ($comment_hashes[$comment->social_retweet_hash] == 'broadcasted') {
+						if (isset($comment_hashes[$comment->social_retweet_hash])) {
+							if ($comment_hashes[$comment->social_retweet_hash] == 'broadcasted') {
 								$broadcasted_retweets[] = $comment;
+							}
+							else if (isset($working_comments[$comment_hashes[$comment->social_retweet_hash]]) and
+							    $working_comments[$comment_hashes[$comment->social_retweet_hash]]->social_status_id != $comment->social_status_id)
+							{
+								$working_comments[$comment_hashes[$comment->social_retweet_hash]]->social_items[] = $comment;
 							}
 						}
 						else if (!isset($working_comments[$comment->social_retweet_hash])) {
@@ -228,11 +231,16 @@ final class Social_Twitter {
 	 *
 	 * @static
 	 * @param  string  $text
-	 * @param  bool    $retweet   is this a reply comment?
 	 * @return string
 	 */
-	private static function build_retweet_hash($text, $retweet = true) {
-		$text = explode(' ', trim($text));
+	private static function build_retweet_hash($text) {
+		$text = trim($text);
+		$retweet = true;
+		if (substr($text, 0, 4) != 'RT @') {
+			$retweet = false;
+		}
+
+		$text = explode(' ', $text);
 		$content = '';
 		foreach ($text as $_content) {
 			if (!empty($_content) and strpos($_content, 'http://') === false) {
