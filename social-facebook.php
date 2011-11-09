@@ -314,7 +314,7 @@ final class Social_Facebook {
 	 * @param  Social_Response         $response
 	 * @return array
 	 */
-	public static function social_save_broadcasted_ids_data(array $data, Social_Service_Account $account, $service_key, $post_id, Social_Response $response) {
+	public static function social_save_broadcasted_ids_data(array $data, Social_Service_Account $account, $service_key, $post_id, Social_Response $response = null) {
 		if ($service_key == 'facebook') {
 			$broadcast_page = $account->broadcast_page();
 			if ($broadcast_page !== null) {

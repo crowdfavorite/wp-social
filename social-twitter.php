@@ -211,9 +211,11 @@ final class Social_Twitter {
 	 * @param  Social_Response         $response
 	 * @return array
 	 */
-	public static function social_save_broadcasted_ids_data(array $data, Social_Service_Account $account, $service_key, $post_id, Social_Response $response) {
+	public static function social_save_broadcasted_ids_data(array $data, Social_Service_Account $account, $service_key, $post_id, Social_Response $response = null) {
 		if ($service_key == 'twitter') {
-			$data['message'] = base64_encode(json_encode($response->body()->response));
+			if (!empty($response)) {
+				$data['message'] = base64_encode(json_encode($response->body()->response));
+			}
 			$data['account'] = (object) array(
 				'user' => $account->as_object()->user
 			);
