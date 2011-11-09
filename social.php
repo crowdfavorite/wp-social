@@ -1669,7 +1669,12 @@ final class Social {
 
 						if (isset($accounts[$service]) and count($accounts[$service])) {
 							$this->_enabled = true; // Flag social as enabled, we have at least one account.
-							$service_accounts = $accounts[$service];
+
+							foreach ($accounts[$service] as $account_id => $account) {
+								// TODO Shouldn't have to do this. Fix later.
+								$account->personal = '0';
+								$service_accounts[$account_id] = $account;
+							}
 						}
 
 						$class = 'Social_Service_'.$service;
@@ -1684,6 +1689,9 @@ final class Social {
 							$this->_enabled = true;
 							$class = 'Social_Service_'.$key.'_Account';
 							foreach ($_accounts as $account_id => $account) {
+								// TODO Shouldn't have to do this. Fix later.
+								$account->universal = '0';
+								
 								if ($services[$key]->account_exists($account_id) and !defined('IS_PROFILE_PAGE')) {
 									$account = $this->merge_accounts($services[$key]->account($account_id)->as_object(), $account, $key);
 								}
