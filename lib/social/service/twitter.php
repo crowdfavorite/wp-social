@@ -493,6 +493,34 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	}
 
 	/**
+	 * Attempts to recover the tweet data for the broadcasted post.
+	 *
+	 * @param  int  $broadcasted_id
+	 * @param  int  $post_id
+	 * @return array|bool|mixed
+	 */
+	public function recover_broadcasted_tweet_data($broadcasted_id, $post_id) {
+		$response = wp_remote_get('http://api.twitter.com/1/statuses/show/'.$broadcasted_id.'.json?include_entities=true');
+		if (!is_wp_error($response)) {
+			$body = json_decode($response['body']);
+			if (!isset($body->error)) {
+				$post_meta = get_post_meta($post_id, '_social_broadcasted_ids', true);
+				if (!empty($post_meta) and isset($post_meta['twitter']) and isset($post_meta['twitter'][$body->user->id]) and isset($post_meta['twitter'][$body->user->id][$broadcasted_id])) {
+					$post_meta['twitter'][$body->user->id][$broadcasted_id] = array(
+						'message' => $body->text,
+						'account' => $body->user
+					);
+
+					update_post_meta($post_id, '_social_broadcasted_ids', $post_meta);
+				}
+				return $body;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Hack to fix the "Twitpocalypse" bug on 32-bit systems.
 	 *
 	 * @static

@@ -21,6 +21,15 @@ if (is_array($ids) and count($ids)) {
 					if ($account === false) {
 						$class = 'Social_Service_'.$key.'_Account';
 						$account = new $class($data['account']);
+
+						if (!$account->has_user() and $key == 'twitter') {
+							$recovered = $service->recover_broadcasted_tweet_data($broadcasted_id, $post->ID);
+
+							if (isset($recovered->user)) {
+								$data['account']->user = $recovered->user;
+								$account = new $class($data['account']);
+							}
+						}
 					}
 
 					$broadcasts[] = Social_View::factory('wp-admin/post/meta/broadcast/parts/account', array(

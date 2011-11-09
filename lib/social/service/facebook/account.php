@@ -109,7 +109,11 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 * @return string
 	 */
 	public function name() {
-		return $this->_user->name;
+		if ($this->has_user()) {
+			return $this->_user->name;
+		}
+
+		return parent::_name();
 	}
 
 	/**
@@ -118,7 +122,12 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 * @return string
 	 */
 	public function url() {
-		return 'http://facebook.com/profile.php?id='.$this->_user->id;
+		$url = 'http://facebook.com/';
+		if ($this->has_user()) {
+			$url .= 'profile.php?id='.$this->_user->id;
+		}
+
+		return $url;
 	}
 
 	/**
@@ -127,7 +136,11 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 * @return string
 	 */
 	public function avatar() {
-		return 'http://graph.facebook.com/'.$this->_user->id.'/picture';
+		if ($this->has_user()) {
+			return 'http://graph.facebook.com/'.$this->_user->id.'/picture';
+		}
+
+		return parent::_avatar();
 	}
 
 	/**
@@ -136,11 +149,15 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 * @return string
 	 */
 	public function username() {
-		if (!isset($this->_user->username)) {
-			$this->_user->username = $this->_user->name.'.'.$this->_user->id;
+		if ($this->has_user()) {
+			if (!isset($this->_user->username)) {
+				$this->_user->username = $this->_user->name.'.'.$this->_user->id;
+			}
+
+			return $this->_user->username;
 		}
 
-		return $this->_user->username;
+		return parent::_username();
 	}
 
 	/**

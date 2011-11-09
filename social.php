@@ -1687,6 +1687,7 @@ final class Social {
 								if ($services[$key]->account_exists($account_id) and !defined('IS_PROFILE_PAGE')) {
 									$account = $this->merge_accounts($services[$key]->account($account_id)->as_object(), $account, $key);
 								}
+
 								$this->_enabled = true;
 								$account = new $class((object) $account);
 								$services[$key]->account($account);

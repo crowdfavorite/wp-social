@@ -112,4 +112,42 @@ abstract class Social_Service_Account {
 		return $this->_keys->secret;
 	}
 
+	/**
+	 * Does this account have a user object with it?
+	 *
+	 * [!!] This is for pre-2.0 accounts. Used to help keep views clean.
+	 *
+	 * @return bool
+	 */
+	public function has_user() {
+		return $this->_user !== null;
+	}
+
+	/**
+	 * Default avatar.
+	 *
+	 * @return string
+	 */
+	public function _avatar() {
+		return 'http://www.gravatar.com/avatar/a06082e4f876182b547f635d945e744e?s=16&d=mm';
+	}
+
+	/**
+	 * Default name
+	 *
+	 * @return string
+	 */
+	public function _name() {
+		return __('Removed Account', 'social');
+	}
+
+	/**
+	 * Default username
+	 *
+	 * @return string
+	 */
+	public function _username() {
+		return __('Removed Account', 'social');
+	}
+
 } // End Social_Service_Account

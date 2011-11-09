@@ -22,7 +22,11 @@ final class Social_Service_Twitter_Account extends Social_Service_Account implem
 	 * @return string
 	 */
 	public function name() {
-		return $this->_user->screen_name;
+		if ($this->has_user()) {
+			return $this->_user->screen_name;
+		}
+
+		return parent::_name();
 	}
 
 	/**
@@ -31,7 +35,12 @@ final class Social_Service_Twitter_Account extends Social_Service_Account implem
 	 * @return string
 	 */
 	public function url() {
-		return 'http://twitter.com/'.$this->_user->screen_name;
+		$url = 'http://twitter.com/';
+		if ($this->has_user()) {
+			$url .= $this->_user->screen_name;
+		}
+
+		return $url;
 	}
 
 	/**
@@ -40,7 +49,11 @@ final class Social_Service_Twitter_Account extends Social_Service_Account implem
 	 * @return string
 	 */
 	public function avatar() {
-		return $this->_user->profile_image_url;
+		if ($this->has_user()) {
+			return $this->_user->profile_image_url;
+		}
+
+		return parent::_avatar();
 	}
 
 	/**
@@ -49,7 +62,11 @@ final class Social_Service_Twitter_Account extends Social_Service_Account implem
 	 * @return string
 	 */
 	public function username() {
-		return $this->_user->screen_name;
+		if ($this->has_user()) {
+			return $this->_user->screen_name;
+		}
+
+		return parent::_username();
 	}
 
 } // End Social_Service_Twitter_Account
