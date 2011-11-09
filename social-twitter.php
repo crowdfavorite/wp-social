@@ -166,7 +166,7 @@ final class Social_Twitter {
 							$working_comments[$comment->social_retweet_hash] = $comment;
 						}
 					}
-				    else {
+					else {
 						$working_comments[] = $comment;
 					}
 				}

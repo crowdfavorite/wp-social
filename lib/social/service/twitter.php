@@ -481,7 +481,12 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 			foreach ($broadcasted_items as $id => $data) {
 				if ($broadcasted_id == $id) {
 					// Store the recovered data.
-					$data['message'] = base64_encode(json_encode($response));
+					$data = array(
+						'message' => $response->text,
+						'account' => (object) array(
+							'user' => $response->user
+						)
+					);
 					$broadcasted['twitter'][$account_id][$id] = $data;
 					update_post_meta($post_id, '_social_broadcasted_ids', $broadcasted);
 					return true;
