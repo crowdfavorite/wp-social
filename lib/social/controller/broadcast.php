@@ -404,7 +404,10 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			}
 
 			// Deauthed accounts?
-			if ($deauthed_accounts !== false) {
+			if ($deauthed_accounts !== false or defined('XMLRPC_REQUEST')) {
+				if (defined('XMLRPC_REQUEST')) {
+					$deauthed_accounts = $errored_accounts;
+				}
 				$this->send_publish_error($post, $deauthed_accounts);
 			}
 		}
