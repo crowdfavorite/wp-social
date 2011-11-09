@@ -73,7 +73,8 @@ final class Social_Twitter {
 				foreach ($broadcasted_ids['twitter'] as $account_id => $broadcasted) {
 					foreach ($broadcasted as $id => $data) {
 						if (empty($data['message'])) {
-							wp_remote_get(wp_nonce_url(site_url('?social_controller=aggregation&social_action=retrieve_twitter_content&broadcasted_id='.$id.'&post_id='.$post_id), 'retrieve_twitter_content'), array(
+							$url = wp_nonce_url(site_url('?social_controller=aggregation&social_action=retrieve_twitter_content&broadcasted_id='.$id.'&post_id='.$post_id), 'retrieve_twitter_content');
+							wp_remote_get(str_replace('&amp;', '&', $url), array(
 								'timeout' => 0.01,
 								'blocking' => false,
 							));
