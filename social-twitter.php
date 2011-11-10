@@ -49,10 +49,15 @@ final class Social_Twitter {
 
 		// we need comments to be keyed by ID, check for Tweet comments
 		$tweet_comments = $_comments = array();
-		foreach ($comments as $comment) {
-			$_comments['id_'.$comment->comment_ID] = $comment;
-			if (is_object($comment) and $comment->comment_type == 'social-twitter') {
-				$tweet_comments['id_'.$comment->comment_ID] = $comment;
+		foreach ($comments as $key => $comment) {
+			if (is_object($comment)) {
+				$_comments['id_'.$comment->comment_ID] = $comment;
+				if ($comment->comment_type == 'social-twitter') {
+					$tweet_comments['id_'.$comment->comment_ID] = $comment;
+				}
+			}
+			else {
+				$_comments[$key] = $comment;
 			}
 		}
 
@@ -112,32 +117,34 @@ final class Social_Twitter {
 
 		// Set up social data for twitter comments
 		foreach ($tweet_comments as $key => &$comment) {
-			$comment->social_items = array();
+			if (is_object($comment)) {
+				$comment->social_items = array();
 
-			// Attach meta
-			foreach ($results as $result) {
-				if ($comment->comment_ID == $result->comment_id) {
-					switch ($result->meta_key) {
-						case 'social_raw_data':
-							$comment->social_raw_data = json_decode(base64_decode($result->meta_value));
-							break;
-						case 'social_status_id':
-							$social_map[$result->meta_value] = $result->comment_id;
-						default:
-							$comment->{$result->meta_key} = $result->meta_value;
+				// Attach meta
+				foreach ($results as $result) {
+					if ($comment->comment_ID == $result->comment_id) {
+						switch ($result->meta_key) {
+							case 'social_raw_data':
+								$comment->social_raw_data = json_decode(base64_decode($result->meta_value));
+								break;
+							case 'social_status_id':
+								$social_map[$result->meta_value] = $result->comment_id;
+							default:
+								$comment->{$result->meta_key} = $result->meta_value;
+						}
 					}
 				}
-			}
 
-			// Attach hash
-			if (isset($comment->social_raw_data) and isset($comment->social_raw_data->text)) {
-				$comment->social_hash = self::build_retweet_hash($comment->social_raw_data->text);
-			}
-			else {
-				$comment->social_hash = self::build_retweet_hash($comment->comment_content);
-			}
-			if (!isset($hash_map[$comment->social_hash])) {
-				$hash_map[$comment->social_hash] = $comment->comment_ID;
+				// Attach hash
+				if (isset($comment->social_raw_data) and isset($comment->social_raw_data->text)) {
+					$comment->social_hash = self::build_retweet_hash($comment->social_raw_data->text);
+				}
+				else {
+					$comment->social_hash = self::build_retweet_hash($comment->comment_content);
+				}
+				if (!isset($hash_map[$comment->social_hash])) {
+					$hash_map[$comment->social_hash] = $comment->comment_ID;
+				}
 			}
 		}
 
@@ -146,43 +153,46 @@ final class Social_Twitter {
 
 		// set-up replies and retweets
 		foreach ($tweet_comments as $key => &$comment) {
-			// set reply/comment parent
-			if (!empty($comment->social_in_reply_to_status_id) and isset($social_map[$comment->social_in_reply_to_status_id])) {
-				$comments[$key]->comment_parent = $social_map[$comment->social_in_reply_to_status_id];
-			}
+			if (is_object($comment)) {
+				// set reply/comment parent
+				if (!empty($comment->social_in_reply_to_status_id) and isset($social_map[$comment->social_in_reply_to_status_id])) {
+					$comments[$key]->comment_parent = $social_map[$comment->social_in_reply_to_status_id];
+				}
 
-			// set retweets
-			$rt_matched = false;
-			if (isset($comment->social_raw_data) and !empty($comment->social_raw_data->retweeted_status)) {
-				// explicit match via API data
-				$rt_id = $comment->social_raw_data->retweeted_status->id_str;
-				if (in_array($rt_id, $broadcasted_social_ids)) {
-					$broadcast_retweets[] = $comment;
-					unset($comments[$key]);
-					$rt_matched = true;
-				}
-				else if (isset($social_map[$rt_id])) {
-					$comments[$social_map[$rt_id]]->social_items[$key] = $comment;
-					unset($comments[$key]);
-					$rt_matched = true;
-				}
-			}
-			if (!$rt_matched) {
-				// best guess via hashes
-				$hash_match = $hash_map[$comment->social_hash];
-				if ($hash_match != $comment->comment_ID) { // hash match to own tweet is expected, at minimum - set above
-					if ($hash_match == 'broadcasted') {
+				// set retweets
+				$rt_matched = false;
+				if (isset($comment->social_raw_data) and !empty($comment->social_raw_data->retweeted_status)) {
+					// explicit match via API data
+					$rt_id = $comment->social_raw_data->retweeted_status->id_str;
+					if (in_array($rt_id, $broadcasted_social_ids)) {
 						$broadcast_retweets[] = $comment;
+						unset($comments[$key]);
+						$rt_matched = true;
 					}
-					else {
-						$comments['id_'.$hash_match]->social_items[$key] = $comment;
+					else if (isset($social_map[$rt_id])) {
+						$comments[$social_map[$rt_id]]->social_items[$key] = $comment;
+						unset($comments[$key]);
+						$rt_matched = true;
 					}
-					unset($comments[$key]);
+				}
+
+				if (!$rt_matched) {
+					// best guess via hashes
+					$hash_match = $hash_map[$comment->social_hash];
+					if ($hash_match != $comment->comment_ID) { // hash match to own tweet is expected, at minimum - set above
+						if ($hash_match == 'broadcasted') {
+							$broadcast_retweets[] = $comment;
+						}
+						else {
+							$comments['id_'.$hash_match]->social_items[$key] = $comment;
+						}
+						unset($comments[$key]);
+					}
 				}
 			}
 		}
 
-		if (isset($comments['social_items'])) {
+		if (!isset($comments['social_items'])) {
 			$comments['social_items'] = array();
 		}
 		$comments['social_items']['twitter'] = $broadcast_retweets;

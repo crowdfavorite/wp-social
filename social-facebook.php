@@ -114,62 +114,83 @@ final class Social_Facebook {
 	public static function comments_array(array $comments, $post_id) {
 		global $wpdb;
 
-		$comment_ids = array();
-		foreach ($comments as $comment) {
-			if (is_object($comment) and $comment->comment_type == 'social-facebook-like') {
-				$comment_ids[] = $comment->comment_ID;
-			}
-		}
-
-		if (count($comment_ids)) {
-			$results = $wpdb->get_results("
-				SELECT meta_key, meta_value, comment_id
-				  FROM $wpdb->commentmeta
-				 WHERE comment_id IN (".implode(',', $comment_ids).")
-				   AND meta_key = 'social_status_id'
-				    OR meta_key = 'social_profile_image_url'
-				    OR meta_key = 'social_comment_type'
-			");
-
-// TODO - refactor this
-			if (isset($comments['social_items'])) {
-				$social_items = $comments['social_items'];
-				unset($comments['social_items']);
+		// we need comments to be keyed by ID, check for Facebook comments
+		$facebook_comments = $facebook_likes = $_comments = array();
+		foreach ($comments as $key => $comment) {
+			if (is_object($comment)) {
+				$_comments['id_'.$comment->comment_ID] = $comment;
+				if (in_array($comment->comment_type, array('social-facebook', 'social-facebook-like'))) {
+					$facebook_comments['id_'.$comment->comment_ID] = $comment;
+				}
 			}
 			else {
-				$social_items = array();
-			}
-			if (!isset($social_items['facebook'])) {
-				$social_items['facebook'] = array();
-			}
-
-			foreach ($comments as $key => $comment) {
-				if (is_object($comment)) {
-					if ($comment->comment_type == 'social-facebook-like') {
-// add facebook meta to comment
-						foreach ($results as $result) {
-							if ($result->comment_id == $comment->comment_ID) {
-								$comment->{$result->meta_key} = $result->meta_value;
-							}
-						}
-// remove from full loop - will not be output as a stand-alone comment
-// TODO - how do we know that this gets output? How is the Like associated to a comment or broadcast?
-						$social_items['facebook'][] = $comment;
-						unset($comments[$key]);
-					}
-				    else {
-					    $comments[$key] = $comment;
-				    }
-				}
-			    else {
-				    $comments[$key] = $comment;
-			    }
-			}
-
-			if (count($social_items)) {
-				$comments['social_items'] = $social_items;
+				$_comments[$key] = $comment;
 			}
 		}
+
+		// if no Facebook comments, get out now
+		if (!count($facebook_comments)) {
+			return $comments;
+		}
+
+		// use our keyed array
+		$comments = $_comments;
+		unset($_comments);
+
+		// Load the comment meta
+		$results = $wpdb->get_results("
+			SELECT meta_key, meta_value, comment_id
+			  FROM $wpdb->commentmeta
+			 WHERE meta_key = 'social_status_id'
+			    OR meta_key = 'social_profile_image_url'
+			    OR meta_key = 'social_comment_type'
+		");
+
+		// Set up social data for facebook comments
+		foreach ($facebook_comments as $key => &$comment) {
+			if (is_object($comment)) {
+				$comment->social_items = array();
+
+				// Attach meta
+				foreach ($results as $result) {
+					if ($comment->comment_ID == $result->comment_id) {
+						switch ($result->meta_key) {
+							case 'social_status_id':
+								$social_map[$result->meta_value] = $result->comment_id;
+							default:
+								$comment->{$result->meta_key} = $result->meta_value;
+						}
+					}
+				}
+			}
+		}
+
+		// merge data so that $comments has the data we've set up
+		$comments = array_merge($comments, $facebook_comments);
+
+		// pre-load the hashes for broadcasted tweets
+		$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
+		if (empty($broadcasted_ids)) {
+			$broadcasted_ids = array();
+		}
+
+		// set-up the likes
+		foreach ($facebook_comments as $key => &$comment) {
+			if (is_object($comment) and isset($broadcasted_ids['facebook'])) {
+				foreach ($broadcasted_ids['facebook'] as $account_id => $broadcasted) {
+					if (isset($broadcasted[$comment->social_status_id])) {
+						$facebook_likes[] = $comment;
+						unset($comments['id_'.$comment->comment_ID]);
+					}
+				}
+			}
+		}
+
+		// Add the likes
+		if (!isset($comments['social_items'])) {
+			$comments['social_items'] = array();
+		}
+		$comments['social_items']['facebook'] = $facebook_likes;
 
 		return $comments;
 	}
