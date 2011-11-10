@@ -64,8 +64,9 @@ final class Social_Twitter {
 		$comments = $_comments;
 		unset($_comments);
 
-		$reply_map = array(); // key = social id, value = comment_ID
+		$social_map = array(); // key = social id, value = comment_ID
 		$hash_map = array(); // key = hash, value = comment_ID
+		$broadcasted_social_ids = array();
  		$broadcast_retweets = array(); // array of comments
 
 // pre-load the hashes for broadcasted tweets
@@ -76,6 +77,7 @@ final class Social_Twitter {
 		if (isset($broadcasted_ids['twitter'])) {
 			foreach ($broadcasted_ids['twitter'] as $account_id => $broadcasted) {
 				foreach ($broadcasted as $id => $data) {
+					$broadcasted_social_ids[] = $id;
 // if we don't have a message saved for a tweet, try to get it so that we can use it next time
 					if (empty($data['message'])) {
 						$url = wp_nonce_url(site_url('?social_controller=aggregation&social_action=retrieve_twitter_content&broadcasted_id='.$id.'&post_id='.$post_id), 'retrieve_twitter_content');
@@ -117,7 +119,7 @@ final class Social_Twitter {
 							$comment->social_raw_data = json_decode(base64_decode($result->meta_value));
 							break;
 						case 'social_status_id':
-							$reply_map[$result->meta_value] = $result->comment_id;
+							$social_map[$result->meta_value] = $result->comment_id;
 						default:
 							$comment->{$result->meta_key} = $result->meta_value;
 					}
@@ -145,19 +147,37 @@ final class Social_Twitter {
 // set-up replies and retweets
 		foreach ($tweet_comments as $key => $comment) {
 // set reply/comment parent
-			if (!empty($comment->social_in_reply_to_status_id) && isset($reply_map[$comment->social_in_reply_to_status_id])) {
-				$comments[$key]->comment_parent = $reply_map[$comment->social_in_reply_to_status_id];
+			if (!empty($comment->social_in_reply_to_status_id) && isset($social_map[$comment->social_in_reply_to_status_id])) {
+				$comments[$key]->comment_parent = $social_map[$comment->social_in_reply_to_status_id];
 			}
 // set retweets
-			$hash_match = $hash_map[$comment->social_hash];
-			if ($hash_match != $comment->comment_ID) {
-				if ($hash_match == 'broadcasted') {
+			$rt_matched = false;
+			if (isset($comment->social_raw_data) && !empty($comment->social_raw_data->retweeted_status)) {
+// explicit match via API data
+				$rt_id = $comment->social_raw_data->retweeted_status->id_str;
+				if (in_array($rt_id, $broadcasted_social_ids)) {
 					$broadcast_retweets[] = $comment;
+					unset($comments[$key]);
+					$rt_matched = true;
 				}
-				else {
-					$comments['id_'.$hash_match]->social_items[] = $comment;
+				else if (isset($social_map[$rt_id])) {
+					$comments[$social_map[$rt_id]]->social_items[$key] = $comment;
+					unset($comments[$key]);
+					$rt_matched = true;
 				}
-				unset($comments[$key]);
+			}
+			if (!$rt_matched) {
+// best guess via hashes
+				$hash_match = $hash_map[$comment->social_hash];
+				if ($hash_match != $comment->comment_ID) { // hash match to own tweet is expected, at minimum - set above
+					if ($hash_match == 'broadcasted') {
+						$broadcast_retweets[] = $comment;
+					}
+					else {
+						$comments['id_'.$hash_match]->social_items[$key] = $comment;
+					}
+					unset($comments[$key]);
+				}
 			}
 		}
 
