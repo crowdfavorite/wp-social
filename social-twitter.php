@@ -145,7 +145,7 @@ final class Social_Twitter {
 		$comments = array_merge($comments, $tweet_comments);
 
 // set-up replies and retweets
-		foreach ($tweet_comments as $key => $comment) {
+		foreach ($tweet_comments as $key => &$comment) {
 // set reply/comment parent
 			if (!empty($comment->social_in_reply_to_status_id) && isset($social_map[$comment->social_in_reply_to_status_id])) {
 				$comments[$key]->comment_parent = $social_map[$comment->social_in_reply_to_status_id];
