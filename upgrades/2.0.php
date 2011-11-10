@@ -271,7 +271,7 @@ if (Social_CRON::instance('upgrade')->lock()) {
 		}
 
 		// Add broadcast by default
-		Social::option('broadcast_by_default', '1');
+		Social::option('broadcast_by_default', '0');
 
 		// Reschedule posts for aggregation
 		$results = $wpdb->get_results("
