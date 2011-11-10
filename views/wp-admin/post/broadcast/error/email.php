@@ -9,10 +9,10 @@ foreach ($accounts as $key => $items) {
 			$deauthed[$key.'-'.$item->account->id()] = $item;
 		}
 		else {
-			if (!isset($types[$item->reason])) {
-				$types[$item->reason] = 0;
+			if (!isset($types[$item->type])) {
+				$types[$item->type] = 0;
 			}
-			++$types[$item->reason];
+			++$types[$item->type];
 		}
 		echo $social->service($key)->title().': '.$item->account->name().' ('.$item->reason.')'."\n";
 	}
