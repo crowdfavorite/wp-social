@@ -129,7 +129,7 @@ final class Social_Twitter {
 							if (isset($comment->social_status_id)) {
 								// Hash
 								if (isset($comment->social_raw_data) and isset($comment->social_raw_data->text)) {
-									$hash = self::build_retweet_hash($comment->social_raw_data->text, false);
+									$hash = self::build_retweet_hash($comment->social_raw_data->text);
 									$comment_hashes[$hash] = $comment->social_status_id;
 								}
 
