@@ -52,7 +52,7 @@ final class Social_Twitter {
 		foreach ($comments as $comment) {
 			$_comments['id_'.$comment->comment_ID] = $comment;
 			if (is_object($comment) && $comment->comment_type == 'social-twitter') {
-				$tweet_comments = ['id_'.$comment->comment_ID] = $comment;
+				$tweet_comments['id_'.$comment->comment_ID] = $comment;
 			}
 		}
 // if no tweet comments, get out now
