@@ -106,14 +106,14 @@ final class Social_Twitter {
 		// Load the comment meta
 		$results = $wpdb->get_results("
 			SELECT meta_key, meta_value, comment_id
-			FROM $wpdb->commentmeta
-			WHERE comment_id IN (".implode(',', $comment_ids).")
-			AND (
-				meta_key = 'social_in_reply_to_status_id'
-				OR meta_key = 'social_status_id'
-				OR meta_key = 'social_raw_data'
-				OR meta_key = 'social_profile_image_url'
-				OR meta_key = 'social_comment_type'
+			  FROM $wpdb->commentmeta
+			 WHERE comment_id IN (".implode(',', $comment_ids).")
+			   AND (
+			       meta_key = 'social_in_reply_to_status_id'
+			    OR meta_key = 'social_status_id'
+			    OR meta_key = 'social_raw_data'
+			    OR meta_key = 'social_profile_image_url'
+			    OR meta_key = 'social_comment_type'
 			)
 		");
 

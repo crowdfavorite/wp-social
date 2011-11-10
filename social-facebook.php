@@ -114,7 +114,7 @@ final class Social_Facebook {
 	public static function comments_array(array $comments, $post_id) {
 		// pre-load the hashes for broadcasted tweets
 		$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
-		if (empty($broadcasted_ids) || empty($broadcasted_ids['facebook'])) {
+		if (empty($broadcasted_ids) or empty($broadcasted_ids['facebook'])) {
 			return $comments;
 		}
 		global $wpdb;
@@ -146,12 +146,12 @@ final class Social_Facebook {
 		// Load the comment meta
 		$results = $wpdb->get_results("
 			SELECT meta_key, meta_value, comment_id
-			FROM $wpdb->commentmeta
-			WHERE comment_id IN (".implode(',', $comment_ids).")
-			AND (
-				meta_key = 'social_status_id'
-				OR meta_key = 'social_profile_image_url'
-				OR meta_key = 'social_comment_type'
+			  FROM $wpdb->commentmeta
+			 WHERE comment_id IN (".implode(',', $comment_ids).")
+			   AND (
+			       meta_key = 'social_status_id'
+			    OR meta_key = 'social_profile_image_url'
+			    OR meta_key = 'social_comment_type'
 			)
 		");
 
