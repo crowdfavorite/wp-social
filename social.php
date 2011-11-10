@@ -121,7 +121,7 @@ final class Social {
 		$query = new WP_Query(array(
 			'posts_per_page' => 1
 		));
-		if (count($query->posts) && $post = $query->posts[0]) {
+		if (count($query->posts) and $post = $query->posts[0]) {
 			$url = wp_get_shortlink($post->ID);
 			$date = get_date_from_gmt($post->post_date_gmt);
 		}
@@ -1346,7 +1346,7 @@ final class Social {
 			$groups = $comments['social_groups'];
 		}
 
-// count the comment types for output in tab headers
+		// count the comment types for output in tab headers
 		foreach ($comments as $comment) {
 			if (is_object($comment)) {
 				if (empty($comment->comment_type)) {
@@ -1359,25 +1359,13 @@ final class Social {
 				else {
 					++$groups[$comment->comment_type];
 				}
-				if (isset($comment->social_items) && is_array($comment->social_items)) {
+				if (isset($comment->social_items) and is_array($comment->social_items)) {
 					$groups[$comment->comment_type] += count($comment->social_items);
 				}
 			}
 		}
 
-// TODO - why isn't this part of the facebook code?
-		if (isset($groups['social-facebook-like'])) {
-			if (!isset($groups['social-facebook'])) {
-				$groups['social-facebook'] = 0;
-			}
-
-			$groups['social-facebook'] = $groups['social-facebook'] + $groups['social-facebook-like'];
-		    unset($groups['social-facebook-like']);
-		}
-
-		if (count($groups)) {
-			$comments['social_groups'] = $groups;
-		}
+		list($groups, $comments) = apply_filters('social_comments_array_groups', $groups, $comments);
 
 		return $comments;
 	}

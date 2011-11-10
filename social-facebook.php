@@ -175,6 +175,31 @@ final class Social_Facebook {
 	}
 
 	/**
+	 * Filters the groups.
+	 *
+	 * @static
+	 * @param  array  $groups
+	 * @param  array  $comments
+	 * @return array
+	 */
+	public static function comments_array_groups(array $groups, array $comments) {
+		if (isset($groups['social-facebook-like'])) {
+			if (!isset($groups['social-facebook'])) {
+				$groups['social-facebook'] = 0;
+			}
+
+			$groups['social-facebook'] = $groups['social-facebook'] + $groups['social-facebook-like'];
+			unset($groups['social-facebook-like']);
+		}
+
+		if (count($groups)) {
+			$comments['social_groups'] = $groups;
+		}
+
+		return array($groups, $comments);
+	}
+
+	/**
 	 * Adds the Facebook Pages checkbox to the button.
 	 *
 	 * @static
@@ -413,6 +438,7 @@ add_filter('social_comment_type_to_service', array('Social_Facebook', 'comment_t
 add_filter('get_avatar', array('Social_Facebook', 'get_avatar'), 10, 5);
 add_filter('get_avatar_comment_types', array('Social_Facebook', 'get_avatar_comment_types'));
 add_filter('social_comments_array', array('Social_Facebook', 'comments_array'), 10, 2);
+add_filter('social_comments_array_groups', array('Social_Facebook', 'comments_array_groups'), 10, 2);
 add_filter('social_service_button', array('Social_Facebook', 'social_service_button'), 10, 3);
 add_filter('social_proxy_url', array('Social_Facebook', 'social_proxy_url'));
 add_filter('social_get_broadcast_account', array('Social_Facebook', 'social_get_broadcast_account'), 10, 3);
