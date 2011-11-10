@@ -1,7 +1,7 @@
 <?php
-	if (strpos($comment_type, 'social-') === false) {
-		$comment_type = 'social-'.$comment_type;
-	}
+if (strpos($comment_type, 'social-') === false) {
+	$comment_type = 'social-'.$comment_type;
+}
 ?>
 <li <?php comment_class('social-comment social-clearfix '.esc_attr($comment_type)); ?> id="li-comment-<?php comment_ID(); ?>">
 <div class="social-comment-inner social-clearfix" id="comment-<?php comment_ID(); ?>">

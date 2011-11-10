@@ -1365,7 +1365,7 @@ final class Social {
 			}
 		}
 
-		list($groups, $comments) = apply_filters('social_comments_array_groups', $groups, $comments);
+		$comments['social_groups'] = apply_filters('social_comments_array_groups', $groups, $comments);
 
 		return $comments;
 	}

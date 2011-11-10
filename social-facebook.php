@@ -112,14 +112,20 @@ final class Social_Facebook {
 	 * @return array
 	 */
 	public static function comments_array(array $comments, $post_id) {
+		// pre-load the hashes for broadcasted tweets
+		$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
+		if (empty($broadcasted_ids) || empty($broadcasted_ids['facebook'])) {
+			return $comments;
+		}
 		global $wpdb;
 
 		// we need comments to be keyed by ID, check for Facebook comments
-		$facebook_comments = $facebook_likes = $_comments = array();
+		$facebook_comments = $facebook_likes = $_comments = $comment_ids = array();
 		foreach ($comments as $key => $comment) {
 			if (is_object($comment)) {
 				$_comments['id_'.$comment->comment_ID] = $comment;
 				if (in_array($comment->comment_type, array('social-facebook', 'social-facebook-like'))) {
+					$comment_ids[] = $comment->comment_ID;
 					$facebook_comments['id_'.$comment->comment_ID] = $comment;
 				}
 			}
@@ -140,27 +146,23 @@ final class Social_Facebook {
 		// Load the comment meta
 		$results = $wpdb->get_results("
 			SELECT meta_key, meta_value, comment_id
-			  FROM $wpdb->commentmeta
-			 WHERE meta_key = 'social_status_id'
-			    OR meta_key = 'social_profile_image_url'
-			    OR meta_key = 'social_comment_type'
+			FROM $wpdb->commentmeta
+			WHERE comment_id IN (".implode(',', $comment_ids).")
+			AND (
+				meta_key = 'social_status_id'
+				OR meta_key = 'social_profile_image_url'
+				OR meta_key = 'social_comment_type'
+			)
 		");
 
 		// Set up social data for facebook comments
 		foreach ($facebook_comments as $key => &$comment) {
-			if (is_object($comment)) {
-				$comment->social_items = array();
+			$comment->social_items = array();
 
-				// Attach meta
-				foreach ($results as $result) {
-					if ($comment->comment_ID == $result->comment_id) {
-						switch ($result->meta_key) {
-							case 'social_status_id':
-								$social_map[$result->meta_value] = $result->comment_id;
-							default:
-								$comment->{$result->meta_key} = $result->meta_value;
-						}
-					}
+			// Attach meta
+			foreach ($results as $result) {
+				if ($comment->comment_ID == $result->comment_id) {
+					$comment->{$result->meta_key} = $result->meta_value;
 				}
 			}
 		}
@@ -168,17 +170,11 @@ final class Social_Facebook {
 		// merge data so that $comments has the data we've set up
 		$comments = array_merge($comments, $facebook_comments);
 
-		// pre-load the hashes for broadcasted tweets
-		$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
-		if (empty($broadcasted_ids)) {
-			$broadcasted_ids = array();
-		}
-
 		// set-up the likes
 		foreach ($facebook_comments as $key => &$comment) {
 			if (is_object($comment) and isset($broadcasted_ids['facebook'])) {
 				foreach ($broadcasted_ids['facebook'] as $account_id => $broadcasted) {
-					if (isset($broadcasted[$comment->social_status_id])) {
+					if (isset($broadcasted[$comment->social_status_id]) and $comment->comment_type == 'social-facebook-like') {
 						$facebook_likes[] = $comment;
 						unset($comments['id_'.$comment->comment_ID]);
 					}
@@ -213,11 +209,7 @@ final class Social_Facebook {
 			unset($groups['social-facebook-like']);
 		}
 
-		if (count($groups)) {
-			$comments['social_groups'] = $groups;
-		}
-
-		return array($groups, $comments);
+		return $groups;
 	}
 
 	/**

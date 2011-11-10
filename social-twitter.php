@@ -45,14 +45,20 @@ final class Social_Twitter {
 	 * @return array
 	 */
 	public static function comments_array(array $comments, $post_id) {
+		// pre-load the hashes for broadcasted tweets
+		$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
+		if (empty($broadcasted_ids)) {
+			return $comments;
+		}
 		global $wpdb;
 
 		// we need comments to be keyed by ID, check for Tweet comments
-		$tweet_comments = $_comments = array();
+		$tweet_comments = $_comments = $comment_ids = array();
 		foreach ($comments as $key => $comment) {
 			if (is_object($comment)) {
 				$_comments['id_'.$comment->comment_ID] = $comment;
 				if ($comment->comment_type == 'social-twitter') {
+					$comment_ids[] = $comment->comment_ID;
 					$tweet_comments['id_'.$comment->comment_ID] = $comment;
 				}
 			}
@@ -75,31 +81,24 @@ final class Social_Twitter {
 		$broadcasted_social_ids = array();
  		$broadcast_retweets = array(); // array of comments
 
-		// pre-load the hashes for broadcasted tweets
-		$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
-		if (empty($broadcasted_ids)) {
-			$broadcasted_ids = array();
-		}
-		if (isset($broadcasted_ids['twitter'])) {
-			foreach ($broadcasted_ids['twitter'] as $account_id => $broadcasted) {
-				foreach ($broadcasted as $id => $data) {
-					$broadcasted_social_ids[] = $id;
-					// if we don't have a message saved for a tweet, try to get it so that we can use it next time
-					if (empty($data['message'])) {
-						$url = wp_nonce_url(site_url('?social_controller=aggregation&social_action=retrieve_twitter_content&broadcasted_id='.$id.'&post_id='.$post_id), 'retrieve_twitter_content');
-						wp_remote_get(str_replace('&amp;', '&', $url), array(
-							'timeout' => 0.01,
-							'blocking' => false,
-						));
-					}
-					else {
-						// create a hash from the broadcast so we can match retweets to it
-						$hash = self::build_retweet_hash($data['message']);
+		foreach ($broadcasted_ids['twitter'] as $account_id => $broadcasted) {
+			foreach ($broadcasted as $id => $data) {
+				$broadcasted_social_ids[] = $id;
+				// if we don't have a message saved for a tweet, try to get it so that we can use it next time
+				if (empty($data['message'])) {
+					$url = wp_nonce_url(site_url('?social_controller=aggregation&social_action=retrieve_twitter_content&broadcasted_id='.$id.'&post_id='.$post_id), 'retrieve_twitter_content');
+					wp_remote_get(str_replace('&amp;', '&', $url), array(
+						'timeout' => 0.01,
+						'blocking' => false,
+					));
+				}
+				else {
+					// create a hash from the broadcast so we can match retweets to it
+					$hash = self::build_retweet_hash($data['message']);
 
-						// This is stored as broadcasted and not the ID so we can easily store broadcasted retweets
-						// instead of attaching retweets to non-existent comments.
-						$hash_map[$hash] = 'broadcasted';
-					}
+					// This is stored as broadcasted and not the ID so we can easily store broadcasted retweets
+					// instead of attaching retweets to non-existent comments.
+					$hash_map[$hash] = 'broadcasted';
 				}
 			}
 		}
@@ -107,44 +106,45 @@ final class Social_Twitter {
 		// Load the comment meta
 		$results = $wpdb->get_results("
 			SELECT meta_key, meta_value, comment_id
-			  FROM $wpdb->commentmeta
-			 WHERE meta_key = 'social_in_reply_to_status_id'
+			FROM $wpdb->commentmeta
+			WHERE comment_id IN (".implode(',', $comment_ids).")
+			AND (
+				meta_key = 'social_in_reply_to_status_id'
 				OR meta_key = 'social_status_id'
 				OR meta_key = 'social_raw_data'
 				OR meta_key = 'social_profile_image_url'
 				OR meta_key = 'social_comment_type'
+			)
 		");
 
 		// Set up social data for twitter comments
 		foreach ($tweet_comments as $key => &$comment) {
-			if (is_object($comment)) {
-				$comment->social_items = array();
+			$comment->social_items = array();
 
-				// Attach meta
-				foreach ($results as $result) {
-					if ($comment->comment_ID == $result->comment_id) {
-						switch ($result->meta_key) {
-							case 'social_raw_data':
-								$comment->social_raw_data = json_decode(base64_decode($result->meta_value));
-								break;
-							case 'social_status_id':
-								$social_map[$result->meta_value] = $result->comment_id;
-							default:
-								$comment->{$result->meta_key} = $result->meta_value;
-						}
+			// Attach meta
+			foreach ($results as $result) {
+				if ($comment->comment_ID == $result->comment_id) {
+					switch ($result->meta_key) {
+						case 'social_raw_data':
+							$comment->social_raw_data = json_decode(base64_decode($result->meta_value));
+							break;
+						case 'social_status_id':
+							$social_map[$result->meta_value] = $result->comment_id;
+						default:
+							$comment->{$result->meta_key} = $result->meta_value;
 					}
 				}
+			}
 
-				// Attach hash
-				if (isset($comment->social_raw_data) and isset($comment->social_raw_data->text)) {
-					$comment->social_hash = self::build_retweet_hash($comment->social_raw_data->text);
-				}
-				else {
-					$comment->social_hash = self::build_retweet_hash($comment->comment_content);
-				}
-				if (!isset($hash_map[$comment->social_hash])) {
-					$hash_map[$comment->social_hash] = $comment->comment_ID;
-				}
+			// Attach hash
+			if (isset($comment->social_raw_data) and isset($comment->social_raw_data->text)) {
+				$comment->social_hash = self::build_retweet_hash($comment->social_raw_data->text);
+			}
+			else {
+				$comment->social_hash = self::build_retweet_hash($comment->comment_content);
+			}
+			if (!isset($hash_map[$comment->social_hash])) {
+				$hash_map[$comment->social_hash] = $comment->comment_ID;
 			}
 		}
 
