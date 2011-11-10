@@ -22,7 +22,7 @@ foreach ($accounts as $key => $items) {
 
 $total_deauthed = count($deauthed);
 if ($total_deauthed or count($types)) {
-	echo '<h6>'.__('Possible fixes:').'</h6><ul>';
+	echo '<h4>'.__('Possible fixes:').'</h4><ul class="social-posting-errors">';
 }
 
 if ($total_deauthed) {

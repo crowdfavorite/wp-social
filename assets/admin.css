@@ -92,6 +92,10 @@
 	color: #333;
 }
 
+#social-broadcast-error h4 {
+	margin-bottom: 0;
+}
+
 .social-accounts {
 	margin: 10px 0;
 	max-width: 60em;

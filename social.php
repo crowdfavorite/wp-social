@@ -505,7 +505,7 @@ final class Social {
 					'accounts' => $error_accounts,
 					'post' => $post,
 				));
-				echo '<div class="error">'.$message.'</div>';
+				echo '<div class="error" id="social-broadcast-error">'.$message.'</div>';
 
 				delete_post_meta($post->ID, '_social_broadcast_error');
 			}
