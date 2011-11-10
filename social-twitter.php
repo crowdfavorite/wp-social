@@ -166,7 +166,7 @@ final class Social_Twitter {
 		}
 		$comments['social_items']['twitter'] = $broadcast_retweets;
 
-		return $working_comments;
+		return $comments;
 	}
 
 	/**
