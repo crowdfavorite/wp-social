@@ -121,7 +121,7 @@ final class Social {
 		$query = new WP_Query(array(
 			'posts_per_page' => 1
 		));
-		if (count($query->posts) && $post = $query->posts[0]) {
+		if (count($query->posts) and $post = $query->posts[0]) {
 			$url = wp_get_shortlink($post->ID);
 			$date = get_date_from_gmt($post->post_date_gmt);
 		}
@@ -1346,21 +1346,11 @@ final class Social {
 			$groups = $comments['social_groups'];
 		}
 
+		// count the comment types for output in tab headers
 		foreach ($comments as $comment) {
 			if (is_object($comment)) {
-				if (isset($comment->social_comment_type)) {
-					$comment->comment_type = $comment->social_comment_type;
-				}
-				else {
-					$comment_type = get_comment_meta($comment->comment_ID, 'social_comment_type', true);
-					if (empty($comment_type)) {
-						$comment_type = (empty($comment->comment_type) ? 'wordpress' : $comment->comment_type);
-					}
-					$comment->comment_type = $comment_type;
-				}
-
-				if (strpos($comment->comment_type, 'social-') === false and $this->service($comment->comment_type) !== false) {
-					$comment->comment_type = 'social-'.$comment->comment_type;
+				if (empty($comment->comment_type)) {
+					$comment->comment_type = 'wordpress';
 				}
 
 				if (!isset($groups[$comment->comment_type])) {
@@ -1369,44 +1359,13 @@ final class Social {
 				else {
 					++$groups[$comment->comment_type];
 				}
-			}
-		}
-
-		// Reorder the comments by their time
-		$times = array();
-		foreach ($comments as $comment) {
-			if (is_object($comment)) {
-				$times[strtotime($comment->comment_date_gmt)] = $comment->comment_ID;
-			}
-		}
-		ksort($times);
-
-		$_comments = array();
-		while (count($times)) {
-			foreach ($times as $timestamp => $id) {
-				foreach ($comments as $key => $comment) {
-					if (is_object($comment) and $comment->comment_ID == $id) {
-						$_comments[] = $comment;
-						unset($comments[$key]);
-						unset($times[$timestamp]);
-					}
+				if (isset($comment->social_items) and is_array($comment->social_items)) {
+					$groups[$comment->comment_type] += count($comment->social_items);
 				}
 			}
 		}
-		$comments = array_merge($comments, $_comments);
 
-		if (isset($groups['social-facebook-like'])) {
-			if (!isset($groups['social-facebook'])) {
-				$groups['social-facebook'] = 0;
-			}
-
-			$groups['social-facebook'] = $groups['social-facebook'] + $groups['social-facebook-like'];
-		    unset($groups['social-facebook-like']);
-		}
-
-		if (count($groups)) {
-			$comments['social_groups'] = $groups;
-		}
+		$comments['social_groups'] = apply_filters('social_comments_array_groups', $groups, $comments);
 
 		return $comments;
 	}

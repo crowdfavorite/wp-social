@@ -112,62 +112,104 @@ final class Social_Facebook {
 	 * @return array
 	 */
 	public static function comments_array(array $comments, $post_id) {
+		// pre-load the hashes for broadcasted tweets
+		$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
+		if (empty($broadcasted_ids) || empty($broadcasted_ids['facebook'])) {
+			return $comments;
+		}
 		global $wpdb;
 
-		$comment_ids = array();
-		foreach ($comments as $comment) {
-			if (is_object($comment) and $comment->comment_type == 'social-facebook-like') {
-				$comment_ids[] = $comment->comment_ID;
-			}
-		}
-
-		if (count($comment_ids)) {
-			$results = $wpdb->get_results("
-				SELECT meta_key, meta_value, comment_id
-				  FROM $wpdb->commentmeta
-				 WHERE comment_id IN (".implode(',', $comment_ids).")
-				   AND meta_key = 'social_status_id'
-				    OR meta_key = 'social_profile_image_url'
-				    OR meta_key = 'social_comment_type'
-			");
-
-			$social_items = array();
-			if (isset($comments['social_items'])) {
-				$social_items = $comments['social_items'];
-				unset($comments['social_items']);
-			}
-
-			foreach ($comments as $key => $comment) {
-				if (is_object($comment)) {
-					if ($comment->comment_type == 'social-facebook-like') {
-						foreach ($results as $result) {
-							if ($result->comment_id == $comment->comment_ID) {
-								$comment->{$result->meta_key} = $result->meta_value;
-							}
-						}
-						
-						if (!isset($social_items['facebook'])) {
-							$social_items['facebook'] = array();
-						}
-
-						$social_items['facebook'][] = $comment;
-						unset($comments[$key]);
-					}
-				    else {
-					    $comments[$key] = $comment;
-				    }
+		// we need comments to be keyed by ID, check for Facebook comments
+		$facebook_comments = $facebook_likes = $_comments = $comment_ids = array();
+		foreach ($comments as $key => $comment) {
+			if (is_object($comment)) {
+				$_comments['id_'.$comment->comment_ID] = $comment;
+				if (in_array($comment->comment_type, array('social-facebook', 'social-facebook-like'))) {
+					$comment_ids[] = $comment->comment_ID;
+					$facebook_comments['id_'.$comment->comment_ID] = $comment;
 				}
-			    else {
-				    $comments[$key] = $comment;
-			    }
 			}
-
-			if (count($social_items)) {
-				$comments['social_items'] = $social_items;
+			else {
+				$_comments[$key] = $comment;
 			}
 		}
+
+		// if no Facebook comments, get out now
+		if (!count($facebook_comments)) {
+			return $comments;
+		}
+
+		// use our keyed array
+		$comments = $_comments;
+		unset($_comments);
+
+		// Load the comment meta
+		$results = $wpdb->get_results("
+			SELECT meta_key, meta_value, comment_id
+			FROM $wpdb->commentmeta
+			WHERE comment_id IN (".implode(',', $comment_ids).")
+			AND (
+				meta_key = 'social_status_id'
+				OR meta_key = 'social_profile_image_url'
+				OR meta_key = 'social_comment_type'
+			)
+		");
+
+		// Set up social data for facebook comments
+		foreach ($facebook_comments as $key => &$comment) {
+			$comment->social_items = array();
+
+			// Attach meta
+			foreach ($results as $result) {
+				if ($comment->comment_ID == $result->comment_id) {
+					$comment->{$result->meta_key} = $result->meta_value;
+				}
+			}
+		}
+
+		// merge data so that $comments has the data we've set up
+		$comments = array_merge($comments, $facebook_comments);
+
+		// set-up the likes
+		foreach ($facebook_comments as $key => &$comment) {
+			if (is_object($comment) and isset($broadcasted_ids['facebook'])) {
+				foreach ($broadcasted_ids['facebook'] as $account_id => $broadcasted) {
+					if (isset($broadcasted[$comment->social_status_id]) and $comment->comment_type == 'social-facebook-like') {
+						$facebook_likes[] = $comment;
+						unset($comments['id_'.$comment->comment_ID]);
+					}
+				}
+			}
+		}
+
+		// Add the likes
+		if (!isset($comments['social_items'])) {
+			$comments['social_items'] = array();
+		}
+		$comments['social_items']['facebook'] = $facebook_likes;
 
 		return $comments;
+	}
+
+	/**
+	 * Filters the groups.
+	 *
+	 * @static
+	 * @param  array  $groups
+	 * @param  array  $comments
+	 * @return array
+	 */
+	public static function comments_array_groups(array $groups, array $comments) {
+		if (isset($groups['social-facebook-like'])) {
+			if (!isset($groups['social-facebook'])) {
+				$groups['social-facebook'] = 0;
+			}
+
+			$groups['social-facebook'] = $groups['social-facebook'] + $groups['social-facebook-like'];
+			unset($groups['social-facebook-like']);
+		}
+
+		return $groups;
 	}
 
 	/**
@@ -409,6 +451,7 @@ add_filter('social_comment_type_to_service', array('Social_Facebook', 'comment_t
 add_filter('get_avatar', array('Social_Facebook', 'get_avatar'), 10, 5);
 add_filter('get_avatar_comment_types', array('Social_Facebook', 'get_avatar_comment_types'));
 add_filter('social_comments_array', array('Social_Facebook', 'comments_array'), 10, 2);
+add_filter('social_comments_array_groups', array('Social_Facebook', 'comments_array_groups'), 10, 2);
 add_filter('social_service_button', array('Social_Facebook', 'social_service_button'), 10, 3);
 add_filter('social_proxy_url', array('Social_Facebook', 'social_proxy_url'));
 add_filter('social_get_broadcast_account', array('Social_Facebook', 'social_get_broadcast_account'), 10, 3);
