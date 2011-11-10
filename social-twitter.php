@@ -125,21 +125,20 @@ final class Social_Twitter {
 
 					// Comment a retweet?
 					if ($comment->comment_type == 'social-twitter' or (isset($comment->social_comment_type) and $comment->social_comment_type == 'social-twitter')) {
-						// Hash
-						if (isset($comment->social_raw_data) and isset($comment->social_raw_data->text)) {
-							$hash = self::build_retweet_hash($comment->social_raw_data->text);
-						}
-						else {
-							$hash = self::build_retweet_hash($comment->comment_content);
-						}
-						$comments[$id]->social_retweet_hash = $hash;
-
 						if (substr($comment->comment_content, 0, 4) != 'RT @') {
 							if (isset($comment->social_status_id)) {
-								$working_comments[$comment->social_status_id] = $comment;
-								$comment_hashes[$hash] = $comment->social_status_id;
+								// Hash
+								if (isset($comment->social_raw_data) and isset($comment->social_raw_data->text)) {
+									$hash = self::build_retweet_hash($comment->social_raw_data->text, false);
+									$comment_hashes[$hash] = $comment->social_status_id;
+								}
+
 								$comment->social_items = array();
+								$working_comments[$comment->social_status_id] = $comment;
 							}
+						}
+						else {
+							$comment->social_retweet_hash = self::build_retweet_hash($comment->comment_content);
 						}
 					}
 				}
@@ -154,21 +153,19 @@ final class Social_Twitter {
 							$comment->comment_parent = $in_reply_to_ids[$comment->social_in_reply_to_status_id];
 						}
 
-						if (isset($comment_hashes[$comment->social_retweet_hash])) {
-							if ($comment_hashes[$comment->social_retweet_hash] == 'broadcasted') {
-								$broadcasted_retweets[] = $comment;
-							}
-							else if (isset($working_comments[$comment_hashes[$comment->social_retweet_hash]]) and
-							    $working_comments[$comment_hashes[$comment->social_retweet_hash]]->social_status_id != $comment->social_status_id)
-							{
+						if (isset($comment->social_retweet_hash) and isset($comment_hashes[$comment->social_retweet_hash])) {
+							if (isset($working_comments[$comment_hashes[$comment->social_retweet_hash]])) {
 								$working_comments[$comment_hashes[$comment->social_retweet_hash]]->social_items[] = $comment;
+							}
+							else if ($comment_hashes[$comment->social_retweet_hash] == 'broadcasted') {
+								$broadcasted_retweets[] = $comment;
 							}
 						}
 						else if (!isset($working_comments[$comment->social_retweet_hash])) {
 							$working_comments[$comment->social_retweet_hash] = $comment;
 						}
 					}
-					else {
+				    else {
 						$working_comments[] = $comment;
 					}
 				}
