@@ -138,9 +138,6 @@ final class Social_Twitter {
 			}
 		}
 
-// TODO - which are we using here, comment_type or social_comment_type? either way, this check should be above
-//					if ($comment->comment_type == 'social-twitter' or (isset($comment->social_comment_type) and $comment->social_comment_type == 'social-twitter')) {
-
 // merge data so that $comments has the data we've set up
 		$comments = array_merge($comments, $tweet_comments);
 
