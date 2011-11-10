@@ -22,8 +22,7 @@ foreach ($accounts as $key => $items) {
 
 $total_deauthed = count($deauthed);
 if ($total_deauthed or count($types)) {
-	_e('<h2>Possible fixes:</h2>');
-	echo '<ul>';
+	echo '<h2>'.__('Possible fixes:').'</h2><ul>';
 }
 
 if ($total_deauthed) {
@@ -34,18 +33,18 @@ if ($total_deauthed) {
 		$service = $social->service($key)->title();
 
 		if (current_user_can('manage_options')) {
-			echo sprintf(__('<p>To reauthorize the deauthorized %s account above, please edit your <a href="%s">global accounts</a> or your <a href="%s">personal accounts</a>.</p>', 'social'), esc_html($service), esc_url(Social::settings_url()), esc_url(admin_url('profile.php#social-accounts')));
+			echo sprintf(__('To reauthorize the deauthorized %s account above, please edit your <a href="%s">global accounts</a> or your <a href="%s">personal accounts</a>.', 'social'), esc_html($service), esc_url(Social::settings_url()), esc_url(admin_url('profile.php#social-accounts')));
 		}
 		else {
-			echo sprintf(__('<p>To reauthorize the deauthorized %s account above, please edit your <a href="%s">personal accounts</a>.</p>', 'social'), esc_html($service), esc_url(admin_url('profile.php#social-accounts')));
+			echo sprintf(__('To reauthorize the deauthorized %s account above, please edit your <a href="%s">personal accounts</a>.', 'social'), esc_html($service), esc_url(admin_url('profile.php#social-accounts')));
 		}
 	}
 	else {
 		if (current_user_can('manage_options')) {
-			echo sprintf(__('<p>To reauthorize the deauthorized accounts above, please edit your <a href="%s">global accounts</a> or your <a href="%s">personal accounts</a>.</p>', 'social'), esc_url(Social::settings_url()), esc_url(admin_url('profile.php#social-accounts')));
+			echo sprintf(__('To reauthorize the deauthorized accounts above, please edit your <a href="%s">global accounts</a> or your <a href="%s">personal accounts</a>.', 'social'), esc_url(Social::settings_url()), esc_url(admin_url('profile.php#social-accounts')));
 		}
 		else {
-			echo sprintf(__('<p>To reauthorize the deauthorized account above, please edit your <a href="%s">personal accounts</a>.</p>', 'social'), esc_url(admin_url('profile.php#social-accounts')));
+			echo sprintf(__('To reauthorize the deauthorized account above, please edit your <a href="%s">personal accounts</a>.', 'social'), esc_url(admin_url('profile.php#social-accounts')));
 		}
 	}
 	echo '</li>';
