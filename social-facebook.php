@@ -131,25 +131,29 @@ final class Social_Facebook {
 				    OR meta_key = 'social_comment_type'
 			");
 
-			$social_items = array();
+// TODO - refactor this
 			if (isset($comments['social_items'])) {
 				$social_items = $comments['social_items'];
 				unset($comments['social_items']);
+			}
+			else {
+				$social_items = array();
+			}
+			if (!isset($social_items['facebook'])) {
+				$social_items['facebook'] = array();
 			}
 
 			foreach ($comments as $key => $comment) {
 				if (is_object($comment)) {
 					if ($comment->comment_type == 'social-facebook-like') {
+// add facebook meta to comment
 						foreach ($results as $result) {
 							if ($result->comment_id == $comment->comment_ID) {
 								$comment->{$result->meta_key} = $result->meta_value;
 							}
 						}
-						
-						if (!isset($social_items['facebook'])) {
-							$social_items['facebook'] = array();
-						}
-
+// remove from full loop - will not be output as a stand-alone comment
+// TODO - how do we know that this gets output? How is the Like associated to a comment or broadcast?
 						$social_items['facebook'][] = $comment;
 						unset($comments[$key]);
 					}

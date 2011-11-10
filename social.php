@@ -1346,12 +1346,14 @@ final class Social {
 			$groups = $comments['social_groups'];
 		}
 
+// count the comment types for output in tab headers
 		foreach ($comments as $comment) {
 			if (is_object($comment)) {
 				if (isset($comment->social_comment_type)) {
 					$comment->comment_type = $comment->social_comment_type;
 				}
 				else {
+// TODO - confirm that this is not resulting in a query per post
 					$comment_type = get_comment_meta($comment->comment_ID, 'social_comment_type', true);
 					if (empty($comment_type)) {
 						$comment_type = (empty($comment->comment_type) ? 'wordpress' : $comment->comment_type);
@@ -1359,6 +1361,7 @@ final class Social {
 					$comment->comment_type = $comment_type;
 				}
 
+// TODO - why is this needed? Upgrade for old data?
 				if (strpos($comment->comment_type, 'social-') === false and $this->service($comment->comment_type) !== false) {
 					$comment->comment_type = 'social-'.$comment->comment_type;
 				}
@@ -1372,11 +1375,20 @@ final class Social {
 			}
 		}
 
-		// Reorder the comments by their time
+// Reorder the comments by their time
+// TODO - why do we need to do this?
 		$times = array();
 		foreach ($comments as $comment) {
 			if (is_object($comment)) {
-				$times[strtotime($comment->comment_date_gmt)] = $comment->comment_ID;
+				$time = strtotime($comment->comment_date_gmt);
+				for ($i = 1000; $i < 2000; $i++) {
+					$i_str = (string) $i;
+					$key = $time.'_'.substr($i_str, 1);
+					if (!isset($times[$key])) {
+						$times[$key] = $comment->comment_ID;
+						$i = 2000;
+					}
+				}
 			}
 		}
 		ksort($times);
@@ -1393,8 +1405,10 @@ final class Social {
 				}
 			}
 		}
+// TODO - shouldn't we be replacing instead of merging?
 		$comments = array_merge($comments, $_comments);
 
+// TODO - why isn't this part of the facebook code?
 		if (isset($groups['social-facebook-like'])) {
 			if (!isset($groups['social-facebook'])) {
 				$groups['social-facebook'] = 0;
