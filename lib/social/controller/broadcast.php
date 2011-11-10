@@ -273,6 +273,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 									$errored_accounts[$key][] = (object) array(
 										'account' => $account,
 										'reason' => $reason,
+										'type' => 'limit_reached',
 									);
 									Social::log('Broadcasting to :username, account #:id FAILED. Reason: :reason', array(
 										'id' => $account->id(),
@@ -289,6 +290,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 									$errored_accounts[$key][] = (object) array(
 										'account' => $account,
 										'reason' => $reason,
+										'type' => 'duplicate_status',
 									);
 									Social::log('Broadcasting to :username, account #:id FAILED. Reason: :reason', array(
 										'id' => $account->id(),
@@ -322,6 +324,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 									$errored_accounts[$key][] = (object) array(
 										'account' => $account,
 										'reason' => $reason,
+										'type' => 'general',
 									);
 									Social::log('Broadcasting to :username, account #:id FAILED. Reason: :reason'."\n\n".'Response:'."\n\n".':response', array(
 										'id' => $account->id(),
