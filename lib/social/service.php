@@ -1,160 +1,285 @@
 <?php
 /**
- * Handles the different services that can be connected to Social.
- *
- * @package Social
+ * @package    Social
+ * @subpackage services
  */
 abstract class Social_Service {
 
 	/**
-	 * @var  string  the service
+	 * @var  string  service key
 	 */
-	public $service = '';
+	protected $_key = '';
 
 	/**
-	 * @var string  the UI display value
+	 * @var  array  collection of account objects
 	 */
-	public $title = '';
+	protected $_accounts = array();
 
 	/**
-	 * @var  array  service's accounts
-	 */
-	protected $accounts = array();
-
-	/**
-	 * @var  WP_User  current user
-	 */
-	private $user = false;
-
-	/**
-	 * Initializes the service, and loads a user by ID.
-	 *
-	 * @param  int  $user_id
-	 */
-	public function __construct($user_id = null) {
-		if ($user_id === null) {
-			$this->user = wp_get_current_user();
-		}
-		else {
-			$this->user = get_userdata($user_id);
-
-			// Load the users account(s)
-			$accounts = get_user_meta($user_id, Social::$prefix . 'accounts', true);
-			if (!empty($accounts) and isset($accounts[$this->service])) {
-				$this->accounts = $accounts[$this->service];
-			}
-		}
-	}
-
-	/**
-	 * Sets the service accounts. Returns all of the service's accounts.
+	 * Instantiates the
 	 *
 	 * @param  array  $accounts
-	 * @return array|IService
 	 */
-	public function accounts(array $accounts = null) {
-		if ($accounts === null) {
-			return $this->accounts;
-		}
-
-		$this->accounts = $accounts;
-		return $this;
+	public function __construct(array $accounts = array()) {
+		$this->accounts($accounts);
 	}
 
 	/**
-	 * Adds an account to the service. Returns an account by ID.
+	 * Returns the service key.
 	 *
-	 * @param  int|object  $account
-	 * @return array|bool|IService
+	 * @return string
 	 */
-	public function account($account) {
-		if (is_int($account) or is_string($account)) {
-			return (isset($this->accounts[$account]) ? $this->accounts[$account] : false);
-		}
-
-		$this->accounts[$account->user->id] = $account;
-		return $this;
+	public function key() {
+		return $this->_key;
 	}
 
 	/**
-	 * Returns the UI-friendly version of the service.
+	 * Gets the title for the service.
 	 *
 	 * @return string
 	 */
 	public function title() {
-		$title = $this->title;
-		if (empty($title)) {
-			$title = ucwords(str_replace('_', ' ', $this->service));
-		}
-
-		return $title;
+		return ucwords(str_replace('_', ' ', $this->_key));
 	}
 
 	/**
-	 * Checks to see if the WP_User object is loaded.
+	 * Builds the authorize URL for the service.
 	 *
+	 * @return string
+	 */
+	public function authorize_url() {
+		global $post;
+
+		$proxy = Social::$api_url.$this->_key.'/authorize';
+		$url = apply_filters('social_authorize_url', $proxy, $this->_key);
+
+		$url = '?social_controller=auth&social_action=authorize&target='.urlencode($url);
+		if (is_admin()) {
+			if (defined('IS_PROFILE_PAGE')) {
+				$url = 'profile.php'.$url;
+			}
+			$url = admin_url($url);
+		}
+		else {
+			$url = site_url($url.'&post_id='.$post->ID);
+		}
+
+		return $url;
+	}
+
+	/**
+	 * Returns the disconnect URL.
+	 *
+	 * @static
+	 *
+	 * @param  object  $account
+	 * @param  bool    $is_admin
+	 * @param  string  $before
+	 * @param  string  $after
+	 *
+	 * @return string
+	 */
+	public function disconnect_url($account, $is_admin = false, $before = '', $after = '') {
+		$params = array(
+			'social_controller' => 'auth',
+			'social_action' => 'disconnect',
+			'id' => $account->id(),
+			'service' => $this->_key
+		);
+
+		if ($is_admin) {
+			$personal = false;
+			if (defined('IS_PROFILE_PAGE')) {
+				$personal = true;
+			}
+			$url = Social::settings_url($params, $personal);
+			$text = '<span title="'.__('Disconnect', 'social').'" class="social-disconnect social-ir">'.__('Disconnect', 'social').'</span>';
+		}
+		else {
+			foreach ($params as $key => $value) {
+				$params[$key] = urlencode($value);
+			}
+
+			$params['redirect_to'] = $_SERVER['REQUEST_URI'];
+			if (isset($_GET['redirect_to'])) {
+				$params['redirect_to'] = $_GET['redirect_to'];
+			}
+
+			$url = add_query_arg($params, site_url());
+			$text = __('Disconnect', 'social');
+		}
+
+		return sprintf('%s<a href="%s">%s</a>%s', $before, esc_url($url), $text, $after);
+	}
+
+	/**
+	 * Creates a WordPress user with the passed in account.
+	 *
+	 * @param  Social_Service_Account  $account
+	 * @param  string                  $nonce
+	 * @return int|bool
+	 */
+	public function create_user($account, $nonce = null) {
+		$username = $account->username();
+		$username = str_replace(' ', '_', $username);
+		if (!empty($username)) {
+			$user = get_userdatabylogin($this->_key.'_'.$username);
+			if ($user === false) {
+				$id = wp_create_user($this->_key.'_'.$username, wp_generate_password(20, false), $this->_key.'.'.$username.'@example.com');
+
+				$role = '';
+				if (get_option('users_can_register') == '1') {
+					$role = get_option('default_role');
+				}
+				else {
+					// Set commenter flag
+					update_user_meta($id, 'social_commenter', 'true');
+				}
+
+				$user = new WP_User($id);
+				$user->set_role($role);
+				$user->show_admin_bar_front = 'false';
+				wp_update_user(get_object_vars($user));
+			}
+			else {
+				$id = $user->ID;
+			}
+
+			// Set the nonce
+			if ($nonce !== null) {
+				wp_set_current_user($id);
+				update_user_meta($id, 'social_commenter', 'true');
+				update_user_meta($id, 'social_auth_nonce_'.$nonce, 'true');
+			}
+
+			Social::log('Created/found user #:id.', array(
+				'id' => $id,
+			));
+			return $id;
+		}
+
+		Social::log('Failed to create/find user with username of :username.', array(
+			'username' => $username,
+		));
+		return false;
+	}
+
+	/**
+	 * Saves the accounts on the service.
+	 *
+	 * @param  bool  $personal  personal account?
+	 * @return void
+	 */
+	public function save($personal = false) {
+		$accounts = array();
+		if ($personal) {
+			foreach ($this->_accounts AS $account) {
+				if ($account->personal()) {
+					$accounts[$account->id()] = $account->as_object();
+				}
+
+				$account->universal(false);
+			}
+
+			if (count($accounts)) {
+				$current = get_user_meta(get_current_user_id(), 'social_accounts', true);
+				$current[$this->_key] = $accounts;
+				update_user_meta(get_current_user_id(), 'social_accounts', $current);
+			}
+			else {
+				delete_user_meta(get_current_user_id(), 'social_accounts');
+			}
+		}
+		else {
+			foreach ($this->_accounts AS $account) {
+				if ($account->universal()) {
+					$accounts[$account->id()] = $account->as_object();
+				}
+
+				$account->personal(false);
+			}
+
+			if (count($accounts)) {
+				$current = Social::option('accounts');
+				if ($current == null) {
+					$current = array();
+				}
+				$current[$this->_key] = $accounts;
+				Social::option('accounts', $current);
+			}
+			else {
+				delete_option('social_accounts');
+			}
+		}
+	}
+
+	/**
+	 * Checks to see if the account exists on the object.
+	 *
+	 * @param  int  $id  account id
 	 * @return bool
 	 */
-	public function loaded() {
-		return ($this->user !== false and $this->user->ID) ? true : false;
+	public function account_exists($id) {
+		return isset($this->_accounts[$id]);
 	}
 
 	/**
-	 * Disconnects an account from the user's account.
+	 * Gets the requested account.
 	 *
-	 * @param  int  $id
-	 * @return void
+	 * @param  int|Social_Service_Account  $account  account id/object
+	 * @return Social_Service_Account|Social_Service|bool
 	 */
-	public function disconnect($id) {
-		if (!is_admin() or IS_PROFILE_PAGE) {
-			$accounts = get_user_meta($this->user->ID, Social::$prefix . 'accounts', true);;
-			if (isset($accounts[$this->service][$id])) {
-				unset($accounts[$this->service][$id]);
-				update_user_meta($this->user->ID, Social::$prefix . 'accounts', $accounts);
-			}
+	public function account($account) {
+		if ($account instanceof Social_Service_Account) {
+			$this->_accounts[$account->id()] = $account;
+			return $this;
 		}
-		else {
-			$accounts = get_option(Social::$prefix . 'accounts', array());
-			if (isset($accounts[$this->service][$id])) {
-				unset($accounts[$this->service][$id]);
-				update_option(Social::$prefix . 'accounts', $accounts);
-			}
+
+		if ($this->account_exists($account)) {
+			return $this->_accounts[$account];
 		}
+
+		return false;
 	}
 
 	/**
-	 * Saves a WP_User object.
+	 * Acts as a getter and setter for service accounts.
 	 *
-	 * @param  int|object  $account  the account ID
-	 * @return void
+	 * @param  array  $accounts  accounts to add to the service
+	 * @return array|Social_Service
 	 */
-	public function save($account = null) {
-		if (!is_admin() or IS_PROFILE_PAGE) {
-			$accounts = get_user_meta(get_current_user_id(), Social::$prefix . 'accounts', true);
-			if ($account === null) {
-				$accounts[$this->service] = $this->accounts;
-			}
-			else {
-				if (is_int($account)) {
-					$account = $this->account($account);
-				}
-				$accounts[$this->service][$account->user->id] = $account;
-			}
-			update_user_meta(get_current_user_id(), Social::$prefix . 'accounts', $accounts);
+	public function accounts(array $accounts = null) {
+		if ($accounts === null) {
+			return $this->_accounts;
 		}
-		else {
-			$accounts = get_option(Social::$prefix . 'accounts', array());
-			if ($account === null) {
-				$accounts[$this->service] = $this->accounts;
+
+		$class = 'Social_Service_'.$this->_key.'_Account';
+		foreach ($accounts as $account) {
+			$account = new $class($account);
+			if (!$this->account_exists($account->id())) {
+				$this->_accounts[$account->id()] = $account;
 			}
-			else {
-				if (is_int($account)) {
-					$account = $this->account($account);
-				}
-				$accounts[$this->service][$account->user->id] = $account;
-			}
-			update_option(Social::$prefix . 'accounts', $accounts);
 		}
+		return $this;
+	}
+
+	/**
+	 * Removes an account from the service.
+	 *
+	 * @abstract
+	 * @param  int|Social_Service_Account  $account
+	 * @return Social_Service
+	 */
+	public function remove_account($account) {
+		if (is_int($account)) {
+			$account = $this->account($account);
+		}
+
+		if ($account !== false) {
+			unset($this->_accounts[$account->id()]);
+		}
+
+		return $this;
 	}
 
 	/**
@@ -166,9 +291,7 @@ abstract class Social_Service {
 	 */
 	public function format_content($post, $format) {
 		// Filter the format
-		$format = apply_filters(Social::$prefix . 'broadcast_format', $format);
-		$format = apply_filters(Social::$prefix . $this->service . '_broadcast_format', $format);
-
+		$format = apply_filters('social_broadcast_format', $format, $post, $this);
 
 		$_format = $format;
 		$available = $this->max_broadcast_length();
@@ -184,18 +307,19 @@ abstract class Social_Service {
 				case '{url}':
 					$url = wp_get_shortlink($post->ID);
 					if (empty($url)) {
-						$url = home_url('?p='.$post->ID);
+						$url = site_url('?p='.$post->ID);
 					}
-					$url = apply_filters(Social::$prefix . 'broadcast_permalink', $url, $post);
-					$url = apply_filters(Social::$prefix . $this->service . '_broadcast_permalink', $url, $post);
-					$content = $url;
+					$url = apply_filters('social_broadcast_permalink', $url, $post, $this);
+					$content = esc_url($url);
 					break;
 				case '{title}':
 					$content = $post->post_title;
 					break;
 				case '{content}':
 					$content = strip_tags($post->post_content);
-					$content = str_replace(array("\n", "\r", PHP_EOL), '', $content);
+					$content = preg_replace('/\s+/', ' ', $content);
+					$content = str_replace(array("\n", "\r", PHP_EOL), ' ', $content);
+					$content = str_replace('&nbsp;', ' ', $content);
 					break;
 				case '{author}':
 					$user = get_userdata($post->post_author);
@@ -207,86 +331,299 @@ abstract class Social_Service {
 			}
 
 			if (strlen($content) > $available) {
-				if (in_array($token, array('{date}', '{author}'))) {
+				if (in_array($token, array('{date}', '{author}'))
+				) {
 					$content = '';
 				}
 				else {
-					$content = substr($content, 0, ($available-3)).'...';
+					$content = substr($content, 0, ($available - 3)).'...';
 				}
 			}
 
 			// Filter the content
-			$content = apply_filters(Social::$prefix . 'format_content', $content, $post, $format);
-			$content = apply_filters(Social::$prefix . $this->service . '_format_content', $content, $post, $format);
+			$content = apply_filters('social_format_content', $content, $post, $format, $this);
 
 			foreach ($_format as $haystack) {
-				if (strpos($haystack, $token) !== false) {
-					if ($available > 0) {
-						$haystack = str_replace($token, $content, $haystack);
-						$available = $available - strlen($haystack);
-						$format = str_replace($token, $content, $format);
-						break;
-					}
+				if (strpos($haystack, $token) !== false and $available > 0) {
+					$haystack = str_replace($token, $content, $haystack);
+					$available = $available - strlen($haystack);
+					$format = str_replace($token, $content, $format);
+					break;
 				}
 			}
 		}
+
+		// Filter the content
+		$format = apply_filters('social_broadcast_content_formatted', $format, $post, $this);
 
 		return $format;
 	}
 
 	/**
-	 * Performs an API request.
+	 * Formats a comment before it's broadcasted.
 	 *
-	 * @param  string      $service  service to use
-	 * @param  int|object  $account  account to use
-	 * @param  string      $api      API endpoint to request
-	 * @param  array       $params   parameters to pass to the API
-	 * @param  string      $method   GET|POST, default: GET
-	 * @return mixed
+	 * @param  WP_Comment  $comment
+	 * @param  array       $format
+	 * @return string
 	 */
-	public function do_request($service, $account, $api, array $params = array(), $method = 'GET') {
-		if (!is_object($account)) {
-			$account = $this->account($account);
+	public function format_comment_content($comment, $format) {
+		// Filter the format
+		$format = apply_filters('social_comment_broadcast_format', $format, $comment, $this);
+
+		$_format = $format;
+		$available = $this->max_broadcast_length();
+		foreach (Social::comment_broadcast_tokens() as $token => $description) {
+			$_format = str_replace($token, '', $_format);
 		}
-		return Social_Helper::request($service, $api, $account->keys->public, $account->keys->secret, $params, $method);
+		$available = $available - strlen($_format);
+
+		$_format = explode(' ', $format);
+		foreach (Social::comment_broadcast_tokens() as $token => $description) {
+			$content = '';
+			switch ($token) {
+				case '{url}':
+					$url = wp_get_shortlink($comment->comment_post_ID);
+					if (empty($url)) {
+						$url = home_url('?p='.$comment->comment_post_ID);
+					}
+					$url .= '#comment-'.$comment->comment_ID;
+					$url = apply_filters('social_comment_broadcast_permalink', $url, $comment, $this);
+					$content = esc_url($url);
+					break;
+				case '{content}':
+					$content = strip_tags($comment->comment_content);
+					$content = str_replace(array("\n", "\r", PHP_EOL), '', $content);
+					$content = str_replace('&nbsp;', '', $content);
+					break;
+			}
+
+			if (strlen($content) > $available) {
+				$content = substr($content, 0, ($available - 3)).'...';
+			}
+
+			$content = apply_filters('social_format_comment_content', $content, $comment, $format, $this);
+
+			foreach ($_format as $haystack) {
+				if (strpos($haystack, $token) !== false and $available > 0) {
+					$haystack = str_replace($token, $content, $haystack);
+					$available = $available - strlen($haystack);
+					$format = str_replace($token, $content, $format);
+					break;
+				}
+			}
+		}
+
+		$format = apply_filters('social_comment_broadcast_content_formatted', $format, $comment, $this);
+		return $format;
 	}
 
 	/**
-	 * Returns the disconnect URL.
+	 * Handles the requests to the proxy.
 	 *
-	 * @static
-	 * @param  object  $account
-	 * @param  bool    $is_admin
-	 * @param  string  $before
-	 * @param  string  $after
-	 * @return string
+	 * @param  Social_Service_Account|int  $account
+	 * @param  string                      $api
+	 * @param  array                       $args
+	 * @param  string                      $method
+	 * @return Social_Response|bool
 	 */
-	public function disconnect_url($account, $is_admin = false, $before = '', $after = '') {
-		$params = array(
-			Social::$prefix . 'disconnect' => 'true',
-			'id' => $account->user->id,
-			'service' => $this->service
-		);
-		if ($is_admin) {
-			$url = Social_Helper::settings_url($params);
-			$text = '<span title="'.__('Disconnect', Social::$i18n).'" class="social-disconnect social-ir">' . __('Disconnect', Social::$i18n) . '</span>';
+	public function request($account, $api, array $args = array(), $method = 'GET') {
+		if (!is_object($account)) {
+			$account = $this->account($account);
+		}
+
+		if ($account !== false) {
+			$proxy = apply_filters('social_api_proxy', Social::$api_url.$this->_key, $this->_key);
+			$api = apply_filters('social_api_endpoint', $api, $this->_key);
+			$method = apply_filters('social_api_endpoint_method', $method, $this->_key);
+			$args = apply_filters('social_api_endpoint_args', $args, $this->_key);
+			$request = wp_remote_post($proxy, array(
+				'sslverify' => false,
+				'body' => array(
+					'api' => $api,
+					'method' => $method,
+					'public_key' => $account->public_key(),
+					'hash' => sha1($account->public_key().$account->private_key()),
+					'params' => json_encode(stripslashes_deep($args))
+				)
+			));
+			if (!is_wp_error($request)) {
+				$request['body'] = apply_filters('social_response_body', $request['body'], $this->_key);
+				if (is_string($request['body'])) {
+					// slashes are normalized (always added) by WordPress
+					$request['body'] = stripslashes_deep(json_decode($request['body']));
+				}
+				return Social_Response::factory($this, $request, $account);
+			}
+			else {
+				Social::log('Service::request() error: '.$request->get_error_message());
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Show full comment?
+	 *
+	 * @param  string  $type
+	 * @return bool
+	 */
+	public function show_full_comment($type) {
+		return true;
+	}
+
+	/**
+	 * Disconnects an account from the user's account.
+	 *
+	 * @param  int  $id
+	 * @return void
+	 */
+	public function disconnect($id) {
+		if (!is_admin() or defined('IS_PROFILE_PAGE')) {
+			$accounts = get_user_meta(get_current_user_id(), 'social_accounts', true);
+			if (isset($accounts[$this->_key][$id])) {
+				if (defined('IS_PROFILE_PAGE')) {
+					unset($accounts[$this->_key][$id]);
+				}
+				else {
+					unset($accounts[$this->_key][$id]->user);
+				}
+
+				if (!count($accounts[$this->_key])) {
+					unset($accounts[$this->_key]);
+				}
+
+				update_user_meta(get_current_user_id(), 'social_accounts', $accounts);
+			}
 		}
 		else {
-			$path = array();
-			foreach ($params as $key => $value) {
-				$path[] = $key . '=' . urlencode($value);
+			$accounts = Social::option('accounts');
+			if (isset($accounts[$this->_key][$id])) {
+				unset($accounts[$this->_key][$id]);
+
+				if (!count($accounts[$this->_key])) {
+					unset($accounts[$this->_key]);
+				}
+
+				Social::option('accounts', $accounts);
+			}
+		}
+		do_action('social_account_disconnected', $this->_key, $id);
+	}
+
+	/**
+	 * Loads all of the accounts to use for aggregation.
+	 *
+	 * Format of returned data:
+	 *
+	 *     $accounts = array(
+	 *         'twitter' => array(
+	 *             '1234567890' => Social_Service_Twitter_Account,
+	 *             '0987654321' => Social_Service_Twitter_Account,
+	 *             // ... Other connected accounts
+	 *         ),
+	 *         'facebook' => array(
+	 *             '1234567890' => Social_Service_Facebook_Account,
+	 *             '0987654321' => Social_Service_Facebook_Account,
+	 *             // ... Other connected accounts
+	 *         ),
+	 *         // ... Other registered services
+	 *     );
+	 *
+	 * @param  object  $post
+	 * @return array
+	 */
+	protected function get_aggregation_accounts($post) {
+		$accounts = array();
+		foreach ($this->accounts() as $account) {
+			if (!isset($accounts[$this->_key])) {
+				$accounts[$this->_key] = array();
 			}
 
-			$redirect_to = $_SERVER['REQUEST_URI'];
-			if (isset($_GET['redirect_to'])) {
-				$redirect_to = $_GET['redirect_to'];
+			if (!isset($accounts[$this->_key][$account->id()])) {
+				$accounts[$this->_key][$account->id()] = $account;
 			}
-
-			$url = site_url('?' . implode('&', $path) . '&redirect_to=' . $redirect_to);
-			$text = 'Disconnect';
 		}
 
-		return sprintf('%s<a href="%s">%s</a>%s', $before, $url, $text, $after);
+		return $accounts;
+	}
+
+	/**
+	 * Checks to see if the result ID is the original broadcasted ID.
+	 *
+	 * @param  WP_Post|int  $post
+	 * @param  int          $result_id
+	 * @return bool
+	 */
+	public function is_original_broadcast($post, $result_id) {
+		if (!is_object($post)) {
+			$broadcasted_ids = get_post_meta($post, '_social_broadcasted_ids', true);
+			if (empty($broadcasted_ids)) {
+				$broadcasted_ids = array();
+			}
+
+			$post = (object) array(
+				'broadcasted_ids' => $broadcasted_ids,
+			);
+		}
+
+		if (isset($post->broadcasted_ids[$this->_key])) {
+			foreach ($post->broadcasted_ids[$this->_key] as $account_id => $broadcasted) {
+				if (isset($broadcasted[$result_id])) {
+					Social::log('This is the original broadcast. (:result_id)', array('result_id' => $result_id));
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Builds the social item output.
+	 *
+	 * @param  object  $item         social item being rendered
+	 * @param  int     $count        current display count
+	 * @param  array   $avatar_size  array containing the width and height attributes
+	 * @return string
+	 */
+	public function social_item_output($item, $count, array $avatar_size = array()) {
+		$style = '';
+		if ($count >= 10) {
+			$style = ' style="display:none"';
+		}
+
+		$width = '24';
+		$height = '24';
+		if (isset($avatar_size['width'])) {
+			$width = $avatar_size['width'];
+		}
+		if (isset($avatar_size['height'])) {
+			$height = $avatar_size['height'];
+		}
+
+		$status_url = $this->status_url($item->comment_author, $item->social_status_id);
+		$image = sprintf('<img src="%s" width="%s" height="%s" alt="%s" />', esc_url($item->social_profile_image_url), esc_attr($width), esc_attr($height), esc_attr($item->comment_author));
+		return sprintf('<a href="%s" title="%s"%s>%s</a>', esc_url($status_url), esc_attr($item->comment_author), $style, $image);
+	}
+
+	/**
+	 * Displays the auth item output.
+	 *
+	 * @param  Social_Service_Account  $account
+	 * @return Social_View
+	 */
+	public function auth_output(Social_Service_Account $account) {
+		$profile_url = esc_url($account->url());
+		$profile_name = esc_html($account->name());
+		$disconnect = $this->disconnect_url($account, true);
+		$name = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
+
+		return Social_View::factory('wp-admin/parts/auth_output', array(
+			'account' => $account,
+			'key' => $this->key(),
+			'name' => $name,
+			'disconnect' => $disconnect,
+		));
 	}
 
 } // End Social_Service

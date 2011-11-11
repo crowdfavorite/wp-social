@@ -1,319 +1,463 @@
 <?php
 /**
- * Facebook integration for Social.
+ * Twitter implementation for Social.
  *
- * @package Social
+ * @package    Social
+ * @subpackage plugins
  */
-add_filter(Social::$prefix . 'register_service', array('Social_Facebook', 'register_service'));
-add_filter(Social::$prefix . 'authorize_url', array('Social_Facebook', 'authorize_url'), 10, 2);
+if (class_exists('Social') and !class_exists('Social_Facebook')) {
 
-final class Social_Facebook extends Social_Service implements Social_IService {
+final class Social_Facebook {
 
 	/**
-	 * Registers this service with Social.
+	 * Registers Facebook to Social.
 	 *
 	 * @static
+	 * @wp-filter  social_register_service
+	 *
 	 * @param  array  $services
+	 *
 	 * @return array
 	 */
 	public static function register_service(array $services) {
-		$services += array(
-			'facebook' => new Social_Facebook
-		);
-
+		$services[] = 'facebook';
 		return $services;
 	}
 
 	/**
-	 * Filters the authorize URL.
+	 * Adds the permissions stuff in for Facebook.
 	 *
 	 * @static
-	 * @param  string  $service
-	 * @param  string  $url
+	 * @wp-filter  social_authorize_url
+	 * @param  string  $url  authorization url
+	 * @param  string  $key  service key
 	 * @return string
 	 */
-	public static function authorize_url($service, $url) {
-		if ($service == 'facebook') {
-			$url .= '&req_perms=publish_stream,read_stream';
+	public static function social_authorize_url($url, $key) {
+		if ($key == 'facebook') {
+			$perms = 'publish_stream';
+			if (is_admin()) {
+				$perms .= ',read_stream,offline_access';
+			}
+
+			$url = $url.'?req_perms='.$perms;
 		}
 
 		return $url;
 	}
 
 	/**
-	 * @var  string  the service
-	 */
-	public $service = 'facebook';
-
-	/**
-	 * @var string  the UI display value
-	 */
-	public $title = 'Facebook';
-
-	/**
-	 * The max length a post can be when broadcasted.
+	 * Quick hook to fix the comment type to service.
 	 *
-	 * @return int
+	 * @static
+	 * @wp-filter  social_comment_type_to_service
+	 * @param  string  $type
+	 * @return string
 	 */
-	public function max_broadcast_length() {
-		return 400;
+	public static function comment_type_to_service($type) {
+		if ($type == 'facebook-like') {
+			$type = 'facebook';
+		}
+
+		return $type;
 	}
 
 	/**
-	 * Executes the request for the service.
+	 * Adds to the avatar comment types array.
 	 *
-	 * @param  int|object  $account  account to use
-	 * @param  string      $api      API endpoint to request
-	 * @param  array       $params   parameters to pass to the API
-	 * @param  string      $method   GET|POST, default: GET
+	 * @static
+	 * @param  array  $types
 	 * @return array
 	 */
-	function request($account, $api, array $params = array(), $method = 'GET') {
-		return parent::do_request('facebook', $account, $api, $params, $method);
+	public static function get_avatar_comment_types(array $types) {
+		return array_merge($types, array(
+			'social-facebook',
+			'social-facebook-like'
+		));
 	}
 
 	/**
-	 * Creates a WordPress User
+	 * Gets the avatar based on the comment type.
 	 *
-	 * @param  int|object  $account  account to use to create WP account
-	 * @return int
-	 */
-	function create_user($account) {
-		if (is_int($account)) {
-			$account = $this->account($account);
-		}
-
-		if (!isset($account->user->username)) {
-			$account->user->username = $account->user->name.'.'.$account->user->id;
-		}
-
-		return Social_Helper::create_user('facebook', $account->user->username);
-	}
-
-	/**
-	 * Updates the user's status.
-	 *
-	 * @param  int|object  $account
-	 * @param  string      $status  status message
-	 * @return array
-	 */
-	public function status_update($account, $status) {
-		return $this->request($account, 'feed', array('message' => $status), 'POST');
-	}
-
-	/**
-	 * Returns the URL to the user's account.
-	 *
-	 * @param  object  $account
+	 * @static
+	 * @wp-filter  get_avatar
+	 * @param  string  $avatar
+	 * @param  object  $comment
+	 * @param  int     $size
+	 * @param  string  $default
+	 * @param  string  $alt
 	 * @return string
 	 */
-	public function profile_url($account) {
-		if (!isset($account->user->link)) {
-			return 'http://facebook.com/profile.php?id='.$account->user->id;
-		}
-		return $account->user->link;
-	}
-
-	/**
-	 * Returns the user's display name.
-	 *
-	 * @param  object  $account
-	 * @return string
-	 */
-	public function profile_name($account) {
-		return $account->user->name;
-	}
-
-	/**
-	 * Builds the user's avatar.
-	 *
-	 * @param  int|object  $account
-	 * @param  int         $comment_id
-	 * @return string
-	 */
-	function profile_avatar($account, $comment_id = null) {
-		if (is_int($account)) {
-			$account = $this->account($account);
-		}
-		else if (!$account and $comment_id !== null) {
-			$id = get_comment_meta($comment_id, Social::$prefix . 'account_id', true);
-			return 'http://graph.facebook.com/' . $id . '/picture';
-		}
-		return 'http://graph.facebook.com/' . $account->user->id . '/picture';
-	}
-
-	/**
-	 * Searches the service to find any replies to the blog post.
-	 *
-	 * @param  object      $post
-	 * @param  array       $urls
-	 * @param  array|null  $broadcasted_ids
-	 * @return array|bool
-	 */
-	function search_for_replies($post, array $urls, $broadcasted_ids = null) {
-		// Load the comments already stored for this post
-		$results = array();
-		$post_comments = get_post_meta($post->ID, Social::$prefix . 'aggregated_replies', true);
-		if (empty($post_comments)) {
-			$post_comments = array();
-		}
-
-		// Search by URL
-		$urls = apply_filters(Social::$prefix . 'search_urls', $urls);
-		$urls = apply_filters(Social::$prefix . $this->service . '_search_urls', $urls);
-		foreach ($urls as $url) {
-			if (!empty($url)) {
-				$url = 'https://graph.facebook.com/search?type=post&q=' . $url;
-				$request = wp_remote_get($url);
-				if (!is_wp_error($request)) {
-					$response = json_decode($request['body']);
-
-					if (isset($response->data) and is_array($response->data) and count($response->data)) {
-						$results = array();
-						foreach ($response->data as $result) {
-							if ((is_array($post_comments) and in_array($result->id, array_values($post_comments))) or
-								(is_array($broadcasted_ids) and in_array($result->id, array_values($broadcasted_ids)))
-							) {
-								Social_Aggregate_Log::instance($post->ID)->add($this->service, $result->id, 'url', true);
-								continue;
-							}
-
-							Social_Aggregate_Log::instance($post->ID)->add($this->service, $result->id, 'url');
-							$post_comments[] = $result->id;
-							$results[] = $result;
-						}
-					}
+	public static function get_avatar($avatar, $comment, $size, $default, $alt) {
+		if (is_object($comment) and $comment->comment_type == 'social-facebook-like') {
+			$image = get_comment_meta($comment->comment_ID, 'social_profile_image_url', true);
+			if ($image !== null) {
+				$type = '';
+				if (is_object($comment)) {
+					$type = $comment->comment_type;
 				}
+				return "<img alt='{$alt}' src='{$image}' class='avatar avatar-{$size} photo {$type}' height='25' width='25' />";
 			}
 		}
-
-		// Load the post author and their Facebook accounts
-		if ($broadcasted_ids !== null) {
-			$accounts = get_user_meta($post->post_author, Social::$prefix . 'accounts', true);
-			if (isset(Social::$global_services['facebook'])) {
-				foreach (Social::$global_services['facebook']->accounts() as $account) {
-					if (!isset($accounts['facebook'][$account->user->id])) {
-						$accounts['facebook'][$account->user->id] = $account;
-					}
-				}
-			}
-
-			if (isset($accounts['facebook'])) {
-				foreach ($accounts['facebook'] as $account) {
-					if (isset($broadcasted_ids[$account->user->id])) {
-						$id = explode('_', $broadcasted_ids[$account->user->id]);
-						$response = $this->request($account, $id[1].'/comments')->response;
-						if (isset($response->data) and is_array($response->data) and count($response->data)) {
-							foreach ($response->data as $comment) {
-								if ((is_array($post_comments) and in_array($comment->id, array_values($post_comments))) or
-									(is_array($broadcasted_ids) and in_array($comment->id, array_values($broadcasted_ids)))
-								) {
-									Social_Aggregate_Log::instance($post->ID)->add($this->service, $comment->id, 'reply', true, array('parent_id' => $id[0]));
-									continue;
-								}
-								Social_Aggregate_Log::instance($post->ID)->add($this->service, $comment->id, 'reply', false, array('parent_id' => $id[0]));
-								$comment->status_id = $broadcasted_ids[$account->user->id];
-								$post_comments[] = $comment->id;
-								$results[] = $comment;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		if (count($results)) {
-			update_post_meta($post->ID, Social::$prefix . 'aggregated_replies', $post_comments);
-			return $results;
-		}
-
-		return false;
+		return $avatar;
 	}
 
 	/**
-	 * Saves the replies as comments.
+	 * Pre-processor to the comments.
 	 *
+	 * @wp-filter social_comments_array
+	 * @static
+	 * @param  array  $comments
 	 * @param  int    $post_id
-	 * @param  array  $replies
-	 * @return void
+	 * @return array
 	 */
-	function save_replies($post_id, array $replies) {
-		foreach ($replies as $reply) {
-			$url = 'http://graph.facebook.com/' . $reply->from->id;
-			$request = wp_remote_get($url);
-			if (!is_wp_error($request)) {
-				$response = json_decode($request['body']);
+	public static function comments_array(array $comments, $post_id) {
+		// pre-load the hashes for broadcasted tweets
+		$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
+		if (empty($broadcasted_ids) or empty($broadcasted_ids['facebook'])) {
+			return $comments;
+		}
+		global $wpdb;
 
-				$account = (object)array(
-					'user' => $response
-				);
+		// we need comments to be keyed by ID, check for Facebook comments
+		$facebook_comments = $facebook_likes = $_comments = $comment_ids = array();
+		foreach ($comments as $key => $comment) {
+			if (is_object($comment)) {
+				$_comments['id_'.$comment->comment_ID] = $comment;
+				if (in_array($comment->comment_type, array('social-facebook', 'social-facebook-like'))) {
+					$comment_ids[] = $comment->comment_ID;
+					$facebook_comments['id_'.$comment->comment_ID] = $comment;
+				}
+			}
+			else {
+				$_comments[$key] = $comment;
+			}
+		}
 
-				$commentdata = array(
-					'comment_post_ID' => $post_id,
-					'comment_type' => $this->service,
-					'comment_author' => $reply->from->name,
-					'comment_author_email' => $this->service . '.' . $reply->id . '@example.com',
-					'comment_author_url' => $this->profile_url($account),
-					'comment_content' => $reply->message,
-					'comment_date' => gmdate('Y-m-d H:i:s', strtotime($reply->created_time)),
-					'comment_date_gmt' => gmdate('Y-m-d H:i:s', strtotime($reply->created_time)),
-					'comment_author_IP' => $_SERVER['SERVER_ADDR'],
-					'comment_agent' => 'Social Aggregator'
-				);
-				$commentdata['comment_approved'] = wp_allow_comment($commentdata);
-				$comment_id = wp_insert_comment($commentdata);
-				update_comment_meta($comment_id, Social::$prefix . 'account_id', $reply->from->id);
-				update_comment_meta($comment_id, Social::$prefix . 'profile_image_url', 'http://graph.facebook.com/' . $reply->from->id . '/picture');
-				update_comment_meta($comment_id, Social::$prefix . 'status_id', (isset($reply->status_id) ? $reply->status_id : $reply->id));
+		// if no Facebook comments, get out now
+		if (!count($facebook_comments)) {
+			return $comments;
+		}
 
-				if ('spam' !== $commentdata['comment_approved']) { // If it's spam save it silently for later crunching
-					if ('0' == $commentdata['comment_approved']) {
-						wp_notify_moderator($comment_id);
-					}
+		// use our keyed array
+		$comments = $_comments;
+		unset($_comments);
 
-					$post = &get_post($commentdata['comment_post_ID']); // Don't notify if it's your own comment
+		// Load the comment meta
+		$results = $wpdb->get_results("
+			SELECT meta_key, meta_value, comment_id
+			  FROM $wpdb->commentmeta
+			 WHERE comment_id IN (".implode(',', $comment_ids).")
+			   AND (
+			       meta_key = 'social_status_id'
+			    OR meta_key = 'social_profile_image_url'
+			    OR meta_key = 'social_comment_type'
+			)
+		");
 
-					if (get_option('comments_notify') and $commentdata['comment_approved'] and (!isset($commentdata['user_id']) or $post->post_author != $commentdata['user_id'])) {
-						wp_notify_postauthor($comment_id, isset($commentdata['comment_type'] ) ? $commentdata['comment_type'] : '');
+		// Set up social data for facebook comments
+		foreach ($facebook_comments as $key => &$comment) {
+			$comment->social_items = array();
+
+			// Attach meta
+			foreach ($results as $result) {
+				if ($comment->comment_ID == $result->comment_id) {
+					$comment->{$result->meta_key} = $result->meta_value;
+				}
+			}
+		}
+
+		// merge data so that $comments has the data we've set up
+		$comments = array_merge($comments, $facebook_comments);
+
+		// set-up the likes
+		foreach ($facebook_comments as $key => &$comment) {
+			if (is_object($comment) and isset($broadcasted_ids['facebook'])) {
+				foreach ($broadcasted_ids['facebook'] as $account_id => $broadcasted) {
+					if (isset($broadcasted[$comment->social_status_id]) and $comment->comment_type == 'social-facebook-like') {
+						$facebook_likes[] = $comment;
+						unset($comments['id_'.$comment->comment_ID]);
 					}
 				}
+			}
+		}
+
+		// Add the likes
+		if (!isset($comments['social_items'])) {
+			$comments['social_items'] = array();
+		}
+		$comments['social_items']['facebook'] = $facebook_likes;
+
+		return $comments;
+	}
+
+	/**
+	 * Filters the groups.
+	 *
+	 * @static
+	 * @param  array  $groups
+	 * @param  array  $comments
+	 * @return array
+	 */
+	public static function comments_array_groups(array $groups, array $comments) {
+		if (isset($groups['social-facebook-like'])) {
+			if (!isset($groups['social-facebook'])) {
+				$groups['social-facebook'] = 0;
+			}
+
+			$groups['social-facebook'] = $groups['social-facebook'] + $groups['social-facebook-like'];
+			unset($groups['social-facebook-like']);
+		}
+
+		return $groups;
+	}
+
+	/**
+	 * Adds the Facebook Pages checkbox to the button.
+	 *
+	 * @static
+	 * @param  string                   $button
+	 * @param  Social_Service_Facebook  $service
+	 * @param  bool                     $profile_page
+	 * @return string
+	 */
+	public static function social_service_button($button, $service, $profile_page = false) {
+		if ($service->key() == 'facebook') {
+			$label = '<input type="checkbox" id="social-facebook-pages" value="true" />'
+			       . '<label for="social-facebook-pages">'.__('Connect with Pages support', 'social').'</label>';
+
+			if (!$profile_page) {
+				$button = explode('</div>', $button);
+				$button = $button[0].$label.'</div>';
+			}
+		}
+		return $button;
+	}
+
+	/**
+	 * Adds the manage pages permission onto the URL.
+	 *
+	 * @static
+	 * @param  string  $url
+	 * @return array|string
+	 */
+	public static function social_proxy_url($url) {
+		if (isset($_GET['use_pages']) and strpos($url, 'req_perms') !== false) {
+			$url = explode('req_perms=', $url);
+			$url = $url[0].'req_perms=manage_pages,'.$url[1];
+
+			// Now add the query param to the response URL
+			$url = explode('response_url=', $url);
+			$response_url = add_query_arg(array(
+				'use_pages' => 'true'
+			), urldecode($url[1]));
+			$url = $url[0].'response_url='.urlencode($response_url);
+		}
+		return $url;
+	}
+
+	/**
+	 * Saves the Facebook pages.
+	 *
+	 * @wp-action social_settings_save
+	 * @static
+	 * @param  bool $is_personal
+	 */
+	public static function social_settings_save($is_personal = false) {
+		$service = Social::instance()->service('facebook');
+		if ($service !== false) {
+			$accounts = $service->accounts();
+			if (count($accounts)) {
+				foreach ($accounts as $account_id => $account) {
+					if (isset($_POST['social_facebook_pages_'.$account->id()])) {
+						$pages = $service->get_pages($account);
+
+						$account->pages(array());
+						if (count($pages)) {
+							foreach ($_POST['social_facebook_pages_'.$account->id()] as $page_id) {
+								if (isset($pages[$page_id])) {
+									$accounts[$account_id] = $account->page($pages[$page_id]);
+								}
+							}
+						}
+					}
+
+					if (defined('IS_PROFILE_PAGE')) {
+						$accounts[$account_id]->universal(false);
+						$accounts[$account_id]->use_pages(false, false);
+						$accounts[$account_id]->pages(array(), false);
+					}
+					else {
+						$accounts[$account_id]->personal(false);
+						$accounts[$account_id]->use_pages(true, false);
+						$accounts[$account_id]->pages(array(), true);
+					}
+
+					$accounts[$account_id] = $accounts[$account_id]->as_object();
+				}
+
+				$service->accounts($accounts)->save($is_personal);
 			}
 		}
 	}
 
 	/**
-	 * Checks to see if the account has been deauthed based on the request response.
+	 * @static
+	 * @param  object                   $account
+	 * @param  WP_Post                  $post
+	 * @param  Social_Service_Facebook  $service
 	 *
-	 * @param  mixed   $response
-	 * @param  object  $account
-	 * @return bool
+	 * @return object|bool
 	 */
-	public function deauthed($response, $account) {
-		if ($response->result == 'error' and strpos($response->response, 'Error validating access token') !== false) {
-			$deauthed = get_option(Social::$prefix . 'deauthed', array());
-			$deauthed[$this->service][$account->user->id] = 'Unable to publish to ' . $this->title() . ' with account ' . $this->profile_name($account) . '. Please <a href="' . Social_Helper::settings_url() . '">re-authorize</a> this account.';
-			update_option(Social::$prefix . 'deauthed', $deauthed);
+	public static function social_get_broadcast_account($account, $post, $service) {
+		if ($service->key() == 'facebook') {
+			// Load accounts
+			$found = false;
+			$accounts = $service->accounts();
+			foreach ($accounts as $_account) {
+				$pages = $_account->pages(null, 'combined');
+				if (isset($pages[$account->id])) {
+					$found = true;
+					$account = $_account->broadcast_page($pages[$account->id]);
+				}
+			}
 
-			// Remove the account from the users
-			unset($this->accounts[$account->user->id]);
-			$this->save();
+			if (!$found) {
+				$personal_accounts = get_user_meta($post->post_author, 'social_accounts', true);
+				if (isset($personal_accounts['facebook'])) {
+					foreach ($personal_accounts['facebook'] as $account_id => $_account) {
+						$_account = new Social_Service_Facebook_Account($_account);
+						$pages = $_account->pages(null, 'combined');
+						if (isset($pages[$account->id])) {
+							$found = true;
+							$account = $_account->broadcast_page($pages[$account->id]);
+						}
+					}
+				}
+			}
 
-			return true;
+			if ($found) {
+				return $account;
+			}
 		}
 
 		return false;
 	}
 
 	/**
-	 * Builds the status URL.
+	 * Sets the raw data for the broadcasted post.
 	 *
-	 * @param  string  $username
-	 * @param  int     $status_id
+	 * @wp-filter social_broadcast_response
+	 * @static
+	 * @param  array                   $data
+	 * @param  Social_Service_Account  $account
+	 * @param  string                  $service_key
+	 * @param  int                     $post_id
+	 * @param  Social_Response         $response
+	 * @return array
+	 */
+	public static function social_save_broadcasted_ids_data(array $data, Social_Service_Account $account, $service_key, $post_id, Social_Response $response = null) {
+		if ($service_key == 'facebook') {
+			$broadcast_page = $account->broadcast_page();
+			if ($broadcast_page !== null) {
+				$data['page'] = (object) array(
+					'id' => $broadcast_page->id,
+					'name' => $broadcast_page->name
+				);
+			}
+
+			$data['account'] = (object) array(
+				'user' => $account->as_object()->user
+			);
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Filter to change the view for Facebook Pages
+	 *
+	 * @static
+	 * @param  string  $file
+	 * @param  array   $data
 	 * @return string
 	 */
-	public function status_url($username, $status_id) {
-		$ids = explode('_', $status_id);
-		return 'http://facebook.com/permalink.php?story_fbid=' . $ids[1] . '&id=' . $ids[0];
+	public static function social_view_set_file($file, $data) {
+		if (isset($data['service']) and
+			$data['service'] != false and
+			$data['service']->key() == 'facebook' and
+			(isset($data['data']) and isset($data['data']['page'])) or
+			(isset($data['account']) and !$data['account'] instanceof Social_Service_Account))
+		{
+			$file = 'wp-admin/post/meta/broadcast/parts/facebook/page';
+		}
+
+		return $file;
+	}
+
+	/**
+	 * Sets the Social view data.
+	 *
+	 * @static
+	 * @param  array   $data
+	 * @param  string  $file
+	 * @return array
+	 */
+	public static function social_view_data($data, $file) {
+		if ($file == 'wp-admin/post/meta/broadcast/parts/facebook/page') {
+			if (isset($data['data']) and isset($data['data']['page'])) {
+				$data['account'] = $data['data']['page'];
+			}
+			else if ($data['account'] instanceof Social_Service_Account) {
+				$data['account'] = (object) array(
+					'id' => $data['account']->id(),
+					'name' => $data['account']->username()
+				);
+			}
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Merges the personal pages into the universal account.
+	 *
+	 * @static
+	 * @param  object  $universal
+	 * @param  object  $personal
+	 * @param  string  $service_key
+	 * @return object
+	 */
+	public static function social_merge_accounts($universal, $personal, $service_key) {
+		// Merge pages
+		if ($service_key == 'facebook') {
+			$universal->pages->personal = $personal->pages->personal;
+			$universal->use_personal_pages = $personal->use_personal_pages;
+		}
+		return $universal;
 	}
 
 } // End Social_Facebook
+
+define('SOCIAL_FACEBOOK_FILE', __FILE__);
+
+// Actions
+add_action('social_settings_save', array('Social_Facebook', 'social_settings_save'));
+
+// Filters
+add_filter('social_register_service', array('Social_Facebook', 'register_service'));
+add_filter('social_authorize_url', array('Social_Facebook', 'social_authorize_url'), 10, 2);
+add_filter('social_comment_type_to_service', array('Social_Facebook', 'comment_type_to_service'));
+add_filter('get_avatar', array('Social_Facebook', 'get_avatar'), 10, 5);
+add_filter('get_avatar_comment_types', array('Social_Facebook', 'get_avatar_comment_types'));
+add_filter('social_comments_array', array('Social_Facebook', 'comments_array'), 10, 2);
+add_filter('social_comments_array_groups', array('Social_Facebook', 'comments_array_groups'), 10, 2);
+add_filter('social_service_button', array('Social_Facebook', 'social_service_button'), 10, 3);
+add_filter('social_proxy_url', array('Social_Facebook', 'social_proxy_url'));
+add_filter('social_get_broadcast_account', array('Social_Facebook', 'social_get_broadcast_account'), 10, 3);
+add_filter('social_save_broadcasted_ids_data', array('Social_Facebook', 'social_save_broadcasted_ids_data'), 10, 5);
+add_filter('social_view_set_file', array('Social_Facebook', 'social_view_set_file'), 10, 2);
+add_filter('social_view_data', array('Social_Facebook', 'social_view_data'), 10, 2);
+add_filter('social_merge_accounts', array('Social_Facebook', 'social_merge_accounts'), 10, 3);
+
+}

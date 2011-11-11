@@ -1,468 +1,336 @@
 <?php
 /**
- * Twitter integration for Social.
+ * Twitter implementation for Social.
  *
- * @package Social
+ * @package    Social
+ * @subpackage plugins
  */
-add_filter(Social::$prefix . 'register_service', array('Social_Twitter', 'register_service'));
-add_filter(Social::$prefix . 'request_body', array('Social_Twitter', 'request_body'));
-add_filter('get_comment_author_link', array('Social_Twitter', 'get_comment_author_link'));
-add_action('wp_head', array('Social_Twitter', 'wp_head'));
+if (class_exists('Social') and !class_exists('Social_Twitter')) {
 
-final class Social_Twitter extends Social_Service implements Social_IService {
+final class Social_Twitter {
 
 	/**
-	 * Registers this service with Social.
+	 * Registers Twitter to Social.
 	 *
 	 * @static
+	 * @wp-filter  social_register_service
+	 *
 	 * @param  array  $services
+	 *
 	 * @return array
 	 */
 	public static function register_service(array $services) {
-		$services += array(
-			'twitter' => new Social_Twitter
-		);
-
+		$services[] = 'twitter';
 		return $services;
 	}
 
 	/**
-	 * Hack to fix the "Twitpocalypse" bug on 32-bit systems.
+	 * Adds to the avatar comment types array.
 	 *
 	 * @static
-	 * @param  string  $body
-	 * @return string
+	 * @param  array  $types
+	 * @return array
 	 */
-	public static function request_body($body) {
-		return preg_replace('/"id":(\d+)/', '"id":"$1"', $body);
+	public static function get_avatar_comment_types(array $types) {
+		return array_merge($types, array('social-twitter'));
 	}
 
 	/**
-	 * Adds the account ID to the rel for the author link.
+	 * Pre-processor to the comments.
 	 *
+	 * @wp-filter social_comments_array
 	 * @static
-	 * @param  string  $url
-	 * @return string
+	 * @param  array  $comments
+	 * @param  int    $post_id
+	 * @return array
 	 */
-	public static function get_comment_author_link($url) {
-		global $comment;
-		if ($comment->comment_type == 'twitter') {
-			$status_id = get_comment_meta($comment->comment_ID, Social::$prefix . 'status_id', true);
-			$output = str_replace("rel='", "rel='" . $status_id . " ", $url);
+	public static function comments_array(array $comments, $post_id) {
+		// pre-load the hashes for broadcasted tweets
+		$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
+		if (empty($broadcasted_ids)) {
+			return $comments;
+		}
+		global $wpdb;
 
-			$api_key = get_option(Social::$prefix . 'twitter_anywhere_api_key');
-			if ($api_key !== false) {
-				$output = str_replace("'>", "' style='display:none'>@", $output);
-				$output .= '@' . get_comment_author($comment->comment_ID);
+		// we need comments to be keyed by ID, check for Tweet comments
+		$tweet_comments = $_comments = $comment_ids = array();
+		foreach ($comments as $key => $comment) {
+			if (is_object($comment)) {
+				$_comments['id_'.$comment->comment_ID] = $comment;
+				if ($comment->comment_type == 'social-twitter') {
+					$comment_ids[] = $comment->comment_ID;
+					$tweet_comments['id_'.$comment->comment_ID] = $comment;
+				}
 			}
 			else {
-				$output = str_replace("'>", "'>@", $output);
+				$_comments[$key] = $comment;
 			}
-
-			return $output;
 		}
 
-		return $url;
+		// if no tweet comments, get out now
+		if (!count($tweet_comments)) {
+			return $comments;
+		}
+
+		// use our keyed array
+		$comments = $_comments;
+		unset($_comments);
+
+		$social_map = array(); // key = social id, value = comment_ID
+		$hash_map = array(); // key = hash, value = comment_ID
+		$broadcasted_social_ids = array();
+ 		$broadcast_retweets = array(); // array of comments
+
+		foreach ($broadcasted_ids['twitter'] as $account_id => $broadcasted) {
+			foreach ($broadcasted as $id => $data) {
+				$broadcasted_social_ids[] = $id;
+				// if we don't have a message saved for a tweet, try to get it so that we can use it next time
+				if (empty($data['message'])) {
+					$url = wp_nonce_url(site_url('?social_controller=aggregation&social_action=retrieve_twitter_content&broadcasted_id='.$id.'&post_id='.$post_id), 'retrieve_twitter_content');
+					wp_remote_get(str_replace('&amp;', '&', $url), array(
+						'timeout' => 0.01,
+						'blocking' => false,
+					));
+				}
+				else {
+					// create a hash from the broadcast so we can match retweets to it
+					$hash = self::build_retweet_hash($data['message']);
+
+					// This is stored as broadcasted and not the ID so we can easily store broadcasted retweets
+					// instead of attaching retweets to non-existent comments.
+					$hash_map[$hash] = 'broadcasted';
+				}
+			}
+		}
+
+		// Load the comment meta
+		$results = $wpdb->get_results("
+			SELECT meta_key, meta_value, comment_id
+			  FROM $wpdb->commentmeta
+			 WHERE comment_id IN (".implode(',', $comment_ids).")
+			   AND (
+			       meta_key = 'social_in_reply_to_status_id'
+			    OR meta_key = 'social_status_id'
+			    OR meta_key = 'social_raw_data'
+			    OR meta_key = 'social_profile_image_url'
+			    OR meta_key = 'social_comment_type'
+			)
+		");
+
+		// Set up social data for twitter comments
+		foreach ($tweet_comments as $key => &$comment) {
+			$comment->social_items = array();
+
+			// Attach meta
+			foreach ($results as $result) {
+				if ($comment->comment_ID == $result->comment_id) {
+					switch ($result->meta_key) {
+						case 'social_raw_data':
+							$comment->social_raw_data = json_decode(base64_decode($result->meta_value));
+							break;
+						case 'social_status_id':
+							$social_map[$result->meta_value] = $result->comment_id;
+						default:
+							$comment->{$result->meta_key} = $result->meta_value;
+					}
+				}
+			}
+
+			// Attach hash
+			if (isset($comment->social_raw_data) and isset($comment->social_raw_data->text)) {
+				$comment->social_hash = self::build_retweet_hash($comment->social_raw_data->text);
+			}
+			else {
+				$comment->social_hash = self::build_retweet_hash($comment->comment_content);
+			}
+			if (!isset($hash_map[$comment->social_hash])) {
+				$hash_map[$comment->social_hash] = $comment->comment_ID;
+			}
+		}
+
+		// merge data so that $comments has the data we've set up
+		$comments = array_merge($comments, $tweet_comments);
+
+		// set-up replies and retweets
+		foreach ($tweet_comments as $key => &$comment) {
+			if (is_object($comment)) {
+				// set reply/comment parent
+				if (!empty($comment->social_in_reply_to_status_id) and isset($social_map[$comment->social_in_reply_to_status_id])) {
+					$comments[$key]->comment_parent = $social_map[$comment->social_in_reply_to_status_id];
+				}
+
+				// set retweets
+				$rt_matched = false;
+				if (isset($comment->social_raw_data) and !empty($comment->social_raw_data->retweeted_status)) {
+					// explicit match via API data
+					$rt_id = $comment->social_raw_data->retweeted_status->id_str;
+					if (in_array($rt_id, $broadcasted_social_ids)) {
+						$broadcast_retweets[] = $comment;
+						unset($comments[$key]);
+						$rt_matched = true;
+					}
+					else if (isset($social_map[$rt_id])) {
+						$comments[$social_map[$rt_id]]->social_items[$key] = $comment;
+						unset($comments[$key]);
+						$rt_matched = true;
+					}
+				}
+
+				if (!$rt_matched) {
+					// best guess via hashes
+					$hash_match = $hash_map[$comment->social_hash];
+					if ($hash_match != $comment->comment_ID) { // hash match to own tweet is expected, at minimum - set above
+						if ($hash_match == 'broadcasted') {
+							$broadcast_retweets[] = $comment;
+						}
+						else {
+							$comments['id_'.$hash_match]->social_items[$key] = $comment;
+						}
+						unset($comments[$key]);
+					}
+				}
+			}
+		}
+
+		if (!isset($comments['social_items'])) {
+			$comments['social_items'] = array();
+		}
+		$comments['social_items']['twitter'] = $broadcast_retweets;
+
+		return $comments;
 	}
 
 	/**
-	 * Adds the hovercard JS.
+	 * Enqueues the @Anywhere script.
 	 *
 	 * @static
 	 * @return void
 	 */
-	public static function wp_head() {
-		$api_key = get_option(Social::$prefix . 'twitter_anywhere_api_key');
-		if (!empty($api_key) and $api_key !== false) {
-?>
-<script src="http://platform.twitter.com/anywhere.js?id=<?php echo $api_key; ?>&amp;v=1"></script>
-<script type="text/javascript">
-	twttr.anywhere(function(twitter) {
-		twitter.hovercards();
-	});
-</script>
-<?php
+	public static function enqueue_assets() {
+		$api_key = Social::option('twitter_anywhere_api_key');
+		if (!empty($api_key)) {
+			wp_enqueue_script('twitter_anywhere', 'http://platform.twitter.com/anywhere.js?id='.$api_key, array('social_js'), Social::$version, true);
 		}
 	}
 
 	/**
-	 * @var  string  the service
-	 */
-	public $service = 'twitter';
-
-	/**
-	 * @var string  the UI display value
-	 */
-	public $title = 'Twitter';
-
-	/**
-	 * @var  array  service's accounts
-	 */
-	protected $accounts = array();
-
-	/**
-	 * The max length a post can be when broadcasted.
+	 * Sets the raw data for the broadcasted post.
 	 *
-	 * @return int
-	 */
-	public function max_broadcast_length() {
-		return 140;
-	}
-
-	/**
-	 * Executes the request for the service.
-	 *
-	 * @param  int|object  $account  account to use
-	 * @param  string      $api      API endpoint to request
-	 * @param  array       $params   parameters to pass to the API
-	 * @param  string      $method   GET|POST, default: GET
+	 * @wp-filter social_broadcast_response
+	 * @static
+	 * @param  array                   $data
+	 * @param  Social_Service_Account  $account
+	 * @param  string                  $service_key
+	 * @param  int                     $post_id
+	 * @param  Social_Response         $response
 	 * @return array
 	 */
-	function request($account, $api, array $params = array(), $method = 'GET') {
-		return parent::do_request('twitter', $account, $api, $params, $method);
-	}
-
-	/**
-	 * Creates a WordPress User
-	 *
-	 * @param  int|object  $account  account to use to create WP account
-	 * @return int
-	 */
-	function create_user($account) {
-		if (is_int($account)) {
-			$account = $this->account($account);
-		}
-
-		return Social_Helper::create_user('twitter', $account->user->screen_name);
-	}
-
-	/**
-	 * Updates the user's status.
-	 *
-	 * @param  int|object  $account
-	 * @param  string      $status  status message
-	 * @return array
-	 */
-	public function status_update($account, $status) {
-		$args = array(
-			'status' => $status
-		);
-		if (isset($_POST['in_reply_to_status_id']) and !empty($_POST['in_reply_to_status_id'])) {
-			$args['in_reply_to_status_id'] = $_POST['in_reply_to_status_id'];
-		}
-		return $this->request($account, 'statuses/update', $args, 'POST');
-	}
-
-	/**
-	 * Returns the URL to the user's account.
-	 *
-	 * @param  object  $account
-	 * @return string
-	 */
-	public function profile_url($account) {
-		return 'http://twitter.com/' . $account->user->screen_name;
-	}
-
-	/**
-	 * Returns the user's display name.
-	 *
-	 * @param  object  $account
-	 * @return string
-	 */
-	public function profile_name($account) {
-		return $account->user->screen_name;
-	}
-
-	/**
-	 * Builds the user's avatar.
-	 *
-	 * @param  int|object  $account
-	 * @param  int         $comment_id
-	 * @return string
-	 */
-	public function profile_avatar($account, $comment_id = null) {
-		if (is_int($account)) {
-			$account = $this->account($account);
-		}
-		else if (!$account and $comment_id !== null) {
-			return get_comment_meta($comment_id, Social::$prefix . 'profile_image_url', true);
-		}
-		return $account->user->profile_image_url;
-	}
-
-	/**
-	 * Searches the service to find any replies to the blog post.
-	 *
-	 * @param  object      $post
-	 * @param  array       $urls
-	 * @param  array|null  $broadcasted_ids
-	 * @return array|bool
-	 */
-	function search_for_replies($post, array $urls, $broadcasted_ids = null) {
-		// Load the comments already stored for this post
-		$results = array();
-		$post_comments = get_post_meta($post->ID, Social::$prefix . 'aggregated_replies', true);
-		if (empty($post_comments)) {
-			$post_comments = array();
-		}
-
-		// Load the post author and their Twitter accounts
-		if ($broadcasted_ids !== null) {
-			$accounts = get_user_meta($post->post_author, Social::$prefix . 'accounts', true);
-			if (isset(Social::$global_services['twitter'])) {
-				foreach (Social::$global_services['twitter']->accounts() as $account) {
-					if (!isset($accounts['twitter'][$account->user->id])) {
-						$accounts['twitter'][$account->user->id] = $account;
-					}
-				}
+	public static function social_save_broadcasted_ids_data(array $data, Social_Service_Account $account, $service_key, $post_id, Social_Response $response = null) {
+		if ($service_key == 'twitter') {
+			if (!empty($response)) {
+				$data['message'] = base64_encode(json_encode($response->body()->response));
 			}
-
-			if (isset($accounts['twitter'])) {
-				foreach ($accounts['twitter'] as $account) {
-					if (isset($broadcasted_ids[$account->user->id])) {
-						$tweets = $this->request($account, 'statuses/retweets/' . $broadcasted_ids[$account->user->id]);
-						if (isset($tweets->response) and is_array($tweets->response) and count($tweets->response)) {
-							foreach ($tweets->response as $tweet) {
-								$log_data = array(
-									'username' => $tweet->user->screen_name
-								);
-								if ((is_array($post_comments) and in_array($tweet->id, array_values($post_comments))) or
-								    (is_array($broadcasted_ids) and in_array($tweet->id, array_values($broadcasted_ids)))
-								) {
-									Social_Aggregate_Log::instance($post->ID)->add($this->service, $tweet->id, 'retweet', true, $log_data);
-									continue;
-								}
-
-								Social_Aggregate_Log::instance($post->ID)->add($this->service, $tweet->id, 'retweet', false, $log_data);
-								$post_comments[] = $tweet->id;
-								$results[$tweet->id] = (object)array(
-									'id' => $tweet->id,
-									'from_user_id' => $tweet->user->id,
-									'from_user' => $tweet->user->screen_name,
-									'text' => $tweet->text,
-									'created_at' => $tweet->created_at,
-									'profile_image_url' => $tweet->user->profile_image_url,
-								);
-							}
-						}
-
-						$tweets = $this->request($account, 'statuses/mentions', array(
-							'since_id' => $broadcasted_ids[$account->user->id],
-							'count' => 200
-						));
-						if (isset($tweets->response) and is_array($tweets->response) and count($tweets->response)) {
-							foreach ($tweets->response as $tweet) {
-								$log_data = array(
-									'username' => $tweet->user->screen_name
-								);
-								if ((is_array($post_comments) and in_array($tweet->id, array_values($post_comments))) or
-								    (is_array($broadcasted_ids) and in_array($tweet->id, array_values($broadcasted_ids)))
-								) {
-									Social_Aggregate_Log::instance($post->ID)->add($this->service, $tweet->id, 'reply', true, $log_data);
-									continue;
-								}
-
-								Social_Aggregate_Log::instance($post->ID)->add($this->service, $tweet->id, 'reply', false, $log_data);
-								if ($tweet->in_reply_to_status_id == $broadcasted_ids[$account->user->id]) {
-									if (!isset($results[$tweet->id])) {
-										$post_comments[] = $tweet->id;
-										$results[$tweet->id] = (object)array(
-											'id' => $tweet->id,
-											'from_user_id' => $tweet->user->id,
-											'from_user' => $tweet->user->screen_name,
-											'text' => $tweet->text,
-											'created_at' => $tweet->created_at,
-											'profile_image_url' => $tweet->user->profile_image_url,
-										);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		// Search by URL
-		$urls = apply_filters(Social::$prefix . 'search_urls', $urls);
-		$urls = apply_filters(Social::$prefix . $this->service . '_search_urls', $urls);
-		$url = 'http://search.twitter.com/search.json?q=' . implode('+OR+', $urls);
-		$request = wp_remote_get($url);
-		if (!is_wp_error($request)) {
-			$request['body'] = $this->request_body($request['body']);
-			$response = json_decode($request['body']);
-			if (isset($response->results) and is_array($response->results) and count($response->results)) {
-				foreach ($response->results as $result) {
-					$log_data = array(
-						'username' => $result->from_user
-					);
-					if ((is_array($post_comments) and in_array($result->id, array_values($post_comments))) or
-					    (is_array($broadcasted_ids) and in_array($result->id, array_values($broadcasted_ids)))
-					) {
-						Social_Aggregate_Log::instance($post->ID)->add($this->service, $result->id, 'url', true, $log_data);
-						continue;
-					}
-
-					Social_Aggregate_Log::instance($post->ID)->add($this->service, $result->id, 'url', false, $log_data);
-					if (!isset($results[$result->id])) {
-						$post_comments[] = $result->id;
-						$results[$result->id] = $result;
-					}
-				}
-			}
-		}
-
-		if (count($results)) {
-			update_post_meta($post->ID, Social::$prefix . 'aggregated_replies', $post_comments);
-			return $results;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Saves the replies as comments.
-	 *
-	 * @param  int    $post_id
-	 * @param  array  $replies
-	 * @return void
-	 */
-	public function save_replies($post_id, array $replies) {
-		foreach ($replies as $reply) {
-			$account = (object)array(
-				'user' => (object)array(
-					'id' => $reply->from_user_id,
-					'screen_name' => $reply->from_user,
-				)
+			$data['account'] = (object) array(
+				'user' => $account->as_object()->user
 			);
-			$commentdata = array(
-				'comment_post_ID' => $post_id,
-				'comment_type' => $this->service,
-				'comment_author' => $reply->from_user,
-				'comment_author_email' => $this->service . '.' . $reply->id . '@example.com',
-				'comment_author_url' => $this->profile_url($account),
-				'comment_content' => $reply->text,
-				'comment_date' => gmdate('Y-m-d H:i:s', strtotime($reply->created_at)),
-				'comment_date_gmt' => gmdate('Y-m-d H:i:s', strtotime($reply->created_at)),
-				'comment_author_IP' => $_SERVER['SERVER_ADDR'],
-				'comment_agent' => 'Social Aggregator'
-			);
-			$commentdata['comment_approved'] = wp_allow_comment($commentdata);
-			$comment_id = wp_insert_comment($commentdata);
-			update_comment_meta($comment_id, Social::$prefix . 'account_id', $reply->from_user_id);
-			update_comment_meta($comment_id, Social::$prefix . 'profile_image_url', $reply->profile_image_url);
-			update_comment_meta($comment_id, Social::$prefix . 'status_id', $reply->id);
-
-			if ('spam' !== $commentdata['comment_approved']) { // If it's spam save it silently for later crunching
-				if ('0' == $commentdata['comment_approved']) {
-					wp_notify_moderator($comment_id);
-				}
-
-				$post = &get_post($commentdata['comment_post_ID']); // Don't notify if it's your own comment
-
-				if (get_option('comments_notify') and $commentdata['comment_approved'] and (!isset($commentdata['user_id']) or $post->post_author != $commentdata['user_id'])) {
-					wp_notify_postauthor($comment_id, isset($commentdata['comment_type'] ) ? $commentdata['comment_type'] : '');
-				}
-			}
 		}
+
+		return $data;
 	}
 
 	/**
-	 * Checks to see if the account has been deauthed based on the request response.
+	 * Strips extra retweet data before comparing.
 	 *
-	 * @param  mixed   $response
-	 * @param  object  $account
+	 * @static
+	 * @param  string  $text
+	 * @return string
+	 */
+	private static function build_retweet_hash($text) {
+		$text = trim($text);
+		$retweet = (bool) (substr($text, 0, 4) == 'RT @');
+
+		$text = explode(' ', $text);
+		$content = '';
+		foreach ($text as $_content) {
+			if (!empty($_content) and strpos($_content, 'http://') === false) {
+				if ($retweet and ($_content == 'RT' or preg_match('/@([\w_]+):/i', $_content))) {
+					continue;
+				}
+
+				$content .= $_content.' ';
+			}
+		}
+
+		return md5(trim($content));
+	}
+	
+	/**
+	 * Checks for a retweet via twitter API data and user perception.
+	 *
+	 * @static
+	 * @param  stdClass  $comment
 	 * @return bool
 	 */
-	public function deauthed($response, $account) {
-		if ($response->result == 'error') {
-			if ($response->response == 'Could not authenticate with OAuth.') {
-				$deauthed = get_option(Social::$prefix . 'deauthed', array());
-				$deauthed[$this->service][$account->user->id] = 'Unable to publish to ' . $this->title() . ' with account ' . $this->profile_name($account) . '. Please <a href="' . Social_Helper::settings_url() . '">re-authorize</a> this account.';
-				update_option(Social::$prefix . 'deauthed', $deauthed);
-
-				// Remove the account from the users
-				unset($this->accounts[$account->user->id]);
-				$this->save();
-			}
-
-			return true;
+	private static function is_retweet($comment) {
+		$is_retweet = false;
+		if (isset($comment->social_raw_data) and !empty($comment->social_raw_data->retweeted_status)) {
+			$is_retweet = true;
 		}
-
-		return false;
+		if (substr($comment->comment_content, 0, 4) == 'RT @') {
+			$is_retweet = true;
+		}
+		return $is_retweet;
 	}
 
 	/**
-	 * Builds the status URL.
+	 * Adds a retweet to the original broadcasted post social items stack.
 	 *
-	 * @param  string  $username
-	 * @param  int     $status_id
-	 * @return string
+	 * @static
+	 * @param  int    $comment_id
+	 * @param  array  $comments
+	 * @param  array  $social_items
 	 */
-	public function status_url($username, $status_id) {
-		return 'http://twitter.com/' . $username . '/status/' . $status_id;
-	}
-
-	/**
-	 * Imports a tweet by URL.
-	 *
-	 * @param  int     $post_id
-	 * @param  string  $url
-	 * @return void
-	 */
-	public function import_tweet($post_id, $url) {
-		$post = get_post($post_id);
-
-		$accounts = get_user_meta($post->post_author, Social::$prefix . 'accounts', true);
-		if (isset(Social::$global_services['twitter'])) {
-			foreach (Social::$global_services['twitter']->accounts() as $account) {
-				if (!isset($accounts['twitter'][$account->user->id])) {
-					$accounts['twitter'][$account->user->id] = $account;
+	private static function add_to_social_items($comment_id, &$comments, &$social_items) {
+		$object = null;
+		$_comments = array();
+		foreach ($comments as $id => $comment) {
+			if (is_int($id)) {
+				if ($comment->comment_ID == $comment_id) {
+					$object = $comment;
+				}
+				else {
+					$_comments[] = $comment;
+				}
+			}
+			else {
+				if (isset($_comments[$id])) {
+					$_comments[$id] = array_merge($_comments[$id], $comment);
+				}
+				else {
+					$_comments[$id] = $comment;
 				}
 			}
 		}
+		$comments = $_comments;
 
-		$url = explode('/', $url);
-		$id = end($url);
-
-		$post_comments = get_post_meta($post->ID, Social::$prefix . 'aggregated_replies', true);
-		if (empty($post_comments)) {
-			$post_comments = array();
-		}
-
-		$url = 'http://api.twitter.com/1/statuses/show.json?id=' . $id;
-		$request = wp_remote_get($url);
-		if (!is_wp_error($request)) {
-			$logger = Social_Aggregate_Log::instance($post->ID);
-			$request['body'] = $this->request_body($request['body']);
-			$response = json_decode($request['body']);
-
-			if (in_array($id, $post_comments)) {
-				$logger->add($this->service, $response->id, 'Imported', true, array(
-				                                                                   'username' => $response->user->screen_name
-				                                                              ));
+		if ($object !== null) {
+			if (!isset($social_items['twitter'])) {
+				$social_items['twitter'] = array();
 			}
-			else {
-				$replies = array(
-					(object)array(
-						'from_user_id' => $response->user->id,
-						'from_user' => $response->user->screen_name,
-						'profile_image_url' => $response->user->profile_image_url,
-						'id' => $response->id,
-						'text' => $response->text,
-						'created_at' => $response->created_at,
-					)
-				);
-				$this->save_replies($post_id, $replies);
-				$logger->add($this->service, $response->id, 'Imported', false, array(
-				                                                                    'username' => $response->user->screen_name
-				                                                               ));
 
-				$post_comments[] = $response->id;
-				update_post_meta($post->ID, Social::$prefix . 'aggregated_replies', $post_comments);
-			}
-			$logger->save();
+			$social_items['twitter'][$comment_id] = $object;
 		}
 	}
 
 } // End Social_Twitter
+
+define('SOCIAL_TWITTER_FILE', __FILE__);
+
+// Filters
+add_filter('social_register_service', array('Social_Twitter', 'register_service'));
+add_filter('get_avatar_comment_types', array('Social_Twitter', 'get_avatar_comment_types'));
+add_filter('social_comments_array', array('Social_Twitter', 'comments_array'), 10, 2);
+add_filter('social_save_broadcasted_ids_data', array('Social_Twitter', 'social_save_broadcasted_ids_data'), 10, 5);
+add_action('wp_enqueue_scripts', array('Social_Twitter', 'enqueue_assets'));
+
+}

@@ -2,8 +2,8 @@
 Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter
 Requires at least: 3.2
-Tested up to: 3.2.1
-Stable tag: 1.0.1
+Tested up to: 3.3-beta2
+Stable tag: 2.0
 
 Broadcast posts to Twitter and/or Facebook, pull in items from each as comments, and allow commenters to use their Twitter/Facebook identities.
 
@@ -135,13 +135,13 @@ If you want to run system CRON jobs and disable Social's built in CRON jobs then
 1. Go to Social's settings page.
 2. Disable Social's internal CRON mechanism by selecting "Yes" under "Disable Internal CRON Mechanism" and clicking on "Save Settings".
 3. Now you should have an API key that you'll find under "API Key" under "Disable Internal CRON Mechanism". Use this API key for the "api_key" parameter on the URL your system CRON fires.
-	- An example system CRON could run `http://example.com/?social_cron=cron_15&api_key=your_api_key_here`
+	- An example system CRON could run `http://example.com/?social_controller=cron&social_action=cron_15&api_key=your_api_key_here`
 
 = How can I hook into a CRON for extra functionality? =
 
 If you want to hook into a CRON for extra functionality for a service, all you have to do is add an action:
 
-    <?php add_action(Social::$prefix.'cron_15', array('Your_Class', 'your_method')); ?>
+    <?php add_action('social_cron_15', array('Your_Class', 'your_method')); ?>
 
 = How can I turn on and off Twitter's @Anywhere functionality? =
 
@@ -156,6 +156,81 @@ If you want to disable the @Anywhere functionality, simply remove the API key fr
 
 No, the proxy acts just like any Twitter or Facebook application. We've simply pass commands back and forth through this application so you don't have to set up your own.
 
+= If a user comments using Twitter and that user has an existing local WordPress account, can they add the twitter account to the existing WordPress account? =
+
+Yes, they can add the account to their profile page.
+
+= Why are some custom posts with my blog post's URL not being found during aggregation? =
+
+This may be due to the bug with Facebook's search API. Currently, for a post to return on the search the URL must not be at the beginning of the post.
+
+Valid post that will be included:
+
+Hey, check out this post! http://example.com/?p=5
+
+Invalid post that will not included:
+
+http://example.com/?p=5 This was a cool post, go read it.
+
+Track this bug on Facebook: http://bugs.developers.facebook.net/show_bug.cgi?id=20611
+
+= Why are some of comments/posts not returning from Facebook right away? =
+
+We have noticed some latency around the inclusion of some items when querying the Graph API. We have seen some comments and posts take up to 72 hours to be included in aggregation requests.
+
+= Does your permalink have apostrophes in it? Is Social stripping these from the URL when disconnecting? =
+
+This is due to the fact that older versions of WordPress did not remove apostrophes from the permalink and newer versions of WordPress do. It is possible that your blog post was created on a version of WordPress that contained this bug. To fix this, simply login to your WP-Admin and edit the post by doing the following (assuming you're running WordPress 3.2+):
+
+1. Click on Posts in the WP-Admin menu.
+2. Find your post and click on "Edit".
+3. Under your post's title, click on the "Edit" link that is next to the permalink.
+4. Click "OK" to save the new permalink. (This will automatically remove the apostrophes for you.)
+
+= Can Social use Bit.ly, Bit.ly Pro or another URL shortener when broadcasting? =
+
+Social uses the core WordPress shortlink feature when broadcasting blog posts. Any plugin that interacts with the shortlink will also be reflected in Social's broadcasts.
+
+wp_get_shortlink Documentation: http://codex.wordpress.org/Function_Reference/wp_get_shortlink
+Bit.ly Plugin: http://wordpress.org/extend/plugins/bitly-shortlinks/
+
+When using the Bit.ly plugin, you will need to add the following to your wp-config.php to get it working:
+
+    /**
+     * Settings for Bit.ly Shortlinks Plugin
+     * http://yoast.com/wordpress/bitly-shortlinks/
+     **/
+    define('BITLY_USERNAME', '<your username>');
+    define('BITLY_APIKEY', '<your API key>');
+
+    // optional, if you want to use j.mp instead of bit.ly URL's
+    define('BITLY_JMP', true);
+
+
+= I have Apache's 401 auth enabled on my website, why is Social not working? =
+
+The proxy Social connects to requires your website to be publicly accessible to properly authorize your Facebook and Twitter accounts.
+
+= How can I be notified via email of comments left using Social? =
+
+You can install the "Subscribe to Comments Reloaded" plugin written by coolman (http://profiles.wordpress.org/users/coolmann/).
+
+Download: http://wordpress.org/extend/plugins/subscribe-to-comments-reloaded/
+
+= I occasionally receive a PHP notice of "Undefined property: WP_Http_Curl::$headers", what does this mean? =
+
+This is actually a bug in the WordPress core. This will be fixed in WordPress 3.3 according to this ticket http://core.trac.wordpress.org/ticket/18157.
+
+= Where can I update my default social broadcast accounts? =
+
+Connect your social account and after that you can add/remove your default broadcast accounts under the Social Settings Page and from your user profile page (Users/Your Profile).
+
+= Why can't I set up my social accounts on my local WordPress site? =
+
+Accounts can not be authorized on local environments, unless your local environment is publicly accessible via DNS.
+
+
+
 == Screenshots ==
 
 1. Allow your visitors to leave a comment as their Facebook or Twitter identities
@@ -167,6 +242,19 @@ No, the proxy acts just like any Twitter or Facebook application. We've simply p
 4. View of replies imported from Twitter as comments, @anywhere support 
 
 == Changelog ==
+
+= 2.0 =
+* Refactored Social completely.
+* Facebook Likes are now imported during comment aggregation.
+* Twitter retweets and Facebook Likes are now displayed under the broadcasted post.
+* Filter: social_broadcast_format now contains a third parameter, $service_key.
+* Filter: social_broadcast_permalink now contains a third parameter, $service_key.
+* Filter: social_format_content now contains a fourth parameter, $service_key.
+* Filter: social_broadcast_content_formatted now contains a third parameter, $service_key.
+
+= 1.0.2 =
+* Added the social_kses method to cleanse data coming back from the services.
+* WP accounts are no longer created with usernames of "facebook_" and "twitter_".
 
 = 1.0.1 =
 * Automatic CRON jobs now run correctly.
