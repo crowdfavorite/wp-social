@@ -263,7 +263,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					if ($this->is_duplicate_comment($post, $result->id)) {
 						Social::log('Result #:result_id already exists, skipping.', array(
 							'result_id' => $result->id
-						));
+						), 'duplicate-comment');
 						continue;
 					}
 

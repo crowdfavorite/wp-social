@@ -222,7 +222,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 					if ($this->is_duplicate_comment($post, $result->id)) {
 						Social::log('Result #:result_id already exists, skipping.', array(
 							'result_id' => $result->id
-						));
+						), 'duplicate-comment');
 						continue;
 					}
 
