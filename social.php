@@ -972,7 +972,9 @@ final class Social {
 	 * @return void
 	 */
 	public function cron_15_init() {
-		$this->request(site_url('?social_controller=cron&social_action=cron_15'), 'cron_15');
+		if (Social_CRON::instance('cron_15')->lock()) {
+			$this->request(site_url('?social_controller=cron&social_action=cron_15'), 'cron_15');
+		}
 	}
 
 	/**
@@ -982,7 +984,9 @@ final class Social {
 	 * @return void
 	 */
 	public function cron_60_init() {
-		$this->request(site_url('?social_controller=cron&social_action=cron_60'), 'cron_60');
+		if (Social_CRON::instance('cron_60')->lock()) {
+			$this->request(site_url('?social_controller=cron&social_action=cron_60'), 'cron_60');
+		}
 	}
 
 	/**

@@ -258,6 +258,18 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 						'comment_author_email' => $this->_key.'.'.$user_id.'@example.com',
 					));
 					$commentdata['comment_approved'] = wp_allow_comment($commentdata);
+
+					// sanity check to make sure this comment is not a duplicate
+					if ($this->is_duplicate_comment($post, $result->id)) {
+						Social::log('Result #:result_id already exists, skipping.', array(
+							'result_id' => $result->id
+						), 'duplicate-comment');
+						continue;
+					}
+
+					Social::log('Saving #:result_id.', array(
+						'result_id' => (isset($result->status_id) ? $result->status_id : $result->id)
+					));
 					$comment_id = wp_insert_comment($commentdata);
 
 					update_comment_meta($comment_id, 'social_account_id', $user_id);
