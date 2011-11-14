@@ -579,6 +579,32 @@ abstract class Social_Service {
 	}
 
 	/**
+	 * Checks to make sure the comment hasn't already been created.
+	 *
+	 * @param  object  $post
+	 * @param  int     $result_id
+	 * @return bool
+	 */
+	public function is_duplicate_comment($post, $result_id) {
+		global $wpdb;
+
+		$results = $wpdb->get_results($wpdb->prepare("
+			SELECT meta_value
+			  FROM $wpdb->commentmeta
+			 WHERE post_id = %s
+			   AND meta_key = 'social_status_id'
+		", $post->ID));
+
+		foreach ($results as $result) {
+			if ($result->meta_value == $result_id) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Builds the social item output.
 	 *
 	 * @param  object  $item         social item being rendered

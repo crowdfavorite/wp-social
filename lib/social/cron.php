@@ -98,9 +98,10 @@ final class Social_CRON {
 	/**
 	 * Executes the CRON job.
 	 *
+	 * @param  bool  $skip_lock
 	 * @return void
 	 */
-	public function execute() {
+	public function execute($skip_lock = false) {
 		$prefix = strtoupper(str_replace('_', ' ', $this->_key)).': ';
 
 		if (!$this->_enabled) {
@@ -109,7 +110,7 @@ final class Social_CRON {
 		}
 
 		Social::log($prefix.'Initiated.');
-		if ($this->lock()) {
+		if ($skip_lock or $this->lock()) {
 			try {
 				Social::log($prefix.'Lock set.');
 
