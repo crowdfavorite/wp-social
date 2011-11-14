@@ -234,7 +234,7 @@ Accounts can not be authorized on local environments, unless your local environm
 
 This is because we completely refactored Social's codebase for 2.0. Chances are your old comments template is using some code that we removed in 2.0. For now you should be able to use the built in Social comments template, but if you want to continue using your old template, we suggest you take a look at social/views/comments.php to see how the new implementation works.
 
-For a more in-depth look at what you need to be aware of when upgrading from 1.x to 2.0 please have a look at the wiki entry: https://github.com/crowdfavorite/wp-social/wiki/Upgrading-from-1.x-to-2.0.
+For a more in-depth look at what you need to be aware of when upgrading from 1.x to 2.0 please have a look at the wiki entry: https://github.com/crowdfavorite/wp-social/wiki/Upgrading-from-1.x-to-2.0
 
 
 ## Screenshots=
