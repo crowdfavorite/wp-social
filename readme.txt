@@ -46,6 +46,10 @@ Many individuals use Facebook or Twitter as their primary identity(ies) on the w
 5. Change your plugin directory or uploads writable to allow the cron jobs to fetch new comments from Twitter and Facebook
 6. Register for and add your [Twitter @anywhere API key](http://dev.twitter.com/anywhere) to the settings page to enable Twitter hovercards
 
+== Upgrade Notice ==
+
+If you are upgrading from 1.x to 2.0 please refer to the Upgrade Guide on GitHub, which can be found here: https://github.com/crowdfavorite/wp-social/wiki/Upgrading-from-1.x-to-2.0
+
 == Frequently Asked Questions ==
 
 = Who created this plugin? =
