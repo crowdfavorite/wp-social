@@ -213,16 +213,15 @@
 		 */
 		var $social_comments_adminbar_item = $('#wp-admin-bar-social_find_comments');
 		if ($social_comments_adminbar_item.size()) {
-			var $social_spinner = $social_comments_adminbar_item.find('img.social-aggregation-spinner');
+			var $social_spinner = $social_comments_adminbar_item.find('.social-aggregation-spinner');
 			var $social_aggregation = $('#social_aggregation');
 			var $comment_adminbar_item = $('#wp-admin-bar-comments');
 			var $comment_adminbar_item_label = $comment_adminbar_item.find('> a:first > span');
-			$social_aggregation.click(
-				function(e) {
-					if ($(this).attr('href') == '#') {
-						e.preventDefault();
-					}
-				}).removeClass('running-aggregation');
+			$social_aggregation.click(function(e) {
+				if ($(this).attr('href') == '#') {
+					e.preventDefault();
+				}
+			}).removeClass('running-aggregation');
 			$comment_adminbar_item.removeClass('running-aggregation');
 
 			$social_comments_adminbar_item.find('a').click(function(e) {
@@ -239,6 +238,26 @@
 					$comment_adminbar_item_label.find('#ab-awaiting-mod').hide().end()
 						.append($social_spinner);
 					$social_spinner.show();
+					SocialLoadingInterval = setInterval(function() {
+						var next = false;
+						var $dots = jQuery('.social-aggregation-spinner').find('.social-dot');
+						$dots.each(function() {
+							var active = jQuery(this).hasClass('dot-active');
+							if (next) {
+								jQuery(this).addClass('dot-active');
+							}
+							if (active) {
+								jQuery(this).removeClass('dot-active');
+								next = true;
+							}
+							else {
+								next = false;
+							}
+						});
+						if ($dots.filter('.dot-active').size() == 0) {
+							$dots.filter(':first').addClass('dot-active');
+						}
+					}, 425);
 
 					// make AJAX call
 					$.get(
@@ -248,6 +267,7 @@
 							// hide spinner
 							$social_spinner.hide();
 							$social_comments_adminbar_item.append($social_spinner);
+							clearInterval(SocialLoadingInterval);
 
 							// update count, show count
 							$comment_adminbar_item_label.find('#ab-awaiting-mod')
@@ -264,8 +284,7 @@
 							}).animate({ width: found_width + 'px' });
 
 							// set params for next call
-							$social_aggregation
-								.attr('href', response.link);
+							$social_aggregation.attr('href', response.link);
 
 							$comment_adminbar_item.removeClass('running-aggregation');
 						},

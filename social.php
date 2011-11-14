@@ -1461,10 +1461,28 @@ final class Social {
 			$wp_admin_bar->add_menu(array(
 				'parent' => 'comments',
 				'id' => 'social_find_comments',
-				'title' => __('Find Social Comments', 'social').'<img src="'.esc_url(admin_url('images/wpspin_dark.gif')).'" class="social-aggregation-spinner" style="display: none;" />',
+				'title' => __('Find Social Comments', 'social')
+					.'<span class="social-aggregation-spinner" style="display: none;">(
+						<span class="social-dot dot-active">.</span>
+						<span class="social-dot">.</span>
+						<span class="social-dot">.</span>
+					)</span>',
 				'href' => esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run')),
 			));
 		}
+	}
+	
+	function admin_bar_footer_css() {
+?>
+<style class="text/css">
+#wpadminbar .social-aggregation-spinner {
+	padding-left: 10px;
+}
+#wpadminbar .social-aggregation-spinner .dot-active {
+	font-weight: bold;
+}
+</style>
+<?php
 	}
 
 	/**
@@ -1764,6 +1782,7 @@ add_action('load-profile.php', array($social, 'enqueue_assets'));
 add_action('load-settings_page_social', array($social, 'enqueue_assets'));
 add_action('admin_enqueue_scripts', array($social, 'admin_enqueue_assets'));
 add_action('admin_bar_menu', array($social, 'admin_bar_menu'), 95);
+add_action('wp_after_admin_bar_render', array($social, 'admin_bar_footer_css'));
 add_action('set_user_role', array($social, 'set_user_role'), 10, 2);
 
 // CRON Actions
