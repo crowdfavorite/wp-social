@@ -114,6 +114,7 @@ final class Social_Controller_Auth extends Social_Controller {
 
 			// Store avatar
 			update_user_meta($user_id, 'social_avatar', $account->avatar());
+			update_user_meta($user_id, 'show_admin_bar_front', 'false');
 		}
 
 		if ($user_id !== false) {
