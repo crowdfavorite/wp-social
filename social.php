@@ -1182,6 +1182,8 @@ final class Social {
 	 * @param  int  $comment_ID
 	 */
 	public function comment_post($comment_ID) {
+		global $wpdb;
+
 		$comment = get_comment($comment_ID);
 		$services = $this->services();
 		if (!empty($services)) {
@@ -1214,6 +1216,12 @@ final class Social {
 						update_comment_meta($comment_ID, 'social_account_id', $account_id);
 						update_comment_meta($comment_ID, 'social_profile_image_url', $account->avatar());
 						update_comment_meta($comment_ID, 'social_comment_type', 'social-'.$service->key());
+
+						$wpdb->query($wpdb->prepare("
+							UPDATE $wpdb->comments
+							   SET comment_type = %s
+							 WHERE comment_ID = %s
+						", 'social-'.$service->key(), $comment_ID));
 
 						if ($comment->user_id != '0') {
 							$comment->comment_author = $account->name();
