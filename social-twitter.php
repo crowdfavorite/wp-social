@@ -81,24 +81,26 @@ final class Social_Twitter {
 		$broadcasted_social_ids = array();
  		$broadcast_retweets = array(); // array of comments
 
-		foreach ($broadcasted_ids['twitter'] as $account_id => $broadcasted) {
-			foreach ($broadcasted as $id => $data) {
-				$broadcasted_social_ids[] = $id;
-				// if we don't have a message saved for a tweet, try to get it so that we can use it next time
-				if (empty($data['message'])) {
-					$url = wp_nonce_url(site_url('?social_controller=aggregation&social_action=retrieve_twitter_content&broadcasted_id='.$id.'&post_id='.$post_id), 'retrieve_twitter_content');
-					wp_remote_get(str_replace('&amp;', '&', $url), array(
-						'timeout' => 0.01,
-						'blocking' => false,
-					));
-				}
-				else {
-					// create a hash from the broadcast so we can match retweets to it
-					$hash = self::build_retweet_hash($data['message']);
+		if (isset($broadcast_ids['twitter'])) {
+			foreach ($broadcasted_ids['twitter'] as $account_id => $broadcasted) {
+				foreach ($broadcasted as $id => $data) {
+					$broadcasted_social_ids[] = $id;
+					// if we don't have a message saved for a tweet, try to get it so that we can use it next time
+					if (empty($data['message'])) {
+						$url = wp_nonce_url(site_url('?social_controller=aggregation&social_action=retrieve_twitter_content&broadcasted_id='.$id.'&post_id='.$post_id), 'retrieve_twitter_content');
+						wp_remote_get(str_replace('&amp;', '&', $url), array(
+							'timeout' => 0.01,
+							'blocking' => false,
+						));
+					}
+					else {
+						// create a hash from the broadcast so we can match retweets to it
+						$hash = self::build_retweet_hash($data['message']);
 
-					// This is stored as broadcasted and not the ID so we can easily store broadcasted retweets
-					// instead of attaching retweets to non-existent comments.
-					$hash_map[$hash] = 'broadcasted';
+						// This is stored as broadcasted and not the ID so we can easily store broadcasted retweets
+						// instead of attaching retweets to non-existent comments.
+						$hash_map[$hash] = 'broadcasted';
+					}
 				}
 			}
 		}
