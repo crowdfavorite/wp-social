@@ -123,7 +123,7 @@ abstract class Social_Service {
 		$username = $account->username();
 		$username = str_replace(' ', '_', $username);
 		if (!empty($username)) {
-			$user = get_userdatabylogin($this->_key.'_'.$username);
+			$user = get_user_by('login', $this->_key.'_'.$username);
 			if ($user === false) {
 				$id = wp_create_user($this->_key.'_'.$username, wp_generate_password(20, false), $this->_key.'.'.$username.'@example.com');
 
