@@ -331,7 +331,7 @@ final class Social_Twitter {
 	 * @return string
 	 */
 	public static function social_item_output_title($title, $key) {
-		if ($key == 'facebook') {
+		if ($key == 'twitter') {
 			$title .= __(' retweeted this', 'social');
 		}
 
