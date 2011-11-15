@@ -81,7 +81,7 @@ final class Social_Twitter {
 		$broadcasted_social_ids = array();
  		$broadcast_retweets = array(); // array of comments
 
-		if (isset($broadcast_ids['twitter'])) {
+		if (isset($broadcasted_ids['twitter'])) {
 			foreach ($broadcasted_ids['twitter'] as $account_id => $broadcasted) {
 				foreach ($broadcasted as $id => $data) {
 					$broadcasted_social_ids[] = $id;
