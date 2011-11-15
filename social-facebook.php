@@ -437,6 +437,22 @@ final class Social_Facebook {
 		return $universal;
 	}
 
+	/**
+	 * Adds messaging to the title.
+	 *
+	 * @static
+	 * @param  string  $title
+	 * @param  string  $key
+	 * @return string
+	 */
+	public static function social_item_output_title($title, $key) {
+		if ($key == 'facebook') {
+			$title .= __(' liked this', 'social');
+		}
+
+		return $title;
+	}
+
 } // End Social_Facebook
 
 define('SOCIAL_FACEBOOK_FILE', __FILE__);
@@ -459,5 +475,6 @@ add_filter('social_save_broadcasted_ids_data', array('Social_Facebook', 'social_
 add_filter('social_view_set_file', array('Social_Facebook', 'social_view_set_file'), 10, 2);
 add_filter('social_view_data', array('Social_Facebook', 'social_view_data'), 10, 2);
 add_filter('social_merge_accounts', array('Social_Facebook', 'social_merge_accounts'), 10, 3);
+add_filter('social_item_output_title', array('Social_Facebook', 'social_item_output_title'), 10, 2);
 
 }

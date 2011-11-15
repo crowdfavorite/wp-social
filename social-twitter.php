@@ -322,6 +322,22 @@ final class Social_Twitter {
 		}
 	}
 
+	/**
+	 * Adds messaging to the title.
+	 *
+	 * @static
+	 * @param  string  $title
+	 * @param  string  $key
+	 * @return string
+	 */
+	public static function social_item_output_title($title, $key) {
+		if ($key == 'facebook') {
+			$title .= __(' retweeted this', 'social');
+		}
+
+		return $title;
+	}
+
 } // End Social_Twitter
 
 define('SOCIAL_TWITTER_FILE', __FILE__);
@@ -331,6 +347,7 @@ add_filter('social_register_service', array('Social_Twitter', 'register_service'
 add_filter('get_avatar_comment_types', array('Social_Twitter', 'get_avatar_comment_types'));
 add_filter('social_comments_array', array('Social_Twitter', 'comments_array'), 10, 2);
 add_filter('social_save_broadcasted_ids_data', array('Social_Twitter', 'social_save_broadcasted_ids_data'), 10, 5);
+add_filter('social_item_output_title', array('Social_Twitter', 'social_item_output_title'), 10, 2);
 add_action('wp_enqueue_scripts', array('Social_Twitter', 'enqueue_assets'));
 
 }
