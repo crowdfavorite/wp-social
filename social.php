@@ -1487,8 +1487,12 @@ final class Social {
 	function admin_bar_footer_css() {
 ?>
 <style class="text/css">
+#wp-admin-bar-comments {
+	white-space: nowrap;
+}
 #wpadminbar .social-aggregation-spinner {
 	padding-left: 10px;
+	white-space: nowrap;
 }
 #wpadminbar .social-aggregation-spinner .dot-active {
 	font-weight: bold;
