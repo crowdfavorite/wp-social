@@ -147,8 +147,7 @@ final class Social_Request {
 			}
 		}
 
-		$this->query($_GET)
-			->post($_POST);
+		$this->query($_GET)->post($_POST);
 
 		if (isset($method)) {
 			$this->method($method);

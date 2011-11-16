@@ -1,6 +1,6 @@
 <?php
 if (empty($accounts)) {
-	echo '<p class=="mar-top-none">'
+	echo '<p class="mar-top-none">'
 	   . __('This post will not be broadcasted to any of your social accounts.', 'social')
 	   . '</p>';
 }

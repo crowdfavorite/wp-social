@@ -7,6 +7,16 @@
  */
 final class Social_Controller_CRON extends Social_Controller {
 
+	/**
+	 * @var  bool  system cron
+	 */
+	protected $system_cron = false;
+
+	/**
+	 * Initializes the CRON controller.
+	 *
+	 * @param  Social_Request  $request
+	 */
 	public function __construct(Social_Request $request) {
 		parent::__construct($request);
 
@@ -17,6 +27,8 @@ final class Social_Controller_CRON extends Social_Controller {
 				wp_die('Oops, you have provided an invalid API key.');
 				exit;
 			}
+
+			$this->system_cron = true;
 		}
 		else if (!$this->nonce_verified) {
 			wp_die('Oops, invalid request.');
@@ -31,7 +43,7 @@ final class Social_Controller_CRON extends Social_Controller {
 	 * @return void
 	 */
 	public function action_cron_15() {
-		Social_CRON::instance('cron_15')->execute();
+		Social_CRON::instance('cron_15')->execute($this->system_cron);
 	}
 
 	/**
@@ -41,7 +53,7 @@ final class Social_Controller_CRON extends Social_Controller {
 	 * @return void
 	 */
 	public function action_cron_60() {
-		Social_CRON::instance('cron_60')->execute();
+		Social_CRON::instance('cron_60')->execute($this->system_cron);
 	}
 
 	/**

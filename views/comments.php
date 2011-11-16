@@ -54,14 +54,20 @@ ob_start();
 			}
 
 			$last_reply_time = 0;
-			if (isset($comments[(count($comments) - 1)])) {
-				$last_reply_time = strtotime($comments[(count($comments) - 1)]->comment_date_gmt);
+			if (count($comments)) {
+				foreach ($comments as $key => $comment) {
+					$time = strtotime($comment->comment_date_gmt);
+					if ($time > $last_reply_time) {
+						$last_reply_time = $time;
+					}
+				}
 			}
-			else if (count($social_items)) {
-				$latest_item = null;
+
+			if (count($social_items)) {
+				$latest_item = 0;
 				foreach ($social_items as $service => $items) {
 					foreach ($items as $comment) {
-						if ($latest_item === null) {
+						if ($latest_item === 0) {
 							$latest_item = strtotime($comment->comment_date_gmt);
 						}
 						else {
@@ -73,7 +79,7 @@ ob_start();
 					}
 				}
 
-				if ($latest_item !== null) {
+				if ($latest_item > $last_reply_time) {
 					$last_reply_time = $latest_item;
 				}
 			}

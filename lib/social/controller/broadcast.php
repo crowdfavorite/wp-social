@@ -32,7 +32,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 		$accounts_selected = false;
 		if ($this->request->post('social_action') !== null) {
 			foreach ($services as $key => $service) {
-				$content = $this->request->post('social_'.$key.'_content');
+				$content = stripslashes($this->request->post('social_'.$key.'_content'));
 				if (count($service->accounts())) {
 					$run_checks = false;
 					if ($this->request->post('social_'.$key.'_accounts') !== null) {

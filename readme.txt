@@ -2,7 +2,7 @@
 Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter
 Requires at least: 3.2
-Tested up to: 3.3-beta2
+Tested up to: 3.3b3
 Stable tag: 2.0
 
 Broadcast posts to Twitter and/or Facebook, pull in items from each as comments, and allow commenters to use their Twitter/Facebook identities.
@@ -45,6 +45,10 @@ Many individuals use Facebook or Twitter as their primary identity(ies) on the w
 4. Visit the settings page under `Settings > Social` to associate Twitter and Facebook accounts with your blog
 5. Change your plugin directory or uploads writable to allow the cron jobs to fetch new comments from Twitter and Facebook
 6. Register for and add your [Twitter @anywhere API key](http://dev.twitter.com/anywhere) to the settings page to enable Twitter hovercards
+
+== Upgrade Notice ==
+
+If you are upgrading from 1.x to 2.0 please refer to the Upgrade Guide on GitHub, which can be found here: https://github.com/crowdfavorite/wp-social/wiki/Upgrading-from-1.x-to-2.0
 
 == Frequently Asked Questions ==
 
@@ -228,6 +232,12 @@ Connect your social account and after that you can add/remove your default broad
 = Why can't I set up my social accounts on my local WordPress site? =
 
 Accounts can not be authorized on local environments, unless your local environment is publicly accessible via DNS.
+
+= I previously used a custom comments.php template with Social and it no longer works when I upgrade to 2.0, why is this? =
+
+This is because we completely refactored Social's codebase for 2.0. Chances are your old comments template is using some code that we removed in 2.0. For now you should be able to use the built in Social comments template, but if you want to continue using your old template, we suggest you take a look at social/views/comments.php to see how the new implementation works.
+
+For a more in-depth look at what you need to be aware of when upgrading from 1.x to 2.0 please have a look at the wiki entry: https://github.com/crowdfavorite/wp-social/wiki/Upgrading-from-1.x-to-2.0
 
 
 

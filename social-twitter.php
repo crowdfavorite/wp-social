@@ -81,24 +81,26 @@ final class Social_Twitter {
 		$broadcasted_social_ids = array();
  		$broadcast_retweets = array(); // array of comments
 
-		foreach ($broadcasted_ids['twitter'] as $account_id => $broadcasted) {
-			foreach ($broadcasted as $id => $data) {
-				$broadcasted_social_ids[] = $id;
-				// if we don't have a message saved for a tweet, try to get it so that we can use it next time
-				if (empty($data['message'])) {
-					$url = wp_nonce_url(site_url('?social_controller=aggregation&social_action=retrieve_twitter_content&broadcasted_id='.$id.'&post_id='.$post_id), 'retrieve_twitter_content');
-					wp_remote_get(str_replace('&amp;', '&', $url), array(
-						'timeout' => 0.01,
-						'blocking' => false,
-					));
-				}
-				else {
-					// create a hash from the broadcast so we can match retweets to it
-					$hash = self::build_retweet_hash($data['message']);
+		if (isset($broadcasted_ids['twitter'])) {
+			foreach ($broadcasted_ids['twitter'] as $account_id => $broadcasted) {
+				foreach ($broadcasted as $id => $data) {
+					$broadcasted_social_ids[] = $id;
+					// if we don't have a message saved for a tweet, try to get it so that we can use it next time
+					if (empty($data['message'])) {
+						$url = wp_nonce_url(site_url('?social_controller=aggregation&social_action=retrieve_twitter_content&broadcasted_id='.$id.'&post_id='.$post_id), 'retrieve_twitter_content');
+						wp_remote_get(str_replace('&amp;', '&', $url), array(
+							'timeout' => 0.01,
+							'blocking' => false,
+						));
+					}
+					else {
+						// create a hash from the broadcast so we can match retweets to it
+						$hash = self::build_retweet_hash($data['message']);
 
-					// This is stored as broadcasted and not the ID so we can easily store broadcasted retweets
-					// instead of attaching retweets to non-existent comments.
-					$hash_map[$hash] = 'broadcasted';
+						// This is stored as broadcasted and not the ID so we can easily store broadcasted retweets
+						// instead of attaching retweets to non-existent comments.
+						$hash_map[$hash] = 'broadcasted';
+					}
 				}
 			}
 		}
@@ -322,6 +324,22 @@ final class Social_Twitter {
 		}
 	}
 
+	/**
+	 * Adds messaging to the title.
+	 *
+	 * @static
+	 * @param  string  $title
+	 * @param  string  $key
+	 * @return string
+	 */
+	public static function social_item_output_title($title, $key) {
+		if ($key == 'twitter') {
+			$title .= __(' retweeted this', 'social');
+		}
+
+		return $title;
+	}
+
 } // End Social_Twitter
 
 define('SOCIAL_TWITTER_FILE', __FILE__);
@@ -331,6 +349,7 @@ add_filter('social_register_service', array('Social_Twitter', 'register_service'
 add_filter('get_avatar_comment_types', array('Social_Twitter', 'get_avatar_comment_types'));
 add_filter('social_comments_array', array('Social_Twitter', 'comments_array'), 10, 2);
 add_filter('social_save_broadcasted_ids_data', array('Social_Twitter', 'social_save_broadcasted_ids_data'), 10, 5);
+add_filter('social_item_output_title', array('Social_Twitter', 'social_item_output_title'), 10, 2);
 add_action('wp_enqueue_scripts', array('Social_Twitter', 'enqueue_assets'));
 
 }

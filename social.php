@@ -3,7 +3,7 @@
 Plugin Name: Social
 Plugin URI: http://mailchimp.com/social-plugin-for-wordpress/
 Description: Broadcast newly published posts and pull in discussions using integrations with Twitter and Facebook. Brought to you by <a href="http://mailchimp.com">MailChimp</a>.
-Version: 2.0b1
+Version: 2.0b2
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com/
 */
@@ -667,10 +667,6 @@ final class Social {
 						break;
 					case 'publish':
 						$button = 'Broadcast';
-						$content = Social_View::factory('wp-admin/post/meta/broadcast/published', array(
-							'ids' => $broadcasted_ids,
-							'broadcasted' => !empty($broadcasted_ids),
-						));
 						break;
 					default:
 						if ($post->post_status == 'draft' and !empty($broadcasted_ids)) {
@@ -692,6 +688,9 @@ final class Social {
 						}
 						break;
 				}
+			}
+			else {
+				$content = Social_View::factory('wp-admin/post/meta/broadcast/private');
 			}
 
 			// Button
@@ -973,7 +972,9 @@ final class Social {
 	 * @return void
 	 */
 	public function cron_15_init() {
-		$this->request(site_url('?social_controller=cron&social_action=cron_15'), 'cron_15');
+		if (Social_CRON::instance('cron_15')->lock()) {
+			$this->request(site_url('?social_controller=cron&social_action=cron_15'), 'cron_15');
+		}
 	}
 
 	/**
@@ -983,7 +984,9 @@ final class Social {
 	 * @return void
 	 */
 	public function cron_60_init() {
-		$this->request(site_url('?social_controller=cron&social_action=cron_60'), 'cron_60');
+		if (Social_CRON::instance('cron_60')->lock()) {
+			$this->request(site_url('?social_controller=cron&social_action=cron_60'), 'cron_60');
+		}
 	}
 
 	/**
@@ -1179,6 +1182,8 @@ final class Social {
 	 * @param  int  $comment_ID
 	 */
 	public function comment_post($comment_ID) {
+		global $wpdb;
+
 		$comment = get_comment($comment_ID);
 		$services = $this->services();
 		if (!empty($services)) {
@@ -1211,6 +1216,12 @@ final class Social {
 						update_comment_meta($comment_ID, 'social_account_id', $account_id);
 						update_comment_meta($comment_ID, 'social_profile_image_url', $account->avatar());
 						update_comment_meta($comment_ID, 'social_comment_type', 'social-'.$service->key());
+
+						$wpdb->query($wpdb->prepare("
+							UPDATE $wpdb->comments
+							   SET comment_type = %s
+							 WHERE comment_ID = %s
+						", 'social-'.$service->key(), $comment_ID));
 
 						if ($comment->user_id != '0') {
 							$comment->comment_author = $account->name();
@@ -1462,10 +1473,32 @@ final class Social {
 			$wp_admin_bar->add_menu(array(
 				'parent' => 'comments',
 				'id' => 'social_find_comments',
-				'title' => __('Find Social Comments', 'social').'<img src="'.esc_url(admin_url('images/wpspin_dark.gif')).'" class="social-aggregation-spinner" style="display: none;" />',
+				'title' => __('Find Social Comments', 'social')
+					.'<span class="social-aggregation-spinner" style="display: none;">(
+						<span class="social-dot dot-active">.</span>
+						<span class="social-dot">.</span>
+						<span class="social-dot">.</span>
+					)</span>',
 				'href' => esc_url(wp_nonce_url(admin_url('?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run')),
 			));
 		}
+	}
+	
+	function admin_bar_footer_css() {
+?>
+<style class="text/css">
+#wp-admin-bar-comments {
+	white-space: nowrap;
+}
+#wpadminbar .social-aggregation-spinner {
+	padding-left: 10px;
+	white-space: nowrap;
+}
+#wpadminbar .social-aggregation-spinner .dot-active {
+	font-weight: bold;
+}
+</style>
+<?php
 	}
 
 	/**
@@ -1611,7 +1644,13 @@ final class Social {
 	 * @return array
 	 */
 	private function load_services() {
-		$services = wp_cache_get('services', 'social');
+		if ((isset($_GET['page']) and $_GET['page'] == basename(SOCIAL_FILE)) or defined('IS_PROFILE_PAGE')) {
+			$services = false;
+		}
+		else {
+			$services = wp_cache_get('services', 'social');
+		}
+
 		if ($services === false) {
 			// Register services
 			$registered_services = apply_filters('social_register_service', array());
@@ -1765,6 +1804,7 @@ add_action('load-profile.php', array($social, 'enqueue_assets'));
 add_action('load-settings_page_social', array($social, 'enqueue_assets'));
 add_action('admin_enqueue_scripts', array($social, 'admin_enqueue_assets'));
 add_action('admin_bar_menu', array($social, 'admin_bar_menu'), 95);
+add_action('wp_after_admin_bar_render', array($social, 'admin_bar_footer_css'));
 add_action('set_user_role', array($social, 'set_user_role'), 10, 2);
 
 // CRON Actions

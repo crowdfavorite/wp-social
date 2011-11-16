@@ -51,10 +51,11 @@ final class Social_Log {
 	 *
 	 * @param  string  $message  message to be logged
 	 * @param  array   $args     arguments to add to the message.
+	 * @param  string  $context  context of the log message
 	 * @return void
 	 */
-	public function write($message, array $args = null) {
-		if (!Social::option('debug')) {
+	public function write($message, array $args = null, $context = null) {
+		if (!Social::option('debug') and !in_array($context, apply_filters('social_log_contexts', array()))) {
 			return;
 		}
 
@@ -64,11 +65,15 @@ final class Social_Log {
 			}
 		}
 
+		if ($context !== null) {
+			$context = '['.strtoupper(str_replace('-', ' ', $context)).'] ';
+		}
+
 		if (is_writable($this->_file)) {
-			error_log('[SOCIAL - '.current_time('mysql').'] '.$message."\n", 3, $this->_file);
+			error_log($context.'[SOCIAL - '.current_time('mysql').'] '.$message."\n", 3, $this->_file);
 		}
 		else {
-			error_log('[SOCIAL - '.current_time('mysql').'] '.$message);
+			error_log($context.'[SOCIAL - '.current_time('mysql').'] '.$message);
 		}
 	}
 

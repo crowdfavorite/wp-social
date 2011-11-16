@@ -114,6 +114,7 @@ final class Social_Controller_Auth extends Social_Controller {
 
 			// Store avatar
 			update_user_meta($user_id, 'social_avatar', $account->avatar());
+			update_user_meta($user_id, 'show_admin_bar_front', 'false');
 		}
 
 		if ($user_id !== false) {
@@ -170,6 +171,9 @@ final class Social_Controller_Auth extends Social_Controller {
 
 		$this->social->service($service_key)->disconnect($id);
 		$this->social->remove_from_default_accounts($service_key, $id);
+
+		// Flush the cache
+		wp_cache_delete('services', 'social');
 
 		if (is_admin()) {
 			wp_redirect(Social::settings_url(array(), $personal));

@@ -123,7 +123,7 @@ abstract class Social_Service {
 		$username = $account->username();
 		$username = str_replace(' ', '_', $username);
 		if (!empty($username)) {
-			$user = get_userdatabylogin($this->_key.'_'.$username);
+			$user = get_user_by('login', $this->_key.'_'.$username);
 			if ($user === false) {
 				$id = wp_create_user($this->_key.'_'.$username, wp_generate_password(20, false), $this->_key.'.'.$username.'@example.com');
 
@@ -171,6 +171,9 @@ abstract class Social_Service {
 	 * @return void
 	 */
 	public function save($personal = false) {
+		// Flush the cache
+		wp_cache_delete('services', 'social');
+
 		$accounts = array();
 		if ($personal) {
 			foreach ($this->_accounts AS $account) {
@@ -579,6 +582,32 @@ abstract class Social_Service {
 	}
 
 	/**
+	 * Checks to make sure the comment hasn't already been created.
+	 *
+	 * @param  object  $post
+	 * @param  int     $result_id
+	 * @return bool
+	 */
+	public function is_duplicate_comment($post, $result_id) {
+		global $wpdb;
+
+		$results = $wpdb->get_results($wpdb->prepare("
+			SELECT meta_value
+			  FROM $wpdb->commentmeta
+			 WHERE comment_id = %s
+			   AND meta_key = 'social_status_id'
+		", $post->ID));
+
+		foreach ($results as $result) {
+			if ($result->meta_value == $result_id) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Builds the social item output.
 	 *
 	 * @param  object  $item         social item being rendered
@@ -602,8 +631,9 @@ abstract class Social_Service {
 		}
 
 		$status_url = $this->status_url($item->comment_author, $item->social_status_id);
-		$image = sprintf('<img src="%s" width="%s" height="%s" alt="%s" />', esc_url($item->social_profile_image_url), esc_attr($width), esc_attr($height), esc_attr($item->comment_author));
-		return sprintf('<a href="%s" title="%s"%s>%s</a>', esc_url($status_url), esc_attr($item->comment_author), $style, $image);
+		$title = apply_filters('social_item_output_title', $item->comment_author, $this->key());
+		$image = sprintf('<img src="%s" width="%s" height="%s" alt="%s" />', esc_url($item->social_profile_image_url), esc_attr($width), esc_attr($height), esc_attr($title));
+		return sprintf('<a href="%s" title="%s"%s>%s</a>', esc_url($status_url), esc_attr($title), $style, $image);
 	}
 
 	/**

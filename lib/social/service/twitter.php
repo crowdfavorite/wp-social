@@ -198,11 +198,6 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 					$class = 'Social_Service_'.$this->_key.'_Account';
 					$account = new $class($account);
 
-					Social::log('Saving #:result_id for account :account_id.', array(
-						'result_id' => $result->id,
-						'account_id' => $account->id()
-					));
-
 					$commentdata = array(
 						'comment_post_ID' => $post->ID,
 						'comment_type' => 'social-'.$this->_key,
@@ -222,6 +217,20 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 					else {
 						$commentdata['comment_approved'] = wp_allow_comment($commentdata);
 					}
+
+					// sanity check to make sure this comment is not a duplicate
+					if ($this->is_duplicate_comment($post, $result->id)) {
+						Social::log('Result #:result_id already exists, skipping.', array(
+							'result_id' => $result->id
+						), 'duplicate-comment');
+						continue;
+					}
+
+					Social::log('Saving #:result_id for account :account_id.', array(
+						'result_id' => $result->id,
+						'account_id' => $account->id()
+					));
+
 					$comment_id = wp_insert_comment($commentdata);
 
 					update_comment_meta($comment_id, 'social_account_id', $result->from_user_id);

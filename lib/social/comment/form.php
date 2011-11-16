@@ -29,6 +29,11 @@ final class Social_Comment_Form {
 	}
 
 	/**
+	 * @var  object  post
+	 */
+	protected $post = null;
+
+	/**
 	 * @var  int  post ID
 	 */
 	protected $post_id = 0;
@@ -65,6 +70,8 @@ final class Social_Comment_Form {
 		if ($post === null) {
 			$post = get_post($this->post_id);
 		}
+
+		$this->post = $post;
 	}
 
 	/**
@@ -262,20 +269,20 @@ final class Social_Comment_Form {
 	 * @return string
 	 */
 	public function get_also_post_to_controls() {
-		$id = 'post_to_service';
-		$label_base = array(
-			'for' => $id,
-			'id' => 'post_to'
-		);
+		if ($this->is_logged_in and $this->post->post_status != 'private') {
+			$id = 'post_to_service';
+			$label_base = array(
+				'for' => $id,
+				'id' => 'post_to'
+			);
 
-		$checkbox = $this->to_tag('input', false, array(
-			'type' => 'checkbox',
-			'name' => $id,
-			'id' => $id,
-			'value' => 1
-		));
+			$checkbox = $this->to_tag('input', false, array(
+				'type' => 'checkbox',
+				'name' => $id,
+				'id' => $id,
+				'value' => 1
+			));
 
-		if ($this->is_logged_in) {
 			if (current_user_can('manage_options')) {
 				$text = sprintf(__('Also post to %s', 'social'), '<span></span>');
 				$post_to = $this->to_tag('label', $checkbox.' '.$text, $label_base, array('style' => 'display:none;'));
@@ -287,7 +294,7 @@ final class Social_Comment_Form {
 						Social::log(print_r($service->accounts(), true));
 						foreach ($service->accounts() as $account) {
 							if ($account->personal()) {
-								$text = sprintf(__('Also post to %s'), $service->title());
+								$text = sprintf(__('Also post to %s', 'social'), $service->title());
 								$post_to .= $this->to_tag('label', $checkbox . ' ' . $text, $label_base);
 							}
 							break;
@@ -298,6 +305,8 @@ final class Social_Comment_Form {
 
 			return $post_to;
 		}
+
+		return '';
 	}
 
 	/**
