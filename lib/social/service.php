@@ -173,7 +173,7 @@ abstract class Social_Service {
 	public function save($personal = false) {
 		// Flush the cache
 		wp_cache_delete('services', 'social');
-		
+
 		$accounts = array();
 		if ($personal) {
 			foreach ($this->_accounts AS $account) {

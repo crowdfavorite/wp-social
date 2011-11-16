@@ -1640,7 +1640,13 @@ final class Social {
 	 * @return array
 	 */
 	private function load_services() {
-		$services = wp_cache_get('services', 'social');
+		if ((isset($_GET['page']) and $_GET['page'] == basename(SOCIAL_FILE)) or defined('IS_PROFILE_PAGE')) {
+			$services = false;
+		}
+		else {
+			$services = wp_cache_get('services', 'social');
+		}
+
 		if ($services === false) {
 			// Register services
 			$registered_services = apply_filters('social_register_service', array());
