@@ -299,7 +299,7 @@ final class Social_Aggregation_Queue {
 			$next_run = Kohana_Date::fuzzy_span($timetamp, $current_time);
 		}
 
-		return $next_run;
+		return str_replace('in ', '', $next_run);
 	}
 
 } // End Social_Aggregation_Queue
