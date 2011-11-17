@@ -374,10 +374,6 @@ final class Social {
 				wp_schedule_event(time() + 900, 'every15min', 'social_cron_15_init');
 			}
 
-			if (wp_next_scheduled('social_cron_60_init') === false) {
-				wp_schedule_event(time() + 3600, 'hourly', 'social_cron_60_init');
-			}
-
 			$this->request(admin_url('?social_controller=cron&social_action=check_crons'), 'check_crons');
 		}
 	}
@@ -974,18 +970,6 @@ final class Social {
 	public function cron_15_init() {
 		if (Social_CRON::instance('cron_15')->lock()) {
 			$this->request(site_url('?social_controller=cron&social_action=cron_15'), 'cron_15');
-		}
-	}
-
-	/**
-	 * Sends a request to initialize CRON 60.
-	 *
-	 * @wp-action  social_cron_60_init
-	 * @return void
-	 */
-	public function cron_60_init() {
-		if (Social_CRON::instance('cron_60')->lock()) {
-			$this->request(site_url('?social_controller=cron&social_action=cron_60'), 'cron_60');
 		}
 	}
 
@@ -1817,7 +1801,6 @@ add_action('set_user_role', array($social, 'set_user_role'), 10, 2);
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));
-add_action('social_cron_60_init', array($social, 'cron_60_init'));
 add_action('social_cron_15', array($social, 'run_aggregation'));
 
 // Admin Actions

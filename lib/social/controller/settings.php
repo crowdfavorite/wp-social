@@ -67,9 +67,6 @@ final class Social_Controller_Settings extends Social_Controller {
 				if (($timestamp = wp_next_scheduled('social_cron_15_core')) !== false) {
 					wp_unschedule_event($timestamp, 'social_cron_15_core');
 				}
-				if (($timestamp = wp_next_scheduled('social_cron_60_core')) !== false) {
-					wp_unschedule_event($timestamp, 'social_cron_60_core');
-				}
 			}
 
 			do_action('social_settings_save');
