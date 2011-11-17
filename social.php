@@ -3,7 +3,7 @@
 Plugin Name: Social
 Plugin URI: http://mailchimp.com/social-plugin-for-wordpress/
 Description: Broadcast newly published posts and pull in discussions using integrations with Twitter and Facebook. Brought to you by <a href="http://mailchimp.com">MailChimp</a>.
-Version: 2.0b1
+Version: 2.0b2
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com/
 */
@@ -1487,8 +1487,12 @@ final class Social {
 	function admin_bar_footer_css() {
 ?>
 <style class="text/css">
+#wp-admin-bar-comments {
+	white-space: nowrap;
+}
 #wpadminbar .social-aggregation-spinner {
 	padding-left: 10px;
+	white-space: nowrap;
 }
 #wpadminbar .social-aggregation-spinner .dot-active {
 	font-weight: bold;
