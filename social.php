@@ -1705,6 +1705,14 @@ final class Social {
 
 			wp_cache_set('services', $services, 'social');
 		}
+		else if (!$this->_enabled and is_array($services)) {
+			foreach ($services as $service) {
+				if (count($service->accounts())) {
+					$this->_enabled = true;
+					break;
+				}
+			}
+		}
 
 		return $services;
 	}
