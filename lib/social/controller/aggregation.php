@@ -29,13 +29,13 @@ final class Social_Controller_Aggregation extends Social_Controller {
 		));
 
 		// Get URLs to query
-		$url = wp_get_shortlink($post->ID);
-		if (empty($url)) {
-			$url = site_url('?p='.$post->ID);
-		}
 		$urls = array(
-			urlencode($url)
+			urlencode(site_url('?p='.$post->ID))
 		);
+		$url = wp_get_shortlink($post->ID);
+		if (strpos($url, '?p=') === false) {
+			$urls[] = urlencode($url);
+		}
 
 		// Add the permalink?
 		$permalink = urlencode(get_permalink($post->ID));
