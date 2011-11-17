@@ -155,7 +155,7 @@ final class Social_CRON {
 			}
 			else if (!empty($timestamp) and time() - $timestamp >= 3600) {
 				$this->unlock();
-				$this->lock();
+				$locked = $this->lock();
 			}
 		}
 		catch (Exception $e) {
