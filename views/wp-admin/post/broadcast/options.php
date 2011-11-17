@@ -163,7 +163,7 @@
 						if ($service->key() == 'facebook') {
 							if (($account->use_pages() or $account->use_pages(true)) and count($pages)) {
 								echo '<div class="social-facebook-pages"'.(!empty($checked_pages) ? ' style="display:block"' : '').'>'
-									.'    <h5>Account Pages</h5>'
+									.'    <h5>'.__('Account Pages', 'social').'</h5>'
 									.'    <ul>';
 								foreach ($pages as $page) {
 									$_checked = $checked;
@@ -200,7 +200,7 @@
 </table>
 <p class="step">
 	<input type="submit" name="social_action" value="<?php _e($step_text, 'social'); ?>" class="button" />
-	<a href="<?php echo esc_url(get_edit_post_link($post->ID, 'url')); ?>" class="button">Cancel</a>
+	<a href="<?php echo esc_url(get_edit_post_link($post->ID, 'url')); ?>" class="button"><?php _e('Cancel', 'social'); ?></a>
 </p>
 </form>
 <script type="text/javascript">
