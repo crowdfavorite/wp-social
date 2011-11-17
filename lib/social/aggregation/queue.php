@@ -292,6 +292,8 @@ final class Social_Aggregation_Queue {
 			else {
 				$next_run = $minutes;
 			}
+
+			$next_run = sprintf(__('approximately %s', 'social'), $next_run);
 		}
 		else {
 			$next_run = Kohana_Date::fuzzy_span($timetamp, $current_time);
