@@ -101,8 +101,11 @@
 					$('#run_aggregation_loader').hide();
 					$this.removeAttr('disabled');
 
-					$('#aggregation_log').hide().html(response).find('.parent:not(:first)').hide().end().fadeIn();
-				});
+					if (response.next_run != '0') {
+						$('#social-next-run span').html(response.next_run);
+					}
+					$('#aggregation_log').hide().html(response.html).find('.parent:not(:first)').hide().end().fadeIn();
+				}, 'json');
 			}
 		});
 		$('#aggregation_log .parent:not(:first)').hide();

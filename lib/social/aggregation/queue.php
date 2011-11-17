@@ -229,4 +229,79 @@ final class Social_Aggregation_Queue {
 		));
 	}
 
+	public static function next_run($timetamp) {
+		$current_time = current_time('timestamp', 1);
+		$diff = $timetamp - $current_time;
+		if ($diff < Kohana_Date::HOUR) {
+			$next_run = Kohana_Date::fuzzy_span($timetamp, $current_time);
+		}
+		else if ($diff < (Kohana_Date::DAY * 2)) {
+			$span = Kohana_Date::span($timetamp, $current_time);
+
+			// Days
+			$days = '';
+			if (!empty($span['days'])) {
+				if ($span['days'] == '1') {
+					$days = __('1 day', 'social');
+				}
+				else {
+					$days = sprintf(__('%s days', 'social'), $span['days']);
+				}
+			}
+
+			// Hours
+			$hours = '';
+			if (!empty($span['hours'])) {
+				if ($span['hours'] == '1') {
+					$hours = __('1 hour', 'social');
+				}
+				else {
+					$hours = sprintf(__('%s hours', 'social'), $span['hours']);
+				}
+			}
+
+			// Minutes
+			$minutes = '';
+			if (!empty($span['minutes'])) {
+				if ($span['minutes'] == '1') {
+					$minutes = __('1 minute', 'social');
+				}
+				else {
+					$minutes = sprintf(__('%s minutes', 'social'), $span['minutes']);
+				}
+			}
+
+			if (!empty($days) and !empty($hours) and !empty($minutes)) {
+				$next_run = sprintf(__('approximately %s %s %s', 'social'), $days, $hours, $minutes);
+			}
+			else if (!empty($days) and !empty($hours) and empty($minutes)) {
+				$next_run = sprintf(__('approximately %s %s', 'social'), $days, $hours);
+			}
+			else if (!empty($days) and !empty($minutes) and empty($hours)) {
+				$next_run = sprintf(__('approximately %s %s', 'social'), $days, $minutes);
+			}
+			else if (!empty($hours) and !empty($minutes)) {
+				$next_run = sprintf(__('approximately %s %s', 'social'), $hours, $minutes);
+			}
+			else {
+				if (!empty($days)) {
+					$text = $days;
+				}
+				else if (!empty($hours)) {
+					$text = $hours;
+				}
+				else {
+					$text = $minutes;
+				}
+
+				$next_run = sprintf(__('approximately %s', 'social'), $text);
+			}
+		}
+		else {
+			$next_run = Kohana_Date::fuzzy_span($timetamp, $current_time);
+		}
+
+		return $next_run;
+	}
+
 } // End Social_Aggregation_Queue

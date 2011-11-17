@@ -15,7 +15,7 @@
 <div class="social-meta-box-block cf-clearfix">
 	<h4>
 		<?php _e('Manual Refresh', 'social'); ?>
-		<span>(<?php echo sprintf(__('Next automatic run: %s', 'social'), $next_run); ?>)</span>
+		<span id="social-next-run">(<?php echo sprintf(__('Next automatic run: <span>%s</span>', 'social'), $next_run); ?>)</span>
 	</h4>
 
 	<p class="submit" style="clear:both;float:none;padding:0;">
