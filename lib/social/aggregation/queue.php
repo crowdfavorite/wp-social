@@ -272,29 +272,25 @@ final class Social_Aggregation_Queue {
 			}
 
 			if (!empty($days) and !empty($hours) and !empty($minutes)) {
-				$next_run = sprintf(__('approximately %s %s %s', 'social'), $days, $hours, $minutes);
+				$next_run = $days.' '.$hours.' '.$minutes;
 			}
 			else if (!empty($days) and !empty($hours) and empty($minutes)) {
-				$next_run = sprintf(__('approximately %s %s', 'social'), $days, $hours);
+				$next_run = $days.' '.$hours;
 			}
 			else if (!empty($days) and !empty($minutes) and empty($hours)) {
-				$next_run = sprintf(__('approximately %s %s', 'social'), $days, $minutes);
+				$next_run = $days.' '.$minutes;
 			}
 			else if (!empty($hours) and !empty($minutes)) {
-				$next_run = sprintf(__('approximately %s %s', 'social'), $hours, $minutes);
+				$next_run = $hours.' '.$minutes;
+			}
+			else if (!empty($days)) {
+				$next_run = $days;
+			}
+			else if (!empty($hours)) {
+				$next_run = $hours;
 			}
 			else {
-				if (!empty($days)) {
-					$text = $days;
-				}
-				else if (!empty($hours)) {
-					$text = $hours;
-				}
-				else {
-					$text = $minutes;
-				}
-
-				$next_run = sprintf(__('approximately %s', 'social'), $text);
+				$next_run = $minutes;
 			}
 		}
 		else {
