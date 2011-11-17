@@ -94,7 +94,7 @@ final class Social_Controller_Aggregation extends Social_Controller {
 			// Re-add to the queue?
 			$queue = Social_Aggregation_Queue::factory();
 			if (!$queue->find($post->ID)) {
-				$queue->add($post->ID, '24hour')->save();
+				$queue->add($post->ID, '24hr')->save();
 			}
 
 			$log = Social_Aggregation_Log::instance($post->ID);
@@ -134,7 +134,16 @@ final class Social_Controller_Aggregation extends Social_Controller {
 				echo json_encode($response);
 			}
 			else {
-				echo $log;
+				$queue = $queue->find($post->ID);
+				$next_run = 0;
+				if ($queue !== false) {
+					$next_run = Social_Aggregation_Queue::next_run($queue->next_run);
+				}
+
+				echo json_encode(array(
+					'html' => $log->render(),
+					'next_run' => $next_run,
+				));
 			}
 			exit;
 		}

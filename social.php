@@ -86,7 +86,7 @@ final class Social {
 	 * @return bool
 	 */
 	public static function auto_load($class) {
-		if (substr($class, 0, 7) == 'Social_') {
+		if (substr($class, 0, 7) == 'Social_' or substr($class, 0, 7) == 'Kohana_') {
 			try {
 				$file = SOCIAL_PATH.'lib/'.str_replace('_', '/', strtolower($class)).'.php';
 				$file = apply_filters('social_auto_load_file', $file, $class);
@@ -723,7 +723,7 @@ final class Social {
 			$next_run = __('Not Scheduled', 'social');
 		}
 		else {
-			$next_run = date(get_option('date_format').' '.get_option('time_format'), ((int) $next_run + (get_option('gmt_offset') * 3600)));
+			$next_run = Social_Aggregation_Queue::next_run($next_run);
 		}
 
 		echo Social_View::factory('wp-admin/post/meta/log/shell', array(
