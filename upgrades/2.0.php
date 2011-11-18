@@ -298,6 +298,24 @@ if (version_compare($installed_version, '2.0', '<')) {
 		}
 		$queue->save();
 	}
+
+	// Fix comment author urls for Facebook comments...
+	$results = $wpdb->get_results("
+		SELECT comment_ID, comment_author_url
+		  FROM $wpdb->comments
+		 WHERE comment_type = 'social-facebook'
+		   AND comment_author_url LIKE 'http://graph.facebook.com/%'
+	");
+	foreach ($results as $result) {
+		$url = explode('http://graph.facebook.com/', $result->comment_author_url);
+		$id = explode('/', $url[1]);
+
+		$wpdb->query($wpdb->prepare("
+			UPDATE $wpdb->comments
+			   SET comment_author_url = %s
+			 WHERE comment_ID = %s
+		", 'http://facebook.com/profile.php?id='.$id[1], $result->comment_ID));
+	}
 }
 
 // Flush the cache
