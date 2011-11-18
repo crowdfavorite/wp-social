@@ -174,7 +174,7 @@ final class Social_Facebook {
 		foreach ($facebook_comments as $key => &$comment) {
 			if (is_object($comment) and isset($broadcasted_ids['facebook'])) {
 				foreach ($broadcasted_ids['facebook'] as $account_id => $broadcasted) {
-					if (isset($broadcasted[$comment->social_status_id]) and $comment->comment_type == 'social-facebook-like') {
+					if (isset($comment->social_status_id) and isset($broadcasted[$comment->social_status_id]) and $comment->comment_type == 'social-facebook-like') {
 						$facebook_likes[] = $comment;
 						unset($comments['id_'.$comment->comment_ID]);
 					}
