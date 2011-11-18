@@ -1,6 +1,6 @@
 <?php
 /**
- * Core Controller
+ * Semaphore Lock Management
  *
  * @package Social
  */
