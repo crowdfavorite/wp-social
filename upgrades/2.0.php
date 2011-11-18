@@ -15,7 +15,11 @@ if (!count($results)) {
 	update_option('social_semaphore', '0');
 }
 
-if (Social_CRON::instance('upgrade')->lock()) {
+$semaphore = Social_Semaphore::factory();
+if ($semaphore->lock()) {
+	// We would normally run an increment here, but since this all happens in
+	// one go and not in a child process there's no need.
+	// $semaphore->increment();
 
 	// Find old social_notify and update to _social_notify.
 	$meta_keys = array(
@@ -73,19 +77,21 @@ if (Social_CRON::instance('upgrade')->lock()) {
 				if (is_array($result->meta_value)) {
 					$meta_value = array();
 					foreach ($result->meta_value as $id) {
-						if (strpos($id, '_') !== false) {
-							if (!isset($meta_value['facebook'])) {
-								$meta_value['facebook'] = array();
-							}
+						if (is_string($id)) {
+							if (strpos($id, '_') !== false) {
+								if (!isset($meta_value['facebook'])) {
+									$meta_value['facebook'] = array();
+								}
 
-							$meta_value['facebook'][] = $id;
-						}
-						else {
-							if (!isset($meta_value['twitter'])) {
-								$meta_value['twitter'] = array();
+								$meta_value['facebook'][] = $id;
 							}
+							else {
+								if (!isset($meta_value['twitter'])) {
+									$meta_value['twitter'] = array();
+								}
 
-							$meta_value['twitter'][] = $id;
+								$meta_value['twitter'][] = $id;
+							}
 						}
 					}
 
@@ -311,8 +317,6 @@ if (Social_CRON::instance('upgrade')->lock()) {
 	// Flush the cache
 	wp_cache_flush();
 
-	Social_CRON::instance('upgrade')->unlock();
-}
-else {
-	// CRON already locked
+	// Decrement the semaphore and unlock
+	$semaphore->decrement()->unlock();
 }
