@@ -42,16 +42,18 @@ final class Social_Semaphore {
 			 WHERE option_name = 'social_semaphore'
 			   AND option_value = '0'
 		");
-		if ($affected != '1' and !$this->stuck_check()) {
-			return false;
-		}
+		if ($affected != '1') {
+			if (!$this->stuck_check()) {
+				return false;
+			}
 
-		// Increment the semaphore to 1
-		$wpdb->query("
-			UPDATE $wpdb->options
-			   SET option_value = '1'
-			 WHERE option_name = 'social_semaphore'
-		");
+			// Reset the semaphore to 1
+			$wpdb->query("
+				UPDATE $wpdb->options
+				   SET option_value = '1'
+				 WHERE option_name = 'social_semaphore'
+			");
+		}
 
 		// Set the lock time
 		$wpdb->query($wpdb->prepare("
