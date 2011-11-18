@@ -270,7 +270,11 @@ final class Social {
 		}
 
 		// Trigger upgrade?
-		$this->upgrade(Social::option('installed_version'));
+		if (isset($_GET['page']) and $_GET['page'] == basename(SOCIAL_FILE)) {
+			if (version_compare(Social::option('installed_version'), Social::$version, '<')) {
+				$this->upgrade();
+			}
+		}
 
 		// Plugins URL
 		$url = plugins_url('', SOCIAL_FILE);
@@ -438,6 +442,12 @@ final class Social {
 	 */
 	public function admin_notices() {
 		if (current_user_can('manage_options') or current_user_can('publish_posts')) {
+			// Upgrade notice
+			if (version_compare(Social::option('installed_version'), Social::$version, '<')) {
+				$message = sprintf(__('Social requires an upgrade. Please <a href="%s">click here</a> to upgrade.', 'social'), esc_url(Social::settings_url()));
+				echo '<div class="error"><p>'.$message.'</p></div>';
+			}
+
 			if (!$this->_enabled and (!isset($_GET['page']) or $_GET['page'] != basename(SOCIAL_FILE))) {
 				$message = sprintf(__('To start using Social, please <a href="%s">add an account</a>.', 'social'), esc_url(Social::settings_url()));
 				echo '<div class="error"><p>'.$message.'</p></div>';
@@ -1488,26 +1498,23 @@ final class Social {
 	/**
 	 * Runs the upgrade only if the installed version is older than the current version.
 	 *
-	 * @param  string  $installed_version
 	 * @return void
 	 */
-	private function upgrade($installed_version) {
-		if (version_compare($installed_version, Social::$version, '<')) {
-			define('SOCIAL_UPGRADE', true);
-			global $wpdb; // Don't delete, this is used in upgrade files.
+	private function upgrade() {
+		define('SOCIAL_UPGRADE', true);
+		global $wpdb; // Don't delete, this is used in upgrade files.
 
-			$upgrades = array(
-				SOCIAL_PATH.'upgrades/2.0.php',
-			);
-			$upgrades = apply_filters('social_upgrade_files', $upgrades);
-			foreach ($upgrades as $file) {
-				if (file_exists($file)) {
-					include_once $file;
-				}
+		$upgrades = array(
+			SOCIAL_PATH.'upgrades/2.0.php',
+		);
+		$upgrades = apply_filters('social_upgrade_files', $upgrades);
+		foreach ($upgrades as $file) {
+			if (file_exists($file)) {
+				include_once $file;
 			}
-
-			Social::option('installed_version', Social::$version);
 		}
+
+		Social::option('installed_version', Social::$version);
 	}
 
 	/**
