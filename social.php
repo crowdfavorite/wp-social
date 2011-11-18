@@ -588,7 +588,7 @@ final class Social {
 	public function personal_options_update($user_id) {
 		// Store the default accounts
 		$accounts = array();
-		if (is_array($_POST['social_default_accounts'])) {
+		if (isset($_POST['social_default_accounts']) and is_array($_POST['social_default_accounts'])) {
 			foreach ($_POST['social_default_accounts'] as $account) {
 				$account = explode('|', $account);
 				$accounts[$account[0]][] = $account[1];
@@ -596,7 +596,7 @@ final class Social {
 		}
 
 		// TODO abstract this to the facebook plugin
-		if (is_array($_POST['social_default_pages'])) {
+		if (isset($_POST['social_default_accounts']) and is_array($_POST['social_default_pages'])) {
 			if (!isset($accounts['facebook'])) {
 				$accounts['facebook'] = array(
 					'pages' => array()
