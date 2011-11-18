@@ -3,6 +3,18 @@
  * Upgrades Social to 2.0.
  */
 
+// First check for the semaphore options, they need to be added before the upgrade starts.
+$results = $wpdb->get_results("
+	SELECT option_id
+	  FROM $wpdb->options
+	 WHERE option_name IN ('social_locked', 'social_unlocked')
+");
+if (!count($results)) {
+	update_option('social_unlocked', '1');
+	update_option('social_last_lock_time', current_time('mysql', 1));
+	update_option('social_semaphore', '0');
+}
+
 if (Social_CRON::instance('upgrade')->lock()) {
 
 	// Find old social_notify and update to _social_notify.
