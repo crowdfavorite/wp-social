@@ -272,6 +272,7 @@ final class Social {
 		// Trigger upgrade?
 		if (isset($_GET['page']) and $_GET['page'] == basename(SOCIAL_FILE)) {
 			if (version_compare(Social::option('installed_version'), Social::$version, '<')) {
+				$this->_enabled = false;
 				$this->upgrade();
 			}
 		}
