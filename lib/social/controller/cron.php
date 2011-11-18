@@ -43,17 +43,7 @@ final class Social_Controller_CRON extends Social_Controller {
 	 * @return void
 	 */
 	public function action_cron_15() {
-		Social_CRON::instance('cron_15')->execute($this->system_cron);
-	}
 
-	/**
-	 * Handles the CRON 60 logic.
-	 *
-	 * @throws Exception
-	 * @return void
-	 */
-	public function action_cron_60() {
-		Social_CRON::instance('cron_60')->execute($this->system_cron);
 	}
 
 	/**
@@ -69,7 +59,6 @@ final class Social_Controller_CRON extends Social_Controller {
 		$crons = _get_cron_array();
 		$social_crons = array(
 			'15' => false,
-			'60' => false
 		);
 		foreach ($crons as $timestamp => $_crons) {
 			foreach ($_crons as $key => $cron) {
