@@ -968,7 +968,10 @@ final class Social {
 	 * @return void
 	 */
 	public function cron_15_init() {
+		$semaphore = Social_Semaphore::factory();
+		if ($semaphore->lock()) {
 			$this->request(site_url('?social_controller=cron&social_action=cron_15'), 'cron_15');
+			$semaphore->unlock();
 		}
 	}
 
@@ -993,6 +996,9 @@ final class Social {
 				}
 			}
 		}
+
+		// Decrement the semaphore
+		Social_Semaphore::factory()->decrement();
 	}
 
 	/**
