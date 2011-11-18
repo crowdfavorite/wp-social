@@ -964,8 +964,23 @@ final class Social {
 		}
 
 		if (!isset($broadcasted_ids[$service][$account->id()][$broadcasted_id])) {
+			$urls = array(
+				get_permalink($post_id)
+			);
+
+			$shortlink = wp_get_shortlink($post_id);
+			if (!in_array($shortlink, $urls)) {
+				$urls[] = $shortlink;
+			}
+
+			$home_url = home_url('?p='.$post_id);
+			if (!in_array($home_url, $urls)) {
+				$urls[] = $home_url;
+			}
+
 			$data = array(
 				'message' => $message,
+				'urls' => $urls
 			);
 			$data = apply_filters('social_save_broadcasted_ids_data', $data, $account, $service, $post_id, $response);
 			$broadcasted_ids[$service][$account->id()][$broadcasted_id] = $data;

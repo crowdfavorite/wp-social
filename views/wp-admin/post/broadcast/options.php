@@ -67,7 +67,7 @@
 					foreach ($accounts as $account) {
 						$checked = true;
 						$checked_pages = array();
-						if (!empty($default_accounts) and !isset($_POST['social_broadcast']) and !isset($_POST['social_'.$key.'_accounts'])) {
+						if (!empty($default_accounts) and !isset($_POST['social_'.$key.'_accounts'])) {
 							if (!isset($default_accounts[$key]) or !in_array($account->id(), $default_accounts[$key])) {
 								$checked = false;
 							}
