@@ -150,6 +150,9 @@ final class Social_Controller_Aggregation extends Social_Controller {
 		else {
 			Social_Aggregation_Log::instance($post->ID)->save();
 		}
+
+		// Decrement the semaphore
+		Social_Semaphore::factory()->decrement();
 	}
 
 	/**

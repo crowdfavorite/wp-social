@@ -982,6 +982,7 @@ final class Social {
 	 * @return void
 	 */
 	public function run_aggregation() {
+		$semaphore = Social_Semaphore::factory();
 		$queue = Social_Aggregation_Queue::factory();
 
 		foreach ($queue->runnable() as $timestamp => $posts) {
@@ -989,6 +990,7 @@ final class Social {
 				$post = get_post($id);
 				if ($post !== null) {
 					$queue->add($id, $interval)->save();
+					$semaphore->increment();
 					$this->request(site_url('?social_controller=aggregation&social_action=run&post_id='.$id), 'run');
 				}
 				else {
@@ -996,9 +998,6 @@ final class Social {
 				}
 			}
 		}
-
-		// Decrement the semaphore
-		Social_Semaphore::factory()->decrement();
 	}
 
 	/**
