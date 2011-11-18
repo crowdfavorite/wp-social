@@ -43,7 +43,12 @@ final class Social_Controller_CRON extends Social_Controller {
 	 * @return void
 	 */
 	public function action_cron_15() {
+		global $wp_filter;
+		if (isset($wp_filter['social_cron_15'])) {
+			Social_Semaphore::factory()->increment($wp_filter['social_cron_15']);
 
+			do_action('social_cron_15');
+		}
 	}
 
 	/**

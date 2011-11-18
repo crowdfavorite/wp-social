@@ -68,16 +68,27 @@ final class Social_Semaphore {
 	/**
 	 * Increment the semaphore.
 	 *
+	 * @param  array  $filters
 	 * @return Social_Semaphore
 	 */
-	public function increment() {
+	public function increment(array $filters = array()) {
 		global $wpdb;
 
-		$wpdb->query("
-			UPDATE $wpdb->options
-			   SET option_value = CAST(option_value AS UNSIGNED) + 1
-			 WHERE option_name = 'social_semaphore'
-		");
+		if (count($filters)) {
+			// Loop through all of the filters and increment the semaphore
+			foreach ($filters as $priority) {
+				for ($i = 0, $j = count($priority); $i < $j; ++$i) {
+					$this->increment();
+				}
+			}
+		}
+		else {
+			$wpdb->query("
+				UPDATE $wpdb->options
+				   SET option_value = CAST(option_value AS UNSIGNED) + 1
+				 WHERE option_name = 'social_semaphore'
+			");
+		}
 
 		return $this;
 	}
