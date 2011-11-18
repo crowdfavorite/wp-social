@@ -207,7 +207,7 @@ final class Social {
 	/**
 	 * @var  bool  is Social enabled?
 	 */
-	private $_enabled = false;
+	private $_enabled = null;
 
 	/**
 	 * Returns an array of all of the services.
@@ -1658,7 +1658,10 @@ final class Social {
 						$service_accounts = array();
 
 						if (isset($accounts[$service]) and count($accounts[$service])) {
-							$this->_enabled = true; // Flag social as enabled, we have at least one account.
+							// Flag social as enabled, we have at least one account.
+							if ($this->_enabled === null) {
+								$this->_enabled = true;
+							}
 
 							foreach ($accounts[$service] as $account_id => $account) {
 								// TODO Shouldn't have to do this. Fix later.
@@ -1676,7 +1679,6 @@ final class Social {
 				if (is_array($personal_accounts)) {
 					foreach ($personal_accounts as $key => $_accounts) {
 						if (count($_accounts) and isset($services[$key])) {
-							$this->_enabled = true;
 							$class = 'Social_Service_'.$key.'_Account';
 							foreach ($_accounts as $account_id => $account) {
 								// TODO Shouldn't have to do this. Fix later.
@@ -1685,10 +1687,13 @@ final class Social {
 								if ($services[$key]->account_exists($account_id) and !defined('IS_PROFILE_PAGE')) {
 									$account = $this->merge_accounts($services[$key]->account($account_id)->as_object(), $account, $key);
 								}
-
-								$this->_enabled = true;
 								$account = new $class((object) $account);
 								$services[$key]->account($account);
+
+								// Flag social as enabled, we have at least one account.
+								if ($this->_enabled === null) {
+									$this->_enabled = true;
+								}
 							}
 						}
 					}
@@ -1697,7 +1702,7 @@ final class Social {
 
 			wp_cache_set('services', $services, 'social');
 		}
-		else if (!$this->_enabled and is_array($services)) {
+		else if ($this->_enabled === null and is_array($services)) {
 			foreach ($services as $service) {
 				if (count($service->accounts())) {
 					$this->_enabled = true;
