@@ -229,6 +229,13 @@ final class Social_Aggregation_Queue {
 		));
 	}
 
+	/**
+	 * Builds the next run output.
+	 *
+	 * @static
+	 * @param  int  $timetamp
+	 * @return string
+	 */
 	public static function next_run($timetamp) {
 		$current_time = current_time('timestamp', 1);
 		$diff = $timetamp - $current_time;
