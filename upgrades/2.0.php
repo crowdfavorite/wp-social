@@ -17,10 +17,6 @@ if (!count($results)) {
 
 $semaphore = Social_Semaphore::factory();
 if ($semaphore->lock()) {
-	// We would normally run an increment here, but since this all happens in
-	// one go and not in a child process there's no need.
-	// $semaphore->increment();
-
 	// Find old social_notify and update to _social_notify.
 	$meta_keys = array(
 		'social_aggregated_replies',
@@ -318,5 +314,5 @@ if ($semaphore->lock()) {
 	wp_cache_flush();
 
 	// Decrement the semaphore and unlock
-	$semaphore->decrement()->unlock();
+	$semaphore->unlock();
 }

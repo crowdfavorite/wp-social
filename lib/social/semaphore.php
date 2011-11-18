@@ -85,7 +85,7 @@ final class Social_Semaphore {
 	/**
 	 * Decrements the semaphore.
 	 *
-	 * @return Social_Semaphore
+	 * @return void
 	 */
 	public function decrement() {
 		global $wpdb;
@@ -96,8 +96,6 @@ final class Social_Semaphore {
 			 WHERE option_name = 'social_semaphore'
 			   AND CAST(option_value AS UNSIGNED) > 0
 		");
-
-		return $this;
 	}
 
 	/**
@@ -107,6 +105,9 @@ final class Social_Semaphore {
 	 */
 	public function unlock() {
 		global $wpdb;
+
+		// Decrement for the master process.
+		$this->decrement();
 
 		$result = $wpdb->query("
 			UPDATE $wpdb->options
