@@ -968,7 +968,6 @@ final class Social {
 	 * @return void
 	 */
 	public function cron_15_init() {
-		if (Social_CRON::instance('cron_15')->lock()) {
 			$this->request(site_url('?social_controller=cron&social_action=cron_15'), 'cron_15');
 		}
 	}
