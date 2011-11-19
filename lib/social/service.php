@@ -43,6 +43,15 @@ abstract class Social_Service {
 	}
 
 	/**
+	 * The max length a post can be when broadcasted.
+	 *
+	 * @return int
+	 */
+	public function max_broadcast_length() {
+		return 140; // default to Twitter length
+	}
+
+	/**
 	 * Builds the authorize URL for the service.
 	 *
 	 * @return string
