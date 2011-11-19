@@ -623,18 +623,21 @@ final class Social {
 		global $post;
 
 		if ($post !== null) {
-			add_meta_box('social_meta_broadcast', __('Social Broadcasting', 'social'), array(
-				$this,
-				'add_meta_box_broadcast'
-			), 'post', 'side', 'high');
-
-			$fetch = Social::option('fetch_comments');
-			if ($this->_enabled and !empty($fetch)) {
-				if ($post->post_status == 'publish') {
-					add_meta_box('social_meta_aggregation_log', __('Social Comments', 'social'), array(
-						$this,
-						'add_meta_box_log'
-					), 'post', 'normal', 'core');
+			$post_types = apply_filters('social_broadcasting_enabled_post_types', array('post'));
+			foreach ($post_types as $post_type) {
+				add_meta_box('social_meta_broadcast', __('Social Broadcasting', 'social'), array(
+					$this,
+					'add_meta_box_broadcast'
+				), $post_type, 'side', 'high');
+	
+				$fetch = Social::option('fetch_comments');
+				if ($this->_enabled and !empty($fetch)) {
+					if ($post->post_status == 'publish') {
+						add_meta_box('social_meta_aggregation_log', __('Social Comments', 'social'), array(
+							$this,
+							'add_meta_box_log'
+						), $post_type, 'normal', 'core');
+					}
 				}
 			}
 		}
