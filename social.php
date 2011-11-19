@@ -1503,7 +1503,7 @@ final class Social {
 				'parent' => 'comments',
 				'id' => 'social_find_comments',
 				'title' => __('Find Social Comments', 'social')
-					.'<span class="social-aggregation-spinner" style="display: none;">(
+					.'<span class="social-aggregation-spinner" style="display: none;">&nbsp;(
 						<span class="social-dot dot-active">.</span>
 						<span class="social-dot">.</span>
 						<span class="social-dot">.</span>
@@ -1516,11 +1516,8 @@ final class Social {
 	function admin_bar_footer_css() {
 ?>
 <style class="text/css">
-#wp-admin-bar-comments {
-	white-space: nowrap;
-}
+#wp-admin-bar-comments,
 #wpadminbar .social-aggregation-spinner {
-	padding-left: 10px;
 	white-space: nowrap;
 }
 #wpadminbar .social-aggregation-spinner .dot-active {
