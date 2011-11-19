@@ -127,10 +127,7 @@ Currently it seems Twitter will only return results using http://example.com/?p=
 
 = What CRON jobs are built into Social? =
 
-Currently Social contains 2 CRON jobs:
-
-1. `cron_15`
-2. `cron_60`
+Currently Social contains one CRON job, `cron_15`.
 
 = How can I override Social's internal CRON service with system CRON jobs? =
 

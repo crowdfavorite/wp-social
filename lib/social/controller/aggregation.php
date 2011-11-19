@@ -29,18 +29,18 @@ final class Social_Controller_Aggregation extends Social_Controller {
 		));
 
 		// Get URLs to query
-		$url = wp_get_shortlink($post->ID);
-		if (empty($url)) {
-			$url = site_url('?p='.$post->ID);
-		}
-		$urls = array(
-			urlencode($url)
+		$default_urls = array(
+			site_url('?p='.$post->ID)
 		);
+		$url = wp_get_shortlink($post->ID);
+		if (strpos($url, '?p=') === false) {
+			$default_urls[] = $url;
+		}
 
 		// Add the permalink?
-		$permalink = urlencode(get_permalink($post->ID));
-		if ($urls[0] != $permalink) {
-			$urls[] = $permalink;
+		$permalink = get_permalink($post->ID);
+		if ($default_urls[0] != $permalink) {
+			$default_urls[] = $permalink;
 		}
 
 		$broadcasted_ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
@@ -57,6 +57,7 @@ final class Social_Controller_Aggregation extends Social_Controller {
 		$post->aggregated_ids = $aggregated_ids;
 		$post->results = array();
 		foreach ($this->social->services() as $key => $service) {
+			$urls = $default_urls;
 			$post->results[$key] = array();
 			if (!isset($post->aggregated_ids[$key])) {
 				$post->aggregated_ids[$key] = array();
@@ -64,11 +65,28 @@ final class Social_Controller_Aggregation extends Social_Controller {
 			
 			if (isset($broadcasted_ids[$key]) and count($broadcasted_ids[$key])) {
 				$service->aggregate_by_api($post);
+
+				foreach ($broadcasted_ids[$key] as $broadcasted) {
+					foreach ($broadcasted as $data) {
+						if (isset($data['urls']) and is_array($data['urls'])) {
+							foreach ($data['urls'] as $url) {
+								if (!in_array($url, $default_urls)) {
+									$urls[] = $url;
+								}
+							}
+						}
+					}
+				}
 			}
 
 			// URL Search
 			$urls = apply_filters('social_search_urls', $urls, $key);
-			$service->aggregate_by_url($post, $urls);
+			if (count($urls)) {
+				foreach ($urls as $key => $url) {
+					$urls[$key] = urlencode($url);
+				}
+				$service->aggregate_by_url($post, $urls);
+			}
 		}
 
 		if (count($post->results)) {
@@ -150,6 +168,9 @@ final class Social_Controller_Aggregation extends Social_Controller {
 		else {
 			Social_Aggregation_Log::instance($post->ID)->save();
 		}
+
+		// Decrement the semaphore
+		Social_Semaphore::factory()->decrement();
 	}
 
 	/**

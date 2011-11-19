@@ -25,7 +25,7 @@ final class Social {
 	/**
 	 * @var  string  version number
 	 */
-	public static $version = '2.0';
+	public static $version = '2.0-beta3-1';
 
 	/**
 	 * @var  string  CRON lock directory.
@@ -207,7 +207,7 @@ final class Social {
 	/**
 	 * @var  bool  is Social enabled?
 	 */
-	private $_enabled = false;
+	private $_enabled = null;
 
 	/**
 	 * Returns an array of all of the services.
@@ -268,9 +268,6 @@ final class Social {
 			Social::option('install_date', current_time('timestamp', 1));
 			Social::option('system_cron_api_key', wp_generate_password(16, false));
 		}
-
-		// Trigger upgrade?
-		$this->upgrade(Social::option('installed_version'));
 
 		// Plugins URL
 		$url = plugins_url('', SOCIAL_FILE);
@@ -352,7 +349,31 @@ final class Social {
 	 */
 	public function admin_init() {
 		if (current_user_can('manage_options') or current_user_can('publish_posts')) {
-			$this->load_services();
+			// Trigger upgrade?
+			if (isset($_GET['page']) and $_GET['page'] == basename(SOCIAL_FILE)) {
+				global $wpdb;
+
+				// First check for the semaphore options, they need to be added before the upgrade starts.
+				$results = $wpdb->get_results("
+					SELECT option_id
+					  FROM $wpdb->options
+					 WHERE option_name IN ('social_locked', 'social_unlocked')
+				");
+				if (!count($results)) {
+					update_option('social_unlocked', '1');
+					update_option('social_last_lock_time', current_time('mysql', 1));
+					update_option('social_semaphore', '0');
+				}
+
+				if (version_compare(Social::option('installed_version'), Social::$version, '<')) {
+					$this->_enabled = false;
+					$this->upgrade();
+				}
+			}
+
+			if ($this->_enabled === null) {
+				$this->load_services();
+			}
 		}
 
 		$commenter = get_user_meta(get_current_user_id(), 'social_commenter', true);
@@ -372,10 +393,6 @@ final class Social {
 		if (Social::option('fetch_comments') == '1') {
 			if (wp_next_scheduled('social_cron_15_init') === false) {
 				wp_schedule_event(time() + 900, 'every15min', 'social_cron_15_init');
-			}
-
-			if (wp_next_scheduled('social_cron_60_init') === false) {
-				wp_schedule_event(time() + 3600, 'hourly', 'social_cron_60_init');
 			}
 
 			$this->request(admin_url('?social_controller=cron&social_action=check_crons'), 'check_crons');
@@ -442,6 +459,12 @@ final class Social {
 	 */
 	public function admin_notices() {
 		if (current_user_can('manage_options') or current_user_can('publish_posts')) {
+			// Upgrade notice
+			if (version_compare(Social::option('installed_version'), Social::$version, '<')) {
+				$message = sprintf(__('Social requires an upgrade. Please <a href="%s">click here</a> to upgrade.', 'social'), esc_url(Social::settings_url()));
+				echo '<div class="error"><p>'.$message.'</p></div>';
+			}
+
 			if (!$this->_enabled and (!isset($_GET['page']) or $_GET['page'] != basename(SOCIAL_FILE))) {
 				$message = sprintf(__('To start using Social, please <a href="%s">add an account</a>.', 'social'), esc_url(Social::settings_url()));
 				echo '<div class="error"><p>'.$message.'</p></div>';
@@ -565,7 +588,7 @@ final class Social {
 	public function personal_options_update($user_id) {
 		// Store the default accounts
 		$accounts = array();
-		if (is_array($_POST['social_default_accounts'])) {
+		if (isset($_POST['social_default_accounts']) and is_array($_POST['social_default_accounts'])) {
 			foreach ($_POST['social_default_accounts'] as $account) {
 				$account = explode('|', $account);
 				$accounts[$account[0]][] = $account[1];
@@ -573,7 +596,7 @@ final class Social {
 		}
 
 		// TODO abstract this to the facebook plugin
-		if (is_array($_POST['social_default_pages'])) {
+		if (isset($_POST['social_default_accounts']) and is_array($_POST['social_default_pages'])) {
 			if (!isset($accounts['facebook'])) {
 				$accounts['facebook'] = array(
 					'pages' => array()
@@ -941,8 +964,23 @@ final class Social {
 		}
 
 		if (!isset($broadcasted_ids[$service][$account->id()][$broadcasted_id])) {
+			$urls = array(
+				get_permalink($post_id)
+			);
+
+			$shortlink = wp_get_shortlink($post_id);
+			if (!in_array($shortlink, $urls)) {
+				$urls[] = $shortlink;
+			}
+
+			$home_url = home_url('?p='.$post_id);
+			if (!in_array($home_url, $urls)) {
+				$urls[] = $home_url;
+			}
+
 			$data = array(
 				'message' => $message,
+				'urls' => $urls
 			);
 			$data = apply_filters('social_save_broadcasted_ids_data', $data, $account, $service, $post_id, $response);
 			$broadcasted_ids[$service][$account->id()][$broadcasted_id] = $data;
@@ -972,21 +1010,7 @@ final class Social {
 	 * @return void
 	 */
 	public function cron_15_init() {
-		if (Social_CRON::instance('cron_15')->lock()) {
-			$this->request(site_url('?social_controller=cron&social_action=cron_15'), 'cron_15');
-		}
-	}
-
-	/**
-	 * Sends a request to initialize CRON 60.
-	 *
-	 * @wp-action  social_cron_60_init
-	 * @return void
-	 */
-	public function cron_60_init() {
-		if (Social_CRON::instance('cron_60')->lock()) {
-			$this->request(site_url('?social_controller=cron&social_action=cron_60'), 'cron_60');
-		}
+		Social_Request::factory('cron/cron_15')->execute();
 	}
 
 	/**
@@ -996,6 +1020,7 @@ final class Social {
 	 * @return void
 	 */
 	public function run_aggregation() {
+		$semaphore = Social_Semaphore::factory();
 		$queue = Social_Aggregation_Queue::factory();
 
 		foreach ($queue->runnable() as $timestamp => $posts) {
@@ -1003,6 +1028,7 @@ final class Social {
 				$post = get_post($id);
 				if ($post !== null) {
 					$queue->add($id, $interval)->save();
+					$semaphore->increment();
 					$this->request(site_url('?social_controller=aggregation&social_action=run&post_id='.$id), 'run');
 				}
 				else {
@@ -1504,26 +1530,23 @@ final class Social {
 	/**
 	 * Runs the upgrade only if the installed version is older than the current version.
 	 *
-	 * @param  string  $installed_version
 	 * @return void
 	 */
-	private function upgrade($installed_version) {
-		if (version_compare($installed_version, Social::$version, '<')) {
-			define('SOCIAL_UPGRADE', true);
-			global $wpdb; // Don't delete, this is used in upgrade files.
+	private function upgrade() {
+		define('SOCIAL_UPGRADE', true);
+		global $wpdb; // Don't delete, this is used in upgrade files.
 
-			$upgrades = array(
-				SOCIAL_PATH.'upgrades/2.0.php',
-			);
-			$upgrades = apply_filters('social_upgrade_files', $upgrades);
-			foreach ($upgrades as $file) {
-				if (file_exists($file)) {
-					include_once $file;
-				}
+		$upgrades = array(
+			SOCIAL_PATH.'upgrades/2.0.php',
+		);
+		$upgrades = apply_filters('social_upgrade_files', $upgrades);
+		foreach ($upgrades as $file) {
+			if (file_exists($file)) {
+				include_once $file;
 			}
-
-			Social::option('installed_version', Social::$version);
 		}
+
+		Social::option('installed_version', Social::$version);
 	}
 
 	/**
@@ -1666,7 +1689,10 @@ final class Social {
 						$service_accounts = array();
 
 						if (isset($accounts[$service]) and count($accounts[$service])) {
-							$this->_enabled = true; // Flag social as enabled, we have at least one account.
+							// Flag social as enabled, we have at least one account.
+							if ($this->_enabled === null) {
+								$this->_enabled = true;
+							}
 
 							foreach ($accounts[$service] as $account_id => $account) {
 								// TODO Shouldn't have to do this. Fix later.
@@ -1684,7 +1710,6 @@ final class Social {
 				if (is_array($personal_accounts)) {
 					foreach ($personal_accounts as $key => $_accounts) {
 						if (count($_accounts) and isset($services[$key])) {
-							$this->_enabled = true;
 							$class = 'Social_Service_'.$key.'_Account';
 							foreach ($_accounts as $account_id => $account) {
 								// TODO Shouldn't have to do this. Fix later.
@@ -1693,10 +1718,13 @@ final class Social {
 								if ($services[$key]->account_exists($account_id) and !defined('IS_PROFILE_PAGE')) {
 									$account = $this->merge_accounts($services[$key]->account($account_id)->as_object(), $account, $key);
 								}
-
-								$this->_enabled = true;
 								$account = new $class((object) $account);
 								$services[$key]->account($account);
+
+								// Flag social as enabled, we have at least one account.
+								if ($this->_enabled === null) {
+									$this->_enabled = true;
+								}
 							}
 						}
 					}
@@ -1704,6 +1732,14 @@ final class Social {
 			}
 
 			wp_cache_set('services', $services, 'social');
+		}
+		else if ($this->_enabled === null and is_array($services)) {
+			foreach ($services as $service) {
+				if (count($service->accounts())) {
+					$this->_enabled = true;
+					break;
+				}
+			}
 		}
 
 		return $services;
@@ -1809,7 +1845,6 @@ add_action('set_user_role', array($social, 'set_user_role'), 10, 2);
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));
-add_action('social_cron_60_init', array($social, 'cron_60_init'));
 add_action('social_cron_15', array($social, 'run_aggregation'));
 
 // Admin Actions

@@ -33,7 +33,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 */
 	public function broadcast($account, $message, array $args = array(), $post_id = null) {
 		global $post;
-		if (has_post_thumbnail($post_id)) {
+		if (function_exists('has_post_thumbnail') and has_post_thumbnail($post_id)) {
 			$post = get_post($post_id);
 			$image = wp_get_attachment_image_src(get_post_thumbnail_id($post_id), 'single-post-thumbnail');
 			$args = $args + array(
@@ -232,7 +232,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 						$commentdata = array_merge($commentdata, array(
 							'comment_type' => 'social-'.$this->_key,
 							'comment_author' => $wpdb->escape($result->from->name),
-							'comment_author_url' => $account->avatar(),
+							'comment_author_url' => $account->url(),
 							'comment_content' => $wpdb->escape($result->message),
 							'comment_date' => date('Y-m-d H:i:s', strtotime($result->created_time) + (get_option('gmt_offset') * 3600)),
 							'comment_date_gmt' => gmdate('Y-m-d H:i:s', strtotime($result->created_time)),
