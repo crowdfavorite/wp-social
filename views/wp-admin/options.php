@@ -88,7 +88,11 @@
 									<?php
 										$show_pages = false;
 										$pages_output = '';
+
+										echo esc_html($account->name());
 										if ($service->key() == 'facebook') {
+											$pages = $account->pages(null, false);
+
 											if ($account->use_pages(true) and count($pages)) {
 												$pages_output .= '<h5>'.__('Account Pages', 'social').'</h5><ul>';
 												foreach ($pages as $page) {
@@ -108,14 +112,10 @@
 														.'</li>';
 												}
 												$pages_output .= '</ul>';
-											}
-										}
 
-										echo esc_html($account->name());
-										if ($service->key() == 'facebook') {
-											$pages = $account->pages(null, false);
-											if ($account->use_pages() and count($pages)) {
-												echo '<span> - <a href="#" class="social-show-facebook-pages">'.__('Show Pages', 'social').'</a></span>';
+												if (!$show_pages) {
+													echo '<span> - <a href="#" class="social-show-facebook-pages">'.__('Show Pages', 'social').'</a></span>';
+												}
 											}
 										}
 									?>
