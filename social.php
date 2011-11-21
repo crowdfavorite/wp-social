@@ -1222,25 +1222,35 @@ final class Social {
 				foreach ($service->accounts() as $account) {
 					if ($account_id == $account->id()) {
 						if (isset($_POST['post_to_service'])) {
+							$in_reply_to_status_id = get_comment_meta($_POST['comment_parent'], 'social_status_id', true);
 							if ($comment->comment_approved == '0') {
 								update_comment_meta($comment_ID, 'social_to_broadcast', $_POST['social_post_account']);
+								if (!empty($in_reply_to_status_id)) {
+									update_comment_meta($comment_ID, 'social_in_reply_to_status_id', $in_reply_to_status_id);
+								}
 							}
 							else {
+								$args = array();
+								if (!empty($in_reply_to_status_id)) {
+									$args['in_reply_to_status_id'] = $in_reply_to_status_id;
+									delete_comment_meta($comment_ID, 'social_in_reply_to_status_id');
+								}
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s.', 'social'), $comment_ID, $service->title(), $account->id()));
-								$response = $service->broadcast($account, $output);
+								$response = $service->broadcast($account, $output, $args);
 								if ($response->id() === false) {
 									wp_delete_comment($comment_ID);
 									$message = sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_ID, $service->title(), $account->id());
 
 									Social::log($message);
 									wp_die($message);
-
-									$wpdb->query($wpdb->prepare("
-										UPDATE $wpdb->comments
-										   SET comment_type = %s
-										 WHERE comment_ID = %s
-									", 'social-'.$service->key(), $comment_ID));
 								}
+
+								$wpdb->query($wpdb->prepare("
+									UPDATE $wpdb->comments
+									   SET comment_type = %s
+									 WHERE comment_ID = %s
+								", 'social-'.$service->key(), $comment_ID));
+
 								$this->set_comment_aggregated_id($comment_ID, $service->key(), $response->id());
 								update_comment_meta($comment_ID, 'social_status_id', $response->id());
 								update_comment_meta($comment_ID, 'social_raw_data', base64_encode(json_encode($response->body()->response)));
@@ -1308,18 +1318,27 @@ final class Social {
 							if ($account !== null) {
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s.', 'social'), $comment_id, $service->title(), $account->id()));
 								$comment = get_comment($comment_id);
+
+								$in_reply_to_status_id = get_comment_meta($comment_id, 'social_in_reply_to_status_id', true);
+								$args = array();
+								if (!empty($in_reply_to_status_id)) {
+									$args['in_reply_to_status_id'] = $in_reply_to_status_id;
+									delete_comment_meta($comment_id, 'social_in_reply_to_status_id');
+								}
+
 								$output = $service->format_comment_content($comment, Social::option('comment_broadcast_format'));
-								$response = $service->broadcast($account, $output);
+								$response = $service->broadcast($account, $output, $args);
 								if ($response->id() === false) {
 									wp_delete_comment($comment_id);
 									Social::log(sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_id, $service->title(), $account->id()));
-
-									$wpdb->query($wpdb->prepare("
-										UPDATE $wpdb->comments
-										   SET comment_type = %s
-										 WHERE comment_ID = %s
-									", 'social-'.$service->key(), $comment_id));
 								}
+
+								$wpdb->query($wpdb->prepare("
+									UPDATE $wpdb->comments
+									   SET comment_type = %s
+									 WHERE comment_ID = %s
+								", 'social-'.$service->key(), $comment_id));
+
 								$this->set_comment_aggregated_id($comment_id, $service->key(), $response->id());
 								update_comment_meta($comment_id, 'social_status_id', $response->id());
 								update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($response->body()->response)));
