@@ -78,7 +78,7 @@ final class Social_Log {
 			debug_print_backtrace();
 			$trace = ob_get_contents();
 			ob_end_clean();
-			
+
 			$error_str .= "\n\n".$trace."\n\n";
 		}
 

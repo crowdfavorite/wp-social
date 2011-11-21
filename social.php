@@ -399,7 +399,7 @@ final class Social {
 				wp_schedule_event(time() + 900, 'every15min', 'social_cron_15_init');
 			}
 
-			$this->request(admin_url('?social_controller=cron&social_action=check_crons'), 'check_crons');
+			$this->request(admin_url('?social_controller=cron&social_action=check_crons&social_api_key='.Social::option('system_cron_api_key')));
 		}
 	}
 
@@ -1675,8 +1675,11 @@ final class Social {
 	 * @param  bool    $post       set to true to do a wp_remote_post
 	 * @return void
 	 */
-	private function request($url, $nonce_key, $post = false) {
-		$url = str_replace('&amp;', '&', wp_nonce_url($url, $nonce_key));
+	private function request($url, $nonce_key = null, $post = false) {
+		if ($nonce_key !== null) {
+			$url = str_replace('&amp;', '&', wp_nonce_url($url, $nonce_key));
+		}
+
 		$data = array(
 			'timeout' => 0.01,
 			'blocking' => false,
