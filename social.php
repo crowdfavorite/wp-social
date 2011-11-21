@@ -1239,7 +1239,7 @@ final class Social {
 								}
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s.', 'social'), $comment_ID, $service->title(), $account->id()));
 								$response = $service->broadcast($account, $output, $args);
-								if ($response->id() === false) {
+								if ($response === false or $response->id() === false) {
 									wp_delete_comment($comment_ID);
 									$message = sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_ID, $service->title(), $account->id());
 
@@ -1330,7 +1330,7 @@ final class Social {
 
 								$output = $service->format_comment_content($comment, Social::option('comment_broadcast_format'));
 								$response = $service->broadcast($account, $output, $args);
-								if ($response->id() === false) {
+								if ($response === false or $response->id() === false) {
 									wp_delete_comment($comment_id);
 									Social::log(sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_id, $service->title(), $account->id()));
 								}
