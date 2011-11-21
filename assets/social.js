@@ -234,8 +234,8 @@
 					});
 
 					// show spinner
-					$comment_adminbar_item.find('#ab-awaiting-mod').hide().parent()
-						.append($social_spinner);
+					$comment_adminbar_item.find('#ab-awaiting-mod').hide().end()
+						.find('a:first').append($social_spinner);
 					$social_spinner.show();
 					SocialLoadingInterval = setInterval(function() {
 						var next = false;
