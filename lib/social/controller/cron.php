@@ -25,14 +25,12 @@ final class Social_Controller_CRON extends Social_Controller {
 			$api_key = $this->request->query('api_key');
 			if ($api_key != Social::option('system_cron_api_key')) {
 				wp_die('Oops, you have provided an invalid API key.');
-				exit;
 			}
 
 			$this->system_cron = true;
 		}
 		else if (!$this->nonce_verified) {
 			wp_die('Oops, invalid request.');
-			exit;
 		}
 	}
 
@@ -56,10 +54,6 @@ final class Social_Controller_CRON extends Social_Controller {
 	 * @return void
 	 */
 	public function action_check_crons() {
-		if (!wp_verify_nonce($this->request->query('_wpnonce'))) {
-			wp_die('Oops, please try again.');
-		}
-
 		$crons = _get_cron_array();
 		$social_crons = array(
 			'15' => false,

@@ -196,12 +196,14 @@ final class Social {
 	 * Add a message to the log.
 	 *
 	 * @static
-	 * @param  string  $message  message to add to the log
-	 * @param  array   $args     arguments to pass to the writer
+	 * @param  string  $message    message to add to the log
+	 * @param  array   $args       arguments to pass to the writer
+	 * @param  string  $context    context of the log message
+	 * @param  bool    $backtrace  show the backtrace
 	 * @return void
 	 */
-	public static function log($message, array $args = null) {
-		Social::$log->write($message, $args);
+	public static function log($message, array $args = null, $context = null, $backtrace = false) {
+		Social::$log->write($message, $args, $context, $backtrace);
 	}
 
 	/**
@@ -1015,6 +1017,7 @@ final class Social {
 	 * @return void
 	 */
 	public function cron_15_init() {
+		Social::log('Running cron_15_init');
 		Social_Request::factory('cron/cron_15')->execute();
 	}
 
@@ -1681,9 +1684,15 @@ final class Social {
 		);
 
 		if ($post) {
+			Social::log('POST request to: :url', array(
+				'url' => $url
+			));
 			wp_remote_post($url, $data);
 		}
 		else {
+			Social::log('GET request to: :url', array(
+				'url' => $url
+			));
 			wp_remote_get($url, $data);
 		}
 	}
