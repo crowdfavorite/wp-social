@@ -1546,8 +1546,8 @@ final class Social {
 	function admin_bar_footer_css() {
 ?>
 <style class="text/css">
-#wp-admin-bar-comments,
-#wpadminbar .social-aggregation-spinner {
+#wpadminbar #wp-admin-bar-comments .social-aggregation-spinner {
+	background: transparent;
 	white-space: nowrap;
 }
 #wpadminbar .social-aggregation-spinner .dot-active {
