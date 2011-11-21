@@ -54,7 +54,7 @@ final class Social_Controller_CRON extends Social_Controller {
 	 * @return void
 	 */
 	public function action_check_crons() {
-		if ($this->request->query('social_api_key') != Social::option('system_cron_api_key')) {
+		if (urldecode($this->request->query('social_api_key')) != Social::option('system_cron_api_key')) {
 			wp_die('Oops, invalid API key.');
 		}
 		

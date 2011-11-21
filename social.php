@@ -399,7 +399,7 @@ final class Social {
 				wp_schedule_event(time() + 900, 'every15min', 'social_cron_15_init');
 			}
 
-			$this->request(admin_url('?social_controller=cron&social_action=check_crons&social_api_key='.Social::option('system_cron_api_key')));
+			$this->request(admin_url('?social_controller=cron&social_action=check_crons&social_api_key='.urlencode(Social::option('system_cron_api_key'))));
 		}
 	}
 
