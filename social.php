@@ -389,9 +389,11 @@ final class Social {
 	 * @return void
 	 */
 	public function check_system_cron() {
+		Social::log('Checking system CRON');
 		// Schedule CRONs
 		if (Social::option('fetch_comments') == '1') {
 			if (wp_next_scheduled('social_cron_15_init') === false) {
+				Social::log('Adding Social 15 CRON schedule');
 				wp_schedule_event(time() + 900, 'every15min', 'social_cron_15_init');
 			}
 
