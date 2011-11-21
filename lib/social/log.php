@@ -69,11 +69,13 @@ final class Social_Log {
 			$context = '['.strtoupper(str_replace('-', ' ', $context)).'] ';
 		}
 
+		$error_str = $context.'[SOCIAL - '.current_time('mysql').' - '.$_SERVER['REMOTE_ADDR'].'] '.$message;
+
 		if (is_writable($this->_file)) {
-			error_log($context.'[SOCIAL - '.current_time('mysql').'] '.$message."\n", 3, $this->_file);
+			error_log($error_str."\n", 3, $this->_file);
 		}
 		else {
-			error_log($context.'[SOCIAL - '.current_time('mysql').'] '.$message);
+			error_log($error_str);
 		}
 	}
 
