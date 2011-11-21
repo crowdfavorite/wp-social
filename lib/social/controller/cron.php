@@ -8,11 +8,6 @@
 final class Social_Controller_CRON extends Social_Controller {
 
 	/**
-	 * @var  bool  system cron
-	 */
-	protected $system_cron = false;
-
-	/**
 	 * Initializes the CRON controller.
 	 *
 	 * @param  Social_Request  $request
@@ -21,13 +16,11 @@ final class Social_Controller_CRON extends Social_Controller {
 		parent::__construct($request);
 
 		// Social system cron?
-		if (Social::option('fetch_comments') == '2') {
+		if (Social::option('fetch_comments') == '2' or $this->request->query('api_key') !== null) {
 			$api_key = $this->request->query('api_key');
 			if ($api_key != Social::option('system_cron_api_key')) {
 				wp_die('Oops, you have provided an invalid API key.');
 			}
-
-			$this->system_cron = true;
 		}
 		else if (!$this->nonce_verified) {
 			wp_die('Oops, invalid request.');

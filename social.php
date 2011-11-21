@@ -1018,7 +1018,7 @@ final class Social {
 	 */
 	public function cron_15_init() {
 		Social::log('Running cron_15_init');
-		Social_Request::factory('cron/cron_15')->execute();
+		Social_Request::factory('cron/cron_15')->query('api_key', Social::option('system_cron_api_key'))->execute();
 	}
 
 	/**
