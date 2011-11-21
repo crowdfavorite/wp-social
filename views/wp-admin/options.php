@@ -73,7 +73,7 @@
 				<td>
 					<ul id="social-default-accounts">
 						<?php
-							$accounts = Social::option('default_accounts');
+							$default_accounts = Social::option('default_accounts');
 							foreach ($services as $key => $service) {
 								foreach ($service->accounts() as $account_id => $account) {
 									if ($key != 'pages') {
@@ -82,7 +82,7 @@
 						?>
 						<li class="social-accounts-item">
 							<label class="social-broadcastable" for="<?php echo esc_attr($key.$account->id()); ?>" style="cursor:pointer">
-								<input type="checkbox" name="social_default_accounts[]" id="<?php echo esc_attr($key.$account->id()); ?>" value="<?php echo esc_attr($key.'|'.$account->id()); ?>"<?php echo ((isset($accounts[$key]) and in_array($account->id(), array_values($accounts[$key]))) ? ' checked="checked"' : ''); ?> />
+								<input type="checkbox" name="social_default_accounts[]" id="<?php echo esc_attr($key.$account->id()); ?>" value="<?php echo esc_attr($key.'|'.$account->id()); ?>"<?php echo ((isset($default_accounts[$key]) and in_array($account->id(), array_values($default_accounts[$key]))) ? ' checked="checked"' : ''); ?> />
 								<img src="<?php echo esc_attr($account->avatar()); ?>" width="24" height="24" />
 								<span class="name">
 									<?php
