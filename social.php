@@ -1234,6 +1234,12 @@ final class Social {
 
 									Social::log($message);
 									wp_die($message);
+
+									$wpdb->query($wpdb->prepare("
+										UPDATE $wpdb->comments
+										   SET comment_type = %s
+										 WHERE comment_ID = %s
+									", 'social-'.$service->key(), $comment_ID));
 								}
 								$this->set_comment_aggregated_id($comment_ID, $service->key(), $response->id());
 								update_comment_meta($comment_ID, 'social_status_id', $response->id());
@@ -1245,12 +1251,6 @@ final class Social {
 						update_comment_meta($comment_ID, 'social_account_id', $account_id);
 						update_comment_meta($comment_ID, 'social_profile_image_url', $account->avatar());
 						update_comment_meta($comment_ID, 'social_comment_type', 'social-'.$service->key());
-
-						$wpdb->query($wpdb->prepare("
-							UPDATE $wpdb->comments
-							   SET comment_type = %s
-							 WHERE comment_ID = %s
-						", 'social-'.$service->key(), $comment_ID));
 
 						if ($comment->user_id != '0') {
 							$comment->comment_author = $account->name();
@@ -1313,6 +1313,12 @@ final class Social {
 								if ($response->id() === false) {
 									wp_delete_comment($comment_id);
 									Social::log(sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_id, $service->title(), $account->id()));
+
+									$wpdb->query($wpdb->prepare("
+										UPDATE $wpdb->comments
+										   SET comment_type = %s
+										 WHERE comment_ID = %s
+									", 'social-'.$service->key(), $comment_id));
 								}
 								$this->set_comment_aggregated_id($comment_id, $service->key(), $response->id());
 								update_comment_meta($comment_id, 'social_status_id', $response->id());
