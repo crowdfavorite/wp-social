@@ -25,7 +25,7 @@ final class Social {
 	/**
 	 * @var  string  version number
 	 */
-	public static $version = '2.0-beta3-1';
+	public static $version = '2.0-beta3-2';
 
 	/**
 	 * @var  string  CRON lock directory.
@@ -1853,6 +1853,7 @@ add_action('init', array($social, 'init'), 1);
 add_action('init', array($social, 'request_handler'), 2);
 add_action('admin_init', array($social, 'admin_init'), 1);
 add_action('load-settings_page_social', array($social, 'check_system_cron'));
+add_action('load-social.php', array($social, 'check_system_cron'));
 add_action('comment_post', array($social, 'comment_post'));
 add_action('wp_set_comment_status', array($social, 'wp_set_comment_status'), 10, 3);
 add_action('admin_notices', array($social, 'admin_notices'));
