@@ -27,7 +27,7 @@
 					}
 					else {
 						var $parent = $('.social-post');
-						$.get($parent.find('#reload_url').val(), {}, function(response) {
+						$.post($parent.find('#reload_url').val(), {}, function(response) {
 							if (response.result == 'success') {
 								// Add logged-in body class since we're not going to be refreshing the page.
 								$('body').addClass('logged-in');
