@@ -145,7 +145,7 @@ final class Social_Semaphore {
 			UPDATE $wpdb->options
 			   SET option_value = %s
 			 WHERE option_name = 'social_last_lock_time'
-			   AND option_value <= DATE_SUB(%s, INTERVAL 1 HOUR)
+			   AND option_value <= DATE_SUB(%s, INTERVAL 30 MINUTE)
 		", current_time('mysql', 1), current_time('mysql', 1)));
 
 		if ($affected == '1') {
