@@ -41,13 +41,9 @@ final class Social_Controller_CRON extends Social_Controller {
 		$semaphore = Social_Semaphore::factory();
 		Social::log('Attempting semaphore lock');
 		if ($semaphore->lock()) {
-			Social::log('semaphore locked, running social_cron_15_action');
+			Social::log('Running social_cron_15_action.');
 			do_action('social_cron_15');
 			$semaphore->unlock();
-			Social::log('semaphore unlocked');
-		}
-		else {
-			Social::log('semaphore locked failed');
 		}
 	}
 
