@@ -19,10 +19,12 @@ final class Social_Controller_CRON extends Social_Controller {
 		if (Social::option('fetch_comments') == '2' or $this->request->query('api_key') !== null) {
 			$api_key = $this->request->query('api_key');
 			if ($api_key != Social::option('system_cron_api_key')) {
+				Social::log('Api key failed');
 				wp_die('Oops, you have provided an invalid API key.');
 			}
 		}
 		else if (!$this->nonce_verified) {
+			Social::log('Nonce failed');
 			wp_die('Oops, invalid request.');
 		}
 	}
@@ -35,9 +37,15 @@ final class Social_Controller_CRON extends Social_Controller {
 	 */
 	public function action_cron_15() {
 		$semaphore = Social_Semaphore::factory();
+		Social::log('Attempting semaphore lock');
 		if ($semaphore->lock()) {
+			Social::log('semaphore locked, running social_cron_15_action');
 			do_action('social_cron_15');
 			$semaphore->unlock();
+			Social::log('semaphore unlocked');
+		}
+		else {
+			Social::log('semaphore locked failed');
 		}
 	}
 
@@ -47,7 +55,9 @@ final class Social_Controller_CRON extends Social_Controller {
 	 * @return void
 	 */
 	public function action_check_crons() {
+		// this is an internal only call, so manually calling URL decode
 		if (urldecode($this->request->query('social_api_key')) != Social::option('system_cron_api_key')) {
+			Social::log('API key failed');
 			wp_die('Oops, invalid API key.');
 		}
 		
