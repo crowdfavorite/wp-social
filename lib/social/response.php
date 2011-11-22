@@ -96,6 +96,9 @@ final class Social_Response {
 			$deauthorized[$this->_service->key()][$this->_account->id()] = sprintf(__('Unable to publish to %s with account %s. Please <a href="%">re-authorize</a> this account.', 'social'), esc_html($this->_service->title()), esc_html($this->_account->name()), esc_url($url));
 			update_option('social_deauthorized', $deauthorized);
 
+			Social::log('Removing deauthorized account: :account', array(
+				'account' => print_r($this->_account)
+			));
 			$this->_service->remove_account($this->_account)->save();
 
 			return true;

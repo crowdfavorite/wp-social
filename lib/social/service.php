@@ -195,10 +195,17 @@ abstract class Social_Service {
 
 			if (count($accounts)) {
 				$current = get_user_meta(get_current_user_id(), 'social_accounts', true);
+				Social::log('Current accounts: :accounts', array(
+					'accounts' => print_r($current, true)
+				));
 				$current[$this->_key] = $accounts;
+				Social::log('New accounts: :accounts', array(
+					'accounts' => print_r($current, true)
+				));
 				update_user_meta(get_current_user_id(), 'social_accounts', $current);
 			}
 			else {
+				Social::log('No accounts, deleting option social_accounts');
 				delete_user_meta(get_current_user_id(), 'social_accounts');
 			}
 		}
@@ -216,10 +223,20 @@ abstract class Social_Service {
 				if ($current == null) {
 					$current = array();
 				}
+
+				Social::log('Current accounts: :accounts', array(
+					'accounts' => print_r($current, true)
+				));
+
 				$current[$this->_key] = $accounts;
+
+				Social::log('New accounts: :accounts', array(
+					'accounts' => print_r($current, true)
+				));
 				Social::option('accounts', $current);
 			}
 			else {
+				Social::log('No accounts, deleting option social_accounts');
 				delete_option('social_accounts');
 			}
 		}
@@ -283,13 +300,21 @@ abstract class Social_Service {
 	 * @return Social_Service
 	 */
 	public function remove_account($account) {
+		Social::log('Starting account removal...');
 		if (is_int($account)) {
 			$account = $this->account($account);
 		}
 
+		Social::log('Accounts: :accounts', array(
+			'accounts' => print_r($this->_accounts, true),
+		));
 		if ($account !== false) {
+			Social::log('Removing...');
 			unset($this->_accounts[$account->id()]);
 		}
+		Social::log('Accounts: :accounts', array(
+			'accounts' => print_r($this->_accounts, true)
+		));
 
 		return $this;
 	}
