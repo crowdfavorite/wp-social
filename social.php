@@ -243,7 +243,7 @@ final class Social {
 
 		$key = str_replace('social-', '', $key);
 		$key = apply_filters('social_comment_type_to_service', $key);
-		if (!isset($services[$key])) {
+		if (empty($key) or !isset($services[$key])) {
 			return false;
 		}
 
