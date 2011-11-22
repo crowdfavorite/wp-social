@@ -17,6 +17,11 @@ final class Social_Semaphore {
 	}
 
 	/**
+	 * @var bool
+	 */
+	protected $lock_broke = false;
+
+	/**
 	 * Attempts to start the lock. If the rename works, the lock is started.
 	 *
 	 * @return bool
@@ -32,7 +37,7 @@ final class Social_Semaphore {
 		");
 
 		if ($affected == '0' and !$this->stuck_check()) {
-			Social::log('Semaphore lock failed.');
+			Social::log('Semaphore lock failed. (Line '.__LINE__.')');
 			return false;
 		}
 
@@ -45,7 +50,7 @@ final class Social_Semaphore {
 		");
 		if ($affected != '1') {
 			if (!$this->stuck_check()) {
-				Social::log('Semaphore lock failed.');
+				Social::log('Semaphore lock failed. (Line '.__LINE__.')');
 				return false;
 			}
 
@@ -151,6 +156,11 @@ final class Social_Semaphore {
 	private function stuck_check() {
 		global $wpdb;
 
+		// Check to see if we already broke the lock.
+		if ($this->lock_broke) {
+			return true;
+		}
+
 		$current_time = current_time('mysql', 1);
 		$affected = $wpdb->query($wpdb->prepare("
 			UPDATE $wpdb->options
@@ -161,6 +171,8 @@ final class Social_Semaphore {
 
 		if ($affected == '1') {
 			Social::log('Semaphore was stuck, set lock time to '.$current_time);
+
+			$this->lock_broke = true;
 			return true;
 		}
 
