@@ -271,6 +271,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 						'result_id' => (isset($result->status_id) ? $result->status_id : $result->id)
 					));
 
+					$comment_id = 0;
 					try
 					{
 						$comment_id = wp_insert_comment($commentdata);
@@ -298,6 +299,11 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 						// Something went wrong, remove the aggregated ID.
 						if (($key = array_search((isset($result->status_id) ? $result->status_id : $result->id), $post->aggregated_ids['facebook'])) !== false) {
 							unset($post->aggregated_ids['facebook'][$key]);
+						}
+
+						if ((int) $comment_id) {
+							// Delete the comment in case it wasn't the insert that failed.
+							wp_delete_comment($comment_id);
 						}
 					}
 				}

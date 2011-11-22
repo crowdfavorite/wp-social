@@ -235,6 +235,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						'account_id' => $account->id()
 					));
 
+					$comment_id = 0;
 					try
 					{
 						$comment_id = wp_insert_comment($commentdata);
@@ -281,6 +282,11 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						// Something went wrong, remove the aggregated ID.
 						if (($key = array_search($result->id, $post->aggregated_ids['twitter'])) !== false) {
 							unset($post->aggregated_ids['twitter'][$key]);
+						}
+
+						if ((int) $comment_id) {
+							// Delete the comment in case it wasn't the insert that failed.
+							wp_delete_comment($comment_id);
 						}
 					}
 				}
