@@ -71,7 +71,7 @@ final class Social_Log {
 			$context = '['.strtoupper(str_replace('-', ' ', $context)).'] ';
 		}
 
-		$error_str = $context.'[SOCIAL - '.current_time('mysql').' - '.$_SERVER['REMOTE_ADDR'].'] '.$message;
+		$error_str = $context.'[SOCIAL - '.current_time('mysql', 1).' - '.$_SERVER['REMOTE_ADDR'].'] '.$message;
 
 		if ($backtrace) {
 			ob_start();
