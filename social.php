@@ -600,7 +600,7 @@ final class Social {
 		}
 
 		// TODO abstract this to the facebook plugin
-		if (isset($_POST['social_default_accounts']) and is_array($_POST['social_default_pages'])) {
+		if (isset($_POST['social_default_pages']) and is_array($_POST['social_default_pages'])) {
 			if (!isset($accounts['facebook'])) {
 				$accounts['facebook'] = array(
 					'pages' => array()
