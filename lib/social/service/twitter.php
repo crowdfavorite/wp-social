@@ -235,43 +235,52 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						'account_id' => $account->id()
 					));
 
-					$comment_id = wp_insert_comment($commentdata);
+					try
+					{
+						$comment_id = wp_insert_comment($commentdata);
 
-					update_comment_meta($comment_id, 'social_account_id', $result->from_user_id);
-					update_comment_meta($comment_id, 'social_profile_image_url', $result->profile_image_url);
-					update_comment_meta($comment_id, 'social_status_id', $result->id);
+						update_comment_meta($comment_id, 'social_account_id', $result->from_user_id);
+						update_comment_meta($comment_id, 'social_profile_image_url', $result->profile_image_url);
+						update_comment_meta($comment_id, 'social_status_id', $result->id);
 
-					// Attempt to see if the comment is in response to an existing Tweet.
-					if (!isset($result->in_reply_to_status_id)) {
-						// This "should" only happen on tweets found on the URL search
-						foreach ($this->accounts() as $account) {
-							$response = $this->request($account, 'statuses/show/'.$result->id)->body();
+						// Attempt to see if the comment is in response to an existing Tweet.
+						if (!isset($result->in_reply_to_status_id)) {
+							// This "should" only happen on tweets found on the URL search
+							foreach ($this->accounts() as $account) {
+								$response = $this->request($account, 'statuses/show/'.$result->id)->body();
 
-							if (isset($response->in_reply_to_status_id)) {
-								if (!empty($response->in_reply_to_status_id)) {
-									$result->in_reply_to_status_id = $response->in_reply_to_status_id;
+								if (isset($response->in_reply_to_status_id)) {
+									if (!empty($response->in_reply_to_status_id)) {
+										$result->in_reply_to_status_id = $response->in_reply_to_status_id;
+									}
+									break;
 								}
-								break;
+							}
+						}
+
+						if (isset($result->in_reply_to_status_id)) {
+							update_comment_meta($comment_id, 'social_in_reply_to_status_id', $result->in_reply_to_status_id);
+						}
+
+						if (!isset($result->raw)) {
+							$result = (object) array_merge((array) $result, array('raw' => $result));
+						}
+						update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($result->raw)));
+
+						if ($commentdata['comment_approved'] !== 'spam') {
+							if ($commentdata['comment_approved'] == '0') {
+								wp_notify_moderator($comment_id);
+							}
+
+							if (get_option('comments_notify') and $commentdata['comment_approved'] and (!isset($commentdata['user_id']) or $post->post_author != $commentdata['user_id'])) {
+								wp_notify_postauthor($comment_id, isset($commentdata['comment_type']) ? $commentdata['comment_type'] : '');
 							}
 						}
 					}
-
-					if (isset($result->in_reply_to_status_id)) {
-						update_comment_meta($comment_id, 'social_in_reply_to_status_id', $result->in_reply_to_status_id);
-					}
-
-					if (!isset($result->raw)) {
-						$result = (object) array_merge((array) $result, array('raw' => $result));
-					}
-					update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($result->raw)));
-
-					if ($commentdata['comment_approved'] !== 'spam') {
-						if ($commentdata['comment_approved'] == '0') {
-							wp_notify_moderator($comment_id);
-						}
-
-						if (get_option('comments_notify') and $commentdata['comment_approved'] and (!isset($commentdata['user_id']) or $post->post_author != $commentdata['user_id'])) {
-							wp_notify_postauthor($comment_id, isset($commentdata['comment_type']) ? $commentdata['comment_type'] : '');
+					catch (Exception $e) {
+						// Something went wrong, remove the aggregated ID.
+						if (($key = array_search($result->id, $post->aggregated_ids['twitter'])) !== false) {
+							unset($post->aggregated_ids['twitter'][$key]);
 						}
 					}
 				}

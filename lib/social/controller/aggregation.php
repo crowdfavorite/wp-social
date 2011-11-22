@@ -89,13 +89,13 @@ final class Social_Controller_Aggregation extends Social_Controller {
 		}
 
 		if (count($post->results)) {
-			update_post_meta($post->ID, '_social_aggregated_ids', $post->aggregated_ids);
-
 			foreach ($post->results as $key => $results) {
 				if (count($results)) {
 					$this->social->service($key)->save_aggregated_comments($post);
 				}
 			}
+
+			update_post_meta($post->ID, '_social_aggregated_ids', $post->aggregated_ids);
 		}
 
 		Social::log('Aggregation for post #:post_id complete.', array(
