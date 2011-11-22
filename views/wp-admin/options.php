@@ -269,6 +269,7 @@
 					</tr>
 				</table>
 			</div>
+			<?php do_action('social_advanced_options'); ?>
 		</div>
 		<p class="submit" style="clear:both">
 			<input type="submit" name="submit" value="Save Settings" class="button-primary" />
