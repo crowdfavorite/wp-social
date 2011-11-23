@@ -160,7 +160,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 								// not a reply to a broadcast
 								if (!isset($broadcasted_ids[$result->in_reply_to_status_id])) {
 									// not a reply to an aggregated reply either
-									if (!isset($post->aggregated_ids[$this->_key]) or !in_array($result->id, $post->aggregated_ids[$this->_key])) {
+									if (!isset($post->aggregated_ids[$this->_key]) or !in_array($result->in_reply_to_status_id, $post->aggregated_ids[$this->_key])) {
 										continue;
 									}
 								}
