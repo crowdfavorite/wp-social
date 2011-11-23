@@ -54,23 +54,16 @@ if (count($accounts_connected)) {
 			<input type="checkbox" name="social_default_accounts[]" id="<?php echo esc_attr($key.$account->id()); ?>" value="<?php echo esc_attr($key.'|'.$account->id()); ?>"<?php echo ((isset($default_accounts[$key]) and in_array($account->id(), array_values($default_accounts[$key]))) ? ' checked="checked"' : ''); ?> />
 			<img src="<?php echo esc_url($account->avatar()); ?>" width="24" height="24" />
 			<span class="name">
-<?php
+			<?php
+					$show_pages = false;
+					$pages_output = '';
+
 					echo esc_html($account->name());
 					if ($service->key() == 'facebook') {
 						$pages = $account->pages(null, true);
+
 						if ($account->use_pages(true) and count($pages)) {
-							echo '<span> - <a href="#" class="social-show-facebook-pages">'.__('Show Pages', 'social').'</a></span>';
-						}
-					}
-?>
-			</span>
-		</label>
-<?php
-					if ($service->key() == 'facebook') {
-						if ($account->use_pages(true) and count($pages)) {
-							echo '<div class="social-facebook-pages">'
-								.'    <h5>'.__('Account Pages', 'social').'</h5>'
-								.'    <ul>';
+							$pages_output .= '<h5>'.__('Account Pages', 'social').'</h5><ul>';
 							foreach ($pages as $page) {
 								$checked = '';
 								if (isset($default_accounts['facebook']) and
@@ -78,19 +71,32 @@ if (count($accounts_connected)) {
 									isset($default_accounts['facebook']['pages'][$account->id()]) and
 									in_array($page->id, $default_accounts['facebook']['pages'][$account->id()])
 								) {
+									$show_pages = true;
 									$checked = ' checked="checked"';
 								}
-								echo '<li>'
+								$pages_output .= '<li>'
 									.'    <input type="checkbox" name="social_default_pages['.esc_attr($account->id()).'][]" value="'.esc_attr($page->id).'"'.$checked.' />'
 									.'    <img src="'.esc_url($service->page_image_url($page)).'" width="24" height="24" />'
 									.'    <span>'.esc_html($page->name).'</span>'
 									.'</li>';
 							}
-							echo '    </ul>'
-								.'</div>';
+							$pages_output .= '</ul>';
+
+							if (!$show_pages) {
+								echo '<span> - <a href="#" class="social-show-facebook-pages">'.__('Show Pages', 'social').'</a></span>';
+							}
 						}
 					}
-?>
+			?>
+			</span>
+		</label>
+		<?php
+					if (!empty($pages_output)) {
+						echo '<div class="social-facebook-pages"'.($show_pages ? ' style="display:block"' : '').'>'
+						   . $pages_output
+						   . '</div>';
+					}
+		?>
 	</li>
 <?php
 				}

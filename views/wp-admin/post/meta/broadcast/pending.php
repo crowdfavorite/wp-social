@@ -1,8 +1,7 @@
 <?php
+echo '<div class="misc-pub-section">';
 if (empty($accounts)) {
-	echo '<p class="mar-top-none">'
-	   . __('This post will not be broadcasted to any of your social accounts.', 'social')
-	   . '</p>';
+	_e('This post will not be broadcasted to any of your social accounts.', 'social');
 }
 else {
 	echo '<p class="mar-top-none">'
@@ -24,8 +23,9 @@ else {
 			}
 
 			if (!empty($output)) {
-				echo '<h4>'.$service->title().'</h4><ul style="margin:0 0 25px;">'.$output.'</ul>';
+				echo '<ul class="social-broadcasted">'.$output.'</ul>';
 			}
 		}
 	}
 }
+echo '</div>';

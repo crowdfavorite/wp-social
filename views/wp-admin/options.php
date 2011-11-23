@@ -73,7 +73,7 @@
 				<td>
 					<ul id="social-default-accounts">
 						<?php
-							$accounts = Social::option('default_accounts');
+							$default_accounts = Social::option('default_accounts');
 							foreach ($services as $key => $service) {
 								foreach ($service->accounts() as $account_id => $account) {
 									if ($key != 'pages') {
@@ -82,44 +82,50 @@
 						?>
 						<li class="social-accounts-item">
 							<label class="social-broadcastable" for="<?php echo esc_attr($key.$account->id()); ?>" style="cursor:pointer">
-								<input type="checkbox" name="social_default_accounts[]" id="<?php echo esc_attr($key.$account->id()); ?>" value="<?php echo esc_attr($key.'|'.$account->id()); ?>"<?php echo ((isset($accounts[$key]) and in_array($account->id(), array_values($accounts[$key]))) ? ' checked="checked"' : ''); ?> />
+								<input type="checkbox" name="social_default_accounts[]" id="<?php echo esc_attr($key.$account->id()); ?>" value="<?php echo esc_attr($key.'|'.$account->id()); ?>"<?php echo ((isset($default_accounts[$key]) and in_array($account->id(), array_values($default_accounts[$key]))) ? ' checked="checked"' : ''); ?> />
 								<img src="<?php echo esc_attr($account->avatar()); ?>" width="24" height="24" />
 								<span class="name">
 									<?php
+										$show_pages = false;
+										$pages_output = '';
+
 										echo esc_html($account->name());
 										if ($service->key() == 'facebook') {
 											$pages = $account->pages(null, false);
+
 											if ($account->use_pages() and count($pages)) {
-												echo '<span> - <a href="#" class="social-show-facebook-pages">'.__('Show Pages', 'social').'</a></span>';
+												$pages_output .= '<h5>'.__('Account Pages', 'social').'</h5><ul>';
+												foreach ($pages as $page) {
+													$checked = '';
+													if (isset($default_accounts['facebook']) and
+														isset($default_accounts['facebook']['pages']) and
+														isset($default_accounts['facebook']['pages'][$account->id()]) and
+														in_array($page->id, $default_accounts['facebook']['pages'][$account->id()])
+													) {
+														$show_pages = true;
+														$checked = ' checked="checked"';
+													}
+													$pages_output .= '<li>'
+														.'    <input type="checkbox" name="social_default_pages['.esc_attr($account->id()).'][]" value="'.esc_attr($page->id).'"'.$checked.' />'
+														.'    <img src="'.esc_url($service->page_image_url($page)).'" width="24" height="24" />'
+														.'    <span>'.esc_html($page->name).'</span>'
+														.'</li>';
+												}
+												$pages_output .= '</ul>';
+
+												if (!$show_pages) {
+													echo '<span> - <a href="#" class="social-show-facebook-pages">'.__('Show Pages', 'social').'</a></span>';
+												}
 											}
 										}
 									?>
 								</span>
 							</label>
 							<?php
-								if ($service->key() == 'facebook') {
-									if ($account->use_pages() and count($pages)) {
-										echo '<div class="social-facebook-pages">'
-											.'    <h5>Account Pages</h5>'
-											.'    <ul>';
-										foreach ($pages as $page) {
-											$checked = '';
-											if (isset($accounts['facebook']) and
-												isset($accounts['facebook']['pages']) and
-												isset($accounts['facebook']['pages'][$account->id()]) and
-												in_array($page->id, $accounts['facebook']['pages'][$account->id()]))
-											{
-												$checked = ' checked="checked"';
-											}
-											echo '<li>'
-												.'    <input type="checkbox" name="social_default_pages['.esc_attr($account->id()).'][]" value="'.esc_attr($page->id).'"'.$checked.' />'
-												.'    <img src="'.esc_url($service->page_image_url($page)).'" width="24" height="24" />'
-												.'    <span>'.esc_html($page->name).'</span>'
-												.'</li>';
-										}
-										echo '    </ul>'
-											.'</div>';
-									}
+								if (!empty($pages_output)) {
+									echo '<div class="social-facebook-pages"'.($show_pages ? ' style="display:block"' : '').'>'
+									   . $pages_output
+									   . '</div>';
 								}
 							?>
 						</li>
@@ -263,6 +269,7 @@
 					</tr>
 				</table>
 			</div>
+			<?php do_action('social_advanced_options'); ?>
 		</div>
 		<p class="submit" style="clear:both">
 			<input type="submit" name="submit" value="Save Settings" class="button-primary" />

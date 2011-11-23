@@ -21,14 +21,14 @@ foreach ($accounts as $key => $items) {
 
 $total_deauthed = count($deauthed);
 if ($total_deauthed or count($types)) {
-	_e('Possible fixes:')."\n\n";
+	echo __('Possible fixes:')."\n\n";
 }
 
 if ($total_deauthed) {
 	if ($total_deauthed == 1) {
 		$key = array_keys($deauthed);
 		$key = explode('-', $key[0]);
-		$service = $social->service($key)->title();
+		$service = $social->service($key[0])->title();
 
 		$message = __('To reauthorize the deauthorized %s account above, please login and edit your accounts.', 'social');
 	}
@@ -36,9 +36,9 @@ if ($total_deauthed) {
 		$message = __('To reauthorize the deauthorized accounts above, please login and edit your accounts.', 'social');
 	}
 
-	$message .= "\n".'    '.__('Personal accounts:', 'social').' '.admin_url('profile.php#social-accounts');
+	$message .= "\n    ".__('Personal accounts:', 'social').' '.admin_url('profile.php#social-accounts');
 	if (current_user_can('manage_options')) {
-		$message .= "\n".'    '.__('Global accounts:', 'social').' '.Social::settings_url();
+		$message .= "\n    ".__('Global accounts:', 'social').' '.Social::settings_url();
 	}
 
 	echo '- '.$message."\n";

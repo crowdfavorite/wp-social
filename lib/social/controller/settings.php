@@ -64,8 +64,8 @@ final class Social_Controller_Settings extends Social_Controller {
 				Social::option('fetch_comments', $this->request->post('social_fetch_comments'));
 
 				// Unschedule the CRONs
-				if (($timestamp = wp_next_scheduled('social_cron_15_core')) !== false) {
-					wp_unschedule_event($timestamp, 'social_cron_15_core');
+				if ($this->request->post('social_fetch_comments') != '1' and ($timestamp = wp_next_scheduled('social_cron_15_init')) !== false) {
+					wp_unschedule_event($timestamp, 'social_cron_15_init');
 				}
 			}
 

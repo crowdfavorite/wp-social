@@ -30,7 +30,7 @@ if ($total_deauthed) {
 	if ($total_deauthed == 1) {
 		$key = array_keys($deauthed);
 		$key = explode('-', $key[0]);
-		$service = $social->service($key)->title();
+		$service = $social->service($key[0])->title();
 
 		if (current_user_can('manage_options')) {
 			echo sprintf(__('To reauthorize the deauthorized %s account above, please edit your <a href="%s">global accounts</a> or your <a href="%s">personal accounts</a>.', 'social'), esc_html($service), esc_url(Social::settings_url()), esc_url(admin_url('profile.php#social-accounts')));

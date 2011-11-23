@@ -316,6 +316,14 @@ if (version_compare($installed_version, '2.0', '<')) {
 			 WHERE comment_ID = %s
 		", 'http://facebook.com/profile.php?id='.$id[1], $result->comment_ID));
 	}
+
+	// Remove old CRONs
+	if (($timestamp = wp_next_scheduled('social_cron_60_init')) !== false) {
+		wp_unschedule_event($timestamp, 'social_cron_60_init');
+	}
+	if (($timestamp = wp_next_scheduled('social_cron_60_core')) !== false) {
+		wp_unschedule_event($timestamp, 'social_cron_60_core');
+	}
 }
 
 // Flush the cache

@@ -270,24 +270,40 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					Social::log('Saving #:result_id.', array(
 						'result_id' => (isset($result->status_id) ? $result->status_id : $result->id)
 					));
-					$comment_id = wp_insert_comment($commentdata);
 
-					update_comment_meta($comment_id, 'social_account_id', $user_id);
-					update_comment_meta($comment_id, 'social_profile_image_url', 'http://graph.facebook.com/'.$user_id.'/picture');
-					update_comment_meta($comment_id, 'social_status_id', (isset($result->status_id) ? $result->status_id : $result->id));
+					$comment_id = 0;
+					try
+					{
+						$comment_id = wp_insert_comment($commentdata);
 
-					if (!isset($result->raw)) {
-						$result = (object) array_merge((array) $result, array('raw' => $result));
+						update_comment_meta($comment_id, 'social_account_id', $user_id);
+						update_comment_meta($comment_id, 'social_profile_image_url', 'http://graph.facebook.com/'.$user_id.'/picture');
+						update_comment_meta($comment_id, 'social_status_id', (isset($result->status_id) ? $result->status_id : $result->id));
+
+						if (!isset($result->raw)) {
+							$result = (object) array_merge((array) $result, array('raw' => $result));
+						}
+						update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($result->raw)));
+
+						if ($commentdata['comment_approved'] !== 'spam') {
+							if ($commentdata['comment_approved'] == '0') {
+								wp_notify_moderator($comment_id);
+							}
+
+							if (get_option('comments_notify') and $commentdata['comment_approved'] and (!isset($commentdata['user_id']) or $post->post_author != $commentdata['user_id'])) {
+								wp_notify_postauthor($comment_id, isset($commentdata['comment_type']) ? $commentdata['comment_type'] : '');
+							}
+						}
 					}
-					update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($result->raw)));
-
-					if ($commentdata['comment_approved'] !== 'spam') {
-						if ($commentdata['comment_approved'] == '0') {
-							wp_notify_moderator($comment_id);
+					catch (Exception $e) {
+						// Something went wrong, remove the aggregated ID.
+						if (($key = array_search((isset($result->status_id) ? $result->status_id : $result->id), $post->aggregated_ids['facebook'])) !== false) {
+							unset($post->aggregated_ids['facebook'][$key]);
 						}
 
-						if (get_option('comments_notify') and $commentdata['comment_approved'] and (!isset($commentdata['user_id']) or $post->post_author != $commentdata['user_id'])) {
-							wp_notify_postauthor($comment_id, isset($commentdata['comment_type']) ? $commentdata['comment_type'] : '');
+						if ((int) $comment_id) {
+							// Delete the comment in case it wasn't the insert that failed.
+							wp_delete_comment($comment_id);
 						}
 					}
 				}

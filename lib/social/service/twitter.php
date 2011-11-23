@@ -101,8 +101,10 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 			foreach ($accounts[$this->_key] as $account) {
 				if (isset($post->broadcasted_ids[$this->_key][$account->id()])) {
 					$broadcasted_ids = $post->broadcasted_ids[$this->_key][$account->id()];
+
 					foreach ($broadcasted_ids as $broadcasted_id => $data) {
 						// Retweets
+						Social::log('Aggregating Twitter via statuses/retweets');
 						$response = $this->request($account, 'statuses/retweets/'.$broadcasted_id);
 						if ($response !== false and is_array($response->body()->response) and count($response->body()->response)) {
 							foreach ($response->body()->response as $result) {
@@ -134,41 +136,43 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 								);
 							}
 						}
-					}
-					// Mentions
-					$response = $this->request($account, 'statuses/mentions', array(
-						'since_id' => $broadcasted_id,
-						'count' => 200,
-					));
-					if ($response !== false and is_array($response->body()->response) and count($response->body()->response)) {
-						foreach ($response->body()->response as $result) {
-							if ($this->is_original_broadcast($post, $result->id)) {
-								continue;
+
+						// Mentions
+						Social::log('Aggregating Twitter via statuses/mentions');
+						$response = $this->request($account, 'statuses/mentions', array(
+							'since_id' => $broadcasted_id,
+							'count' => 200,
+						));
+						if ($response !== false and is_array($response->body()->response) and count($response->body()->response)) {
+							foreach ($response->body()->response as $result) {
+								if ($this->is_original_broadcast($post, $result->id)) {
+									continue;
+								}
+								$data = array(
+									'username' => $result->user->screen_name,
+								);
+								// existing comment
+								if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
+									Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', true, $data);
+									continue;
+								}
+								// not a reply to a broadcast
+								if (!isset($broadcasted_ids[$result->in_reply_to_status_id])) {
+									continue;
+								}
+								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
+								$post->aggregated_ids[$this->_key][] = $result->id;
+								$post->results[$this->_key][$result->id] = (object) array(
+									'id' => $result->id,
+									'from_user_id' => $result->user->id,
+									'from_user' => $result->user->screen_name,
+									'text' => $result->text,
+									'created_at' => $result->created_at,
+									'profile_image_url' => $result->user->profile_image_url,
+									'in_reply_to_status_id' => $result->in_reply_to_status_id,
+									'raw' => $result,
+								);
 							}
-							$data = array(
-								'username' => $result->user->screen_name,
-							);
-							// existing comment
-							if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
-								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', true, $data);
-								continue;
-							}
-							// not a reply to a broadcast
-							if (!isset($broadcasted_ids[$result->in_reply_to_status_id])) {
-								continue;
-							}
-							Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
-							$post->aggregated_ids[$this->_key][] = $result->id;
-							$post->results[$this->_key][$result->id] = (object) array(
-								'id' => $result->id,
-								'from_user_id' => $result->user->id,
-								'from_user' => $result->user->screen_name,
-								'text' => $result->text,
-								'created_at' => $result->created_at,
-								'profile_image_url' => $result->user->profile_image_url,
-								'in_reply_to_status_id' => $result->in_reply_to_status_id,
-								'raw' => $result,
-							);
 						}
 					}
 				}
@@ -231,43 +235,58 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						'account_id' => $account->id()
 					));
 
-					$comment_id = wp_insert_comment($commentdata);
+					$comment_id = 0;
+					try
+					{
+						$comment_id = wp_insert_comment($commentdata);
 
-					update_comment_meta($comment_id, 'social_account_id', $result->from_user_id);
-					update_comment_meta($comment_id, 'social_profile_image_url', $result->profile_image_url);
-					update_comment_meta($comment_id, 'social_status_id', $result->id);
+						update_comment_meta($comment_id, 'social_account_id', $result->from_user_id);
+						update_comment_meta($comment_id, 'social_profile_image_url', $result->profile_image_url);
+						update_comment_meta($comment_id, 'social_status_id', $result->id);
 
-					// Attempt to see if the comment is in response to an existing Tweet.
-					if (!isset($result->in_reply_to_status_id)) {
-						// This "should" only happen on tweets found on the URL search
-						foreach ($this->accounts() as $account) {
-							$response = $this->request($account, 'statuses/show/'.$result->id)->body();
+						// Attempt to see if the comment is in response to an existing Tweet.
+						if (!isset($result->in_reply_to_status_id)) {
+							// This "should" only happen on tweets found on the URL search
+							foreach ($this->accounts() as $account) {
+								$response = $this->request($account, 'statuses/show/'.$result->id)->body();
 
-							if (isset($response->in_reply_to_status_id)) {
-								if (!empty($response->in_reply_to_status_id)) {
-									$result->in_reply_to_status_id = $response->in_reply_to_status_id;
+								if (isset($response->in_reply_to_status_id)) {
+									if (!empty($response->in_reply_to_status_id)) {
+										$result->in_reply_to_status_id = $response->in_reply_to_status_id;
+									}
+									break;
 								}
-								break;
+							}
+						}
+
+						if (isset($result->in_reply_to_status_id)) {
+							update_comment_meta($comment_id, 'social_in_reply_to_status_id', $result->in_reply_to_status_id);
+						}
+
+						if (!isset($result->raw)) {
+							$result = (object) array_merge((array) $result, array('raw' => $result));
+						}
+						update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($result->raw)));
+
+						if ($commentdata['comment_approved'] !== 'spam') {
+							if ($commentdata['comment_approved'] == '0') {
+								wp_notify_moderator($comment_id);
+							}
+
+							if (get_option('comments_notify') and $commentdata['comment_approved'] and (!isset($commentdata['user_id']) or $post->post_author != $commentdata['user_id'])) {
+								wp_notify_postauthor($comment_id, isset($commentdata['comment_type']) ? $commentdata['comment_type'] : '');
 							}
 						}
 					}
-
-					if (isset($result->in_reply_to_status_id)) {
-						update_comment_meta($comment_id, 'social_in_reply_to_status_id', $result->in_reply_to_status_id);
-					}
-
-					if (!isset($result->raw)) {
-						$result = (object) array_merge((array) $result, array('raw' => $result));
-					}
-					update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($result->raw)));
-
-					if ($commentdata['comment_approved'] !== 'spam') {
-						if ($commentdata['comment_approved'] == '0') {
-							wp_notify_moderator($comment_id);
+					catch (Exception $e) {
+						// Something went wrong, remove the aggregated ID.
+						if (($key = array_search($result->id, $post->aggregated_ids['twitter'])) !== false) {
+							unset($post->aggregated_ids['twitter'][$key]);
 						}
 
-						if (get_option('comments_notify') and $commentdata['comment_approved'] and (!isset($commentdata['user_id']) or $post->post_author != $commentdata['user_id'])) {
-							wp_notify_postauthor($comment_id, isset($commentdata['comment_type']) ? $commentdata['comment_type'] : '');
+						if ((int) $comment_id) {
+							// Delete the comment in case it wasn't the insert that failed.
+							wp_delete_comment($comment_id);
 						}
 					}
 				}

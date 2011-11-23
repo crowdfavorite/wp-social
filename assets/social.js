@@ -27,7 +27,7 @@
 					}
 					else {
 						var $parent = $('.social-post');
-						$.get($parent.find('#reload_url').val(), {}, function(response) {
+						$.post($parent.find('#reload_url').val(), {}, function(response) {
 							if (response.result == 'success') {
 								// Add logged-in body class since we're not going to be refreshing the page.
 								$('body').addClass('logged-in');
@@ -216,7 +216,6 @@
 			var $social_spinner = $social_comments_adminbar_item.find('.social-aggregation-spinner');
 			var $social_aggregation = $('#social_aggregation');
 			var $comment_adminbar_item = $('#wp-admin-bar-comments');
-			var $comment_adminbar_item_label = $comment_adminbar_item.find('> a:first > span');
 			$social_aggregation.click(function(e) {
 				if ($(this).attr('href') == '#') {
 					e.preventDefault();
@@ -235,8 +234,8 @@
 					});
 
 					// show spinner
-					$comment_adminbar_item_label.find('#ab-awaiting-mod').hide().end()
-						.append($social_spinner);
+					$comment_adminbar_item.find('#ab-awaiting-mod').hide().end()
+						.find('a:first').append($social_spinner);
 					$social_spinner.show();
 					SocialLoadingInterval = setInterval(function() {
 						var next = false;
@@ -270,7 +269,7 @@
 							clearInterval(SocialLoadingInterval);
 
 							// update count, show count
-							$comment_adminbar_item_label.find('#ab-awaiting-mod')
+							$comment_adminbar_item.find('#ab-awaiting-mod')
 								.html(response.total).show();
 
 							// show results (slide right)

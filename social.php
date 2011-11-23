@@ -3,7 +3,7 @@
 Plugin Name: Social
 Plugin URI: http://mailchimp.com/social-plugin-for-wordpress/
 Description: Broadcast newly published posts and pull in discussions using integrations with Twitter and Facebook. Brought to you by <a href="http://mailchimp.com">MailChimp</a>.
-Version: 2.0b2
+Version: 2.0b3
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com/
 */
@@ -25,7 +25,7 @@ final class Social {
 	/**
 	 * @var  string  version number
 	 */
-	public static $version = '2.0-beta3-1';
+	public static $version = '2.0-beta3-2';
 
 	/**
 	 * @var  string  CRON lock directory.
@@ -196,12 +196,14 @@ final class Social {
 	 * Add a message to the log.
 	 *
 	 * @static
-	 * @param  string  $message  message to add to the log
-	 * @param  array   $args     arguments to pass to the writer
+	 * @param  string  $message    message to add to the log
+	 * @param  array   $args       arguments to pass to the writer
+	 * @param  string  $context    context of the log message
+	 * @param  bool    $backtrace  show the backtrace
 	 * @return void
 	 */
-	public static function log($message, array $args = null) {
-		Social::$log->write($message, $args);
+	public static function log($message, array $args = null, $context = null, $backtrace = false) {
+		Social::$log->write($message, $args, $context, $backtrace);
 	}
 
 	/**
@@ -241,7 +243,7 @@ final class Social {
 
 		$key = str_replace('social-', '', $key);
 		$key = apply_filters('social_comment_type_to_service', $key);
-		if (!isset($services[$key])) {
+		if (empty($key) or !isset($services[$key])) {
 			return false;
 		}
 
@@ -389,13 +391,19 @@ final class Social {
 	 * @return void
 	 */
 	public function check_system_cron() {
+		Social::log('Checking system CRON');
 		// Schedule CRONs
 		if (Social::option('fetch_comments') == '1') {
 			if (wp_next_scheduled('social_cron_15_init') === false) {
+				Social::log('Adding Social 15 CRON schedule');
 				wp_schedule_event(time() + 900, 'every15min', 'social_cron_15_init');
 			}
 
-			$this->request(admin_url('?social_controller=cron&social_action=check_crons'), 'check_crons');
+			wp_remote_get(admin_url('?social_controller=cron&social_action=check_crons&social_api_key='.urlencode(Social::option('system_cron_api_key'))), array(
+				'timeout' => 0.01,
+				'blocking' => false,
+				'sslverify' => apply_filters('https_local_ssl_verify', true),
+			));
 		}
 	}
 
@@ -596,7 +604,7 @@ final class Social {
 		}
 
 		// TODO abstract this to the facebook plugin
-		if (isset($_POST['social_default_accounts']) and is_array($_POST['social_default_pages'])) {
+		if (isset($_POST['social_default_pages']) and is_array($_POST['social_default_pages'])) {
 			if (!isset($accounts['facebook'])) {
 				$accounts['facebook'] = array(
 					'pages' => array()
@@ -1013,7 +1021,8 @@ final class Social {
 	 * @return void
 	 */
 	public function cron_15_init() {
-		Social_Request::factory('cron/cron_15')->execute();
+		Social::log('Running cron_15_init');
+		Social_Request::factory('cron/cron_15')->query('api_key', Social::option('system_cron_api_key'))->execute();
 	}
 
 	/**
@@ -1222,19 +1231,35 @@ final class Social {
 				foreach ($service->accounts() as $account) {
 					if ($account_id == $account->id()) {
 						if (isset($_POST['post_to_service'])) {
+							$in_reply_to_status_id = get_comment_meta($_POST['comment_parent'], 'social_status_id', true);
 							if ($comment->comment_approved == '0') {
 								update_comment_meta($comment_ID, 'social_to_broadcast', $_POST['social_post_account']);
+								if (!empty($in_reply_to_status_id)) {
+									update_comment_meta($comment_ID, 'social_in_reply_to_status_id', $in_reply_to_status_id);
+								}
 							}
 							else {
+								$args = array();
+								if (!empty($in_reply_to_status_id)) {
+									$args['in_reply_to_status_id'] = $in_reply_to_status_id;
+									delete_comment_meta($comment_ID, 'social_in_reply_to_status_id');
+								}
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s.', 'social'), $comment_ID, $service->title(), $account->id()));
-								$response = $service->broadcast($account, $output);
-								if ($response->id() === false) {
+								$response = $service->broadcast($account, $output, $args);
+								if ($response === false or $response->id() === false) {
 									wp_delete_comment($comment_ID);
 									$message = sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_ID, $service->title(), $account->id());
 
 									Social::log($message);
 									wp_die($message);
 								}
+
+								$wpdb->query($wpdb->prepare("
+									UPDATE $wpdb->comments
+									   SET comment_type = %s
+									 WHERE comment_ID = %s
+								", 'social-'.$service->key(), $comment_ID));
+
 								$this->set_comment_aggregated_id($comment_ID, $service->key(), $response->id());
 								update_comment_meta($comment_ID, 'social_status_id', $response->id());
 								update_comment_meta($comment_ID, 'social_raw_data', base64_encode(json_encode($response->body()->response)));
@@ -1245,12 +1270,6 @@ final class Social {
 						update_comment_meta($comment_ID, 'social_account_id', $account_id);
 						update_comment_meta($comment_ID, 'social_profile_image_url', $account->avatar());
 						update_comment_meta($comment_ID, 'social_comment_type', 'social-'.$service->key());
-
-						$wpdb->query($wpdb->prepare("
-							UPDATE $wpdb->comments
-							   SET comment_type = %s
-							 WHERE comment_ID = %s
-						", 'social-'.$service->key(), $comment_ID));
 
 						if ($comment->user_id != '0') {
 							$comment->comment_author = $account->name();
@@ -1308,12 +1327,27 @@ final class Social {
 							if ($account !== null) {
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s.', 'social'), $comment_id, $service->title(), $account->id()));
 								$comment = get_comment($comment_id);
+
+								$in_reply_to_status_id = get_comment_meta($comment_id, 'social_in_reply_to_status_id', true);
+								$args = array();
+								if (!empty($in_reply_to_status_id)) {
+									$args['in_reply_to_status_id'] = $in_reply_to_status_id;
+									delete_comment_meta($comment_id, 'social_in_reply_to_status_id');
+								}
+
 								$output = $service->format_comment_content($comment, Social::option('comment_broadcast_format'));
-								$response = $service->broadcast($account, $output);
-								if ($response->id() === false) {
+								$response = $service->broadcast($account, $output, $args);
+								if ($response === false or $response->id() === false) {
 									wp_delete_comment($comment_id);
 									Social::log(sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_id, $service->title(), $account->id()));
 								}
+
+								$wpdb->query($wpdb->prepare("
+									UPDATE $wpdb->comments
+									   SET comment_type = %s
+									 WHERE comment_ID = %s
+								", 'social-'.$service->key(), $comment_id));
+
 								$this->set_comment_aggregated_id($comment_id, $service->key(), $response->id());
 								update_comment_meta($comment_id, 'social_status_id', $response->id());
 								update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($response->body()->response)));
@@ -1503,7 +1537,7 @@ final class Social {
 				'parent' => 'comments',
 				'id' => 'social_find_comments',
 				'title' => __('Find Social Comments', 'social')
-					.'<span class="social-aggregation-spinner" style="display: none;">(
+					.'<span class="social-aggregation-spinner" style="display: none;">&nbsp;(
 						<span class="social-dot dot-active">.</span>
 						<span class="social-dot">.</span>
 						<span class="social-dot">.</span>
@@ -1516,11 +1550,8 @@ final class Social {
 	function admin_bar_footer_css() {
 ?>
 <style class="text/css">
-#wp-admin-bar-comments {
-	white-space: nowrap;
-}
-#wpadminbar .social-aggregation-spinner {
-	padding-left: 10px;
+#wpadminbar #wp-admin-bar-comments .social-aggregation-spinner {
+	background: transparent;
 	white-space: nowrap;
 }
 #wpadminbar .social-aggregation-spinner .dot-active {
@@ -1648,8 +1679,11 @@ final class Social {
 	 * @param  bool    $post       set to true to do a wp_remote_post
 	 * @return void
 	 */
-	private function request($url, $nonce_key, $post = false) {
-		$url = str_replace('&amp;', '&', wp_nonce_url($url, $nonce_key));
+	private function request($url, $nonce_key = null, $post = false) {
+		if ($nonce_key !== null) {
+			$url = str_replace('&amp;', '&', wp_nonce_url($url, $nonce_key));
+		}
+
 		$data = array(
 			'timeout' => 0.01,
 			'blocking' => false,
@@ -1657,9 +1691,15 @@ final class Social {
 		);
 
 		if ($post) {
+			Social::log('POST request to: :url', array(
+				'url' => $url
+			));
 			wp_remote_post($url, $data);
 		}
 		else {
+			Social::log('GET request to: :url', array(
+				'url' => $url
+			));
 			wp_remote_get($url, $data);
 		}
 	}
@@ -1829,6 +1869,7 @@ add_action('init', array($social, 'init'), 1);
 add_action('init', array($social, 'request_handler'), 2);
 add_action('admin_init', array($social, 'admin_init'), 1);
 add_action('load-settings_page_social', array($social, 'check_system_cron'));
+add_action('load-social.php', array($social, 'check_system_cron'));
 add_action('comment_post', array($social, 'comment_post'));
 add_action('wp_set_comment_status', array($social, 'wp_set_comment_status'), 10, 3);
 add_action('admin_notices', array($social, 'admin_notices'));

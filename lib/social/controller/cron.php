@@ -8,11 +8,6 @@
 final class Social_Controller_CRON extends Social_Controller {
 
 	/**
-	 * @var  bool  system cron
-	 */
-	protected $system_cron = false;
-
-	/**
 	 * Initializes the CRON controller.
 	 *
 	 * @param  Social_Request  $request
@@ -20,19 +15,19 @@ final class Social_Controller_CRON extends Social_Controller {
 	public function __construct(Social_Request $request) {
 		parent::__construct($request);
 
-		// Social system cron?
-		if (Social::option('fetch_comments') == '2') {
-			$api_key = $this->request->query('api_key');
-			if ($api_key != Social::option('system_cron_api_key')) {
-				wp_die('Oops, you have provided an invalid API key.');
-				exit;
+		if ($this->request->action() != 'check_crons') {
+			// Social system cron?
+			if (Social::option('fetch_comments') == '2' or $this->request->query('api_key') !== null) {
+				$api_key = $this->request->query('api_key');
+				if ($api_key != Social::option('system_cron_api_key')) {
+					Social::log('Api key failed');
+					wp_die('Oops, you have provided an invalid API key.');
+				}
 			}
-
-			$this->system_cron = true;
-		}
-		else if (!$this->nonce_verified) {
-			wp_die('Oops, invalid request.');
-			exit;
+			else if (!$this->nonce_verified) {
+				Social::log('Nonce failed');
+				wp_die('Oops, invalid request.');
+			}
 		}
 	}
 
@@ -44,7 +39,9 @@ final class Social_Controller_CRON extends Social_Controller {
 	 */
 	public function action_cron_15() {
 		$semaphore = Social_Semaphore::factory();
+		Social::log('Attempting semaphore lock');
 		if ($semaphore->lock()) {
+			Social::log('Running social_cron_15_action.');
 			do_action('social_cron_15');
 			$semaphore->unlock();
 		}
@@ -56,10 +53,12 @@ final class Social_Controller_CRON extends Social_Controller {
 	 * @return void
 	 */
 	public function action_check_crons() {
-		if (!wp_verify_nonce($this->request->query('_wpnonce'))) {
-			wp_die('Oops, please try again.');
+		// this is an internal only call, so manually calling URL decode
+		if (urldecode($this->request->query('social_api_key')) != Social::option('system_cron_api_key')) {
+			Social::log('API key failed');
+			wp_die('Oops, invalid API key.');
 		}
-
+		
 		$crons = _get_cron_array();
 		$social_crons = array(
 			'15' => false,

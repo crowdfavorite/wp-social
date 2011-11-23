@@ -17,6 +17,11 @@ final class Social_Semaphore {
 	}
 
 	/**
+	 * @var bool
+	 */
+	protected $lock_broke = false;
+
+	/**
 	 * Attempts to start the lock. If the rename works, the lock is started.
 	 *
 	 * @return bool
@@ -32,6 +37,7 @@ final class Social_Semaphore {
 		");
 
 		if ($affected == '0' and !$this->stuck_check()) {
+			Social::log('Semaphore lock failed. (Line '.__LINE__.')');
 			return false;
 		}
 
@@ -44,6 +50,7 @@ final class Social_Semaphore {
 		");
 		if ($affected != '1') {
 			if (!$this->stuck_check()) {
+				Social::log('Semaphore lock failed. (Line '.__LINE__.')');
 				return false;
 			}
 
@@ -53,6 +60,8 @@ final class Social_Semaphore {
 				   SET option_value = '1'
 				 WHERE option_name = 'social_semaphore'
 			");
+
+			Social::log('Semaphore reset to 1.');
 		}
 
 		// Set the lock time
@@ -61,7 +70,9 @@ final class Social_Semaphore {
 			   SET option_value = %s
 			 WHERE option_name = 'social_last_lock_time'
 		", current_time('mysql', 1)));
+		Social::log('Set semaphore last lock time to '.current_time('mysql', 1));
 
+		Social::log('Semaphore lock complete.');
 		return true;
 	}
 
@@ -88,6 +99,7 @@ final class Social_Semaphore {
 				   SET option_value = CAST(option_value AS UNSIGNED) + 1
 				 WHERE option_name = 'social_semaphore'
 			");
+			Social::log('Incremented the semaphore by 1.');
 		}
 
 		return $this;
@@ -107,6 +119,7 @@ final class Social_Semaphore {
 			 WHERE option_name = 'social_semaphore'
 			   AND CAST(option_value AS UNSIGNED) > 0
 		");
+		Social::log('Decremented the semaphore by 1.');
 	}
 
 	/**
@@ -127,9 +140,11 @@ final class Social_Semaphore {
 		");
 
 		if ($result == '1') {
+			Social::log('Semaphore unlocked.');
 			return true;
 		}
 
+		Social::log('Semaphore still locked.');
 		return false;
 	}
 
@@ -141,14 +156,23 @@ final class Social_Semaphore {
 	private function stuck_check() {
 		global $wpdb;
 
+		// Check to see if we already broke the lock.
+		if ($this->lock_broke) {
+			return true;
+		}
+
+		$current_time = current_time('mysql', 1);
 		$affected = $wpdb->query($wpdb->prepare("
 			UPDATE $wpdb->options
 			   SET option_value = %s
 			 WHERE option_name = 'social_last_lock_time'
-			   AND option_value <= DATE_SUB(%s, INTERVAL 1 HOUR)
-		", current_time('mysql', 1), current_time('mysql', 1)));
+			   AND option_value <= DATE_SUB(%s, INTERVAL 30 MINUTE)
+		", $current_time, $current_time));
 
 		if ($affected == '1') {
+			Social::log('Semaphore was stuck, set lock time to '.$current_time);
+
+			$this->lock_broke = true;
 			return true;
 		}
 

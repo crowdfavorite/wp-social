@@ -47,14 +47,16 @@ final class Social_Log {
 	}
 
 	/**
-	 * Adds a message to the error log.
+	 * Add a message to the log.
 	 *
-	 * @param  string  $message  message to be logged
-	 * @param  array   $args     arguments to add to the message.
-	 * @param  string  $context  context of the log message
+	 * @static
+	 * @param  string  $message    message to add to the log
+	 * @param  array   $args       arguments to pass to the writer
+	 * @param  string  $context    context of the log message
+	 * @param  bool    $backtrace  show the backtrace
 	 * @return void
 	 */
-	public function write($message, array $args = null, $context = null) {
+	public function write($message, array $args = null, $context = null, $backtrace = false) {
 		if (!Social::option('debug') and !in_array($context, apply_filters('social_log_contexts', array()))) {
 			return;
 		}
@@ -69,11 +71,22 @@ final class Social_Log {
 			$context = '['.strtoupper(str_replace('-', ' ', $context)).'] ';
 		}
 
+		$error_str = $context.'[SOCIAL - '.current_time('mysql', 1).' - '.$_SERVER['REMOTE_ADDR'].'] '.$message;
+
+		if ($backtrace) {
+			ob_start();
+			debug_print_backtrace();
+			$trace = ob_get_contents();
+			ob_end_clean();
+
+			$error_str .= "\n\n".$trace."\n\n";
+		}
+
 		if (is_writable($this->_file)) {
-			error_log($context.'[SOCIAL - '.current_time('mysql').'] '.$message."\n", 3, $this->_file);
+			error_log($error_str."\n", 3, $this->_file);
 		}
 		else {
-			error_log($context.'[SOCIAL - '.current_time('mysql').'] '.$message);
+			error_log($error_str);
 		}
 	}
 

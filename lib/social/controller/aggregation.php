@@ -70,9 +70,7 @@ final class Social_Controller_Aggregation extends Social_Controller {
 					foreach ($broadcasted as $data) {
 						if (isset($data['urls']) and is_array($data['urls'])) {
 							foreach ($data['urls'] as $url) {
-								if (!in_array($url, $default_urls)) {
-									$urls[] = $url;
-								}
+								$urls[] = $url;
 							}
 						}
 					}
@@ -81,6 +79,7 @@ final class Social_Controller_Aggregation extends Social_Controller {
 
 			// URL Search
 			$urls = apply_filters('social_search_urls', $urls, $key);
+			$urls = array_unique($urls);
 			if (count($urls)) {
 				foreach ($urls as $key => $url) {
 					$urls[$key] = urlencode($url);
@@ -90,13 +89,13 @@ final class Social_Controller_Aggregation extends Social_Controller {
 		}
 
 		if (count($post->results)) {
-			update_post_meta($post->ID, '_social_aggregated_ids', $post->aggregated_ids);
-
 			foreach ($post->results as $key => $results) {
 				if (count($results)) {
 					$this->social->service($key)->save_aggregated_comments($post);
 				}
 			}
+
+			update_post_meta($post->ID, '_social_aggregated_ids', $post->aggregated_ids);
 		}
 
 		Social::log('Aggregation for post #:post_id complete.', array(

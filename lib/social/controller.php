@@ -34,8 +34,8 @@ abstract class Social_Controller {
 		$nonce = $request->query('_wpnonce');
 		if ($nonce !== null) {
 			if (!wp_verify_nonce($nonce, $this->request->action())) {
+				Social::log('NONCE Failure', array(), null, true);
 				wp_die('Oops, please try again.');
-				exit;
 			}
 
 			$this->nonce_verified = true;
