@@ -93,7 +93,7 @@
 										if ($service->key() == 'facebook') {
 											$pages = $account->pages(null, false);
 
-											if ($account->use_pages(true) and count($pages)) {
+											if ($account->use_pages() and count($pages)) {
 												$pages_output .= '<h5>'.__('Account Pages', 'social').'</h5><ul>';
 												foreach ($pages as $page) {
 													$checked = '';
