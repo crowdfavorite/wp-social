@@ -1,4 +1,4 @@
-<form id="setup" method="post" action="<?php echo esc_url(admin_url('?social_controller=settings&social_action=index')); ?>">
+<form id="setup" method="post" action="<?php echo esc_url(admin_url('index.php?social_controller=settings&social_action=index')); ?>">
 <?php wp_nonce_field(); ?>
 <input type="hidden" name="social_action" value="settings" />
 <?php if (isset($_GET['saved'])): ?>
