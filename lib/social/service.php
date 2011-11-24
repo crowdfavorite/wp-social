@@ -64,7 +64,7 @@ abstract class Social_Service {
 
 		$params = '?social_controller=auth&social_action=authorize&target='.urlencode($url);
 		if (is_admin()) {
-			$url = (defined('IS_PROFILE_PAGE') ? 'profile.php' : 'index.php';
+			$url = (defined('IS_PROFILE_PAGE') ? 'profile.php' : 'index.php');
 			$url = admin_url($url.$params);
 		}
 		else {
