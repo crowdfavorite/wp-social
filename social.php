@@ -402,12 +402,18 @@ final class Social {
 				Social::log('Adding Social 15 CRON schedule');
 				wp_schedule_event(time() + 900, 'every15min', 'social_cron_15_init');
 			}
-
-			wp_remote_get(admin_url('?social_controller=cron&social_action=check_crons&social_api_key='.urlencode(Social::option('system_cron_api_key'))), array(
-				'timeout' => 0.01,
-				'blocking' => false,
-				'sslverify' => apply_filters('https_local_ssl_verify', true),
-			));
+			wp_remote_get(
+				admin_url('index.php?'.http_build_query(array(
+					'social_controller' => 'cron',
+					'social_action' => 'check_crons',
+					'social_api_key' => Social::option('system_cron_api_key')
+				))),
+				array(
+					'timeout' => 0.01,
+					'blocking' => false,
+					'sslverify' => apply_filters('https_local_ssl_verify', true),
+				)
+			);
 		}
 	}
 
