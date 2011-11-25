@@ -21,10 +21,8 @@ final class Social_Controller_Auth extends Social_Controller {
 			);
 
 			if (is_admin()) {
-				$args += array(
-					'is_admin' => 'true',
-					'user_id' => get_current_user_id(),
-				);
+				$args['is_admin'] = 'true';
+				$args['user_id'] = get_current_user_id();
 				if (defined('IS_PROFILE_PAGE')) {
 					$args['personal'] = 'true';
 					$url = add_query_arg('personal', 'true', $url);
