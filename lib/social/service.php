@@ -161,7 +161,8 @@ abstract class Social_Service {
 				update_user_meta($id, 'social_auth_nonce_'.$nonce, 'true');
 			}
 
-			Social::log('Created/found user #:id.', array(
+			Social::log('Created/found user :username. (#:id)', array(
+				'username' => $username,
 				'id' => $id,
 			));
 			return $id;
