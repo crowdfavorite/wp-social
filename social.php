@@ -630,6 +630,24 @@ final class Social {
 			delete_user_meta($user_id, 'social_default_accounts');
 		}
 	}
+	
+	/**
+	 * Return array of enabled social broadcasting post types
+	 *
+	 * @return array
+	 */
+	static function broadcasting_enabled_post_types() {
+		return apply_filters('social_broadcasting_enabled_post_types', array('post'));
+	}
+	
+	/**
+	 * Check if a post type has broadcasting enabled
+	 *
+	 * @return bool
+	 */
+	static function broadcasting_enabled_for_post_type($post_type = null) {
+		return (bool) in_array($post_type, self::broadcasting_enabled_post_types());
+	}
 
 	/**
 	 * Add Meta Boxes
@@ -641,8 +659,7 @@ final class Social {
 		global $post;
 
 		if ($post !== null) {
-			$post_types = apply_filters('social_broadcasting_enabled_post_types', array('post'));
-			foreach ($post_types as $post_type) {
+			foreach (self::broadcasting_enabled_post_types() as $post_type) {
 				add_meta_box('social_meta_broadcast', __('Social Broadcasting', 'social'), array(
 					$this,
 					'add_meta_box_broadcast'
@@ -827,8 +844,9 @@ final class Social {
 					$xmlrpc = true;
 					$this->xmlrpc_publish_post($post);
 				}
-
-				Social_Aggregation_Queue::factory()->add($post->ID)->save();
+				if (self::broadcasting_enabled_for_post_type($post->post_type)) {
+					Social_Aggregation_Queue::factory()->add($post->ID)->save();
+				}
 			}
 
 			// Sends previously saved broadcast information
