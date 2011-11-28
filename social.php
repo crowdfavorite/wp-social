@@ -634,18 +634,21 @@ final class Social {
 	/**
 	 * Return array of enabled social broadcasting post types
 	 *
+	 * @static
 	 * @return array
 	 */
-	static function broadcasting_enabled_post_types() {
+	public static function broadcasting_enabled_post_types() {
 		return apply_filters('social_broadcasting_enabled_post_types', array('post'));
 	}
 	
 	/**
 	 * Check if a post type has broadcasting enabled
 	 *
+	 * @static
+	 * @param  string  $post_type  post type to check for
 	 * @return bool
 	 */
-	static function broadcasting_enabled_for_post_type($post_type = null) {
+	public static function broadcasting_enabled_for_post_type($post_type = null) {
 		return (bool) in_array($post_type, self::broadcasting_enabled_post_types());
 	}
 
