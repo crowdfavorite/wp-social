@@ -117,7 +117,6 @@ final class Social {
 	 * @return array
 	 */
 	public static function broadcast_tokens() {
-		global $wpdb;
 		$query = new WP_Query(array(
 			'posts_per_page' => 1
 		));
