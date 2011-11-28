@@ -16,7 +16,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 		$post = get_post($this->request->post('post_ID'));
 		if ($post === null or get_post_meta($post->ID, '_social_notify', true) != '1') {
 			if ($post === null) {
-				wp_redirect(admin_url());
+				wp_redirect(admin_url('index.php'));
 			}
 			
 			return;
