@@ -215,6 +215,9 @@ final class Social_Controller_Auth extends Social_Controller {
 				wp_set_auth_cookie($user_id, true);
 				remove_filter('auth_cookie_expiration', array($this->social, 'auth_cookie_expiration'));
 
+				delete_user_meta($user_id, 'social_auth_nonce_'.$_COOKIE['social_auth_nonce']);
+				setcookie('social_auth_nonce', '', -3600, '/');
+
 				$post_id = $this->request->query('post_id');
 				$form = trim(Social_Comment_Form::instance($post_id)->render());
 				echo json_encode(array(
@@ -222,9 +225,6 @@ final class Social_Controller_Auth extends Social_Controller {
 					'html' => $form,
 					'disconnect_url' => wp_loginout('', false)
 				));
-
-				delete_user_meta($user_id, 'social_auth_nonce_'.$_COOKIE['social_auth_nonce']);
-				setcookie('social_auth_nonce', '', -3600, '/');
 			}
 			else {
 				Social::log('Failed to find the user using nonce :nonce.', array(
