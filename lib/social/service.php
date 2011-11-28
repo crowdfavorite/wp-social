@@ -112,7 +112,7 @@ abstract class Social_Service {
 				$params['redirect_to'] = $_GET['redirect_to'];
 			}
 
-			$url = add_query_arg($params, site_url());
+			$url = add_query_arg($params, home_url());
 			$text = __('Disconnect', 'social');
 		}
 
