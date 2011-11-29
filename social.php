@@ -257,6 +257,10 @@ final class Social {
 	 * @return void
 	 */
 	public function init() {
+		// Load the language translations
+		$path = str_replace(basename(SOCIAL_FILE), '', plugin_basename(SOCIAL_FILE)).'lang';
+		load_textdomain('social', false, $path);
+
 		if (version_compare(PHP_VERSION, '5.2.4', '<')) {
 			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
 			wp_die(__("Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers.", 'social'));
