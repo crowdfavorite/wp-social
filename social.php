@@ -273,7 +273,7 @@ final class Social {
 	public function init() {
 		// Load the language translations
 		if (Social::$loaded_by_theme) {
-			$path = apply_filters('social_theme_textdomain_path', '');
+			$path = trailingslashit(SOCIAL_PATH).'lang';
 			load_theme_textdomain('social', $path);
 		}
 		else {
