@@ -181,7 +181,7 @@ final class Social_Twitter {
 							$rt_matched = true;
 						}
 						else if (isset($social_map[$rt_id])) {
-							$comments[$social_map[$rt_id]]->social_items[$key] = $comment;
+							$comments['id_'.$social_map[$rt_id]]->social_items[$key] = $comment;
 							unset($comments[$key]);
 							$rt_matched = true;
 						}
