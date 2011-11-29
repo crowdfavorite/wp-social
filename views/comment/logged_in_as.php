@@ -1,7 +1,7 @@
 <div class="social-identity">
 	<?php
 		if (current_user_can('manage_options')) {
-		echo get_avatar($current_user->ID, 40, 'force-wordpress');
+			echo get_avatar($current_user->ID, 40);
 	?>
 	<p class="social-input-row">
 		<?php if (count($accounts)) { ?>
