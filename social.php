@@ -38,6 +38,11 @@ final class Social {
 	public static $plugins_url = '';
 
 	/**
+	 * @var  bool  loaded by theme?
+	 */
+	public static $loaded_by_theme = false;
+
+	/**
 	 * @var  Social_Log  logger
 	 */
 	private static $log = null;
@@ -206,6 +211,16 @@ final class Social {
 	}
 
 	/**
+	 * Sets the loaded by theme.
+	 *
+	 * @static
+	 * @return void
+	 */
+	public static function social_loaded_by_theme() {
+		self::$loaded_by_theme = true;
+	}
+
+	/**
 	 * @var  bool  is Social enabled?
 	 */
 	private $_enabled = null;
@@ -257,8 +272,14 @@ final class Social {
 	 */
 	public function init() {
 		// Load the language translations
-		$plugin_dir = basename(dirname(SOCIAL_FILE)).'/lang';
-		load_plugin_textdomain('social', false, $plugin_dir);
+		if (Social::$loaded_by_theme) {
+			$path = apply_filters('social_theme_textdomain_path', '');
+			load_theme_textdomain('social', $path);
+		}
+		else {
+			$plugin_dir = basename(dirname(SOCIAL_FILE)).'/lang';
+			load_plugin_textdomain('social', false, $plugin_dir);
+		}
 
 		if (version_compare(PHP_VERSION, '5.2.4', '<')) {
 			deactivate_plugins(basename(__FILE__)); // Deactivate ourself
