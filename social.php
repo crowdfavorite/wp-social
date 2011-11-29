@@ -403,9 +403,11 @@ final class Social {
 		}
 
 		// Redirect to the home_url() if the user is a commenter.
-		$commenter = get_user_meta(get_current_user_id(), 'social_commenter', true);
-		if (!empty($commenter) and $commenter == 'true') {
-			wp_redirect(trailingslashit(home_url()));
+		if (!current_user_can('publish_posts')) {
+			$commenter = get_user_meta(get_current_user_id(), 'social_commenter', true);
+			if (!empty($commenter) and $commenter == 'true') {
+				wp_redirect(trailingslashit(home_url()));
+			}
 		}
 	}
 
