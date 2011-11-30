@@ -99,7 +99,7 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 * @return string
 	 */
 	public function id() {
-		return $this->_user->id;
+		return $this->_user['id'];
 	}
 
 	/**
@@ -110,7 +110,7 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 */
 	public function name() {
 		if ($this->has_user()) {
-			return $this->_user->name;
+			return $this->_user['name'];
 		}
 
 		return parent::_name();
@@ -124,7 +124,7 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	public function url() {
 		$url = 'http://facebook.com/';
 		if ($this->has_user()) {
-			$url .= 'profile.php?id='.$this->_user->id;
+			$url .= 'profile.php?id='.$this->_user['id'];
 		}
 
 		return $url;
@@ -137,7 +137,7 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 */
 	public function avatar() {
 		if ($this->has_user()) {
-			return 'http://graph.facebook.com/'.$this->_user->id.'/picture';
+			return 'http://graph.facebook.com/'.$this->_user['id'].'/picture';
 		}
 
 		return parent::_avatar();
@@ -150,11 +150,11 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 */
 	public function username() {
 		if ($this->has_user()) {
-			if (!isset($this->_user->username)) {
-				$this->_user->username = $this->_user->name.'.'.$this->_user->id;
+			if (!isset($this->_user['username'])) {
+				$this->_user['username'] = $this->_user['name'].'.'.$this->_user['id'];
 			}
 
-			return $this->_user->username;
+			return $this->_user['username'];
 		}
 
 		return parent::_username();
@@ -170,19 +170,19 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	public function page($page, $is_profile = false) {
 		if (is_object($page)) {
 			if ($is_profile) {
-				$this->_pages->personal[$page->id] = $page;
+				$this->_pages['personal'][$page->id] = $page;
 			}
 			else {
-				$this->_pages->universal[$page->id] = $page;
+				$this->_pages['universal'][$page->id] = $page;
 			}
 			return $this;
 		}
 		else {
-			if ($is_profile and isset($this->_pages->personal[$page])) {
-				return $this->_pages->personal[$page];
+			if ($is_profile and isset($this->_pages['personal'][$page])) {
+				return $this->_pages['personal'][$page];
 			}
-			else if (!$is_profile and isset($this->_pages->universal[$page])) {
-				return $this->_pages->universal[$page];
+			else if (!$is_profile and isset($this->_pages['universal'][$page])) {
+				return $this->_pages['universal'][$page];
 			}
 		}
 
@@ -199,14 +199,14 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	public function pages(array $pages = null, $is_profile = false) {
 		if ($pages === null) {
 			if ($is_profile === true) {
-				return $this->_pages->personal;
+				return $this->_pages['personal'];
 			}
 			else if ($is_profile === false) {
-				return $this->_pages->universal;
+				return $this->_pages['universal'];
 			}
 			else if ($is_profile === 'combined') {
-				$pages = $this->_pages->personal;
-				foreach ($this->_pages->universal as $page) {
+				$pages = $this->_pages['personal'];
+				foreach ($this->_pages['universal'] as $page) {
 					if (!isset($pages[$page->id])) {
 						$pages[$page->id] = $page;
 					}
@@ -220,19 +220,19 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 		if (count($pages)) {
 			foreach ($pages as $_page) {
 				if ($is_profile) {
-					$this->_pages->personal[$_page->id] = $_page;
+					$this->_pages['personal'][$_page->id] = $_page;
 				}
 				else {
-					$this->_pages->universal[$_page->id] = $_page;
+					$this->_pages['universal'][$_page->id] = $_page;
 				}
 			}
 		}
 		else {
 			if ($is_profile) {
-				$this->_pages->personal = array();
+				$this->_pages['personal'] = array();
 			}
 			else {
-				$this->_pages->universal = array();
+				$this->_pages['universal'] = array();
 			}
 		}
 		
