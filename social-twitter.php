@@ -48,7 +48,7 @@ final class Social_Twitter {
 		// pre-load the hashes for broadcasted tweets
 		$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
 		if (empty($broadcasted_ids)) {
-			return $comments;
+			$broadcasted_ids = array();
 		}
 		global $wpdb;
 
@@ -207,7 +207,9 @@ final class Social_Twitter {
 		if (!isset($comments['social_items'])) {
 			$comments['social_items'] = array();
 		}
-		$comments['social_items']['twitter'] = $broadcast_retweets;
+		if (count($broadcast_retweets)) {
+			$comments['social_items']['twitter'] = $broadcast_retweets;
+		}
 
 		return $comments;
 	}
