@@ -100,15 +100,15 @@
 													if (isset($default_accounts['facebook']) and
 														isset($default_accounts['facebook']['pages']) and
 														isset($default_accounts['facebook']['pages'][$account->id()]) and
-														in_array($page->id, $default_accounts['facebook']['pages'][$account->id()])
+														in_array($page['id'], $default_accounts['facebook']['pages'][$account->id()])
 													) {
 														$show_pages = true;
 														$checked = ' checked="checked"';
 													}
 													$pages_output .= '<li>'
-														.'    <input type="checkbox" name="social_default_pages['.esc_attr($account->id()).'][]" value="'.esc_attr($page->id).'"'.$checked.' />'
+														.'    <input type="checkbox" name="social_default_pages['.esc_attr($account->id()).'][]" value="'.esc_attr($page['id']).'"'.$checked.' />'
 														.'    <img src="'.esc_url($service->page_image_url($page)).'" width="24" height="24" />'
-														.'    <span>'.esc_html($page->name).'</span>'
+														.'    <span>'.esc_html($page['name']).'</span>'
 														.'</li>';
 												}
 												$pages_output .= '</ul>';

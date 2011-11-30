@@ -168,12 +168,13 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 * @return bool|Social_Service_Facebook_Account
 	 */
 	public function page($page, $is_profile = false) {
-		if (is_object($page)) {
+		if (is_object($page) or is_array($page)) {
+			$page = (array) $page;
 			if ($is_profile) {
-				$this->_pages['personal'][$page->id] = $page;
+				$this->_pages['personal'][$page['id']] = $page;
 			}
 			else {
-				$this->_pages['universal'][$page->id] = $page;
+				$this->_pages['universal'][$page['id']] = $page;
 			}
 			return $this;
 		}
@@ -207,8 +208,8 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 			else if ($is_profile === 'combined') {
 				$pages = $this->_pages['personal'];
 				foreach ($this->_pages['universal'] as $page) {
-					if (!isset($pages[$page->id])) {
-						$pages[$page->id] = $page;
+					if (!isset($pages[$page['id']])) {
+						$pages[$page['id']] = $page;
 					}
 				}
 				return $pages;

@@ -228,7 +228,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 				Social::log('Found service :service', array('service' => $key));
 				$message = null;
 				foreach ($accounts as $_account) {
-					if ($_account->universal != '1') {
+					if ($_account['universal'] != '1') {
 						if ($personal_accounts === null) {
 							$personal_accounts = get_user_meta($post->post_author, 'social_accounts', true);
 						}

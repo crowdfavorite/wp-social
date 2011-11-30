@@ -52,8 +52,8 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		$broadcast_account = $account->broadcast_page();
 		if ($broadcast_account !== null) {
 			$args = $args + array(
-				'access_token' => $broadcast_account->access_token,
-				'page_id' => $broadcast_account->id,
+				'access_token' => $broadcast_account['access_token'],
+				'page_id' => $broadcast_account['id'],
 			);
 		}
 
@@ -483,7 +483,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * @return string
 	 */
 	public function page_image_url($account) {
-		return apply_filters('social_facebook_page_image_url', 'http://graph.facebook.com/'.$account->id.'/picture', $account);
+		return apply_filters('social_facebook_page_image_url', 'http://graph.facebook.com/'.$account['id'].'/picture', $account);
 	}
 
 } // End Social_Service_Facebook

@@ -26,7 +26,7 @@ if (is_array($ids) and count($ids)) {
 							$recovered = $service->recover_broadcasted_tweet_data($broadcasted_id, $post->ID);
 
 							if (isset($recovered->user)) {
-								$data['account']->user = $recovered->user;
+								$data['account']['user'] = $recovered->user;
 								$account = new $class($data['account']);
 							}
 						}

@@ -319,9 +319,9 @@ final class Social_Facebook {
 			$accounts = $service->accounts();
 			foreach ($accounts as $_account) {
 				$pages = $_account->pages(null, 'combined');
-				if (isset($pages[$account->id])) {
+				if (isset($pages[$account['id']])) {
 					$found = true;
-					$account = $_account->broadcast_page($pages[$account->id]);
+					$account = $_account->broadcast_page($pages[$account['id']]);
 				}
 			}
 
@@ -331,9 +331,9 @@ final class Social_Facebook {
 					foreach ($personal_accounts['facebook'] as $account_id => $_account) {
 						$_account = new Social_Service_Facebook_Account($_account);
 						$pages = $_account->pages(null, 'combined');
-						if (isset($pages[$account->id])) {
+						if (isset($pages[$account['id']])) {
 							$found = true;
-							$account = $_account->broadcast_page($pages[$account->id]);
+							$account = $_account->broadcast_page($pages[$account['id']]);
 						}
 					}
 				}

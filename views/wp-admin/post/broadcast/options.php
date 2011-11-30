@@ -93,8 +93,8 @@
 								if ($key == 'facebook' and isset($_POST['social_facebook_pages']) and isset($_POST['social_facebook_pages'][$account->id()])) {
 									$pages = $account->pages(null, 'combined');
 									foreach ($pages as $page) {
-										if (in_array($page->id, $_POST['social_facebook_pages'][$account->id()])) {
-											$checked_pages[] = $page->id;
+										if (in_array($page['id'], $_POST['social_facebook_pages'][$account->id()])) {
+											$checked_pages[] = $page['id'];
 										}
 									}
 								}
@@ -121,8 +121,8 @@
 											if ($key == 'facebook') {
 												$pages = $account->pages(null, 'combined');
 												foreach ($pages as $page) {
-													if ($page->id == $account_id) {
-														$checked_pages[$account->id()][] = $page->id;
+													if ($page['id'] == $account_id) {
+														$checked_pages[$account->id()][] = $page['id'];
 														break;
 													}
 												}
@@ -168,14 +168,14 @@
 								foreach ($pages as $page) {
 									$_checked = $checked;
 									if (!empty($checked_pages)) {
-										if (in_array($page->id, $checked_pages[$account->id()])) {
+										if (in_array($page['id'], $checked_pages[$account->id()])) {
 											$checked = ' checked="checked"';
 										}
 									}
 									echo '<li>'
-										.'    <input type="checkbox" name="social_facebook_pages['.esc_attr($account->id()).'][]" value="'.esc_attr($page->id).'"'.$checked.' />'
+										.'    <input type="checkbox" name="social_facebook_pages['.esc_attr($account->id()).'][]" value="'.esc_attr($page['id']).'"'.$checked.' />'
 										.'    <img src="'.esc_url($service->page_image_url($page)).'" width="24" height="24" />'
-										.'    <span>'.esc_html($page->name).'</span>'
+										.'    <span>'.esc_html($page['name']).'</span>'
 										.'</li>';
 
 									$checked = $_checked;
