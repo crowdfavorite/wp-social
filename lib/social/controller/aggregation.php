@@ -154,7 +154,7 @@ final class Social_Controller_Aggregation extends Social_Controller {
 				$queue = $queue->find($post->ID);
 				$next_run = 0;
 				if ($queue !== false) {
-					$next_run = Social_Aggregation_Queue::next_run($queue->next_run);
+					$next_run = Social_Aggregation_Queue::next_run($queue['next_run']);
 				}
 
 				echo json_encode(array(

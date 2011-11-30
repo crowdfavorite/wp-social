@@ -82,11 +82,11 @@ final class Social_Aggregation_Log {
 	 * Log format:
 	 *
 	 *     array(
-	 *         '1234567890' => (object) array( // current_time('timestamp')
+	 *         '1234567890' => array( // current_time('timestamp')
 	 *             'manual' => false, // Can be "true" or "false"
 	 *             'items' => array(
 	 *                 'twitter' => array(
-	 *                     (object) array(
+	 *                     array(
 	 *                         'id' => '1234567890', // Broadcasted ID
 	 *                         'type' => 'url', // url|reply|retweet or whatever you want to group this item by
 	 *                         'ignored' => false, // Can be "true" or "false"

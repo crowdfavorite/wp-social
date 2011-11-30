@@ -245,11 +245,7 @@ final class Social_Twitter {
 			if (!empty($response)) {
 				$data['message'] = base64_encode(json_encode($response->body()->response));
 			}
-
-			$account = $account->as_array();
-			$data['account'] = (object) array(
-				'user' => $account['user']
-			);
+			$data['account'] = $account->as_array();
 		}
 
 		return $data;

@@ -188,7 +188,7 @@ final class Social_Aggregation_Queue {
 		foreach ($this->_queue as $timestamp => $posts) {
 			foreach ($posts as $id => $interval) {
 				if ($id === $post_id) {
-					return (object) array(
+					return array(
 						'post_id' => $id,
 						'interval' => $interval,
 						'next_run' => $timestamp

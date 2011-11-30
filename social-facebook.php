@@ -363,16 +363,12 @@ final class Social_Facebook {
 		if ($service_key == 'facebook') {
 			$broadcast_page = $account->broadcast_page();
 			if ($broadcast_page !== null) {
-				$data['page'] = (object) array(
-					'id' => $broadcast_page->id,
-					'name' => $broadcast_page->name
+				$data['page'] = array(
+					'id' => $broadcast_page['id'],
+					'name' => $broadcast_page['name']
 				);
 			}
-
-			$account = $account->as_array();
-			$data['account'] = (object) array(
-				'user' => $account['user']
-			);
+			$data['account'] = $account->as_array();
 		}
 
 		return $data;
@@ -413,7 +409,7 @@ final class Social_Facebook {
 				$data['account'] = $data['data']['page'];
 			}
 			else if ($data['account'] instanceof Social_Service_Account) {
-				$data['account'] = (object) array(
+				$data['account'] = array(
 					'id' => $data['account']->id(),
 					'name' => $data['account']->username()
 				);
