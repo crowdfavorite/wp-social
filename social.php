@@ -293,6 +293,7 @@ final class Social {
 		if (!Social::option('install_date')) {
 			Social::option('install_date', current_time('timestamp', 1));
 			Social::option('system_cron_api_key', wp_generate_password(16, false));
+			Social::option('installed_version', Social::$version);
 		}
 		else {
 			// This account upgrade bit "has" to happen here, or else all of Social will bomb. This
