@@ -115,7 +115,7 @@ final class Social_Facebook {
 		// pre-load the hashes for broadcasted tweets
 		$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
 		if (empty($broadcasted_ids) or empty($broadcasted_ids['facebook'])) {
-			return $comments;
+			$broadcasted_ids = array();
 		}
 		global $wpdb;
 
@@ -186,7 +186,10 @@ final class Social_Facebook {
 		if (!isset($comments['social_items'])) {
 			$comments['social_items'] = array();
 		}
-		$comments['social_items']['facebook'] = $facebook_likes;
+
+		if (count($facebook_likes)) {
+			$comments['social_items']['facebook'] = $facebook_likes;
+		}
 
 		return $comments;
 	}
