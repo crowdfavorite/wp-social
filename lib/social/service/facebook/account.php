@@ -58,7 +58,7 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 * @return array
 	 */
 	public function as_array() {
-		$array = parent::as_object();
+		$array = parent::as_array();
 		$array['use_personal_pages'] = $this->_use_personal_pages;
 		$array['use_universal_pages'] = $this->_use_universal_pages;
 		$array['pages'] = $this->_pages;
