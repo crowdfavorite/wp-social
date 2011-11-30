@@ -1793,7 +1793,7 @@ final class Social {
 
 							foreach ($accounts[$service] as $account_id => $account) {
 								// TODO Shouldn't have to do this. Fix later.
-								$account->personal = '0';
+								$account['personal'] = '0';
 								$service_accounts[$account_id] = $account;
 							}
 						}
