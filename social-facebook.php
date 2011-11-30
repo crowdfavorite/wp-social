@@ -186,6 +186,7 @@ final class Social_Facebook {
 		if (!isset($comments['social_items'])) {
 			$comments['social_items'] = array();
 		}
+
 		if (count($facebook_likes)) {
 			$comments['social_items']['facebook'] = $facebook_likes;
 		}
