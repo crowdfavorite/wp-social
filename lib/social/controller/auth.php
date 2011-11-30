@@ -77,11 +77,11 @@ final class Social_Controller_Auth extends Social_Controller {
 		Social::log('Authorizing with nonce :nonce.', array('nonce' => $nonce));
 
 		$response = stripslashes_deep($this->request->post('response'));
-		$account = (object) array(
-			'keys' => (object) $response['keys'],
-			'user' => (object) $response['user'],
+		$account = array(
+			'keys' => $response['keys'],
+			'user' => $response['user'],
 		);
-		$account->user = $this->social->kses($account->user);
+		$account['user'] = $this->social->kses($account['user']);
 
 		$class = 'Social_Service_'.$response['service'].'_Account';
 		$account = new $class($account);

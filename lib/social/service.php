@@ -186,7 +186,7 @@ abstract class Social_Service {
 		if ($personal) {
 			foreach ($this->_accounts AS $account) {
 				if ($account->personal()) {
-					$accounts[$account->id()] = $account->as_object();
+					$accounts[$account->id()] = $account->as_array();
 				}
 
 				$account->universal(false);
@@ -220,7 +220,7 @@ abstract class Social_Service {
 		else {
 			foreach ($this->_accounts AS $account) {
 				if ($account->universal()) {
-					$accounts[$account->id()] = $account->as_object();
+					$accounts[$account->id()] = $account->as_array();
 				}
 
 				$account->personal(false);

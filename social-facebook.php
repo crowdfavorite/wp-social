@@ -369,8 +369,9 @@ final class Social_Facebook {
 				);
 			}
 
+			$account = $account->as_array();
 			$data['account'] = (object) array(
-				'user' => $account->as_object()->user
+				'user' => $account['user']
 			);
 		}
 

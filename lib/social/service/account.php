@@ -33,28 +33,28 @@ abstract class Social_Service_Account {
 	 * @param  object  $account
 	 */
 	public function __construct($account) {
-		$this->_user = $account->user;
+		$this->_user = $account['user'];
 
-		if (isset($account->keys)) {
-			$this->_keys = $account->keys;
+		if (isset($account['keys'])) {
+			$this->_keys = $account['keys'];
 		}
 
-		if (isset($account->personal)) {
-			$this->_personal = $account->personal;
+		if (isset($account['personal'])) {
+			$this->_personal = $account['personal'];
 		}
 
-		if (isset($account->universal)) {
-			$this->_universal = $account->universal;
+		if (isset($account['universal'])) {
+			$this->_universal = $account['universal'];
 		}
 	}
 
 	/**
 	 * Returns an array object of the account.
 	 *
-	 * @return object
+	 * @return array
 	 */
-	public function as_object() {
-		return (object) array(
+	public function as_array() {
+		return array(
 			'user' => $this->_user,
 			'keys' => $this->_keys,
 			'personal' => $this->_personal,

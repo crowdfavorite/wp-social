@@ -8,9 +8,9 @@ interface Social_Interface_Service_Account {
 	/**
 	 * Returns an array object of the account.
 	 *
-	 * @return object
+	 * @return array
 	 */
-	function as_object();
+	function as_array();
 
 	/**
 	 * Returns whether the account is public or not.

@@ -33,19 +33,19 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	public function __construct($account) {
 		parent::__construct($account);
 
-		if (isset($account->use_personal_pages)) {
-			$this->_use_personal_pages = (bool) $account->use_personal_pages;
+		if (isset($account['use_personal_pages'])) {
+			$this->_use_personal_pages = (bool) $account['use_personal_pages'];
 		}
 
-		if (isset($account->use_universal_pages)) {
-			$this->_use_universal_pages = (bool) $account->use_universal_pages;
+		if (isset($account['use_universal_pages'])) {
+			$this->_use_universal_pages = (bool) $account['use_universal_pages'];
 		}
 
-		if (isset($account->pages)) {
-			$this->_pages = $account->pages;
+		if (isset($account['pages'])) {
+			$this->_pages = $account['pages'];
 		}
 		else {
-			$this->_pages = (object) array(
+			$this->_pages = array(
 				'personal' => array(),
 				'universal' => array()
 			);
@@ -55,14 +55,14 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	/**
 	 * Returns an array object of the account.
 	 *
-	 * @return object
+	 * @return array
 	 */
-	public function as_object() {
-		$object = parent::as_object();
-		$object->use_personal_pages = $this->_use_personal_pages;
-		$object->use_universal_pages = $this->_use_universal_pages;
-		$object->pages = $this->_pages;
-		return $object;
+	public function as_array() {
+		$array = parent::as_object();
+		$array['use_personal_pages'] = $this->_use_personal_pages;
+		$array['use_universal_pages'] = $this->_use_universal_pages;
+		$array['pages'] = $this->_pages;
+		return $array;
 	}
 
 	/**
