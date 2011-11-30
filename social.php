@@ -294,6 +294,30 @@ final class Social {
 			Social::option('install_date', current_time('timestamp', 1));
 			Social::option('system_cron_api_key', wp_generate_password(16, false));
 		}
+		else {
+			// This account upgrade bit "has" to happen here, or else all of Social will bomb. This
+			// will only run multiple times if the upgrade script is never called.
+			if (version_compare(Social::option('installed_version'), '2.0-beta3-3')) {
+				global $wpdb;
+
+				$results = $wpdb->get_results("
+					SELECT user_id, meta_value
+					  FROM $wpdb->usermeta
+					 WHERE meta_key = 'social_accounts'
+				");
+				foreach ($results as $result) {
+					$result->meta_value = unserialize($result->meta_value);
+					$result->meta_value = self::convert_to_array($result->meta_value);
+					update_user_meta($result->user_id, 'social_accounts', $result->meta_value);
+				}
+
+				$universal = Social::option('accounts');
+				if ($universal !== null) {
+					$universal = self::convert_to_array($universal);
+					Social::option('accounts', $universal);
+				}
+			}
+		}
 
 		// Plugins URL
 		$url = plugins_url('', SOCIAL_FILE);
@@ -1895,6 +1919,27 @@ final class Social {
 		}
 
 		return $url;
+	}
+
+	/**
+	 * Recursively converts an object to all array values.
+	 *
+	 * @static
+	 * @param  mixed  $object
+	 * @return array
+	 */
+	public static function convert_to_array($object) {
+		$object = (array) $object;
+		foreach ($object as $key => $value) {
+			if (is_array($value) or is_object($value)) {
+				$object[$key] = self::convert_to_array($value);
+			}
+			else {
+				$object[$key] = $value;
+			}
+		}
+
+		return $object;
 	}
 
 } // End Social

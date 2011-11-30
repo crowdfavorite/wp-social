@@ -183,15 +183,8 @@ final class Social_Aggregation_Log {
 					continue;
 				}
 
-				$entry = (array) $entry;
-				foreach ($entry['items'] as $service_key => $_items) {
-					foreach ($_items as $key => $item) {
-						$entry['items'][$service_key][$key] = (array) $_items;
-					}
-				}
-
 				$upgraded = true;
-				$this->_log[$timestamp] = $entry;
+				$this->_log[$timestamp] = Social::convert_to_array($entry);
 			}
 		}
 
