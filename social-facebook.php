@@ -435,8 +435,8 @@ final class Social_Facebook {
 	public static function social_merge_accounts($universal, $personal, $service_key) {
 		// Merge pages
 		if ($service_key == 'facebook') {
-			$universal->pages->personal = $personal->pages->personal;
-			$universal->use_personal_pages = $personal->use_personal_pages;
+			$universal['pages']['personal'] = $personal['pages']['personal'];
+			$universal['use_personal_pages'] = $personal['use_personal_pages'];
 		}
 		return $universal;
 	}

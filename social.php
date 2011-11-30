@@ -1810,10 +1810,10 @@ final class Social {
 							$class = 'Social_Service_'.$key.'_Account';
 							foreach ($_accounts as $account_id => $account) {
 								// TODO Shouldn't have to do this. Fix later.
-								$account->universal = '0';
+								$account['universal'] = '0';
 
 								if ($services[$key]->account_exists($account_id) and !defined('IS_PROFILE_PAGE')) {
-									$account = $this->merge_accounts($services[$key]->account($account_id)->as_object(), $account, $key);
+									$account = $this->merge_accounts($services[$key]->account($account_id)->as_array(), $account, $key);
 								}
 								$account = new $class((object) $account);
 								$services[$key]->account($account);
@@ -1851,7 +1851,7 @@ final class Social {
 	 * @return object
 	 */
 	private function merge_accounts($arr1, $arr2, $service_key) {
-		$arr1->personal = true;
+		$arr1['personal'] = true;
 		return apply_filters('social_merge_accounts', $arr1, $arr2, $service_key);
 	}
 
