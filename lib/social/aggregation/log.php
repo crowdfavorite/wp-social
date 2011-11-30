@@ -62,6 +62,9 @@ final class Social_Aggregation_Log {
 
 		// Load the current log for the post
 		$this->_log = get_post_meta($post_id, '_social_aggregation_log', true);
+
+		// Upgrade log?
+		$this->upgrade_log();
 	}
 
 	/**
@@ -105,24 +108,24 @@ final class Social_Aggregation_Log {
 	 */
 	public function add($service, $id, $type, $ignored = false, array $data = null) {
 		if (!isset($this->_log[$this->_timestamp])) {
-			$this->_log[$this->_timestamp] = (object) array(
+			$this->_log[$this->_timestamp] = array(
 				'manual' => false,
 				'items' => array(),
 			);
 		}
 		
-		if (!isset($this->_log[$this->_timestamp]->items[$service])) {
-			$this->_log[$this->_timestamp]->items[$service] = array();
+		if (!isset($this->_log[$this->_timestamp]['items'][$service])) {
+			$this->_log[$this->_timestamp]['items'][$service] = array();
 		}
 
-		foreach ($this->_log[$this->_timestamp]->items[$service] as $item) {
-			if ($item->id === $id) {
+		foreach ($this->_log[$this->_timestamp]['items'][$service] as $item) {
+			if ($item['id'] === $id) {
 				// Bail! Item already exists.
 				return $this;
 			}
 		}
 
-		$this->_log[$this->_timestamp]->items[$service][] = (object) array(
+		$this->_log[$this->_timestamp]['items'][$service][] = array(
 			'id' => $id,
 			'type' => $type,
 			'ignored' => $ignored,
@@ -139,7 +142,7 @@ final class Social_Aggregation_Log {
 	 * @return void
 	 */
 	public function save($manual = false) {
-		$this->_log[$this->_timestamp]->manual = $manual;
+		$this->_log[$this->_timestamp]['manual'] = $manual;
 		update_post_meta($this->_post_id, '_social_aggregation_log', $this->_log);
 	}
 
@@ -162,6 +165,40 @@ final class Social_Aggregation_Log {
 			'log' => $this->_log,
 			'services' => Social::instance()->services(),
 		))->render();
+	}
+
+	/**
+	 * Upgrades the log format.
+	 *
+	 * [!!] This was due to a change made during the 2.0 beta to standardize the data formats.
+	 *
+	 * @return void
+	 */
+	private function upgrade_log() {
+		$upgraded = false;
+		if (!empty($this->_log)) {
+			foreach ($this->_log as $timestamp => $entry) {
+				if (is_array($entry)) {
+					// Already upgraded, bail!
+					continue;
+				}
+
+				$entry = (array) $entry;
+				foreach ($entry['items'] as $service_key => $_items) {
+					foreach ($_items as $key => $item) {
+						$entry['items'][$service_key][$key] = (array) $_items;
+					}
+				}
+
+				$upgraded = true;
+				$this->_log[$timestamp] = $entry;
+			}
+		}
+
+		if ($upgraded) {
+			// Store the new log format.
+			update_post_meta($this->_post_id, '_social_aggregation_log', $this->_log);
+		}
 	}
 
 } // End Social_Aggregation_Log

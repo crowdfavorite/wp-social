@@ -915,17 +915,17 @@ final class Social {
 
 									if (!isset($broadcast_accounts[$service_key][$page_id])) {
 										if (isset($universal_pages[$page_id])) {
-											$broadcast_accounts[$service_key][$page_id] = (object) array(
+											$broadcast_accounts[$service_key][$page_id] = array(
 												'id' => $page_id,
-												'name' => $universal_pages[$page_id]->name,
+												'name' => $universal_pages[$page_id]['name'],
 												'universal' => true,
 												'page' => true,
 											);
 										}
 										else if (isset($personal_pages[$page_id])) {
-											$broadcast_accounts[$service_key][$page_id] = (object) array(
+											$broadcast_accounts[$service_key][$page_id] = array(
 												'id' => $page_id,
-												'name' => $personal_pages[$page_id]->name,
+												'name' => $personal_pages[$page_id]['name'],
 												'universal' => false,
 												'page' => true,
 											);
@@ -941,7 +941,7 @@ final class Social {
 									$broadcast_accounts[$service_key] = array();
 								}
 
-								$broadcast_accounts[$service_key][$account->id()] = (object) array(
+								$broadcast_accounts[$service_key][$account->id()] = array(
 									'id' => $account->id(),
 									'universal' => $account->universal()
 								);

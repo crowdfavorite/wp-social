@@ -74,7 +74,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 						foreach ($this->request->post('social_'.$key.'_accounts') as $account) {
 							$account = explode('|', $account);
 
-							$accounts[$account[0]] = (object) array(
+							$accounts[$account[0]] = array(
 								'id' => $account[0],
 								'universal' => isset($account[1]),
 							);
@@ -103,17 +103,17 @@ final class Social_Controller_Broadcast extends Social_Controller {
 									if (!isset($broadcast_accounts[$key][$page_id])) {
 										if (isset($universal_pages[$page_id])) {
 											$store_meta = true;
-											$broadcast_accounts[$key][$page_id] = (object) array(
+											$broadcast_accounts[$key][$page_id] = array(
 												'id' => $page_id,
-												'name' => $universal_pages[$page_id]->name,
+												'name' => $universal_pages[$page_id]['name'],
 												'universal' => true,
 												'page' => true,
 											);
 										}
 									    else if (isset($personal_pages[$page_id])) {
-											$broadcast_accounts[$key][$page_id] = (object) array(
+											$broadcast_accounts[$key][$page_id] = array(
 												'id' => $page_id,
-												'name' => $personal_pages[$page_id]->name,
+												'name' => $personal_pages[$page_id]['name'],
 												'universal' => false,
 												'page' => true,
 											);
@@ -233,16 +233,16 @@ final class Social_Controller_Broadcast extends Social_Controller {
 							$personal_accounts = get_user_meta($post->post_author, 'social_accounts', true);
 						}
 
-						if (isset($personal_accounts[$key][$_account->id])) {
+						if (isset($personal_accounts[$key][$_account['id']])) {
 							$class = 'Social_Service_'.$key.'_Account';
-							$account = new $class($personal_accounts[$key][$_account->id]);
+							$account = new $class($personal_accounts[$key][$_account['id']]);
 						}
 						else {
 							$account = false;
 						}
 					}
 					else {
-						$account = $service->account($_account->id);
+						$account = $service->account($_account['id']);
 					}
 
 					if ($account == false) {
