@@ -296,7 +296,7 @@ final class Social_Facebook {
 						$accounts[$account_id]->pages(array(), true);
 					}
 
-					$accounts[$account_id] = $accounts[$account_id]->as_object();
+					$accounts[$account_id] = $accounts[$account_id]->as_array();
 				}
 
 				$service->accounts($accounts)->save($is_personal);

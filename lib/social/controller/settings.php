@@ -196,7 +196,7 @@ final class Social_Controller_Settings extends Social_Controller {
 			}
 
 			foreach ($accounts as $account_id => $account) {
-				$accounts[$account_id] = $account->as_object();
+				$accounts[$account_id] = $account->as_array();
 			}
 
 			$service->accounts($accounts)->save($is_profile);

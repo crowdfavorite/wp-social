@@ -464,7 +464,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 							$_account->pages(array(), $is_profile);
 						}
 
-						$accounts[$account_id] = $account->as_object();
+						$accounts[$account_id] = $account->as_array();
 					}
 
 					if ($save) {
