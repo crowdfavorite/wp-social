@@ -207,6 +207,7 @@ final class Social_Twitter {
 		if (!isset($comments['social_items'])) {
 			$comments['social_items'] = array();
 		}
+
 		if (count($broadcast_retweets)) {
 			$comments['social_items']['twitter'] = $broadcast_retweets;
 		}
