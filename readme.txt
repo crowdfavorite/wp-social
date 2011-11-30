@@ -2,7 +2,7 @@
 Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter
 Requires at least: 3.2
-Tested up to: 3.3b3
+Tested up to: 3.3b4
 Stable tag: 2.0
 
 Broadcast posts to Twitter and/or Facebook, pull in items from each as comments, and allow commenters to use their Twitter/Facebook identities.
@@ -37,14 +37,18 @@ Many individuals use Facebook or Twitter as their primary identity(ies) on the w
 - Links point back to users' Facebook or Twitter profiles
 - Indicators let you and visitors know people are who they say they are
 
+**Developers**
+
+Please [fork, contribute and file technical bugs on GitHub](https://github.com/crowdfavorite/wp-social).
+
 == Installation ==
 
 1. Upload `social` to the `/wp-content/plugins/` directory or install it from the Plugin uploader
 2. Activate the plugin through the `Plugins` menu in the WordPress administrator dashboard
-3. Visit your profile page under `Users > Profile` to associate Twitter and Facebook accounts with your profile
-4. Visit the settings page under `Settings > Social` to associate Twitter and Facebook accounts with your blog
-5. Change your plugin directory or uploads writable to allow the cron jobs to fetch new comments from Twitter and Facebook
-6. Register for and add your [Twitter @anywhere API key](http://dev.twitter.com/anywhere) to the settings page to enable Twitter hovercards
+3. Visit the settings page under `Settings > Social` to add Twitter and Facebook accounts for all authors on your site
+4. Visit your profile page under `Users > Profile` to add Twitter and Facebook accounts that only you can broadcast to
+5. Make sure your plugin or uploads directory writable to allow the cron jobs to fetch new comments from Twitter and Facebook
+6. (Optional) Register for and add your [Twitter @anywhere API key](http://dev.twitter.com/anywhere) to the settings page to enable Twitter hovercards
 
 == Upgrade Notice ==
 
