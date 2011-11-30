@@ -270,7 +270,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 									}
 
 									$reason = __('Rate limit reached', 'social');
-									$errored_accounts[$key][] = (object) array(
+									$errored_accounts[$key][] = array(
 										'account' => $account,
 										'reason' => $reason,
 										'type' => 'limit_reached',
@@ -287,7 +287,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 									}
 
 									$reason = __('Duplicate status', 'social');
-									$errored_accounts[$key][] = (object) array(
+									$errored_accounts[$key][] = array(
 										'account' => $account,
 										'reason' => $reason,
 										'type' => 'duplicate_status',
@@ -304,7 +304,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 									}
 
 									$reason = __('Account deauthorized', 'social');
-									$errored_accounts[$key][] = (object) array(
+									$errored_accounts[$key][] = array(
 										'account' => $account,
 										'reason' => $reason,
 										'deauthed' => true,
@@ -321,7 +321,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 									}
 
 									$reason = $response->body()->response;
-									$errored_accounts[$key][] = (object) array(
+									$errored_accounts[$key][] = array(
 										'account' => $account,
 										'reason' => $reason,
 										'type' => 'general',
@@ -379,10 +379,10 @@ final class Social_Controller_Broadcast extends Social_Controller {
 
 						$service = $this->social->service($key);
 						if ($service !== false) {
-							$account = $service->account($account->id);
+							$account = $service->account($account['id']);
 							if ($account !== false) {
-								$_broadcast_accounts[$key][$account->id] = (object) array(
-									'id' => $account->id,
+								$_broadcast_accounts[$key][$account['id']] = (object) array(
+									'id' => $account['id'],
 									'universal' => $account->universal(),
 								);
 							}

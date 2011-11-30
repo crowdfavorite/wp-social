@@ -124,7 +124,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 
 								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'retweet', false, $data);
 								$post->aggregated_ids[$this->_key][] = $result->id;
-								$post->results[$this->_key][$result->id] = (object) array(
+								$post->results[$this->_key][$result->id] = array(
 									'id' => $result->id,
 									'from_user_id' => $result->user->id,
 									'from_user' => $result->user->screen_name,
@@ -162,7 +162,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 								}
 								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
 								$post->aggregated_ids[$this->_key][] = $result->id;
-								$post->results[$this->_key][$result->id] = (object) array(
+								$post->results[$this->_key][$result->id] = array(
 									'id' => $result->id,
 									'from_user_id' => $result->user->id,
 									'from_user' => $result->user->screen_name,
@@ -193,8 +193,8 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 
 			foreach ($post->results[$this->_key] as $result) {
 				if (!isset($result->user->protected) or $result->user->protected == false) {
-					$account = (object) array(
-						'user' => (object) array(
+					$account = array(
+						'user' => array(
 							'id' => $result->from_user_id,
 							'screen_name' => $result->from_user,
 						),
@@ -264,7 +264,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						}
 
 						if (!isset($result->raw)) {
-							$result = (object) array_merge((array) $result, array('raw' => $result));
+							$result = array_merge((array) $result, array('raw' => $result));
 						}
 						update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($result->raw)));
 
@@ -367,7 +367,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						));
 
 						$post->aggregated_ids[$this->_key][] = $response->id;
-						$post->results[$this->_key][$response->id] = (object) array(
+						$post->results[$this->_key][$response->id] = array(
 							'id' => $response->id,
 							'from_user_id' => $response->user->id,
 							'from_user' => $response->user->screen_name,
@@ -513,7 +513,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 					// Store the recovered data.
 					$data = array(
 						'message' => $response->text,
-						'account' => (object) array(
+						'account' => array(
 							'user' => $response->user
 						)
 					);

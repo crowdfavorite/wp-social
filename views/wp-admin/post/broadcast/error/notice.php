@@ -5,17 +5,17 @@ echo '<p>'.sprintf(__('Social failed to broadcast the blog post "%s" to one or m
 foreach ($accounts as $key => $items) {
 	echo '<ul class="social-posting-errors">';
 	foreach ($items as $item) {
-		if (isset($item->deauthed)) {
+		if (isset($item['deauthed'])) {
 			$deauthed[$key.'-'.$item->account->id()] = $item;
 		}
 		else {
-			if (!isset($types[$item->type])) {
-				$types[$item->type] = 0;
+			if (!isset($types[$item['type']])) {
+				$types[$item['type']] = 0;
 			}
-			++$types[$item->type];
+			++$types[$item['type']];
 		}
 
-		echo '<li>'.esc_html($social->service($key)->title()).': '.esc_html($item->account->name()).' ('.esc_html($item->reason).')</li>';
+		echo '<li>'.esc_html($social->service($key)->title()).': '.esc_html($item->account->name()).' ('.esc_html($item['reason']).')</li>';
 	}
 	echo '</ul>';
 }

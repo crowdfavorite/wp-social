@@ -185,7 +185,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					continue;
 				}
 				$post->aggregated_ids[$this->_key][] = $result->id;
-				$post->results[$this->_key][$result->id] = (object) array_merge(array(
+				$post->results[$this->_key][$result->id] = array_merge(array(
 					'like' => true,
 					'status_id' => $parent_id.'_'.$id,
 					'raw' => $result,
@@ -223,7 +223,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					if (!is_wp_error($request)) {
 						$response = json_decode($request['body']);
 
-						$account = (object) array(
+						$account = array(
 							'user' => $response
 						);
 						$class = 'Social_Service_'.$this->_key.'_Account';
@@ -281,7 +281,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 						update_comment_meta($comment_id, 'social_status_id', (isset($result->status_id) ? $result->status_id : $result->id));
 
 						if (!isset($result->raw)) {
-							$result = (object) array_merge((array) $result, array('raw' => $result));
+							$result = array_merge((array) $result, array('raw' => $result));
 						}
 						update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($result->raw)));
 
