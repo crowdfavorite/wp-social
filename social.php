@@ -1532,14 +1532,22 @@ final class Social {
 		// Social items?
 		$social_items = '';
 		if (!empty($comment->social_items)) {
-			$social_items = Social_View::factory('comment/social_item', array(
-				'items' => $comment->social_items,
-				'service' => $service,
-				'avatar_size' => array(
-					'width' => 18,
-					'height' => 18,
-				)
-			));
+			if (is_object($service) && method_exists($service, 'key')) {
+				$social_items = Social_View::factory('comment/social_item', array(
+					'items' => $comment->social_items,
+					'service' => $service,
+					'avatar_size' => array(
+						'width' => 18,
+						'height' => 18,
+					)
+				));
+			}
+			else {
+				Social::log('service not set for: '.print_r($comment, true));
+				ob_start();
+				var_dump($service);
+				Social::log('$service: '.ob_get_clean());
+			}
 		}
 
 		echo Social_View::factory('comment/comment', array(
