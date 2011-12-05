@@ -165,7 +165,7 @@ final class Social_Twitter {
 
 				// set retweets
 				$rt_matched = false;
-				if (isset($comment->social_raw_data)) {
+				if (isset($comment->social_raw_data) && isset($comment->social_raw_data->retweeted_status)) {
 					// explicit match via API data
 					$rt_id = $comment->social_raw_data->retweeted_status->id_str;
 					if (in_array($rt_id, $broadcasted_social_ids)) {
