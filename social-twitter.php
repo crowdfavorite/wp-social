@@ -259,15 +259,14 @@ final class Social_Twitter {
 	 *
 	 * @static
 	 * @param  string  $text
-	 * @param  bool    $retweet
 	 * @return string
 	 */
-	private static function build_hash($text, $retweet = false) {
+	private static function build_hash($text) {
 		$text = explode(' ', $text);
 		$content = '';
 		foreach ($text as $_content) {
 			if (!empty($_content) and strpos($_content, 'http://') === false) {
-				if ($retweet and ($_content == 'RT' or preg_match('/@([\w_]+):/i', $_content))) {
+				if ($_content == 'RT' or preg_match('/@([\w_]+):/i', $_content)) {
 					continue;
 				}
 
