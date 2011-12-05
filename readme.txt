@@ -52,7 +52,9 @@ Please [fork, contribute and file technical bugs on GitHub](https://github.com/c
 
 == Upgrade Notice ==
 
-If you are upgrading from 1.x to 2.0 please refer to the Upgrade Guide on GitHub, which can be found here: https://github.com/crowdfavorite/wp-social/wiki/Upgrading-from-1.x-to-2.0
+Social 2.0 is a ground-up rewrite from 1.x and a highly recommended upgrade for all users. Enhancements include posting to Facebook Pages, bringing in Facebook Likes, improved Retweet comment display and numerous bug fixes and changes to increase reliability.
+
+If you have customized your Social comment templates or CSS, please refer to the [Upgrade Guide on GitHub](https://github.com/crowdfavorite/wp-social/wiki/Upgrading-from-1.x-to-2.0).
 
 == Frequently Asked Questions ==
 
@@ -255,9 +257,19 @@ For a more in-depth look at what you need to be aware of when upgrading from 1.x
 == Changelog ==
 
 = 2.0 =
-* Refactored Social completely.
+* Complete re-write for improved reliability and ease of future expansion.
+* Enables broadcasting to Facebook Pages.
 * Facebook Likes are now imported during comment aggregation.
-* Twitter retweets and Facebook Likes are now displayed under the broadcasted post.
+* Twitter retweets and Facebook Likes have more compact visual presentation.
+* Smart detection of retweets as understood by humans (where possible).
+* Enable broadcasting to selected by default.
+* Future posts are not broadcast until they are published.
+* Comments are not broadcast until they are approved.
+* Directly imported tweets (by URL) are approved immediately (not held for moderation).
+* Only public tweets are imported as comments.
+* New authentication scheme improves security.
+* Manual comment check commands from the admin bar and posts list admin page.
+* Improved queue and locking system to reduce the possibility of social reactions being imported twice. 
 * Filter: social_broadcast_format now contains a third parameter, $service_key.
 * Filter: social_broadcast_permalink now contains a third parameter, $service_key.
 * Filter: social_format_content now contains a fourth parameter, $service_key.
