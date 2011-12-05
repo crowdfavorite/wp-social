@@ -165,7 +165,7 @@ final class Social_Twitter {
 
 				// set retweets
 				$rt_matched = false;
-				if (isset($comment->social_raw_data) && isset($comment->social_raw_data->retweeted_status)) {
+				if (isset($comment->social_raw_data) and isset($comment->social_raw_data->retweeted_status)) {
 					// explicit match via API data
 					$rt_id = $comment->social_raw_data->retweeted_status->id_str;
 					if (in_array($rt_id, $broadcasted_social_ids)) {
@@ -173,7 +173,7 @@ final class Social_Twitter {
 						unset($comments[$key]);
 						$rt_matched = true;
 					}
-					else if (isset($social_map[$rt_id])) {
+					else if (isset($social_map[$rt_id]) and isset($comments['id_'.$social_map[$rt_id]])) {
 						$comments['id_'.$social_map[$rt_id]]->social_items[$key] = $comment;
 						unset($comments[$key]);
 						$rt_matched = true;
@@ -187,8 +187,17 @@ final class Social_Twitter {
 						if ($hash_match == 'broadcasted') {
 							$broadcast_retweets[] = $comment;
 						}
-						else {
+						else if (isset($comments['id_'.$hash_match])) {
 							$comments['id_'.$hash_match]->social_items[$key] = $comment;
+						}
+						else {
+							// Loop through the broadcasted retweets and see if this is a retweet of one of those.
+							foreach ($broadcast_retweets as $retweet) {
+								if ($retweet->comment_ID == $hash_match) {
+									$broadcast_retweets[] = $comment;
+									break;
+								}
+							}
 						}
 						unset($comments[$key]);
 					}
