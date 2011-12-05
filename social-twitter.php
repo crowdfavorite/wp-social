@@ -141,21 +141,15 @@ final class Social_Twitter {
 			// Attach hash
 			if (isset($comment->social_raw_data) and isset($comment->social_raw_data->text)) {
 				$text = trim($comment->social_raw_data->text);
-				$retweet = (bool) (substr($text, 0, 4) == 'RT @');
-				$comment->social_hash = self::build_hash($comment->social_raw_data->text);
 			}
 			else {
 				$text = trim($comment->comment_content);
-				$retweet = (bool) (substr($text, 0, 4) == 'RT @');
-				$comment->social_hash = self::build_hash($comment->comment_content);
 			}
+			$comment->social_hash = self::build_hash($text);
 
 			if (!isset($hash_map[$comment->social_hash])) {
 				$hash_map[$comment->social_hash] = $comment->comment_ID;
 			}
-
-			// Flag as a retweet
-			$comment->social_is_retweet = $retweet;
 		}
 
 		// merge data so that $comments has the data we've set up
@@ -170,35 +164,33 @@ final class Social_Twitter {
 				}
 
 				// set retweets
-				if ($comment->social_is_retweet) {
-					$rt_matched = false;
-					if (isset($comment->social_raw_data)) {
-						// explicit match via API data
-						$rt_id = $comment->social_raw_data->retweeted_status->id_str;
-						if (in_array($rt_id, $broadcasted_social_ids)) {
-							$broadcast_retweets[] = $comment;
-							unset($comments[$key]);
-							$rt_matched = true;
-						}
-						else if (isset($social_map[$rt_id])) {
-							$comments['id_'.$social_map[$rt_id]]->social_items[$key] = $comment;
-							unset($comments[$key]);
-							$rt_matched = true;
-						}
+				$rt_matched = false;
+				if (isset($comment->social_raw_data)) {
+					// explicit match via API data
+					$rt_id = $comment->social_raw_data->retweeted_status->id_str;
+					if (in_array($rt_id, $broadcasted_social_ids)) {
+						$broadcast_retweets[] = $comment;
+						unset($comments[$key]);
+						$rt_matched = true;
 					}
+					else if (isset($social_map[$rt_id])) {
+						$comments['id_'.$social_map[$rt_id]]->social_items[$key] = $comment;
+						unset($comments[$key]);
+						$rt_matched = true;
+					}
+				}
 
-					if (!$rt_matched) {
-						// best guess via hashes
-						$hash_match = $hash_map[$comment->social_hash];
-						if ($hash_match != $comment->comment_ID) { // hash match to own tweet is expected, at minimum - set above
-							if ($hash_match == 'broadcasted') {
-								$broadcast_retweets[] = $comment;
-							}
-							else {
-								$comments['id_'.$hash_match]->social_items[$key] = $comment;
-							}
-							unset($comments[$key]);
+				if (!$rt_matched) {
+					// best guess via hashes
+					$hash_match = $hash_map[$comment->social_hash];
+					if ($hash_match != $comment->comment_ID) { // hash match to own tweet is expected, at minimum - set above
+						if ($hash_match == 'broadcasted') {
+							$broadcast_retweets[] = $comment;
 						}
+						else {
+							$comments['id_'.$hash_match]->social_items[$key] = $comment;
+						}
+						unset($comments[$key]);
 					}
 				}
 			}

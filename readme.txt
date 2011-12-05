@@ -2,7 +2,7 @@
 Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter
 Requires at least: 3.2
-Tested up to: 3.3b3
+Tested up to: 3.3b4
 Stable tag: 2.0
 
 Broadcast posts to Twitter and/or Facebook, pull in items from each as comments, and allow commenters to use their Twitter/Facebook identities.
@@ -37,18 +37,24 @@ Many individuals use Facebook or Twitter as their primary identity(ies) on the w
 - Links point back to users' Facebook or Twitter profiles
 - Indicators let you and visitors know people are who they say they are
 
+**Developers**
+
+Please [fork, contribute and file technical bugs on GitHub](https://github.com/crowdfavorite/wp-social).
+
 == Installation ==
 
 1. Upload `social` to the `/wp-content/plugins/` directory or install it from the Plugin uploader
 2. Activate the plugin through the `Plugins` menu in the WordPress administrator dashboard
-3. Visit your profile page under `Users > Profile` to associate Twitter and Facebook accounts with your profile
-4. Visit the settings page under `Settings > Social` to associate Twitter and Facebook accounts with your blog
-5. Change your plugin directory or uploads writable to allow the cron jobs to fetch new comments from Twitter and Facebook
-6. Register for and add your [Twitter @anywhere API key](http://dev.twitter.com/anywhere) to the settings page to enable Twitter hovercards
+3. Visit the settings page under `Settings > Social` to add Twitter and Facebook accounts for all authors on your site
+4. Visit your profile page under `Users > Profile` to add Twitter and Facebook accounts that only you can broadcast to
+5. Make sure your plugin or uploads directory writable to allow the cron jobs to fetch new comments from Twitter and Facebook
+6. (Optional) Register for and add your [Twitter @anywhere API key](http://dev.twitter.com/anywhere) to the settings page to enable Twitter hovercards
 
 == Upgrade Notice ==
 
-If you are upgrading from 1.x to 2.0 please refer to the Upgrade Guide on GitHub, which can be found here: https://github.com/crowdfavorite/wp-social/wiki/Upgrading-from-1.x-to-2.0
+Social 2.0 is a ground-up rewrite from 1.x and a highly recommended upgrade for all users. Enhancements include posting to Facebook Pages, bringing in Facebook Likes, improved Retweet comment display and numerous bug fixes and changes to increase reliability.
+
+If you have customized your Social comment templates or CSS, please refer to the [Upgrade Guide on GitHub](https://github.com/crowdfavorite/wp-social/wiki/Upgrading-from-1.x-to-2.0).
 
 == Frequently Asked Questions ==
 
@@ -251,9 +257,19 @@ For a more in-depth look at what you need to be aware of when upgrading from 1.x
 == Changelog ==
 
 = 2.0 =
-* Refactored Social completely.
+* Complete re-write for improved reliability and ease of future expansion.
+* Enables broadcasting to Facebook Pages.
 * Facebook Likes are now imported during comment aggregation.
-* Twitter retweets and Facebook Likes are now displayed under the broadcasted post.
+* Twitter retweets and Facebook Likes have more compact visual presentation.
+* Smart detection of retweets as understood by humans (where possible).
+* Enable broadcasting to selected by default.
+* Future posts are not broadcast until they are published.
+* Comments are not broadcast until they are approved.
+* Directly imported tweets (by URL) are approved immediately (not held for moderation).
+* Only public tweets are imported as comments.
+* New authentication scheme improves security.
+* Manual comment check commands from the admin bar and posts list admin page.
+* Improved queue and locking system to reduce the possibility of social reactions being imported twice. 
 * Filter: social_broadcast_format now contains a third parameter, $service_key.
 * Filter: social_broadcast_permalink now contains a third parameter, $service_key.
 * Filter: social_format_content now contains a fourth parameter, $service_key.
