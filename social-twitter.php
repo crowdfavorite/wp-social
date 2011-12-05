@@ -48,7 +48,7 @@ final class Social_Twitter {
 		// pre-load the hashes for broadcasted tweets
 		$broadcasted_ids = get_post_meta($post_id, '_social_broadcasted_ids', true);
 		if (empty($broadcasted_ids)) {
-			return $comments;
+			$broadcasted_ids = array();
 		}
 		global $wpdb;
 
@@ -141,21 +141,15 @@ final class Social_Twitter {
 			// Attach hash
 			if (isset($comment->social_raw_data) and isset($comment->social_raw_data->text)) {
 				$text = trim($comment->social_raw_data->text);
-				$retweet = (bool) (substr($text, 0, 4) == 'RT @');
-				$comment->social_hash = self::build_hash($comment->social_raw_data->text);
 			}
 			else {
 				$text = trim($comment->comment_content);
-				$retweet = (bool) (substr($text, 0, 4) == 'RT @');
-				$comment->social_hash = self::build_hash($comment->comment_content);
 			}
+			$comment->social_hash = self::build_hash($text);
 
 			if (!isset($hash_map[$comment->social_hash])) {
 				$hash_map[$comment->social_hash] = $comment->comment_ID;
 			}
-
-			// Flag as a retweet
-			$comment->social_is_retweet = $retweet;
 		}
 
 		// merge data so that $comments has the data we've set up
@@ -170,35 +164,42 @@ final class Social_Twitter {
 				}
 
 				// set retweets
-				if ($comment->social_is_retweet) {
-					$rt_matched = false;
-					if (isset($comment->social_raw_data)) {
-						// explicit match via API data
-						$rt_id = $comment->social_raw_data->retweeted_status->id_str;
-						if (in_array($rt_id, $broadcasted_social_ids)) {
-							$broadcast_retweets[] = $comment;
-							unset($comments[$key]);
-							$rt_matched = true;
-						}
-						else if (isset($social_map[$rt_id])) {
-							$comments[$social_map[$rt_id]]->social_items[$key] = $comment;
-							unset($comments[$key]);
-							$rt_matched = true;
-						}
+				$rt_matched = false;
+				if (isset($comment->social_raw_data) and isset($comment->social_raw_data->retweeted_status)) {
+					// explicit match via API data
+					$rt_id = $comment->social_raw_data->retweeted_status->id_str;
+					if (in_array($rt_id, $broadcasted_social_ids)) {
+						$broadcast_retweets[] = $comment;
+						unset($comments[$key]);
+						$rt_matched = true;
 					}
+					else if (isset($social_map[$rt_id]) and isset($comments['id_'.$social_map[$rt_id]])) {
+						$comments['id_'.$social_map[$rt_id]]->social_items[$key] = $comment;
+						unset($comments[$key]);
+						$rt_matched = true;
+					}
+				}
 
-					if (!$rt_matched) {
-						// best guess via hashes
-						$hash_match = $hash_map[$comment->social_hash];
-						if ($hash_match != $comment->comment_ID) { // hash match to own tweet is expected, at minimum - set above
-							if ($hash_match == 'broadcasted') {
-								$broadcast_retweets[] = $comment;
-							}
-							else {
-								$comments['id_'.$hash_match]->social_items[$key] = $comment;
-							}
-							unset($comments[$key]);
+				if (!$rt_matched) {
+					// best guess via hashes
+					$hash_match = $hash_map[$comment->social_hash];
+					if ($hash_match != $comment->comment_ID) { // hash match to own tweet is expected, at minimum - set above
+						if ($hash_match == 'broadcasted') {
+							$broadcast_retweets[] = $comment;
 						}
+						else if (isset($comments['id_'.$hash_match])) {
+							$comments['id_'.$hash_match]->social_items[$key] = $comment;
+						}
+						else {
+							// Loop through the broadcasted retweets and see if this is a retweet of one of those.
+							foreach ($broadcast_retweets as $retweet) {
+								if ($retweet->comment_ID == $hash_match) {
+									$broadcast_retweets[] = $comment;
+									break;
+								}
+							}
+						}
+						unset($comments[$key]);
 					}
 				}
 			}
@@ -207,7 +208,10 @@ final class Social_Twitter {
 		if (!isset($comments['social_items'])) {
 			$comments['social_items'] = array();
 		}
-		$comments['social_items']['twitter'] = $broadcast_retweets;
+
+		if (count($broadcast_retweets)) {
+			$comments['social_items']['twitter'] = $broadcast_retweets;
+		}
 
 		return $comments;
 	}
@@ -255,15 +259,14 @@ final class Social_Twitter {
 	 *
 	 * @static
 	 * @param  string  $text
-	 * @param  bool    $retweet
 	 * @return string
 	 */
-	private static function build_hash($text, $retweet = false) {
+	private static function build_hash($text) {
 		$text = explode(' ', $text);
 		$content = '';
 		foreach ($text as $_content) {
 			if (!empty($_content) and strpos($_content, 'http://') === false) {
-				if ($retweet and ($_content == 'RT' or preg_match('/@([\w_]+):/i', $_content))) {
+				if ($_content == 'RT' or preg_match('/@([\w_]+):/i', $_content)) {
 					continue;
 				}
 

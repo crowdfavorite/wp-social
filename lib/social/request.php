@@ -170,7 +170,6 @@ final class Social_Request {
 	/**
 	 * Executes the request.
 	 *
-	 * @throws Exception
 	 * @return Social_Request
 	 */
 	public function execute() {
@@ -192,11 +191,18 @@ final class Social_Request {
 				$controller->{$action}();
 			}
 			else {
-				throw new Exception(sprintf(__('Invalid action %s called on controller %s.', 'social'), $this->action(), $this->controller()));
+				Social::log('Invalid action :action called on controller :controller.', array(
+					'action' => $this->action(),
+					'controller' => $this->controller(),
+				));
+				die;
 			}
 		}
 		else {
-			throw new Exception(sprintf(__('Controller %s does not exist.', 'social'), 'Social_Controller_'.$this->controller()));
+			Social::log('Controller :controller does not exist.', array(
+				'controller' => $this->controller(),
+			));
+			die;
 		}
 
 		return $this;

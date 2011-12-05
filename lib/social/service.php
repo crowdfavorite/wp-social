@@ -62,15 +62,13 @@ abstract class Social_Service {
 		$proxy = Social::$api_url.$this->_key.'/authorize';
 		$url = apply_filters('social_authorize_url', $proxy, $this->_key);
 
-		$url = '?social_controller=auth&social_action=authorize&target='.urlencode($url);
+		$params = '?social_controller=auth&social_action=authorize&target='.urlencode($url);
 		if (is_admin()) {
-			if (defined('IS_PROFILE_PAGE')) {
-				$url = 'profile.php'.$url;
-			}
-			$url = admin_url($url);
+			$url = (defined('IS_PROFILE_PAGE') ? 'profile.php' : 'index.php');
+			$url = admin_url($url.$params);
 		}
 		else {
-			$url = site_url($url.'&post_id='.$post->ID);
+			$url = site_url('index.php'.$params.'&post_id='.$post->ID);
 		}
 
 		return $url;
@@ -114,7 +112,7 @@ abstract class Social_Service {
 				$params['redirect_to'] = $_GET['redirect_to'];
 			}
 
-			$url = add_query_arg($params, site_url());
+			$url = add_query_arg($params, home_url());
 			$text = __('Disconnect', 'social');
 		}
 
@@ -161,7 +159,8 @@ abstract class Social_Service {
 				update_user_meta($id, 'social_auth_nonce_'.$nonce, 'true');
 			}
 
-			Social::log('Created/found user #:id.', array(
+			Social::log('Created/found user :username. (#:id)', array(
+				'username' => $username,
 				'id' => $id,
 			));
 			return $id;

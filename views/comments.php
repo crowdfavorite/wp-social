@@ -35,8 +35,8 @@ $form = ob_get_clean();
 ob_start();
 ?>
 	<div id="social-tabs-comments">
-		<?php if (have_comments()): ?>
-		<?php
+		<?php 
+		if (have_comments()): 
 			$groups = array();
 			$social_items = array();
 			if (get_comments_number()) {

@@ -280,20 +280,16 @@ if (version_compare($installed_version, '2.0', '<')) {
 	// Reschedule posts for aggregation
 	$results = $wpdb->get_results("
 		SELECT post_id
-		  FROM $wpdb->postmeta
-		 WHERE meta_key = '_social_broadcasted_ids'
+		FROM $wpdb->postmeta
+		WHERE meta_key = '_social_broadcasted_ids'
+		ORDER BY post_id DESC
+		LIMIT 50
 	");
 	if ($results !== null) {
-		$count = 0;
 		$queue = Social_Aggregation_Queue::factory();
 		foreach ($results as $result) {
 			if (!$queue->find($result->post_id)) {
 				$queue->add($result->post_id);
-			}
-
-			++$count;
-			if ($count >= 50) {
-				break;
 			}
 		}
 		$queue->save();
@@ -302,9 +298,9 @@ if (version_compare($installed_version, '2.0', '<')) {
 	// Fix comment author urls for Facebook comments...
 	$results = $wpdb->get_results("
 		SELECT comment_ID, comment_author_url
-		  FROM $wpdb->comments
-		 WHERE comment_type = 'social-facebook'
-		   AND comment_author_url LIKE 'http://graph.facebook.com/%'
+		FROM $wpdb->comments
+		WHERE comment_type = 'social-facebook'
+		AND comment_author_url LIKE 'http://graph.facebook.com/%'
 	");
 	foreach ($results as $result) {
 		$url = explode('http://graph.facebook.com/', $result->comment_author_url);
@@ -312,8 +308,8 @@ if (version_compare($installed_version, '2.0', '<')) {
 
 		$wpdb->query($wpdb->prepare("
 			UPDATE $wpdb->comments
-			   SET comment_author_url = %s
-			 WHERE comment_ID = %s
+			SET comment_author_url = %s
+			WHERE comment_ID = %s
 		", 'http://facebook.com/profile.php?id='.$id[1], $result->comment_ID));
 	}
 

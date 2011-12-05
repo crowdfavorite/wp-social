@@ -21,10 +21,8 @@ final class Social_Controller_Auth extends Social_Controller {
 			);
 
 			if (is_admin()) {
-				$args += array(
-					'is_admin' => 'true',
-					'user_id' => get_current_user_id(),
-				);
+				$args['is_admin'] = 'true';
+				$args['user_id'] = get_current_user_id();
 				if (defined('IS_PROFILE_PAGE')) {
 					$args['personal'] = 'true';
 					$url = add_query_arg('personal', 'true', $url);
@@ -49,6 +47,7 @@ final class Social_Controller_Auth extends Social_Controller {
 			$proxy = apply_filters('social_proxy_url', $proxy);
 		}
 
+		Social::log('Authorizing with URL: '.$proxy);
 		wp_redirect($proxy);
 		exit;
 	}
@@ -216,6 +215,9 @@ final class Social_Controller_Auth extends Social_Controller {
 				wp_set_auth_cookie($user_id, true);
 				remove_filter('auth_cookie_expiration', array($this->social, 'auth_cookie_expiration'));
 
+				delete_user_meta($user_id, 'social_auth_nonce_'.stripslashes($_COOKIE['social_auth_nonce']));
+				setcookie('social_auth_nonce', '', -3600, '/');
+
 				$post_id = $this->request->query('post_id');
 				$form = trim(Social_Comment_Form::instance($post_id)->render());
 				echo json_encode(array(
@@ -223,9 +225,6 @@ final class Social_Controller_Auth extends Social_Controller {
 					'html' => $form,
 					'disconnect_url' => wp_loginout('', false)
 				));
-
-				delete_user_meta($user_id, 'social_auth_nonce_'.$_COOKIE['social_auth_nonce']);
-				setcookie('social_auth_nonce', '', -3600, '/');
 			}
 			else {
 				Social::log('Failed to find the user using nonce :nonce.', array(

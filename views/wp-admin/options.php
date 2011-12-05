@@ -1,4 +1,4 @@
-<form id="setup" method="post" action="<?php echo esc_url(admin_url('?social_controller=settings&social_action=index')); ?>">
+<form id="setup" method="post" action="<?php echo esc_url(admin_url('index.php?social_controller=settings&social_action=index')); ?>">
 <?php wp_nonce_field(); ?>
 <input type="hidden" name="social_action" value="settings" />
 <?php if (isset($_GET['saved'])): ?>
@@ -250,7 +250,7 @@
 							<span class="description"><?php _e('(nerds only)', 'social'); ?></span>
 						</th>
 						<td>
-							<p style="margin-top:0"><?php _e('If you turn debug on, Social will save additional information in the social/debug_log.txt file. Not recommended for production environments.', 'social'); ?></p>
+							<p style="margin-top:0"><?php _e('If you turn debug on, Social will save additional information in <code>debug_log.txt</code> file. Not recommended for production environments.', 'social'); ?></p>
 							<ul>
 								<li>
 									<label for="debug_mode_no">
@@ -265,6 +265,8 @@
 									</label>
 								</li>
 							</ul>
+
+							<strong><?php _e('Debug log location:', 'social'); ?></strong> <code><?php echo SOCIAL_PATH.'debug_log.txt'; ?></code>
 						</td>
 					</tr>
 				</table>

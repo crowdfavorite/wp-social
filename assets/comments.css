@@ -633,7 +633,8 @@ override submit styles in TwentyEleven theme */
 }
 
 #social .social-comment-collapse > .social-comment-inner > .social-comment-body,
-#social .social-comment-collapse > .social-comment-inner > .social-actions {
+#social .social-comment-collapse > .social-comment-inner > .social-actions,
+#social .social-comment-collapse > .social-comment-inner > .social-items-comment {
 	display: none;
 }
 
