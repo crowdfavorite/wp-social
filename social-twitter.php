@@ -55,15 +55,15 @@ final class Social_Twitter {
 		// we need comments to be keyed by ID, check for Tweet comments
 		$tweet_comments = $_comments = $comment_ids = array();
 		foreach ($comments as $key => $comment) {
-			if (is_object($comment)) {
+			if ($key == 'social_items') {
+				$_comments[$key] = $comment;
+			}
+			else {
 				$_comments['id_'.$comment->comment_ID] = $comment;
 				if ($comment->comment_type == 'social-twitter') {
 					$comment_ids[] = $comment->comment_ID;
 					$tweet_comments['id_'.$comment->comment_ID] = $comment;
 				}
-			}
-			else {
-				$_comments[$key] = $comment;
 			}
 		}
 
