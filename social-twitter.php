@@ -55,15 +55,15 @@ final class Social_Twitter {
 		// we need comments to be keyed by ID, check for Tweet comments
 		$tweet_comments = $_comments = $comment_ids = array();
 		foreach ($comments as $key => $comment) {
-			if (is_object($comment)) {
+			if ($key == 'social_items') {
+				$_comments[$key] = $comment;
+			}
+			else {
 				$_comments['id_'.$comment->comment_ID] = $comment;
 				if ($comment->comment_type == 'social-twitter') {
 					$comment_ids[] = $comment->comment_ID;
 					$tweet_comments['id_'.$comment->comment_ID] = $comment;
 				}
-			}
-			else {
-				$_comments[$key] = $comment;
 			}
 		}
 
@@ -165,7 +165,7 @@ final class Social_Twitter {
 
 				// set retweets
 				$rt_matched = false;
-				if (isset($comment->social_raw_data)) {
+				if (isset($comment->social_raw_data) && isset($comment->social_raw_data->retweeted_status)) {
 					// explicit match via API data
 					$rt_id = $comment->social_raw_data->retweeted_status->id_str;
 					if (in_array($rt_id, $broadcasted_social_ids)) {

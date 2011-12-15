@@ -1508,38 +1508,42 @@ final class Social {
 	public function comment($comment, array $args = array(), $depth = 0) {
 		$GLOBALS['comment'] = $comment;
 
+		$social_items = '';
 		$status_url = null;
-		$service = null;
 		$comment_type = $comment->comment_type;
+		if (!($service = $this->service($comment->comment_type))) {
+			$comment_type = 'wordpress';
+		}
 		if (!in_array($comment->comment_type, apply_filters('social_ignored_comment_types', array(
 			'wordpress',
 			'pingback'
 		)))
 		) {
-			$service = $this->service($comment->comment_type);
-			if ($service !== false and $service->show_full_comment($comment->comment_type)) {
-				if ($status_url === null) {
-					$comment_type = 'wordpress';
-				}
-			}
 
 			$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
 			if (!empty($status_id)) {
 				$status_url = $service->status_url(get_comment_author(), $status_id);
 			}
-		}
 
-		// Social items?
-		$social_items = '';
-		if (!empty($comment->social_items)) {
-			$social_items = Social_View::factory('comment/social_item', array(
-				'items' => $comment->social_items,
-				'service' => $service,
-				'avatar_size' => array(
-					'width' => 18,
-					'height' => 18,
-				)
-			));
+			// Social items?
+			if (!empty($comment->social_items)) {
+				if (is_object($service) && method_exists($service, 'key')) {
+					$social_items = Social_View::factory('comment/social_item', array(
+						'items' => $comment->social_items,
+						'service' => $service,
+						'avatar_size' => array(
+							'width' => 18,
+							'height' => 18,
+						)
+					));
+				}
+				else {
+					Social::log('service not set for: '.print_r($comment, true));
+					ob_start();
+					var_dump($service);
+					Social::log('$service: '.ob_get_clean());
+				}
+			}
 		}
 
 		echo Social_View::factory('comment/comment', array(
