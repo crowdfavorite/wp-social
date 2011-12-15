@@ -1915,7 +1915,7 @@ else if (isset($network_plugin)) {
 }
 
 define('SOCIAL_FILE', $social_file);
-define('SOCIAL_PATH', dirname(__FILE__).'/');
+define('SOCIAL_PATH', WP_PLUGIN_DIR.'/'.basename(dirname($social_file)).'/');
 
 // Register Social's autoloading
 spl_autoload_register(array('Social', 'auto_load'));
