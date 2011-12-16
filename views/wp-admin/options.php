@@ -146,7 +146,7 @@
 				</th>
 				<td>
 					<input type="text" class="regular-text" name="social_broadcast_format" id="social_broadcast_format" value="<?php echo esc_attr(Social::option('broadcast_format')); ?>" />
-					<p class="description"><?php _e('How you would like posts to be formatted when broadcasting to Twitter or Facebook?'); ?></p>
+					<p class="description"><?php _e('How you would like posts to be formatted when broadcasting to Twitter or Facebook?', 'social'); ?></p>
 
 					<div class="description">
 						<?php _e('Tokens:', 'social'); ?>
@@ -169,7 +169,7 @@
 				</th>
 				<td>
 					<input type="text" class="regular-text" name="social_comment_broadcast_format" id="social_comment_broadcast_format" value="<?php echo esc_attr(Social::option('comment_broadcast_format')); ?>" />
-					<p class="description"><?php _e('How you would like comments to be formatted when broadcasting to Twitter or Facebook?'); ?></p>
+					<p class="description"><?php _e('How you would like comments to be formatted when broadcasting to Twitter or Facebook?', 'social'); ?></p>
 
 					<div class="description">
 						<?php _e('Tokens:', 'social'); ?>
