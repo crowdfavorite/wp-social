@@ -21,7 +21,7 @@ foreach ($accounts as $key => $items) {
 
 $total_deauthed = count($deauthed);
 if ($total_deauthed or count($types)) {
-	echo __('Possible fixes:')."\n\n";
+	echo __('Possible fixes:', 'social')."\n\n";
 }
 
 if ($total_deauthed) {
