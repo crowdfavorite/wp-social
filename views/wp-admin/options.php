@@ -266,7 +266,7 @@
 								</li>
 							</ul>
 
-							<strong><?php _e('Debug log location:', 'social'); ?></strong> <code><?php echo SOCIAL_PATH.'debug_log.txt'; ?></code>
+							<strong><?php _e('Debug log location:', 'social'); ?></strong> <code><?php echo Social::$plugins_path.'debug_log.txt'; ?></code>
 						</td>
 					</tr>
 				</table>
