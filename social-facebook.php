@@ -121,7 +121,7 @@ final class Social_Facebook {
 
 		// we need comments to be keyed by ID, check for Facebook comments
 		$facebook_comments = $facebook_likes = $_comments = $comment_ids = array();
-		foreach ($comments as $comment) {
+		foreach ($comments as $key => $comment) {
 			if ($key == 'social_items') {
 				$_comments[$key] = $comment;
 			}
