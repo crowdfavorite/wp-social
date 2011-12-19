@@ -11,41 +11,40 @@ final class Social_Controller_Auth extends Social_Controller {
 	 * @return void
 	 */
 	public function action_authorize() {
-		$proxy = urldecode($this->request->query('target'));
-		if (strpos($proxy, Social::$api_url) !== false) {
-			$id = wp_create_nonce('social_authentication');
-			$url = site_url('index.php');
-			$args = array(
-				'social_controller' => 'auth',
-				'social_action' => 'authorized',
-			);
+		$service = urldecode($this->request->query('service'));
 
-			if (is_admin()) {
-				$args['is_admin'] = 'true';
-				$args['user_id'] = get_current_user_id();
-				if (defined('IS_PROFILE_PAGE')) {
-					$args['personal'] = 'true';
-					$url = add_query_arg('personal', 'true', $url);
-				}
+		$id = wp_create_nonce('social_authentication');
+		$url = site_url('index.php');
+		$args = array(
+			'social_controller' => 'auth',
+			'social_action' => 'authorized',
+		);
+
+		if (is_admin()) {
+			$args['is_admin'] = 'true';
+			$args['user_id'] = get_current_user_id();
+			if (defined('IS_PROFILE_PAGE')) {
+				$args['personal'] = 'true';
+				$url = add_query_arg('personal', 'true', $url);
 			}
-			else {
-				$post_id = $this->request->query('post_id');
-				if ($post_id !== null) {
-					$args['p'] = $post_id;
-				}
-
-				// Set the nonce cookie
-				setcookie('social_auth_nonce', $id, 0, '/');
-			}
-
-			$proxy = add_query_arg(array(
-				'v' => '2',
-				'id' => $id,
-				'response_url' => urlencode(add_query_arg($args, $url))
-			), $proxy);
-
-			$proxy = apply_filters('social_proxy_url', $proxy);
 		}
+		else {
+			$post_id = $this->request->query('post_id');
+			if ($post_id !== null) {
+				$args['p'] = $post_id;
+			}
+
+			// Set the nonce cookie
+			setcookie('social_auth_nonce', $id, 0, '/');
+		}
+
+		$proxy = add_query_arg(array(
+			'v' => '2',
+			'id' => $id,
+			'response_url' => urlencode(add_query_arg($args, $url))
+		), Social::$api_url.$service.'/authorize');
+
+		$proxy = apply_filters('social_proxy_url', $proxy);
 
 		Social::log('Authorizing with URL: '.$proxy);
 		wp_redirect($proxy);
