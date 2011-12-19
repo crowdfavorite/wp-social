@@ -206,9 +206,9 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						'comment_post_ID' => $post->ID,
 						'comment_type' => 'social-'.$this->_key,
 						'comment_author' => $wpdb->escape($account->username()),
-						'comment_author_email' => $wpdb->escape($this->_key.'.'.$account->id().'@example.com'),
+						'comment_author_email' => 'test@example.com',//$wpdb->escape($this->_key.'.'.$account->id().'@example.com'),
 						'comment_author_url' => $account->url(),
-						'comment_content' => $wpdb->escape($result->text),
+						'comment_content' => 'test',//$wpdb->escape($result->text),
 						'comment_date' => date('Y-m-d H:i:s', strtotime($result->created_at) + (get_option('gmt_offset') * 3600)),
 						'comment_date_gmt' => gmdate('Y-m-d H:i:s', strtotime($result->created_at)),
 						'comment_author_IP' => $_SERVER['SERVER_ADDR'],
@@ -219,7 +219,21 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						$commentdata['comment_approved'] = '1';
 					}
 					else {
-						$commentdata['comment_approved'] = wp_allow_comment($commentdata);
+						add_filter('wp_die_handler', array('Social', 'wp_die_handler'));
+						try {
+							$commentdata['comment_approved'] = wp_allow_comment($commentdata);
+							remove_filter('wp_die_handler', array('Social', 'wp_die_handler'));
+						} catch (Exception $e) {
+							remove_filter('wp_die_handler', array('Social', 'wp_die_handler'));
+							if ($e->getMessage() == Social::$duplicate_comment_message) {
+								// Remove the aggregation ID from the stack
+								unset($post->results[$this->_key][$result->id]);
+								Social_Aggregation_Log::instance($post->ID)->ignore($result->id);
+
+								// ... continue looping
+								continue;
+							}
+						}
 					}
 
 					// sanity check to make sure this comment is not a duplicate

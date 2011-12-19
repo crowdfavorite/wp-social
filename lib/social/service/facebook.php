@@ -256,7 +256,24 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					'comment_post_ID' => $post->ID,
 					'comment_author_email' => $this->_key.'.'.$user_id.'@example.com',
 				));
-				$commentdata['comment_approved'] = wp_allow_comment($commentdata);
+
+				add_filter('wp_die_handler', array('Social', 'wp_die_handler'));
+				try {
+					$commentdata['comment_approved'] = wp_allow_comment($commentdata);
+					remove_filter('wp_die_handler', array('Social', 'wp_die_handler'));
+				} catch (Exception $e) {
+					remove_filter('wp_die_handler', array('Social', 'wp_die_handler'));
+					if ($e->getMessage() == Social::$duplicate_comment_message) {
+						$id = (isset($result->status_id) ? $result->status_id : $result->id);
+
+						// Remove the aggregation ID from the stack
+						unset($post->results[$this->_key][$id]);
+						Social_Aggregation_Log::instance($post->ID)->ignore($id);
+
+						// ... continue looping
+						continue;
+					}
+				}
 
 				// sanity check to make sure this comment is not a duplicate
 				if ($this->is_duplicate_comment($post, $result->id)) {

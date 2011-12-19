@@ -133,6 +133,27 @@ final class Social_Aggregation_Log {
 	}
 
 	/**
+	 * Force an item to be flagged as ignored.
+	 *
+	 * @param  int  $id
+	 * @return $this
+	 */
+	public function ignore($id) {
+		foreach ($this->_log[$this->_timestamp]->items as $service => $items) {
+			foreach ($items as $key => $item) {
+				if ($item->id == $id) {
+					$item->ignored = true;
+					$this->_log[$this->_timestamp]->items[$service][$key] = $item;
+
+					return $this;
+				}
+			}
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Saves the log.
 	 *
 	 * @param  bool  $manual

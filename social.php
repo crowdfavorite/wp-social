@@ -48,6 +48,11 @@ final class Social {
 	public static $loaded_by_theme = false;
 
 	/**
+	 * @var  string  duplicate comment message
+	 */
+	public static $duplicate_comment_message = 'duplicate comment';
+
+	/**
 	 * @var  Social_Log  logger
 	 */
 	private static $log = null;
@@ -223,6 +228,33 @@ final class Social {
 	 */
 	public static function social_loaded_by_theme() {
 		self::$loaded_by_theme = true;
+	}
+
+	/**
+	 * Sets the customer die handler.
+	 *
+	 * @static
+	 * @param  string  $handler
+	 * @return array
+	 */
+	public static function wp_die_handler($handler) {
+		return array('Social', 'wp_comment_die_handler');
+	}
+
+	/**
+	 * Don't actually die for aggregation runs.
+	 *
+	 * @static
+	 * @param  string  $message
+	 * @param  string  $title
+	 * @param  array   $args
+	 * @return mixed
+	 */
+	public static function wp_comment_die_handler($message, $title, $args) {
+		if ($message == __('Duplicate comment detected; it looks as though you&#8217;ve already said that!')) {
+			// Keep going
+			throw new Exception(Social::$duplicate_comment_message);
+		}
 	}
 
 	/**
