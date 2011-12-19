@@ -251,60 +251,58 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					));
 				}
 
-				if (count($commentdata)) {
-					$user_id = (isset($result->like) ? $result->id : $result->from->id);
-					$commentdata = array_merge($commentdata, array(
-						'comment_post_ID' => $post->ID,
-						'comment_author_email' => $this->_key.'.'.$user_id.'@example.com',
-					));
-					$commentdata['comment_approved'] = wp_allow_comment($commentdata);
+				$user_id = (isset($result->like) ? $result->id : $result->from->id);
+				$commentdata = array_merge($commentdata, array(
+					'comment_post_ID' => $post->ID,
+					'comment_author_email' => $this->_key.'.'.$user_id.'@example.com',
+				));
+				$commentdata['comment_approved'] = wp_allow_comment($commentdata);
 
-					// sanity check to make sure this comment is not a duplicate
-					if ($this->is_duplicate_comment($post, $result->id)) {
-						Social::log('Result #:result_id already exists, skipping.', array(
-							'result_id' => $result->id
-						), 'duplicate-comment');
-						continue;
+				// sanity check to make sure this comment is not a duplicate
+				if ($this->is_duplicate_comment($post, $result->id)) {
+					Social::log('Result #:result_id already exists, skipping.', array(
+						'result_id' => $result->id
+					), 'duplicate-comment');
+					continue;
+				}
+
+				Social::log('Saving #:result_id.', array(
+					'result_id' => (isset($result->status_id) ? $result->status_id : $result->id)
+				));
+
+				$comment_id = 0;
+				try
+				{
+					$comment_id = wp_insert_comment($commentdata);
+
+					update_comment_meta($comment_id, 'social_account_id', $user_id);
+					update_comment_meta($comment_id, 'social_profile_image_url', 'http://graph.facebook.com/'.$user_id.'/picture');
+					update_comment_meta($comment_id, 'social_status_id', (isset($result->status_id) ? $result->status_id : $result->id));
+
+					if (!isset($result->raw)) {
+						$result = (object) array_merge((array) $result, array('raw' => $result));
 					}
+					update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($result->raw)));
 
-					Social::log('Saving #:result_id.', array(
-						'result_id' => (isset($result->status_id) ? $result->status_id : $result->id)
-					));
-
-					$comment_id = 0;
-					try
-					{
-						$comment_id = wp_insert_comment($commentdata);
-
-						update_comment_meta($comment_id, 'social_account_id', $user_id);
-						update_comment_meta($comment_id, 'social_profile_image_url', 'http://graph.facebook.com/'.$user_id.'/picture');
-						update_comment_meta($comment_id, 'social_status_id', (isset($result->status_id) ? $result->status_id : $result->id));
-
-						if (!isset($result->raw)) {
-							$result = (object) array_merge((array) $result, array('raw' => $result));
+					if ($commentdata['comment_approved'] !== 'spam') {
+						if ($commentdata['comment_approved'] == '0') {
+							wp_notify_moderator($comment_id);
 						}
-						update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($result->raw)));
 
-						if ($commentdata['comment_approved'] !== 'spam') {
-							if ($commentdata['comment_approved'] == '0') {
-								wp_notify_moderator($comment_id);
-							}
-
-							if (get_option('comments_notify') and $commentdata['comment_approved'] and (!isset($commentdata['user_id']) or $post->post_author != $commentdata['user_id'])) {
-								wp_notify_postauthor($comment_id, isset($commentdata['comment_type']) ? $commentdata['comment_type'] : '');
-							}
+						if (get_option('comments_notify') and $commentdata['comment_approved'] and (!isset($commentdata['user_id']) or $post->post_author != $commentdata['user_id'])) {
+							wp_notify_postauthor($comment_id, isset($commentdata['comment_type']) ? $commentdata['comment_type'] : '');
 						}
 					}
-					catch (Exception $e) {
-						// Something went wrong, remove the aggregated ID.
-						if (($key = array_search((isset($result->status_id) ? $result->status_id : $result->id), $post->aggregated_ids['facebook'])) !== false) {
-							unset($post->aggregated_ids['facebook'][$key]);
-						}
+				}
+				catch (Exception $e) {
+					// Something went wrong, remove the aggregated ID.
+					if (($key = array_search((isset($result->status_id) ? $result->status_id : $result->id), $post->aggregated_ids['facebook'])) !== false) {
+						unset($post->aggregated_ids['facebook'][$key]);
+					}
 
-						if ((int) $comment_id) {
-							// Delete the comment in case it wasn't the insert that failed.
-							wp_delete_comment($comment_id);
-						}
+					if ((int) $comment_id) {
+						// Delete the comment in case it wasn't the insert that failed.
+						wp_delete_comment($comment_id);
 					}
 				}
 			}
