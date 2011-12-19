@@ -105,6 +105,7 @@ final class Social_Controller_Aggregation extends Social_Controller {
 		// Some cleanup...
 		unset($post->broadcasted_ids);
 		unset($post->aggregated_ids);
+		unset($post->results);
 
 		if ($this->request->is_ajax()) {
 			// Re-add to the queue?
