@@ -732,7 +732,7 @@ abstract class Social_Service {
 				$post->aggregated_ids[$this->_key] = $aggregated_ids;
 
 				// Mark the result as ignored
-				Social_Aggregation_Log::instance($post->ID)->ignore($id);
+				Social_Aggregation_Log::instance($post->ID)->ignore($result_id);
 			}
 		}
 
