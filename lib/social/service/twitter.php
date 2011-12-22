@@ -218,10 +218,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 					if ($skip_approval) {
 						$commentdata['comment_approved'] = '1';
 					}
-					else if (($allowed = $this->allow_comment($commentdata, $result->id, $post)) !== false) {
-						$commentdata = $allowed;
-					}
-					else {
+					else if (($commentdata = $this->allow_comment($commentdata, $result->id, $post)) === false) {
 						continue;
 					}
 

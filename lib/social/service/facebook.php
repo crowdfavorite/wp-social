@@ -258,10 +258,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				));
 
 				$result_id = (isset($result->status_id) ? $result->status_id : $result->id);
-				if (($allowed = $this->allow_comment($commentdata, $result_id, $post)) !== false) {
-					$commentdata = $allowed;
-				}
-				else {
+				if (($commentdata = $this->allow_comment($commentdata, $result_id, $post)) === false) {
 					continue;
 				}
 
