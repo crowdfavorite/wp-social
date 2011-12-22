@@ -288,7 +288,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 							}
 
 							if (get_option('comments_notify') and $commentdata['comment_approved'] and (!isset($commentdata['user_id']) or $post->post_author != $commentdata['user_id'])) {
-								wp_notify_postauthor($comment_id, isset($commentdata['comment_type']) ? $commentdata['comment_type'] : '');
+								wp_notify_postauthor($comment_id, 'comment');
 							}
 						}
 					}
