@@ -218,31 +218,11 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 					if ($skip_approval) {
 						$commentdata['comment_approved'] = '1';
 					}
+					else if (($allowed = $this->allow_comment($commentdata, $result->id, $post)) !== false) {
+						$commentdata = $allowed;
+					}
 					else {
-						add_filter('wp_die_handler', array('Social', 'wp_die_handler'));
-						try {
-							$commentdata['comment_approved'] = wp_allow_comment($commentdata);
-							remove_filter('wp_die_handler', array('Social', 'wp_die_handler'));
-						} catch (Exception $e) {
-							remove_filter('wp_die_handler', array('Social', 'wp_die_handler'));
-							if ($e->getMessage() == Social::$duplicate_comment_message) {
-								// Remove the aggregation ID from the stack
-								unset($post->results[$this->_key][$result->id]);
-								$aggregated_ids = array();
-								foreach ($post->aggregated_ids[$this->_key] as $id) {
-									if ($id != $result->id) {
-										$aggregated_ids[] = $id;
-									}
-								}
-								$post->aggregated_ids[$this->_key] = $aggregated_ids;
-
-								// Mark the result as ignored
-								Social_Aggregation_Log::instance($post->ID)->ignore($result->id);
-
-								// ... continue looping
-								continue;
-							}
-						}
+						continue;
 					}
 
 					// sanity check to make sure this comment is not a duplicate
