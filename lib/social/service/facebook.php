@@ -268,6 +268,15 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 
 						// Remove the aggregation ID from the stack
 						unset($post->results[$this->_key][$id]);
+						$aggregated_ids = array();
+						foreach ($post->aggregated_ids[$this->_key] as $id) {
+							if ($id != $result->id) {
+								$aggregated_ids[] = $id;
+							}
+						}
+						$post->aggregated_ids[$this->_key] = $aggregated_ids;
+
+						// Mark the result as ignored
 						Social_Aggregation_Log::instance($post->ID)->ignore($id);
 
 						// ... continue looping

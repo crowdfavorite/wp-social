@@ -228,6 +228,15 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 							if ($e->getMessage() == Social::$duplicate_comment_message) {
 								// Remove the aggregation ID from the stack
 								unset($post->results[$this->_key][$result->id]);
+								$aggregated_ids = array();
+								foreach ($post->aggregated_ids[$this->_key] as $id) {
+									if ($id != $result->id) {
+										$aggregated_ids[] = $id;
+									}
+								}
+								$post->aggregated_ids[$this->_key] = $aggregated_ids;
+
+								// Mark the result as ignored
 								Social_Aggregation_Log::instance($post->ID)->ignore($result->id);
 
 								// ... continue looping
