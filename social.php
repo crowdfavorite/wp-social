@@ -1554,20 +1554,21 @@ final class Social {
 		$social_items = '';
 		$status_url = null;
 		$comment_type = $comment->comment_type;
-		if (!($service = $this->service($comment->comment_type))) {
-			$comment_type = 'wordpress';
-		}
-		if (!in_array($comment->comment_type, apply_filters('social_ignored_comment_types', array(
+		$ignored_types = apply_filters('social_ignored_comment_types', array(
 			'wordpress',
 			'pingback'
-		)))
-		) {
-
+		));
+		// set the comment type to WordPress if we can't load the Social service (perhaps it was deactivated)
+		// and the type isn't an ignored type
+		if (!($service = $this->service($comment->comment_type)) && !in_array($comment->comment_type, $ignored_types)) {
+			$comment_type = 'wordpress';
+		}
+		// set Social Items for Social comments
+		if (!in_array($comment->comment_type, $ignored_types)) {
 			$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
 			if (!empty($status_id)) {
 				$status_url = $service->status_url(get_comment_author(), $status_id);
 			}
-
 			// Social items?
 			if (!empty($comment->social_items)) {
 				if (is_object($service) && method_exists($service, 'key')) {
