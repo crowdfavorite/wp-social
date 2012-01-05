@@ -122,15 +122,15 @@ final class Social_Facebook {
 		// we need comments to be keyed by ID, check for Facebook comments
 		$facebook_comments = $facebook_likes = $_comments = $comment_ids = array();
 		foreach ($comments as $key => $comment) {
-			if ($key == 'social_items') {
-				$_comments[$key] = $comment;
-			}
-			else {
+			if (is_object($comment)) {
 				$_comments['id_'.$comment->comment_ID] = $comment;
 				if (in_array($comment->comment_type, array('social-facebook', 'social-facebook-like'))) {
 					$comment_ids[] = $comment->comment_ID;
 					$facebook_comments['id_'.$comment->comment_ID] = $comment;
 				}
+			}
+			else { // social items
+				$_comments[$key] = $comment;
 			}
 		}
 
