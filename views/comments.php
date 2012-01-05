@@ -119,17 +119,20 @@ ob_start();
 					if ($last_reply_time or count($social_items)) {
 						echo '<div class="cf-clearfix"></div>';
 					}
+					if (count($comments)) {
 				?>
 				<ol class="social-commentlist">
-					<?php
+				<?php
 						wp_list_comments(array(
 							'callback' => array(Social::instance(), 'comment'),
 							'walker' => new Social_Walker_Comment,
 						), $comments);
-					?>
+				?>
 				</ol>
-
-				<?php if (get_comment_pages_count() > 1 and get_option('page_comments')): ?>
+				<?php
+				}
+				if (get_comment_pages_count() > 1 and get_option('page_comments')): 
+				?>
 				<nav id="comment-nav-below">
 					<h1 class="assistive-text"><?php _e('Comment navigation', 'social'); ?></h1>
 					<div class="nav-previous"><?php previous_comments_link(__('&larr; Older Comments', 'social')); ?></div>
