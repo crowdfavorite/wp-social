@@ -7,7 +7,7 @@ ob_start();
 	<?php else: ?>
 	<div class="social-post">
 		<div id="loading" style="display:none">
-			<input type="hidden" id="reload_url" value="<?php echo esc_url(site_url('?social_controller=auth&social_action=reload_form&redirect_to='.get_permalink(get_the_ID()).'&post_id='.get_the_ID())); ?>" />
+			<input type="hidden" id="reload_url" value="<?php echo esc_url(home_url('index.php?social_controller=auth&social_action=reload_form&redirect_to='.get_permalink(get_the_ID()).'&post_id='.get_the_ID())); ?>" />
 			<?php _e('Logging In...', 'social'); ?>
 		</div>
 		<?php

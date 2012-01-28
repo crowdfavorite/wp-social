@@ -140,7 +140,7 @@ final class Social {
 			$date = get_date_from_gmt($post->post_date_gmt);
 		}
 		else {
-			$url = site_url('?p=123');
+			$url = home_url('?p=123');
 			$date = get_date_from_gmt(current_time('mysql', true));
 		}
 
@@ -1138,7 +1138,7 @@ final class Social {
 				if ($post !== null) {
 					$queue->add($id, $interval)->save();
 					$semaphore->increment();
-					$this->request(site_url('?social_controller=aggregation&social_action=run&post_id='.$id), 'run');
+					$this->request(home_url('index.php?social_controller=aggregation&social_action=run&post_id='.$id), 'run');
 				}
 				else {
 					$queue->remove($id, $timestamp)->save();

@@ -68,7 +68,7 @@ abstract class Social_Service {
 			$url = admin_url($url.$params);
 		}
 		else {
-			$url = site_url('index.php'.$params.'&post_id='.$post->ID);
+			$url = home_url('index.php'.$params.'&post_id='.$post->ID);
 		}
 
 		return $url;
@@ -356,7 +356,7 @@ abstract class Social_Service {
 				case '{url}':
 					$url = wp_get_shortlink($post->ID);
 					if (empty($url)) {
-						$url = site_url('?p='.$post->ID);
+						$url = home_url('?p='.$post->ID);
 					}
 					$url = apply_filters('social_broadcast_permalink', $url, $post, $this);
 					$content = esc_url($url);
