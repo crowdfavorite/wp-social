@@ -486,7 +486,7 @@ final class Social {
 		}
 
 		if ($file == $this_plugin) {
-			$settings_link = '<a href="'.esc_url(admin_url('options-general.php?page=social.php')).'">'.__("Settings", "photosmash-galleries").'</a>';
+			$settings_link = '<a href="'.esc_url(admin_url('options-general.php?page=social.php')).'">'.__('Settings', 'social').'</a>';
 			array_unshift($links, $settings_link);
 		}
 		return $links;
