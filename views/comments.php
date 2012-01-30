@@ -14,7 +14,7 @@ ob_start();
 			if (comments_open()) {
 				if (get_option('comment_registration') and !is_user_logged_in()) {
 		?>
-		<p class="must-log-in"><?php printf(__('You must be <a href="%s">logged in</a> to post a comment.'), wp_login_url(apply_filters('the_permalink', get_permalink(get_the_ID())))); ?></p>
+		<p class="must-log-in"><?php printf(__('You must be <a href="%s">logged in</a> to post a comment.', 'social'), wp_login_url(apply_filters('the_permalink', get_permalink(get_the_ID())))); ?></p>
 		<?php
 					do_action('comment_form_must_log_in_after');
 				}
