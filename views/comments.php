@@ -98,28 +98,28 @@ ob_start();
 		<div id="social-comments-tab-all" class="social-tabs-panel social-tabs-first-panel">
 			<div id="comments" class="social-comments">
 				<?php
-					if ($last_reply_time) {
-						echo '<div class="social-last-reply-when">'.sprintf(__('Last reply was %s ago', 'social'), human_time_diff($last_reply_time)).'</div>';
-					}
+				if ($last_reply_time) {
+					echo '<div class="social-last-reply-when">'.sprintf(__('Last reply was %s ago', 'social'), human_time_diff($last_reply_time)).'</div>';
+				}
 
-					if (count($social_items)) {
-						echo '<div id="social-items-wrapper">';
-						foreach ($social_items as $group => $items) {
-							$service = Social::instance()->service($group);
-							if ($service !== false and count($items)) {
-								echo Social_View::factory('comment/social_item', array(
-									'items' => $items,
-									'service' => $service,
-								));
-							}
+				if (count($social_items)) {
+					echo '<div id="social-items-wrapper">';
+					foreach ($social_items as $group => $items) {
+						$service = Social::instance()->service($group);
+						if ($service !== false and count($items)) {
+							echo Social_View::factory('comment/social_item', array(
+								'items' => $items,
+								'service' => $service,
+							));
 						}
-						echo '</div>';
 					}
+					echo '</div>';
+				}
 
-					if ($last_reply_time or count($social_items)) {
-						echo '<div class="cf-clearfix"></div>';
-					}
-					if (count($comments)) {
+				if ($last_reply_time or count($social_items)) {
+					echo '<div class="cf-clearfix"></div>';
+				}
+				if (count($comments)) {
 				?>
 				<ol class="social-commentlist">
 				<?php
