@@ -473,7 +473,7 @@ final class Social {
 					'social_controller' => 'cron',
 					'social_action' => 'check_crons',
 					'social_api_key' => Social::option('system_cron_api_key')
-				))),
+				), null, '&')),
 				array(
 					'timeout' => 0.01,
 					'blocking' => false,
