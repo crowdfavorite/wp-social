@@ -170,5 +170,37 @@
 			});
 		});
 
+		$('.social-broadcast-edit').click(function(e){
+			e.preventDefault();
+			var $parent = $(this).parent();
+
+			$(this).hide();
+			$parent.find('.social-broadcast-editable').fadeIn().find('textarea').focus();
+		});
+
+		$('.social-broadcast-save, .social-broadcast-cancel').click(function(e){
+			e.preventDefault();
+
+			var $parent = $(this).parent();
+			var $p = $parent.parent().find('p');
+			var $input = $parent.find('input');
+			var $textarea = $parent.find('textarea');
+
+			if ($(this).hasClass('social-broadcast-save')) {
+				$input.val($textarea.val());
+				$p.html($textarea.val());
+			} else {
+				$p.html($input.val());
+				$textarea.val($input.val());
+			}
+
+			$parent.hide();
+			$parent.parent().parent().find('.social-broadcast-edit').fadeIn();
+		});
+
+		$('.social-broadcast-editable textarea').click(function(e){
+			e.preventDefault();
+			$(this).focus();
+		});
 	});
 })(jQuery);
