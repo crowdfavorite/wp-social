@@ -161,12 +161,23 @@
 			var $use_twitter_reply = $('#use_twitter_reply');
 			$('.comment-reply-link').click(function() {
 				$('.comment-reply-link').show();
-				$(this).hide();
 				var $parent = $(this).closest('li');
 				var $textarea = $parent.find('textarea');
-				if ($parent.hasClass('social-twitter') && $use_twitter_reply.val() == '1') {
-					var $author = $parent.find('.social-comment-author a');
-					insertTwitterUsername($respond.closest('li').find('.social-comment-author a'), $textarea);
+				if ($parent.hasClass('social-twitter')) {
+					$('#post_accounts option').each(function(){
+						if ($(this).data('type') == 'twitter') {
+							$('#post_accounts').val($(this).attr('value')).change();
+							return;
+						}
+					});
+
+					if ($use_twitter_reply.val() == '1') {
+						var $author = $parent.find('.social-comment-author a');
+						insertTwitterUsername($author, $textarea);
+					}
+				} else {
+					$textarea.val('');
+					$('#post_accounts').val('').change();
 				}
 			});
 			$('#cancel-comment-reply-link').click(function() {
