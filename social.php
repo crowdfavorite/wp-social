@@ -567,10 +567,11 @@ final class Social {
 				echo '<div class="error"><p>'.$message.'</p></div>';
 			}
 
-			if (!$this->_enabled and (!isset($_GET['page']) or $_GET['page'] != basename(SOCIAL_FILE)) and
-				Social::option('disable_no_accounts_warning') != '1') {
+			$suppress_no_accounts_notice = get_user_meta(get_current_user_id(), 'social_suppress_no_accounts_notice', true);
+			if (!$this->_enabled and (!isset($_GET['page']) or $_GET['page'] != basename(SOCIAL_FILE)) and empty($suppress_no_accounts_notice)) {
+				$dismiss = sprintf(__('<a href="%s" class="social_dismiss">[Dismiss]</a>', 'social'), esc_url(admin_url('index.php?social_controller=settings&social_action=suppress_no_accounts_notice')));
 				$message = sprintf(__('To start using Social, please <a href="%s">add an account</a>.', 'social'), esc_url(Social::settings_url()));
-				echo '<div class="error"><p>'.$message.'</p></div>';
+				echo '<div class="error"><p>'.$message.' '.$dismiss.'</p></div>';
 			}
 
 			if (isset($_GET['page']) and $_GET['page'] == basename(SOCIAL_FILE)) {
