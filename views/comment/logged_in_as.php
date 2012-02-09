@@ -13,7 +13,7 @@
 					if (count($_accounts)) {
 						echo '<optgroup label="'.esc_attr(__(ucfirst($key), 'social')).'">';
 						foreach ($_accounts as $account) {
-							echo '<option value="'.esc_attr($account->id()).'" rel="'.esc_attr($account->avatar()).'">'.esc_html($account->name()).'</option>';
+							echo '<option value="'.esc_attr($account->id()).'" rel="'.esc_attr($account->avatar()).'" data-type="'.$key.'">'.esc_html($account->name()).'</option>';
 						}
 						echo '</optgroup>';
 					}
