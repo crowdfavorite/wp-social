@@ -50,7 +50,7 @@ if (count($meta_keys)) {
 }
 
 // De-auth Facebook accounts for new permissions.
-if (version_compare($installed_version, '2.0', '<')) {
+if (version_compare(Social::option('installed_version'), '2.0', '<')) {
 	// Fix aggregated IDs
 	$results = $wpdb->get_results("
 		SELECT post_id, meta_value
