@@ -15,10 +15,10 @@ final class Social_Log {
 	 */
 	public static function factory($file = null) {
 		if ($file == null) {
-			$file = SOCIAL_PATH.'debug_log.txt';
+			$file = Social::$plugins_path.'debug_log.txt';
 
 			// Attempt to create the file if it doesn't exist.
-			if (is_writable(SOCIAL_PATH)) {
+			if (is_writable(Social::$plugins_path)) {
 				try {
 					$fh = fopen($file, 'a');
 					fclose($fh);

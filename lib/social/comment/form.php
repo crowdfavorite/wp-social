@@ -114,6 +114,8 @@ final class Social_Comment_Form {
 	private function attach_hooks() {
 		add_action('comment_form_top', array($this, 'top'));
 		add_action('comment_form_defaults', array($this, 'configure_args'));
+		add_action('comment_form', array($this, 'comment_form_wrapper_open'), 0);
+		add_action('comment_form', array($this, 'comment_form_wrapper_close'), 99999);
 		add_filter('comment_form_logged_in', array($this, 'logged_in_as'));
 		add_filter('comment_id_fields', array($this, 'comment_id_fields'), 10, 3);
 	}
@@ -126,8 +128,28 @@ final class Social_Comment_Form {
 	private function remove_hooks() {
 		remove_action('comment_form_top', array($this, 'top'));
 		remove_action('comment_form_defaults', array($this, 'configure_args'));
+		remove_action('comment_form', array($this, 'comment_form_wrapper_open'), 0);
+		remove_action('comment_form', array($this, 'comment_form_wrapper_close'), 99999);
 		remove_filter('comment_form_logged_in', array($this, 'logged_in_as'));
 		remove_filter('comment_id_fields', array($this, 'comment_id_fields'), 10, 3);
+	}
+
+	/**
+	 * Echo opening wrapper around comment_form action.
+	 *
+	 * @return void
+	 */
+	public function comment_form_wrapper_open() {
+		echo '<div id="commentform-extras">';
+	}
+
+	/**
+	 * Echo closing wrapper around comment_form action.
+	 *
+	 * @return void
+	 */
+	public function comment_form_wrapper_close() {
+		echo '</div>';
 	}
 
 	/**

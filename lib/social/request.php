@@ -174,7 +174,7 @@ final class Social_Request {
 	 */
 	public function execute() {
 		require 'controller.php';
-		$controller = apply_filters('social_controller', SOCIAL_PATH.'lib/social/controller/'.$this->controller());
+		$controller = apply_filters('social_controller', Social::$plugins_path.'lib/social/controller/'.$this->controller());
 		if (file_exists($controller.'.php')) {
 			require $controller.'.php';
 

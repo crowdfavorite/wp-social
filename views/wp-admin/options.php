@@ -146,7 +146,7 @@
 				</th>
 				<td>
 					<input type="text" class="regular-text" name="social_broadcast_format" id="social_broadcast_format" value="<?php echo esc_attr(Social::option('broadcast_format')); ?>" />
-					<p class="description"><?php _e('How you would like posts to be formatted when broadcasting to Twitter or Facebook?'); ?></p>
+					<p class="description"><?php _e('How you would like posts to be formatted when broadcasting to Twitter or Facebook?', 'social'); ?></p>
 
 					<div class="description">
 						<?php _e('Tokens:', 'social'); ?>
@@ -169,7 +169,7 @@
 				</th>
 				<td>
 					<input type="text" class="regular-text" name="social_comment_broadcast_format" id="social_comment_broadcast_format" value="<?php echo esc_attr(Social::option('comment_broadcast_format')); ?>" />
-					<p class="description"><?php _e('How you would like comments to be formatted when broadcasting to Twitter or Facebook?'); ?></p>
+					<p class="description"><?php _e('How you would like comments to be formatted when broadcasting to Twitter or Facebook?', 'social'); ?></p>
 
 					<div class="description">
 						<?php _e('Tokens:', 'social'); ?>
@@ -237,7 +237,7 @@
 											</dd>
 										</dl>
 										<p><?php _e('For your system CRON to run correctly, make sure it is pointing towards a URL that looks something like the following:', 'social'); ?></p>
-										<code><?php echo esc_url(site_url('?social_controller=cron&social_action=cron_15&api_key='.Social::option('system_cron_api_key'))); ?></code>
+										<code><?php echo esc_url(home_url('index.php?social_controller=cron&social_action=cron_15&api_key='.Social::option('system_cron_api_key'))); ?></code>
 										<?php endif; ?>
 									</div>
 								</li>
@@ -266,7 +266,7 @@
 								</li>
 							</ul>
 
-							<strong><?php _e('Debug log location:', 'social'); ?></strong> <code><?php echo SOCIAL_PATH.'debug_log.txt'; ?></code>
+							<strong><?php _e('Debug log location:', 'social'); ?></strong> <code><?php echo Social::$plugins_path.'debug_log.txt'; ?></code>
 						</td>
 					</tr>
 				</table>
