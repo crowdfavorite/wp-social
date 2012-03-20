@@ -30,7 +30,7 @@ final class Social_Controller_Aggregation extends Social_Controller {
 
 		// Get URLs to query
 		$default_urls = array(
-			site_url('?p='.$post->ID)
+			home_url('?p='.$post->ID)
 		);
 		$url = wp_get_shortlink($post->ID);
 		if (strpos($url, '?p=') === false) {

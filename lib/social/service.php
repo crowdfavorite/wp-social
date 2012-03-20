@@ -68,7 +68,7 @@ abstract class Social_Service {
 			$url = admin_url($url.$params);
 		}
 		else {
-			$url = site_url('index.php'.$params.'&post_id='.$post->ID);
+			$url = home_url('index.php'.$params.'&post_id='.$post->ID);
 		}
 
 		return $url;
@@ -356,7 +356,7 @@ abstract class Social_Service {
 				case '{url}':
 					$url = wp_get_shortlink($post->ID);
 					if (empty($url)) {
-						$url = site_url('?p='.$post->ID);
+						$url = home_url('?p='.$post->ID);
 					}
 					$url = apply_filters('social_broadcast_permalink', $url, $post, $this);
 					$content = esc_url($url);
@@ -700,6 +700,43 @@ abstract class Social_Service {
 			'name' => $name,
 			'disconnect' => $disconnect,
 		));
+	}
+
+	/**
+	 * Checks to see if the comment is allowed.
+	 *
+	 * [!!] Handles the exception for duplicate comments.
+	 *
+	 * @param  array   $commentdata
+	 * @param  int     $result_id
+	 * @param  object  $post
+	 * @return array|bool
+	 */
+	public function allow_comment(array $commentdata, $result_id, &$post) {
+		try {
+			add_filter('wp_die_handler', array('Social', 'wp_die_handler'));
+			$commentdata['comment_approved'] = wp_allow_comment($commentdata);
+			remove_filter('wp_die_handler', array('Social', 'wp_die_handler'));
+			return $commentdata;
+		} catch (Exception $e) {
+			remove_filter('wp_die_handler', array('Social', 'wp_die_handler'));
+			if ($e->getMessage() == Social::$duplicate_comment_message) {
+				// Remove the aggregation ID from the stack
+				unset($post->results[$this->_key][$result_id]);
+				$aggregated_ids = array();
+				foreach ($post->aggregated_ids[$this->_key] as $id) {
+					if ($id != $result_id) {
+						$aggregated_ids[] = $id;
+					}
+				}
+				$post->aggregated_ids[$this->_key] = $aggregated_ids;
+
+				// Mark the result as ignored
+				Social_Aggregation_Log::instance($post->ID)->ignore($result_id);
+			}
+		}
+
+		return false;
 	}
 
 } // End Social_Service

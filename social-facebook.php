@@ -129,7 +129,7 @@ final class Social_Facebook {
 					$facebook_comments['id_'.$comment->comment_ID] = $comment;
 				}
 			}
-			else {
+			else { // social items
 				$_comments[$key] = $comment;
 			}
 		}

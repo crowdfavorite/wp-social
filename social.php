@@ -3,7 +3,7 @@
 Plugin Name: Social
 Plugin URI: http://mailchimp.com/social-plugin-for-wordpress/
 Description: Broadcast newly published posts and pull in discussions using integrations with Twitter and Facebook. Brought to you by <a href="http://mailchimp.com">MailChimp</a>.
-Version: 2.0
+Version: 2.0.1
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com/
 */
@@ -25,7 +25,7 @@ final class Social {
 	/**
 	 * @var  string  version number
 	 */
-	public static $version = '2.0';
+	public static $version = '2.0.1';
 
 	/**
 	 * @var  string  CRON lock directory.
@@ -38,9 +38,19 @@ final class Social {
 	public static $plugins_url = '';
 
 	/**
+	 * @var  string  plugins file path
+	 */
+	public static $plugins_path = '';
+
+	/**
 	 * @var  bool  loaded by theme?
 	 */
 	public static $loaded_by_theme = false;
+
+	/**
+	 * @var  string  duplicate comment message
+	 */
+	public static $duplicate_comment_message = 'duplicate comment';
 
 	/**
 	 * @var  Social_Log  logger
@@ -93,7 +103,7 @@ final class Social {
 	public static function auto_load($class) {
 		if (substr($class, 0, 7) == 'Social_' or substr($class, 0, 7) == 'Kohana_') {
 			try {
-				$file = SOCIAL_PATH.'lib/'.str_replace('_', '/', strtolower($class)).'.php';
+				$file = Social::$plugins_path.'lib/'.str_replace('_', '/', strtolower($class)).'.php';
 				$file = apply_filters('social_auto_load_file', $file, $class);
 				if (file_exists($file)) {
 					require $file;
@@ -130,7 +140,7 @@ final class Social {
 			$date = get_date_from_gmt($post->post_date_gmt);
 		}
 		else {
-			$url = site_url('?p=123');
+			$url = home_url('?p=123');
 			$date = get_date_from_gmt(current_time('mysql', true));
 		}
 
@@ -221,6 +231,33 @@ final class Social {
 	}
 
 	/**
+	 * Sets the customer die handler.
+	 *
+	 * @static
+	 * @param  string  $handler
+	 * @return array
+	 */
+	public static function wp_die_handler($handler) {
+		return array('Social', 'wp_comment_die_handler');
+	}
+
+	/**
+	 * Don't actually die for aggregation runs.
+	 *
+	 * @static
+	 * @param  string  $message
+	 * @param  string  $title
+	 * @param  array   $args
+	 * @return mixed
+	 */
+	public static function wp_comment_die_handler($message, $title, $args) {
+		if ($message == __('Duplicate comment detected; it looks as though you&#8217;ve already said that!')) {
+			// Keep going
+			throw new Exception(Social::$duplicate_comment_message);
+		}
+	}
+
+	/**
 	 * @var  bool  is Social enabled?
 	 */
 	private $_enabled = null;
@@ -273,7 +310,7 @@ final class Social {
 	public function init() {
 		// Load the language translations
 		if (Social::$loaded_by_theme) {
-			$path = trailingslashit(SOCIAL_PATH).'lang';
+			$path = trailingslashit(Social::$plugins_path).'lang';
 			load_theme_textdomain('social', $path);
 		}
 		else {
@@ -286,9 +323,6 @@ final class Social {
 			wp_die(__("Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers.", 'social'));
 		}
 
-		// Set the logger
-		Social::$log = Social_Log::factory();
-
 		// Just activated?
 		if (!Social::option('install_date')) {
 			Social::option('install_date', current_time('timestamp', 1));
@@ -298,6 +332,15 @@ final class Social {
 		// Plugins URL
 		$url = plugins_url('', SOCIAL_FILE);
 		Social::$plugins_url = trailingslashit(apply_filters('social_plugins_url', $url));
+
+		Social::$plugins_path = trailingslashit(apply_filters('social_plugins_path', SOCIAL_PATH));
+
+		// Set the logger
+		Social::$log = Social_Log::factory();
+
+		// Require Facebook and Twitter by default.
+		require Social::$plugins_path.'social-twitter.php';
+		require Social::$plugins_path.'social-facebook.php';
 	}
 
 	/**
@@ -430,7 +473,7 @@ final class Social {
 					'social_controller' => 'cron',
 					'social_action' => 'check_crons',
 					'social_api_key' => Social::option('system_cron_api_key')
-				))),
+				), null, '&')),
 				array(
 					'timeout' => 0.01,
 					'blocking' => false,
@@ -486,7 +529,7 @@ final class Social {
 		}
 
 		if ($file == $this_plugin) {
-			$settings_link = '<a href="'.esc_url(admin_url('options-general.php?page=social.php')).'">'.__("Settings", "photosmash-galleries").'</a>';
+			$settings_link = '<a href="'.esc_url(admin_url('options-general.php?page=social.php')).'">'.__('Settings', 'social').'</a>';
 			array_unshift($links, $settings_link);
 		}
 		return $links;
@@ -515,15 +558,15 @@ final class Social {
 				// CRON Lock
 				if (Social::option('cron_lock_error') !== null) {
 					$upload_dir = wp_upload_dir();
-					if (is_writeable(SOCIAL_PATH) or (isset($upload_dir['basedir']) and is_writeable($upload_dir['basedir']))) {
+					if (is_writeable(Social::$plugins_path) or (isset($upload_dir['basedir']) and is_writeable($upload_dir['basedir']))) {
 						delete_option('social_cron_lock_error');
 					}
 					else {
 						if (isset($upload_dir['basedir'])) {
-							$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', 'social'), esc_html(SOCIAL_PATH), esc_html($upload_dir['basedir']));
+							$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', 'social'), esc_html(Social::$plugins_path), esc_html($upload_dir['basedir']));
 						}
 						else {
-							$message = sprintf(__('Social requires that %s is writable for CRON jobs.', 'social'), esc_html(SOCIAL_PATH));
+							$message = sprintf(__('Social requires that %s is writable for CRON jobs.', 'social'), esc_html(Social::$plugins_path));
 						}
 
 						echo '<div class="error"><p>'.esc_html($message).'</p></div>';
@@ -543,7 +586,7 @@ final class Social {
 			$error = Social::option('log_write_error');
 			if ($error == '1') {
 				echo '<div class="error"><p>'.
-					sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_dismiss">[Dismiss]</a>', 'social'), esc_html(SOCIAL_PATH), esc_url(admin_url('index.php?social_controller=settings&social_action=clear_log_write_error'))).
+					sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_dismiss">[Dismiss]</a>', 'social'), esc_html(Social::$plugins_path), esc_url(admin_url('index.php?social_controller=settings&social_action=clear_log_write_error'))).
 					'</p></div>';
 			}
 		}
@@ -1095,7 +1138,7 @@ final class Social {
 				if ($post !== null) {
 					$queue->add($id, $interval)->save();
 					$semaphore->increment();
-					$this->request(site_url('?social_controller=aggregation&social_action=run&post_id='.$id), 'run');
+					$this->request(home_url('index.php?social_controller=aggregation&social_action=run&post_id='.$id), 'run');
 				}
 				else {
 					$queue->remove($id, $timestamp)->save();
@@ -1511,20 +1554,21 @@ final class Social {
 		$social_items = '';
 		$status_url = null;
 		$comment_type = $comment->comment_type;
-		if (!($service = $this->service($comment->comment_type))) {
-			$comment_type = 'wordpress';
-		}
-		if (!in_array($comment->comment_type, apply_filters('social_ignored_comment_types', array(
+		$ignored_types = apply_filters('social_ignored_comment_types', array(
 			'wordpress',
 			'pingback'
-		)))
-		) {
-
+		));
+		// set the comment type to WordPress if we can't load the Social service (perhaps it was deactivated)
+		// and the type isn't an ignored type
+		if (!($service = $this->service($comment->comment_type)) && !in_array($comment->comment_type, $ignored_types)) {
+			$comment_type = 'wordpress';
+		}
+		// set Social Items for Social comments
+		if (!in_array($comment->comment_type, $ignored_types)) {
 			$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
 			if (!empty($status_id)) {
 				$status_url = $service->status_url(get_comment_author(), $status_id);
 			}
-
 			// Social items?
 			if (!empty($comment->social_items)) {
 				if (is_object($service) && method_exists($service, 'key')) {
@@ -1629,7 +1673,7 @@ final class Social {
 		global $wpdb; // Don't delete, this is used in upgrade files.
 
 		$upgrades = array(
-			SOCIAL_PATH.'upgrades/2.0.php',
+			Social::$plugins_path.'upgrades/2.0.php',
 		);
 		$upgrades = apply_filters('social_upgrade_files', $upgrades);
 		foreach ($upgrades as $file) {
@@ -1915,7 +1959,7 @@ else if (isset($network_plugin)) {
 }
 
 define('SOCIAL_FILE', $social_file);
-define('SOCIAL_PATH', dirname(__FILE__).'/');
+define('SOCIAL_PATH', WP_PLUGIN_DIR.'/'.basename(dirname($social_file)).'/');
 
 // Register Social's autoloading
 spl_autoload_register(array('Social', 'auto_load'));
@@ -1967,9 +2011,5 @@ add_filter('social_comments_array', array($social, 'comments_array'), 100, 2);
 
 // Service filters
 add_filter('social_auto_load_class', array($social, 'auto_load_class'));
-
-// Require Facebook and Twitter by default.
-require SOCIAL_PATH.'social-twitter.php';
-require SOCIAL_PATH.'social-facebook.php';
 
 } // End class_exists check

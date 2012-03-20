@@ -143,7 +143,7 @@ final class Social_View {
 	 * @return string
 	 */
 	private function path($file) {
-		return SOCIAL_PATH.'views/'.$file.'.php';
+		return Social::$plugins_path.'views/'.$file.'.php';
 	}
 
 } // End Social_View

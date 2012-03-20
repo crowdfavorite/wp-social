@@ -56,6 +56,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		Social::log('Searching by URL(s) for post #:post_id. (Query: :url)', array(
 			'post_id' => $post->ID,
 			'url' => $url,
+			'rpp' => 100
 		));
 		$request = wp_remote_get($url);
 		if (!is_wp_error($request)) {
@@ -218,8 +219,8 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 					if ($skip_approval) {
 						$commentdata['comment_approved'] = '1';
 					}
-					else {
-						$commentdata['comment_approved'] = wp_allow_comment($commentdata);
+					else if (($commentdata = $this->allow_comment($commentdata, $result->id, $post)) === false) {
+						continue;
 					}
 
 					// sanity check to make sure this comment is not a duplicate
@@ -274,7 +275,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 							}
 
 							if (get_option('comments_notify') and $commentdata['comment_approved'] and (!isset($commentdata['user_id']) or $post->post_author != $commentdata['user_id'])) {
-								wp_notify_postauthor($comment_id, isset($commentdata['comment_type']) ? $commentdata['comment_type'] : '');
+								wp_notify_postauthor($comment_id, 'comment');
 							}
 						}
 					}
