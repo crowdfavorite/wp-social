@@ -2,8 +2,8 @@
 Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter
 Requires at least: 3.2
-Tested up to: 3.3rc1
-Stable tag: 2.0
+Tested up to: 3.3.1
+Stable tag: 2.0.1
 
 Broadcast posts to Twitter and/or Facebook, pull in items from each as comments, and allow commenters to use their Twitter/Facebook identities.
 
@@ -255,6 +255,10 @@ For a more in-depth look at what you need to be aware of when upgrading from 1.x
 4. View of replies imported from Twitter as comments, @anywhere support 
 
 == Changelog ==
+
+= 2.0.1 =
+* Localization fixes (props thomasclausen)
+* Minor bug fixes
 
 = 2.0 =
 * Complete re-write for improved reliability and ease of future expansion.
