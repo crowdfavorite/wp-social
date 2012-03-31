@@ -239,71 +239,15 @@ final class Social_Aggregation_Queue {
 	public static function next_run($timetamp) {
 		$current_time = current_time('timestamp', 1);
 		$diff = $timetamp - $current_time;
-		if ($diff < Kohana_Date::HOUR) {
-			$next_run = Kohana_Date::fuzzy_span($timetamp, $current_time);
+		if ($diff < Social_Date::HOUR) {
+			$next_run = Social_Date::fuzzy_span($timetamp, $current_time);
 		}
-		else if ($diff < (Kohana_Date::DAY * 2)) {
-			$span = Kohana_Date::span($timetamp, $current_time);
-
-			// Days
-			$days = '';
-			if (!empty($span['days'])) {
-				if ($span['days'] == '1') {
-					$days = __('1 day', 'social');
-				}
-				else {
-					$days = sprintf(__('%s days', 'social'), $span['days']);
-				}
-			}
-
-			// Hours
-			$hours = '';
-			if (!empty($span['hours'])) {
-				if ($span['hours'] == '1') {
-					$hours = __('1 hour', 'social');
-				}
-				else {
-					$hours = sprintf(__('%s hours', 'social'), $span['hours']);
-				}
-			}
-
-			// Minutes
-			$minutes = '';
-			if (!empty($span['minutes'])) {
-				if ($span['minutes'] == '1') {
-					$minutes = __('1 minute', 'social');
-				}
-				else {
-					$minutes = sprintf(__('%s minutes', 'social'), $span['minutes']);
-				}
-			}
-
-			if (!empty($days) and !empty($hours) and !empty($minutes)) {
-				$next_run = $days.' '.$hours.' '.$minutes;
-			}
-			else if (!empty($days) and !empty($hours) and empty($minutes)) {
-				$next_run = $days.' '.$hours;
-			}
-			else if (!empty($days) and !empty($minutes) and empty($hours)) {
-				$next_run = $days.' '.$minutes;
-			}
-			else if (!empty($hours) and !empty($minutes)) {
-				$next_run = $hours.' '.$minutes;
-			}
-			else if (!empty($days)) {
-				$next_run = $days;
-			}
-			else if (!empty($hours)) {
-				$next_run = $hours;
-			}
-			else {
-				$next_run = $minutes;
-			}
-
+		else if ($diff < (Social_Date::DAY * 2)) {
+			$next_run = Social_Date::span_formatted($timetamp, $current_time);
 			$next_run = sprintf(__('approximately %s', 'social'), $next_run);
 		}
 		else {
-			$next_run = Kohana_Date::fuzzy_span($timetamp, $current_time);
+			$next_run = Social_Date::fuzzy_span($timetamp, $current_time);
 		}
 
 		// Things set by Kohana_Date::fuzzy_span()
