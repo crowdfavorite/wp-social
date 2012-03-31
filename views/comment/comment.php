@@ -37,7 +37,7 @@ if (strpos($comment_type, 'social-') === false) {
 				</a>
 				<?php endif; ?>
 			</span>
-			<a href="<?php echo esc_url(get_comment_link(get_comment_ID())); ?>" class="social-posted-when" target="_blank"><?php echo esc_html(sprintf(__('%s ago', 'social'), human_time_diff(strtotime($comment->comment_date_gmt)))); ?></a>
+			<a href="<?php echo esc_url(get_comment_link(get_comment_ID())); ?>" class="social-posted-when" target="_blank"><?php echo esc_html(Social_Date::span_comment(strtotime($comment->comment_date_gmt))); ?></a>
 		</div>
 	</div>
 	<div class="social-comment-body">
