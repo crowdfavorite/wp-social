@@ -103,8 +103,45 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 				if (isset($post->broadcasted_ids[$this->_key][$account->id()])) {
 					$broadcasted_ids = $post->broadcasted_ids[$this->_key][$account->id()];
 
+					// Mentions
+					Social::log('Aggregating Twitter via statuses/mentions');
+					$response = $this->request($account, 'statuses/mentions', array(
+						'count' => 200,
+					));
+					if ($response !== false and is_array($response->body()->response) and count($response->body()->response)) {
+						foreach ($response->body()->response as $result) {
+							if ($this->is_original_broadcast($post, $result->id)) {
+								continue;
+							}
+							$data = array(
+								'username' => $result->user->screen_name,
+							);
+							// existing comment
+							if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
+								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', true, $data);
+								continue;
+							}
+							// not a reply to a broadcast
+							if (!isset($broadcasted_ids[$result->in_reply_to_status_id])) {
+								continue;
+							}
+							Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
+							$post->aggregated_ids[$this->_key][] = $result->id;
+							$post->results[$this->_key][$result->id] = (object) array(
+								'id' => $result->id,
+								'from_user_id' => $result->user->id,
+								'from_user' => $result->user->screen_name,
+								'text' => $result->text,
+								'created_at' => $result->created_at,
+								'profile_image_url' => $result->user->profile_image_url,
+								'in_reply_to_status_id' => $result->in_reply_to_status_id,
+								'raw' => $result,
+							);
+						}
+					}
+
+					// Retweets
 					foreach ($broadcasted_ids as $broadcasted_id => $data) {
-						// Retweets
 						Social::log('Aggregating Twitter via statuses/retweets');
 						$response = $this->request($account, 'statuses/retweets/'.$broadcasted_id);
 						if ($response !== false and is_array($response->body()->response) and count($response->body()->response)) {
@@ -124,44 +161,6 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 								}
 
 								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'retweet', false, $data);
-								$post->aggregated_ids[$this->_key][] = $result->id;
-								$post->results[$this->_key][$result->id] = (object) array(
-									'id' => $result->id,
-									'from_user_id' => $result->user->id,
-									'from_user' => $result->user->screen_name,
-									'text' => $result->text,
-									'created_at' => $result->created_at,
-									'profile_image_url' => $result->user->profile_image_url,
-									'in_reply_to_status_id' => $result->in_reply_to_status_id,
-									'raw' => $result,
-								);
-							}
-						}
-
-						// Mentions
-						Social::log('Aggregating Twitter via statuses/mentions');
-						$response = $this->request($account, 'statuses/mentions', array(
-							'since_id' => $broadcasted_id,
-							'count' => 200,
-						));
-						if ($response !== false and is_array($response->body()->response) and count($response->body()->response)) {
-							foreach ($response->body()->response as $result) {
-								if ($this->is_original_broadcast($post, $result->id)) {
-									continue;
-								}
-								$data = array(
-									'username' => $result->user->screen_name,
-								);
-								// existing comment
-								if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
-									Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', true, $data);
-									continue;
-								}
-								// not a reply to a broadcast
-								if (!isset($broadcasted_ids[$result->in_reply_to_status_id])) {
-									continue;
-								}
-								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
 								$post->aggregated_ids[$this->_key][] = $result->id;
 								$post->results[$this->_key][$result->id] = (object) array(
 									'id' => $result->id,
