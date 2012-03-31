@@ -121,8 +121,9 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', true, $data);
 								continue;
 							}
-							// not a reply to a broadcast
-							if (!isset($broadcasted_ids[$result->in_reply_to_status_id])) {
+							// not a reply to a broadcast, or a reply to an aggregated (or broadcast) comment
+							if (!isset($broadcasted_ids[$result->in_reply_to_status_id]) && 
+								!in_array($result->in_reply_to_status_id, $post->aggregated_ids[$this->_key])) {
 								continue;
 							}
 							Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
