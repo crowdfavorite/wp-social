@@ -1609,11 +1609,9 @@ final class Social {
 	 * @return array
 	 */
 	public function post_row_actions(array $actions, $post) {
-		if ($post->post_status == 'publish') {
-			if (!in_array(Social::option('fetch_comments'), array('1', '2'))) {
-				$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', 'social'), esc_url(wp_nonce_url(admin_url('index.php?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID).
-					'<img src="'.esc_url(admin_url('images/wpspin_light.gif')).'" class="social_run_aggregation_loader" />';
-			}
+		if ($post->post_status == 'publish' && in_array(Social::option('fetch_comments'), array('1', '2'))) {
+			$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', 'social'), esc_url(wp_nonce_url(admin_url('index.php?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID).
+				'<img src="'.esc_url(admin_url('images/wpspin_light.gif')).'" class="social_run_aggregation_loader" />';
 		}
 		return $actions;
 	}
@@ -1636,7 +1634,7 @@ final class Social {
 			and ($post_type_object = get_post_type_object($current_object->post_type))
 				and current_user_can($post_type_object->cap->edit_post, $current_object->ID)
 					and ($post_type_object->show_ui or 'attachment' == $current_object->post_type)
-						and (!in_array(Social::option('fetch_comments'), array('1', '2')))
+						and (in_array(Social::option('fetch_comments'), array('1', '2')))
 		) {
 			$wp_admin_bar->add_menu(array(
 				'parent' => 'comments',

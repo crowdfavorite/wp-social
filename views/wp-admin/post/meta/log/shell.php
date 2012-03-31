@@ -12,7 +12,7 @@
 	</p>
 </div><!-- .social-meta-box-block -->
 
-<?php if (!in_array(Social::option('fetch_comments'), array('1', '2'))) { ?>
+<?php if (in_array(Social::option('fetch_comments'), array('1', '2'))) { ?>
 <div class="social-meta-box-block cf-clearfix">
 	<h4>
 		<?php _e('Manual Refresh', 'social'); ?>
