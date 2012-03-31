@@ -99,9 +99,8 @@ ob_start();
 			<div id="comments" class="social-comments">
 				<?php
 				if ($last_reply_time) {
-					echo '<div class="social-last-reply-when">'.sprintf(__('Last reply was %s ago', 'social'), human_time_diff($last_reply_time)).'</div>';
+					echo '<div class="social-last-reply-when">'.sprintf(__('Last reply was %s', 'social'), Social_Date::span_comment($last_reply_time)).'</div>';
 				}
-
 				if (count($social_items)) {
 					echo '<div id="social-items-wrapper">';
 					foreach ($social_items as $group => $items) {
