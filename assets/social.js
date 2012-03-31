@@ -174,7 +174,7 @@
 							$('#post_to_service').prop('checked', true);
 							var $author = $parent.find('.social-comment-author a');
 							insertTwitterUsername($author, $textarea);
-							return;
+							return false;
 						}
 					});
 				}
@@ -205,7 +205,11 @@
 							if ($respond.parent().hasClass('social-twitter')) {
 								var content = $textarea.val();
 								if (!content.length || content.substring(0, 1) != '@') {
-									insertTwitterUsername($respond.closest('li').find('.social-comment-author a'), $textarea, content);
+									insertTwitterUsername(
+										$respond.closest('li').find('.social-comment-author a'),
+										$textarea,
+										content
+									);
 								}
 							}
 						}
