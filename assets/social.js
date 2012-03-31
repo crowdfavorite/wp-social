@@ -139,38 +139,50 @@
 				if (extraContent !== undefined) {
 					username += extraContent;
 				}
-
-				var pos = username.length;
-
-				$textarea.val(username);
-				if ($textarea.get(0).setSelectionRange) {
-					$textarea.focus();
-					$textarea.get(0).setSelectionRange(pos, pos);
-				} else if ($textarea.createTextRange) {
-					var range = $textarea.get(0).createTextRange();
-					range.collapse(true);
-					range.moveEnd('character', pos);
-					range.moveStart('character', pos);
-					range.select();
+				var val = $textarea.val();
+				if (val.substr(0, username.length) != username) {
+					var content = '';
+					var content = (val.length > 0 ? username + ' ' + val : username);
+					var pos = content.length;
+					$textarea.val(content);
+					if ($textarea.get(0).setSelectionRange) {
+						$textarea.focus();
+						$textarea.get(0).setSelectionRange(pos, pos);
+					}
+					else if ($textarea.createTextRange) {
+						var range = $textarea.get(0).createTextRange();
+						range.collapse(true);
+						range.moveEnd('character', pos);
+						range.moveStart('character', pos);
+						range.select();
+					}
 				}
 
 				var author_rel = $author.attr('rel').split(' ');
 				$('#in_reply_to_status_id').val(author_rel[0]);
 			}
 
-			var $use_twitter_reply = $('#use_twitter_reply');
 			$('.comment-reply-link').click(function() {
 				$('.comment-reply-link').show();
 				$(this).hide();
 				var $parent = $(this).closest('li');
 				var $textarea = $parent.find('textarea');
-				if ($parent.hasClass('social-twitter') && $use_twitter_reply.val() == '1') {
-					var $author = $parent.find('.social-comment-author a');
-					insertTwitterUsername($respond.closest('li').find('.social-comment-author a'), $textarea);
+				if ($parent.hasClass('social-twitter')) {
+					$('#post_accounts option').each(function() {
+						if ($(this).data('type') == 'twitter') {
+							$('#post_accounts').val($(this).attr('value')).change();
+							$('#post_to_service').prop('checked', true);
+							var $author = $parent.find('.social-comment-author a');
+							insertTwitterUsername($author, $textarea);
+							return false;
+						}
+					});
 				}
 			});
+
 			$('#cancel-comment-reply-link').click(function() {
 				$('.comment-reply-link').show();
+				$('#post_to_service').prop('checked', false);
 			});
 
 			var $avatar = $('#commentform .avatar');
@@ -180,27 +192,29 @@
 					var avatar = $(this).attr('rel');
 					if (avatar !== undefined) {
 						$avatar.attr('src', avatar);
-					} else {
+					}
+					else {
 						$avatar.attr('src', original_avatar);
 					}
 					var label = $(this).parent().attr('label');
 					if (label !== undefined) {
 						$('#post_to').show().find('span').html(label);
-
 						if (label === 'Twitter') {
 							var $respond = $('#respond');
 							var $textarea = $respond.find('textarea');
 							if ($respond.parent().hasClass('social-twitter')) {
 								var content = $textarea.val();
 								if (!content.length || content.substring(0, 1) != '@') {
-									insertTwitterUsername($respond.closest('li').find('.social-comment-author a'), $textarea, content);
+									insertTwitterUsername(
+										$respond.closest('li').find('.social-comment-author a'),
+										$textarea,
+										content
+									);
 								}
 							}
-							$use_twitter_reply.val('1');
-						} else {
-							$use_twitter_reply.val('0');
 						}
-					} else {
+					}
+					else {
 						$('#post_to').hide();
 					}
 				});
