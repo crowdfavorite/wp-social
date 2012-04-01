@@ -103,6 +103,42 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 				if (isset($post->broadcasted_ids[$this->_key][$account->id()])) {
 					$broadcasted_ids = $post->broadcasted_ids[$this->_key][$account->id()];
 
+					// Retweets
+					foreach ($broadcasted_ids as $broadcasted_id => $data) {
+						Social::log('Aggregating Twitter via statuses/retweets');
+						$response = $this->request($account, 'statuses/retweets/'.$broadcasted_id);
+						if ($response !== false and is_array($response->body()->response) and count($response->body()->response)) {
+							foreach ($response->body()->response as $result) {
+								$data = array(
+									'username' => $result->user->screen_name,
+								);
+
+								if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
+									Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'retweet', true, $data);
+									continue;
+								}
+								// sanity check
+								if ($this->is_original_broadcast($post, $result->id)) {
+									continue;
+								}
+
+								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'retweet', false, $data);
+								$post->aggregated_ids[$this->_key][] = $result->id;
+								$post->results[$this->_key][$result->id] = (object) array(
+									'id' => $result->id,
+									'from_user_id' => $result->user->id,
+									'from_user' => $result->user->screen_name,
+									'text' => $result->text,
+									'created_at' => $result->created_at,
+									'profile_image_url' => $result->user->profile_image_url,
+									'in_reply_to_status_id' => $result->in_reply_to_status_id,
+									'raw' => $result,
+									'comment_type' => 'social-'.$this->_key.'-rt',
+								);
+							}
+						}
+					}
+
 					// Mentions
 					Social::log('Aggregating Twitter via statuses/mentions');
 					$response = $this->request($account, 'statuses/mentions', array(
@@ -142,42 +178,6 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 								'raw' => $result,
 								'comment_type' => 'social-'.$this->_key,
 							);
-						}
-					}
-
-					// Retweets
-					foreach ($broadcasted_ids as $broadcasted_id => $data) {
-						Social::log('Aggregating Twitter via statuses/retweets');
-						$response = $this->request($account, 'statuses/retweets/'.$broadcasted_id);
-						if ($response !== false and is_array($response->body()->response) and count($response->body()->response)) {
-							foreach ($response->body()->response as $result) {
-								$data = array(
-									'username' => $result->user->screen_name,
-								);
-
-								if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
-									Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'retweet', true, $data);
-									continue;
-								}
-								// sanity check
-								if ($this->is_original_broadcast($post, $result->id)) {
-									continue;
-								}
-
-								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'retweet', false, $data);
-								$post->aggregated_ids[$this->_key][] = $result->id;
-								$post->results[$this->_key][$result->id] = (object) array(
-									'id' => $result->id,
-									'from_user_id' => $result->user->id,
-									'from_user' => $result->user->screen_name,
-									'text' => $result->text,
-									'created_at' => $result->created_at,
-									'profile_image_url' => $result->user->profile_image_url,
-									'in_reply_to_status_id' => $result->in_reply_to_status_id,
-									'raw' => $result,
-									'comment_type' => 'social-'.$this->_key.'-rt',
-								);
-							}
 						}
 					}
 				}
