@@ -488,4 +488,29 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		return apply_filters('social_facebook_page_image_url', 'http://graph.facebook.com/'.$account->id.'/picture', $account);
 	}
 
+	/**
+	 * Comment types for this service.
+	 *
+	 * @static
+	 * @return array
+	 */
+	public static function comment_types() {
+		return array(
+			'social-facebook',
+			'social-facebook-like',
+		);
+	}
+
+	/**
+	 * Comment types that are "meta". In this case, Likes (and perhaps Shares in the future).
+	 *
+	 * @static
+	 * @return array
+	 */
+	public static function comment_types_meta() {
+		return array(
+			'social-facebook-like',
+		);
+	}
+
 } // End Social_Service_Facebook

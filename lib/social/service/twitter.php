@@ -599,5 +599,30 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 
 		return $url;
 	}
+	
+	/**
+	 * Comment types for this service.
+	 *
+	 * @static
+	 * @return array
+	 */
+	public static function comment_types() {
+		return array(
+			'social-twitter',
+			'social-twitter-rt',
+		);
+	}
+
+	/**
+	 * Comment types that are "meta". In this case, Retweets (and perhaps Favorites in the future).
+	 *
+	 * @static
+	 * @return array
+	 */
+	public static function comment_types_meta() {
+		return array(
+			'social-twitter-rt',
+		);
+	}
 
 } // End Social_Service_Twitter
