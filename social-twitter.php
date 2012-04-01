@@ -32,7 +32,7 @@ final class Social_Twitter {
 	 * @return array
 	 */
 	public static function get_avatar_comment_types(array $types) {
-		return array_merge($types, array('social-twitter'));
+		return array_merge($types, Social_Service_Twitter::comment_types());
 	}
 
 	/**
@@ -57,7 +57,7 @@ final class Social_Twitter {
 		foreach ($comments as $key => $comment) {
 			if (is_object($comment)) {
 				$_comments['id_'.$comment->comment_ID] = $comment;
-				if ($comment->comment_type == 'social-twitter') {
+				if (in_array($comment->comment_type, Social_Service_Twitter::comment_types())) {
 					$comment_ids[] = $comment->comment_ID;
 					$tweet_comments['id_'.$comment->comment_ID] = $comment;
 				}

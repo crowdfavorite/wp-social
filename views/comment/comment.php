@@ -1,4 +1,5 @@
 <?php
+// backward compat check
 if (strpos($comment_type, 'social-') === false) {
 	$comment_type = 'social-'.$comment_type;
 }
@@ -10,7 +11,7 @@ if (strpos($comment_type, 'social-') === false) {
 			<?php
 				switch ($comment_type) {
 					case 'pingback':
-						echo '<span class="social-comment-label">Pingback</span>';
+						echo '<span class="social-comment-label">'.__('Pingback', 'social').'</span>';
 					break;
 					default:
 						echo get_avatar($comment, 40);

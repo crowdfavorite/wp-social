@@ -518,7 +518,7 @@ abstract class Social_Service {
 	 * @return bool
 	 */
 	public function show_full_comment($type) {
-		return true;
+		return (!in_array($type, self::comment_types_meta()));
 	}
 
 	/**
@@ -737,6 +737,26 @@ abstract class Social_Service {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Comment types for this service.
+	 *
+	 * @static
+	 * @return array
+	 */
+	public static function comment_types() {
+		return array();
+	}
+
+	/**
+	 * Comment types that are "meta" (not displayed in full).
+	 *
+	 * @static
+	 * @return array
+	 */
+	public static function comment_types_meta() {
+		return array();
 	}
 
 } // End Social_Service

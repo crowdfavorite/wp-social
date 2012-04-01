@@ -287,18 +287,34 @@ final class Social {
 	 *     $twitter = Social::instance()->service('twitter');
 	 *
 	 * @param  string  $key    service key
-	 * @return Social_Service|Social_Service_Twitter|Social_Service_Facebook
+	 * @return mixed Social_Service|Social_Service_Twitter|Social_Service_Facebook|false
 	 */
 	public function service($key) {
 		$services = $this->load_services();
-
-		$key = str_replace('social-', '', $key);
-		$key = apply_filters('social_comment_type_to_service', $key);
-		if (empty($key) or !isset($services[$key])) {
+		if (!isset($services[$key])) {
 			return false;
 		}
-
 		return $services[$key];
+	}
+	
+	/**
+	 * Returns a service by comment type.
+	 *
+	 * Loading a service:
+	 *
+	 *     $twitter = Social::instance()->service_for_comment_type('social-twitter-rt');
+	 *
+	 * @param  string  $key    service key
+	 * @return mixed  Social_Service|Social_Service_Twitter|Social_Service_Facebook|false
+	 */
+	public function service_for_comment_type($comment_type) {
+		$services = $this->load_services();
+		foreach ($services as $service) {
+			if (in_array($comment_type, $service->comment_types())) {
+				return $service;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -1298,9 +1314,11 @@ final class Social {
 		}
 
 		if ($image !== null) {
+			$image = esc_url($image);
+			$size = esc_attr($size);
 			$type = '';
 			if (is_object($comment)) {
-				$type = $comment->comment_type;
+				$type = esc_attr($comment->comment_type);
 			}
 
 			$image = esc_url($image);
@@ -1560,7 +1578,7 @@ final class Social {
 		));
 		// set the comment type to WordPress if we can't load the Social service (perhaps it was deactivated)
 		// and the type isn't an ignored type
-		if (!($service = $this->service($comment->comment_type)) && !in_array($comment->comment_type, $ignored_types)) {
+		if (!($service = $this->service_for_comment_type($comment->comment_type)) && !in_array($comment->comment_type, $ignored_types)) {
 			$comment_type = 'wordpress';
 		}
 		// set Social Items for Social comments
@@ -1960,8 +1978,29 @@ final class Social {
 
 		return $url;
 	}
+	
+	public static function comments_feed_exclusions($where) {
+		global $wpdb;
+		$meta_types = array();
+// get services
+		$services = Social::instance()->services();
+// ask each service for it's "meta" comment types
+		foreach ($services as $service) {
+			$meta_types = array_merge($meta_types, $service->comment_types_meta());
+		}
+		$meta_types = array_unique($meta_types);
+		if (count($meta_types)) {
+			$where .= " AND comment_type NOT IN ('".implode("', '", array_map('social_wpdb_escape', $meta_types))."') ";
+		}
+		return $where;
+	}
 
 } // End Social
+
+function social_wpdb_escape($str) {
+	global $wpdb;
+	return $wpdb->escape($str);
+}
 
 $social_file = __FILE__;
 if (isset($plugin)) {
@@ -2024,6 +2063,7 @@ add_filter('register', array($social, 'register'));
 add_filter('loginout', array($social, 'loginout'));
 add_filter('post_row_actions', array($social, 'post_row_actions'), 10, 2);
 add_filter('social_comments_array', array($social, 'comments_array'), 100, 2);
+add_filter('comment_feed_where', array($social, 'comments_feed_exclusions'));
 
 // Service filters
 add_filter('social_auto_load_class', array($social, 'auto_load_class'));
