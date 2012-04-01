@@ -1876,12 +1876,7 @@ final class Social {
 			// Register services
 			$registered_services = apply_filters('social_register_service', array());
 			if (is_array($registered_services) and count($registered_services)) {
-				$accounts = array();
-				$commenter = get_user_meta(get_current_user_id(), 'social_commenter', true);
-
-				if ($commenter != 'true') {
-					$accounts = Social::option('accounts');
-				}
+				$accounts = Social::option('accounts');
 				foreach ($registered_services as $service) {
 					if (!isset($services[$service])) {
 						$service_accounts = array();
@@ -1904,38 +1899,44 @@ final class Social {
 					}
 				}
 
-				$personal_accounts = get_user_meta(get_current_user_id(), 'social_accounts', true);
-				if (is_array($personal_accounts)) {
-					foreach ($personal_accounts as $key => $_accounts) {
-						if (count($_accounts) and isset($services[$key])) {
-							$class = 'Social_Service_'.$key.'_Account';
-							foreach ($_accounts as $account_id => $account) {
-								// TODO Shouldn't have to do this. Fix later.
-								$account->universal = '0';
-
-								if ($services[$key]->account_exists($account_id) and !defined('IS_PROFILE_PAGE')) {
-									$account = $this->merge_accounts($services[$key]->account($account_id)->as_object(), $account, $key);
-								}
-								$account = new $class((object) $account);
-								$services[$key]->account($account);
-
-								// Flag social as enabled, we have at least one account.
-								if ($this->_enabled === null) {
-									$this->_enabled = true;
-								}
-							}
-						}
-					}
-				}
+				wp_cache_set('services', $services, 'social');
 			}
-
-			wp_cache_set('services', $services, 'social');
 		}
 		else if ($this->_enabled === null and is_array($services)) {
 			foreach ($services as $service) {
 				if (count($service->accounts())) {
 					$this->_enabled = true;
 					break;
+				}
+			}
+		}
+
+// don't return global services for commenters
+		$commenter = get_user_meta(get_current_user_id(), 'social_commenter', true);
+		if ($commenter == 'true' && !current_user_can('publish_posts')) {
+			$services = array();
+		}
+
+		$personal_accounts = get_user_meta(get_current_user_id(), 'social_accounts', true);
+		if (is_array($personal_accounts)) {
+			foreach ($personal_accounts as $key => $_accounts) {
+				if (count($_accounts) and isset($services[$key])) {
+					$class = 'Social_Service_'.$key.'_Account';
+					foreach ($_accounts as $account_id => $account) {
+						// TODO Shouldn't have to do this. Fix later.
+						$account->universal = '0';
+
+						if ($services[$key]->account_exists($account_id) and !defined('IS_PROFILE_PAGE')) {
+							$account = $this->merge_accounts($services[$key]->account($account_id)->as_object(), $account, $key);
+						}
+						$account = new $class((object) $account);
+						$services[$key]->account($account);
+
+						// Flag social as enabled, we have at least one account.
+						if ($this->_enabled === null) {
+							$this->_enabled = true;
+						}
+					}
 				}
 			}
 		}
