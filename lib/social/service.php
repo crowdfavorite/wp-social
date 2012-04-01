@@ -739,4 +739,24 @@ abstract class Social_Service {
 		return false;
 	}
 
+	/**
+	 * Comment types for this service.
+	 *
+	 * @static
+	 * @return array
+	 */
+	public static function comment_types() {
+		return array();
+	}
+
+	/**
+	 * Comment types that are "meta" (not displayed in full).
+	 *
+	 * @static
+	 * @return array
+	 */
+	public static function comment_types_meta() {
+		return array();
+	}
+
 } // End Social_Service
