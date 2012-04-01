@@ -405,16 +405,6 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	}
 
 	/**
-	 * Show full comment?
-	 *
-	 * @param  string  $type
-	 * @return bool
-	 */
-	public function show_full_comment($type) {
-		return ($type !== 'social-facebook-like');
-	}
-
-	/**
 	 * Displays the auth item output.
 	 *
 	 * @param  Social_Service_Account  $account

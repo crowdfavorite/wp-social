@@ -54,10 +54,7 @@ final class Social_Facebook {
 	 * @return array
 	 */
 	public static function get_avatar_comment_types(array $types) {
-		return array_merge($types, array(
-			'social-facebook',
-			'social-facebook-like'
-		));
+		return array_merge($types, Social_Service_Facebook::comment_types());
 	}
 
 	/**
@@ -73,13 +70,11 @@ final class Social_Facebook {
 	 * @return string
 	 */
 	public static function get_avatar($avatar, $comment, $size, $default, $alt) {
-		if (is_object($comment) and $comment->comment_type == 'social-facebook-like') {
-			$image = get_comment_meta($comment->comment_ID, 'social_profile_image_url', true);
+		if (is_object($comment) and in_array($comment->comment_type, Social_Service_Facebook::comment_types())) {
+			$image = esc_url(get_comment_meta($comment->comment_ID, 'social_profile_image_url', true));
 			if ($image !== null) {
-				$type = '';
-				if (is_object($comment)) {
-					$type = $comment->comment_type;
-				}
+				$size = esc_attr($size);
+				$type = esc_attr($comment->comment_type);
 				return "<img alt='{$alt}' src='{$image}' class='avatar avatar-{$size} photo {$type}' height='25' width='25' />";
 			}
 		}
@@ -108,7 +103,7 @@ final class Social_Facebook {
 		foreach ($comments as $key => $comment) {
 			if (is_object($comment)) {
 				$_comments['id_'.$comment->comment_ID] = $comment;
-				if (in_array($comment->comment_type, array('social-facebook', 'social-facebook-like'))) {
+				if (in_array($comment->comment_type, Social_Service_Facebook::comment_types())) {
 					$comment_ids[] = $comment->comment_ID;
 					$facebook_comments['id_'.$comment->comment_ID] = $comment;
 				}

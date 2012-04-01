@@ -518,7 +518,7 @@ abstract class Social_Service {
 	 * @return bool
 	 */
 	public function show_full_comment($type) {
-		return true;
+		return (!in_array($type, self::comment_types_meta()));
 	}
 
 	/**

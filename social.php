@@ -1314,9 +1314,11 @@ final class Social {
 		}
 
 		if ($image !== null) {
+			$image = esc_url($image);
+			$size = esc_attr($size);
 			$type = '';
 			if (is_object($comment)) {
-				$type = $comment->comment_type;
+				$type = esc_attr($comment->comment_type);
 			}
 
 			$image = esc_url($image);
@@ -1984,7 +1986,6 @@ final class Social {
 		$services = Social::instance()->services();
 // ask each service for it's "meta" comment types
 		foreach ($services as $service) {
-// add to list
 			$meta_types = array_merge($meta_types, $service->comment_types_meta());
 		}
 		$meta_types = array_unique($meta_types);
