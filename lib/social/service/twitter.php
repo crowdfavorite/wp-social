@@ -140,6 +140,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 								'profile_image_url' => $result->user->profile_image_url,
 								'in_reply_to_status_id' => $result->in_reply_to_status_id,
 								'raw' => $result,
+								'comment_type' => 'social-'.$this->_key,
 							);
 						}
 					}
@@ -158,10 +159,9 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 									Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'retweet', true, $data);
 									continue;
 								}
-								else {
-									if ($this->is_original_broadcast($post, $result->id)) {
-										continue;
-									}
+								// sanity check
+								if ($this->is_original_broadcast($post, $result->id)) {
+									continue;
 								}
 
 								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'retweet', false, $data);
@@ -175,6 +175,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 									'profile_image_url' => $result->user->profile_image_url,
 									'in_reply_to_status_id' => $result->in_reply_to_status_id,
 									'raw' => $result,
+									'comment_type' => 'social-'.$this->_key.'-rt',
 								);
 							}
 						}
@@ -208,7 +209,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 
 					$commentdata = array(
 						'comment_post_ID' => $post->ID,
-						'comment_type' => 'social-'.$this->_key,
+						'comment_type' => $result->comment_type,
 						'comment_author' => $wpdb->escape($account->username()),
 						'comment_author_email' => $wpdb->escape($this->_key.'.'.$account->id().'@example.com'),
 						'comment_author_url' => $account->url(),
