@@ -242,6 +242,15 @@ This is because we completely refactored Social's codebase for 2.0. Chances are 
 
 For a more in-depth look at what you need to be aware of when upgrading from 1.x to 2.0 please have a look at the wiki entry: https://github.com/crowdfavorite/wp-social/wiki/Upgrading-from-1.x-to-2.0
 
+= How do I include Facebook Likes and Twitter Retweets in my comments feed? =
+
+The following code should add "meta" comments such as Likes as Retweets to your comments RSS and Atom feeds:
+
+	function social_enable_meta_comments_in_feed() {
+		$social = Social::instance();
+		remove_filter('comment_feed_where', array($social, 'comments_feed_exclusions'));
+	}
+	add_action('init', 'social_enable_meta_comments_in_feed');
 
 
 == Screenshots ==
