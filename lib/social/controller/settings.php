@@ -15,6 +15,7 @@ final class Social_Controller_Settings extends Social_Controller {
 	public function action_index() {
 		if ($this->request->post('submit')) {
 			Social::option('broadcast_format', $this->request->post('social_broadcast_format'));
+			Social::option('comment_broadcast_format', $this->request->post('social_comment_broadcast_format'));
 			Social::option('debug', $this->request->post('social_debug'));
 
 			if (!Social::option('debug')) {
