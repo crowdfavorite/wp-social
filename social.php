@@ -287,18 +287,34 @@ final class Social {
 	 *     $twitter = Social::instance()->service('twitter');
 	 *
 	 * @param  string  $key    service key
-	 * @return Social_Service|Social_Service_Twitter|Social_Service_Facebook
+	 * @return mixed Social_Service|Social_Service_Twitter|Social_Service_Facebook|false
 	 */
 	public function service($key) {
 		$services = $this->load_services();
-
-		$key = str_replace('social-', '', $key);
-		$key = apply_filters('social_comment_type_to_service', $key);
-		if (empty($key) or !isset($services[$key])) {
+		if (!isset($services[$key])) {
 			return false;
 		}
-
 		return $services[$key];
+	}
+	
+	/**
+	 * Returns a service by comment type.
+	 *
+	 * Loading a service:
+	 *
+	 *     $twitter = Social::instance()->service_for_comment_type('social-twitter-rt');
+	 *
+	 * @param  string  $key    service key
+	 * @return mixed  Social_Service|Social_Service_Twitter|Social_Service_Facebook|false
+	 */
+	public function service_for_comment_type($comment_type) {
+		$services = $this->load_services();
+		foreach ($services as $service) {
+			if (in_array($comment_type, $service->comment_types())) {
+				return $service;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -1560,7 +1576,7 @@ final class Social {
 		));
 		// set the comment type to WordPress if we can't load the Social service (perhaps it was deactivated)
 		// and the type isn't an ignored type
-		if (!($service = $this->service($comment->comment_type)) && !in_array($comment->comment_type, $ignored_types)) {
+		if (!($service = $this->service_for_comment_type($comment->comment_type)) && !in_array($comment->comment_type, $ignored_types)) {
 			$comment_type = 'wordpress';
 		}
 		// set Social Items for Social comments

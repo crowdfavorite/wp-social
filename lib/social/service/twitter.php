@@ -106,7 +106,9 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 					// Retweets
 					foreach ($broadcasted_ids as $broadcasted_id => $data) {
 						Social::log('Aggregating Twitter via statuses/retweets');
-						$response = $this->request($account, 'statuses/retweets/'.$broadcasted_id);
+						$response = $this->request($account, 'statuses/retweets/'.$broadcasted_id, array(
+							'count' => 200,
+						));
 						if ($response !== false and is_array($response->body()->response) and count($response->body()->response)) {
 							foreach ($response->body()->response as $result) {
 								$data = array(
@@ -146,7 +148,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 					));
 					if ($response !== false and is_array($response->body()->response) and count($response->body()->response)) {
 						foreach ($response->body()->response as $result) {
-							if ($this->is_original_broadcast($post, $result->id)) {
+							if ($this->is_original_broadcast($post, $result->id) || isset($post->results[$this->_key][$result->id])) {
 								continue;
 							}
 							$data = array(
@@ -582,7 +584,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 */
 	public static function get_comment_author_link($url) {
 		global $comment;
-		if ($comment->comment_type == 'social-twitter') {
+		if (in_array($comment->comment_type, self::comment_types())) {
 			$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
 			$output = str_replace("rel='", "rel='".$status_id." ", $url);
 

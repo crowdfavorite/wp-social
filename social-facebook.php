@@ -47,22 +47,6 @@ final class Social_Facebook {
 	}
 
 	/**
-	 * Quick hook to fix the comment type to service.
-	 *
-	 * @static
-	 * @wp-filter  social_comment_type_to_service
-	 * @param  string  $type
-	 * @return string
-	 */
-	public static function comment_type_to_service($type) {
-		if ($type == 'facebook-like') {
-			$type = 'facebook';
-		}
-
-		return $type;
-	}
-
-	/**
 	 * Adds to the avatar comment types array.
 	 *
 	 * @static
@@ -466,7 +450,6 @@ add_action('social_settings_save', array('Social_Facebook', 'social_settings_sav
 // Filters
 add_filter('social_register_service', array('Social_Facebook', 'register_service'));
 add_filter('social_authorize_url', array('Social_Facebook', 'social_authorize_url'), 10, 2);
-add_filter('social_comment_type_to_service', array('Social_Facebook', 'comment_type_to_service'));
 add_filter('get_avatar', array('Social_Facebook', 'get_avatar'), 10, 5);
 add_filter('get_avatar_comment_types', array('Social_Facebook', 'get_avatar_comment_types'));
 add_filter('social_comments_array', array('Social_Facebook', 'comments_array'), 10, 2);
