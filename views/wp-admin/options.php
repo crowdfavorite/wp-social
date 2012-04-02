@@ -204,6 +204,27 @@
 			<div class="social-content">
 				<table id="social-advanced" class="form-table">
 					<tr>
+						<th>
+							<?php _e('Misc.', 'social'); ?>
+						</th>
+						<td>
+							<ul>
+								<li>
+									<label for="social_use_standard_comments">
+										<input type="checkbox" name="social_use_standard_comments" id="social_use_standard_comments" value="1" <?php checked(Social::option('use_standard_comments'), '1'); ?> />
+										<?php _e("Don't use Social's comment display (use standard theme output instead).", 'social'); ?>
+									</label>
+								</li>
+								<li>
+									<label for="social_disable_no_accounts_warning">
+										<input type="checkbox" name="social_disable_no_accounts_warning" id="social_disable_no_accounts_warning" value="1" <?php checked(Social::option('disable_no_accounts_warning'), '1'); ?> />
+										<?php _e('Hide the "add an account" banner.', 'social'); ?>
+									</label>
+								</li>
+							</ul>
+						</td>
+					</tr>
+					<tr>
 						<th><?php _e('Fetch new comments', 'social'); ?></th>
 						<td>
 							<ul>
@@ -226,7 +247,7 @@
 										<input type="radio" name="social_fetch_comments" value="2" id="fetch_comments_cron" style="position:relative;top:-1px"<?php echo Social::option('fetch_comments') == '2' ? ' checked="checked"' : ''; ?> />
 										<?php _e('Using a custom CRON job <span class="description">(advanced)</span>', 'social'); ?>
 									</label>
-									<p class="description"><?php _e('If you select this option, new tweets and Facebook posts will not be fetched unless you set up a system CRON job or fetch new items manually from the post edit screen. More help is also available in&nbsp;<code>readme.txt</code>.', 'social'); ?></p>
+									<p class="description"><?php _e('If you select this option, new tweets and Facebook posts will not be fetched unless you set up a system CRON job or fetch new items manually from the post edit screen. More help is also available in&nbsp;<code>README.txt</code>.', 'social'); ?></p>
 									<?php if (Social::option('fetch_comments') == '2'): ?>
 									<div class="social-callout">
 										<h3 class="social-title"><?php _e('CRON Setup', 'social'); ?></h3>

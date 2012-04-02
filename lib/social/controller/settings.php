@@ -69,6 +69,22 @@ final class Social_Controller_Settings extends Social_Controller {
 					wp_unschedule_event($timestamp, 'social_cron_15_init');
 				}
 			}
+			
+			// don't warn when there are no Social accounts
+			if (isset($_POST['social_disable_no_accounts_warning'])) {
+				Social::option('disable_no_accounts_warning', '1');
+			}
+			else {
+				delete_option('social_disable_no_accounts_warning');
+			}
+
+			// Disable Social's comment display feature
+			if (isset($_POST['social_use_standard_comments'])) {
+				Social::option('use_standard_comments', '1');
+			}
+			else {
+				delete_option('social_use_standard_comments');
+			}
 
 			do_action('social_settings_save');
 

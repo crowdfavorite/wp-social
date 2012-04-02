@@ -70,6 +70,8 @@ final class Social {
 		'system_cron_api_key' => null,
 		'fetch_comments' => '1',
 		'broadcast_by_default' => '0',
+		'disable_no_accounts_warning' => '0',
+		'use_standard_comments' => '0',
 	);
 
 	/**
@@ -565,7 +567,8 @@ final class Social {
 				echo '<div class="error"><p>'.$message.'</p></div>';
 			}
 
-			if (!$this->_enabled and (!isset($_GET['page']) or $_GET['page'] != basename(SOCIAL_FILE))) {
+			if (!$this->_enabled and (!isset($_GET['page']) or $_GET['page'] != basename(SOCIAL_FILE)) and
+				Social::option('disable_no_accounts_warning') != '1') {
 				$message = sprintf(__('To start using Social, please <a href="%s">add an account</a>.', 'social'), esc_url(Social::settings_url()));
 				echo '<div class="error"><p>'.$message.'</p></div>';
 			}
@@ -1260,11 +1263,15 @@ final class Social {
 	 * @wp-filter  comments_template
 	 * @return string
 	 */
-	public function comments_template() {
+	public function comments_template($path) {
 		global $post;
 
-		if (!(is_singular() and (have_comments() or $post->comment_status == 'open'))) {
-			return;
+		if (!(
+			is_singular() and 
+			(have_comments() or $post->comment_status == 'open') and 
+			Social::option('use_standard_comments') != '1'
+		)) {
+			return $path;
 		}
 
 		if (!defined('SOCIAL_COMMENTS_FILE')) {
