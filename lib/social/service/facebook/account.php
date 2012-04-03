@@ -254,4 +254,32 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 		return $this;
 	}
 
+	/**
+	 * Get all pages (the accounts are already segregated by personal/universal so we just want all of the pages).
+	 *
+	 * @return array
+	 */
+	public function child_accounts() {
+		return array_merge($this->_pages->personal, $this->_pages->universal);
+	}
+
+	/**
+	 * Child account key.
+	 *
+	 * @return string
+	 */
+	public function child_account_key() {
+		return 'pages';
+	}
+
+	/**
+	 * Child account avatar.
+	 *
+	 * @return string
+	 */
+	public function child_account_avatar($child_account) {
+		$service = new Social_Service_Facebook;
+		return $service->page_image_url($child_account);
+	}
+
 } // End Social_Service_Facebook_Account

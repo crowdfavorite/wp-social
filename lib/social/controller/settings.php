@@ -91,9 +91,23 @@ final class Social_Controller_Settings extends Social_Controller {
 			wp_redirect(Social::settings_url(array('saved' => 'true')));
 			exit;
 		}
+		
+		$accounts = array();
+		foreach ($this->social->services() as $key => $service) {
+			if (!isset($accounts[$key])) {
+				$accounts[$key] = array();
+			}
+			foreach ($service->accounts() as $account) {
+				if ($account->universal()) {
+					$accounts[$key][] = $account->id();
+				}
+			}
+		}
 
 		echo Social_View::factory('wp-admin/options', array(
 			'services' => $this->social->services(),
+			'accounts' => $accounts,
+			'defaults' => Social::option('default_accounts'),
 		));
 	}
 
@@ -157,7 +171,7 @@ final class Social_Controller_Settings extends Social_Controller {
 		if ($service !== false) {
 			$accounts = $service->accounts();
 			if (isset($accounts[$account_id])) {
-				$pages = $service->get_pages($accounts[$account_id], $is_profile,false);
+				$pages = $service->get_pages($accounts[$account_id], $is_profile, false);
 				if (count($pages)) {
 					$html = Social_View::factory('wp-admin/parts/facebook/page/settings', array(
 						'service' => $service,

@@ -149,5 +149,32 @@ abstract class Social_Service_Account {
 	public function _username() {
 		return __('Removed Account', 'social');
 	}
+	
+	/**
+	 * Return child accounts (Facebook pages, for example)
+	 *
+	 * @return array
+	 */
+	public function child_accounts() {
+		return array();
+	}
+
+	/**
+	 * Child account key.
+	 *
+	 * @return string
+	 */
+	public function child_account_key() {
+		return '';
+	}
+
+	/**
+	 * Child account avatar.
+	 *
+	 * @return string
+	 */
+	public function child_account_avatar() {
+		return $this->_avatar();
+	}
 
 } // End Social_Service_Account
