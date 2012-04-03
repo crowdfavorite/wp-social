@@ -123,7 +123,7 @@ abstract class Social_Service {
 	public function disconnect_link($account, $is_admin = false, $before = '', $after = '') {
 		$url = $this->disconnect_url($account, $is_admin, $before, $after);
 		if ($is_admin) {
-			$text = '<span title="'.__('Disconnect', 'social').'" class="social-disconnect social-ir">'.__('Disconnect', 'social').'</span>';
+			$text = '<span title="'.__('Disconnect', 'social').'" class="social-disconnect">'.__('Disconnect', 'social').'</span>';
 		}
 		else {
 			$text = __('Disconnect', 'social');

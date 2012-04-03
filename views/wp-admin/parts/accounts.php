@@ -23,7 +23,7 @@ foreach ($services as $key => $service) {
 			$name = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
 ?>
 		<li class="social-accounts-item">
-			<img src="<?php echo esc_url($account->avatar()); ?>" width="24" height="24" />
+			<img src="<?php echo esc_url($account->avatar()); ?>" width="32" height="32" />
 			<span class="name"><?php echo $name; ?></span>
 			<label for="<?php echo esc_attr($key.$account->id()); ?>">
 				<input type="checkbox" name="social_default_accounts[]" id="<?php echo esc_attr($key.$account->id()); ?>" value="<?php echo esc_attr($key.'|'.$account->id()); ?>"<?php echo ((isset($defaults[$key]) and in_array($account->id(), array_values($defaults[$key]))) ? ' checked="checked"' : ''); ?> />
@@ -48,7 +48,7 @@ foreach ($services as $key => $service) {
 					}
 ?>
 				<li class="social-accounts-item">
-					<img src="<?php echo esc_url($account->child_account_avatar($child_account)); ?>" width="24" height="24" />
+					<img src="<?php echo esc_url($account->child_account_avatar($child_account)); ?>" width="32" height="32" />
 					<span class="name"><?php echo esc_html($child_account->name); ?></span>
 					<label for="<?php echo esc_attr($key.$child_account->id); ?>">
 						<input type="checkbox" name="social_default_pages[<?php echo esc_attr($account->id()); ?>][]" id="<?php echo esc_attr($key.$child_account->id); ?>" value="<?php echo esc_attr($child_account->id); ?>"<?php echo $checked; ?> />
