@@ -18,7 +18,7 @@
 					<?php _e('Accounts', 'social'); ?>
 					<p class="description" style="padding-top: 40px;"><?php printf(__('Available to all blog authors. Add accounts that only you can use in <a href="%s">your profile</a>.', 'social'), esc_url(admin_url('profile.php#social-accounts'))); ?></p>
 				</th>
-				<td nowrap="nowrap">
+				<td>
 <?php
 echo Social_View::factory(
 	'wp-admin/parts/accounts',

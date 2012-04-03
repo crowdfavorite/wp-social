@@ -675,9 +675,21 @@ final class Social {
 		if (empty($default_accounts)) {
 			$default_accounts = array();
 		}
+		$accounts = array();
+		foreach ($this->services() as $key => $service) {
+			if (!isset($accounts[$key])) {
+				$accounts[$key] = array();
+			}
+			foreach ($service->accounts() as $account) {
+				if ($account->personal()) {
+					$accounts[$key][] = $account->id();
+				}
+			}
+		}
 		echo Social_View::factory('wp-admin/profile', array(
-			'default_accounts' => $default_accounts,
-			'services' => $this->services()
+			'defaults' => $default_accounts,
+			'services' => $this->services(),
+			'accounts' => $accounts,
 		));
 	}
 

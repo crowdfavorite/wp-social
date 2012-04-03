@@ -70,7 +70,7 @@ foreach ($services as $key => $service) {
 	if ($i == 0) {
 ?>
 		<li class="social-accounts-item none">
-			<div class="social-facebook-icon"><i style="background: url(http://www.gravatar.com/avatar/a06082e4f876182b547f635d945e744e?s=16&d=mm) no-repeat;"></i></div>
+			<img src="http://www.gravatar.com/avatar/a06082e4f876182b547f635d945e744e?s=32&d=mm" width="32" height="32" />
 			<span class="name"><?php _e('No Accounts', 'social'); ?></span>
 		</li>
 <?php
