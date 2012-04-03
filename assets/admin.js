@@ -1,13 +1,5 @@
 (function($) {
 	$(function() {
-		$('.social-collapsible').each(function() {
-			var $t = $(this);
-			$t.find('.social-title a').click(function(e) {
-				$t.toggleClass('social-open');
-				e.preventDefault();
-			});
-		});
-
 		function counter($object, $counter, max) {
 			var content = $object.val();
 			$counter.html(max - content.length);
