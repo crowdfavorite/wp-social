@@ -19,7 +19,7 @@ foreach ($services as $key => $service) {
 		if (in_array($account->id(), $accounts[$key])) {
 			$profile_url = esc_url($account->url());
 			$profile_name = esc_html($account->name());
-			$disconnect = $service->disconnect_url($account, true);
+			$disconnect = $service->disconnect_link($account, true);
 			$name = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
 ?>
 		<li class="social-accounts-item">

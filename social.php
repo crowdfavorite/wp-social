@@ -1222,7 +1222,7 @@ final class Social {
 				foreach ($this->services() as $key => $service) {
 					$account = reset($service->accounts());
 					if ($account) {
-						return $service->disconnect_url($account);
+						return $service->disconnect_link($account);
 					}
 				}
 			}
