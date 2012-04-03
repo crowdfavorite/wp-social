@@ -695,26 +695,6 @@ abstract class Social_Service {
 	}
 
 	/**
-	 * Displays the auth item output.
-	 *
-	 * @param  Social_Service_Account  $account
-	 * @return Social_View
-	 */
-	public function auth_output(Social_Service_Account $account) {
-		$profile_url = esc_url($account->url());
-		$profile_name = esc_html($account->name());
-		$disconnect = $this->disconnect_link($account, true);
-		$name = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
-
-		return Social_View::factory('wp-admin/parts/auth_output', array(
-			'account' => $account,
-			'key' => $this->key(),
-			'name' => $name,
-			'disconnect' => $disconnect,
-		));
-	}
-
-	/**
 	 * Checks to see if the comment is allowed.
 	 *
 	 * [!!] Handles the exception for duplicate comments.

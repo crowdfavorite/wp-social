@@ -405,27 +405,6 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	}
 
 	/**
-	 * Displays the auth item output.
-	 *
-	 * @param  Social_Service_Account  $account
-	 * @return Social_View
-	 */
-	public function auth_output(Social_Service_Account $account) {
-		$profile_url = esc_url($account->url());
-		$profile_name = esc_html($account->name());
-		$disconnect = $this->disconnect_link($account, true);
-		$name = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
-
-		return Social_View::factory('wp-admin/parts/facebook/auth_output', array(
-			'account' => $account,
-			'key' => $this->key(),
-			'name' => $name,
-			'disconnect' => $disconnect,
-			'is_profile' => defined('IS_PROFILE_PAGE'),
-		));
-	}
-
-	/**
 	 * Loads the pages for the account.
 	 *
 	 * @param  Social_Service_Account  $account
