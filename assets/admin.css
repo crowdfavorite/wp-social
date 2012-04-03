@@ -363,11 +363,11 @@
 .social-connect-button input,
 .social-connect-button label {
 	float: left;
-	margin: 6px 0 0 10px;
+	margin: 7px 0 0 10px;
 }
 
 .social-connect-button label {
-	margin: 4px 0 0 5px;
+	margin: 4px 0 0 4px;
 }
 
 .social-connect-button a {

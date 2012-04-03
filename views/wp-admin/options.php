@@ -16,7 +16,7 @@
 			<tr id="social-accounts">
 				<th>
 					<?php _e('Accounts', 'social'); ?>
-					<p class="description" style="padding-top: 20px;"><?php printf(__('Available to all blog authors. Add accounts that only you can use in <a href="%s">your profile</a>.', 'social'), esc_url(admin_url('profile.php#social-accounts'))); ?></p>
+					<p class="description" style="padding-top: 40px;"><?php printf(__('Available to all blog authors. Add accounts that only you can use in <a href="%s">your profile</a>.', 'social'), esc_url(admin_url('profile.php#social-accounts'))); ?></p>
 				</th>
 				<td nowrap="nowrap">
 <?php
