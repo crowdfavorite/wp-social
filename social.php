@@ -381,27 +381,27 @@ final class Social {
 	 * @return void
 	 */
 	public function enqueue_assets() {
+		if (Social::option('use_standard_comments') == '1') {
+			return;
+		}
 		// JS/CSS
 		if (!defined('SOCIAL_COMMENTS_JS')) {
 			define('SOCIAL_COMMENTS_JS', Social::$plugins_url.'assets/social.js');
+		}
+		if (SOCIAL_COMMENTS_JS !== false) {
+			wp_enqueue_script('jquery');
+			wp_enqueue_script('social_js', SOCIAL_COMMENTS_JS, array('jquery'), Social::$version, true);
 		}
 
 		if (!is_admin()) {
 			if (!defined('SOCIAL_COMMENTS_CSS')) {
 				define('SOCIAL_COMMENTS_CSS', Social::$plugins_url.'assets/comments.css');
 			}
-
-			// JS/CSS
 			if (SOCIAL_COMMENTS_CSS !== false) {
 				wp_enqueue_style('social_comments', SOCIAL_COMMENTS_CSS, array(), Social::$version, 'screen');
 			}
 		}
 
-		// JS/CSS
-		if (SOCIAL_COMMENTS_JS !== false) {
-			wp_enqueue_script('jquery');
-			wp_enqueue_script('social_js', SOCIAL_COMMENTS_JS, array('jquery'), Social::$version, true);
-		}
 	}
 
 	/**

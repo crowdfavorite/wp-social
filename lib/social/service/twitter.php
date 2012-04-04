@@ -583,6 +583,9 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 * @return string
 	 */
 	public static function get_comment_author_link($url) {
+		if (Social::option('use_standard_comments') == '1') {
+			return $url;
+		}
 		global $comment;
 		if (in_array($comment->comment_type, self::comment_types())) {
 			$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
