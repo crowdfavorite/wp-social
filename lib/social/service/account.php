@@ -155,8 +155,19 @@ abstract class Social_Service_Account {
 	 *
 	 * @return array
 	 */
-	public function child_accounts() {
+	public function child_accounts($update = false) {
+		if ($update) {
+			$this->fetch_child_accounts();
+		}
 		return array();
+	}
+
+	/**
+	 * Get child account list from service.
+	 *
+	 * @return void
+	 */
+	public function fetch_child_accounts() {
 	}
 
 	/**

@@ -135,8 +135,13 @@
 	height: 32px;
 	line-height: 32px;
 	position: absolute;
-	right: 100px;
 	top: 0;
+}
+.social-accounts .social-accounts-item label.default {
+	right: 100px;
+}
+.social-accounts .social-accounts-item label.enabled {
+	right: 8px;
 }
 
 .social-accounts .name a {

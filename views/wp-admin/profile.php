@@ -15,3 +15,4 @@ echo Social_View::factory(
 		</td>
 	</tr>
 </table>
+<input type="hidden" name="social_profile" value="true" />

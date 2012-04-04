@@ -41,5 +41,13 @@ abstract class Social_Controller {
 			$this->nonce_verified = true;
 		}
 	}
+	
+	public function request() {
+		return $this->request;
+	}
+
+	public function social() {
+		return $this->social;
+	}
 
 } // End Social_Controller
