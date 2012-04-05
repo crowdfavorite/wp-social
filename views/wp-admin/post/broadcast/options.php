@@ -213,7 +213,8 @@
 ?>
 </div>
 <p class="step">
-	<input type="submit" name="social_action" value="<?php _e($step_text, 'social'); ?>" class="button" />
+	<input type="submit" name="social_action" value="<?php echo esc_attr($step_text); ?>" />
+	<input type="submit" name="social_submit" value="<?php _e($step_text, 'social'); ?>" class="button" />
 	<a href="<?php echo esc_url(get_edit_post_link($post->ID, 'url')); ?>" class="button"><?php _e('Cancel', 'social'); ?></a>
 </p>
 </form>
