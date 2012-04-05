@@ -11,8 +11,7 @@
 	?>
 </head>
 <body>
-<h1 id="logo"><?php _e('Social Broadcasting Options', 'social'); ?></h1>
-<p><?php __('You have chosen to broadcast this blog post to your social accounts. Use the form below to edit your broadcasted messages.', 'social'); ?></p>
+<h1 id="logo"><?php _e('Social Broadcasts', 'social'); ?></h1>
 <form id="setup" method="post" action="<?php echo esc_url(admin_url('post.php?social_controller=broadcast&social_action=options')); ?>">
 <?php wp_nonce_field(); ?>
 <input type="hidden" name="post_ID" value="<?php echo $post->ID; ?>" />
@@ -213,7 +212,7 @@
 ?>
 </div>
 <p class="step">
-	<input type="submit" name="social_action" value="<?php echo esc_attr($step_text); ?>" />
+	<input type="hidden" name="social_action" value="<?php echo esc_attr($step_text); ?>" />
 	<input type="submit" name="social_submit" value="<?php _e($step_text, 'social'); ?>" class="button" />
 	<a href="<?php echo esc_url(get_edit_post_link($post->ID, 'url')); ?>" class="button"><?php _e('Cancel', 'social'); ?></a>
 </p>
