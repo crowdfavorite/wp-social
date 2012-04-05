@@ -3,12 +3,12 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title><?php _e('Social Broadcasting Options', 'social'); ?></title>
-	<?php
-		wp_admin_css('install', true);
-		// Need to do this because we are enqueuing some styles for the admin in social.php
-		do_action('admin_enqueue_scripts');
-		do_action('admin_print_styles');
-	?>
+<?php
+wp_admin_css('install', true);
+// Need to do this because we are enqueuing some styles for the admin in social.php
+do_action('admin_enqueue_scripts');
+do_action('admin_print_styles');
+?>
 </head>
 <body>
 <h1 id="logo"><?php _e('Social Broadcasts', 'social'); ?></h1>
@@ -122,10 +122,10 @@
 
 				$_content = stripslashes((isset($_POST['social_account_content'][$service->key()][$account->id()])) ? $_POST['social_account_content'][$service->key()][$account->id()] : '');
 				if (empty($_content) and isset($broadcast_content[$key][$account->id()])) {
-					$content = esc_textarea($broadcast_content[$key][$account->id()]);
+					$content = $broadcast_content[$key][$account->id()];
 				}
 				else {
-					$content = esc_textarea($content);
+					$content = $content;
 				}
 		?>
 		<li class="social-accounts-item<?php echo (isset($errors[$key][$account->id()]) ? ' error' : ''); ?>">
@@ -136,14 +136,14 @@
 				<div class="broadcast-content">
 					<span class="name"><?php echo esc_html($account->name()); ?></span>
 
-					<p><?php echo $content; ?></p>
+					<p><?php echo esc_html($content); ?></p>
 					<div class="social-broadcast-editable"<?php echo (isset($errors[$key][$account->id()]) ? ' style="display:block"' : ''); ?>>
 						<input type="hidden" value="<?php echo $content; ?>" />
-						<textarea name="social_account_content[<?php echo esc_attr($service->key()); ?>][<?php echo esc_attr($account->id()); ?>]" class="social-preview-content" cols="40" rows="2"><?php echo $content; ?></textarea><br />
+						<textarea name="social_account_content[<?php echo esc_attr($service->key()); ?>][<?php echo esc_attr($account->id()); ?>]" class="social-preview-content" cols="40" rows="2"><?php echo esc_textarea($content); ?></textarea><br />
 
 						<?php
 							if (isset($errors[$key][$account->id()])) {
-								echo '<span>'.$errors[$key][$account->id()].'</span><br />';
+								echo '<span>'.esc_html($errors[$key][$account->id()]).'</span><br />';
 							}
 						?>
 
@@ -166,10 +166,10 @@
 
 							$_content = stripslashes((isset($_POST['social_account_content'][$service->key()][$page->id])) ? $_POST['social_account_content'][$service->key()][$page->id] : '');
 							if (empty($_content) and isset($broadcast_content[$key][$page->id])) {
-								$content = esc_textarea($broadcast_content[$key][$page->id]);
+								$content = $broadcast_content[$key][$page->id];
 							}
 							else {
-								$content = esc_textarea($content);
+								$content = $_content;
 							}
 		?>
 		<li class="social-accounts-item<?php echo (isset($errors[$key][$page->id]) ? ' error' : ''); ?>">
@@ -180,14 +180,14 @@
 				<div class="broadcast-content"<?php echo (isset($errors[$key][$account->id()]) ? ' style="display:block"' : ''); ?>>
 					<span class="name"><?php echo esc_html($page->name); ?></span>
 
-					<p><?php echo $content; ?></p>
+					<p><?php echo esc_html($content); ?></p>
 					<div class="social-broadcast-editable"<?php echo (isset($errors[$key][$page->id]) ? ' style="display:block"' : ''); ?>>
 						<input type="hidden" value="<?php echo $content; ?>" />
-						<textarea name="social_account_content[facebook][<?php echo $page->id; ?>]" class="social-preview-content" cols="40" rows="2"><?php echo $content; ?></textarea><br />
+						<textarea name="social_account_content[facebook][<?php echo $page->id; ?>]" class="social-preview-content" cols="40" rows="2"><?php echo esc_textarea($content); ?></textarea><br />
 
 						<?php
 							if (isset($errors[$key][$page->id])) {
-								echo '<span>'.$errors[$key][$page->id].'</span><br />';
+								echo '<span>'.esc_html($errors[$key][$page->id]).'</span><br />';
 							}
 						?>
 
@@ -212,8 +212,8 @@
 ?>
 </div>
 <p class="step">
-	<input type="hidden" name="social_action" value="<?php echo esc_attr($step_text); ?>" />
-	<input type="submit" name="social_submit" value="<?php _e($step_text, 'social'); ?>" class="button" />
+	<input type="hidden" name="social_action" value="<?php echo esc_attr($step); ?>" />
+	<input type="submit" name="social_submit" value="<?php echo $step_text; // already localized in controller ?>" class="button" />
 	<a href="<?php echo esc_url(get_edit_post_link($post->ID, 'url')); ?>" class="button"><?php _e('Cancel', 'social'); ?></a>
 </p>
 </form>
