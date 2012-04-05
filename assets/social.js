@@ -192,20 +192,41 @@
 			$('.comment-reply-link').click(function() {
 				$('.comment-reply-link').show();
 				$(this).hide();
-				var $parent = $(this).closest('li');
-				var $textarea = $parent.find('textarea');
+				var $parent = $(this).closest('li'),
+					$textarea = $parent.find('textarea');
 				if ($parent.hasClass('social-twitter')) {
-					$('#post_accounts option').each(function() {
-						if ($(this).data('type') == 'twitter') {
-							$('#post_accounts').val($(this).attr('value')).change();
-							$('#post_to_service').prop('checked', true);
-							var $author = $parent.find('.social-comment-author a');
-							var author_rel = $author.attr('rel').split(' ');
-							$('#in_reply_to_status_id').val(author_rel[0]);
-							insertTwitterUsername($author, $textarea);
+					// look for a username at the beginning of the comment
+					// if we have that account available, use it
+					// if not, select the first account for that service
+					var username = '',
+						matched = false,
+						$option = false,
+						$options = $('#post_accounts option[data-type="twitter"]');
+					var content = $.trim($parent.find('.social-comment-body:first').text());
+					if (content.substr(0, 1) == '@') {
+						username = content.split(' ')[0].substr(1);
+					}
+					$options.each(function() {
+						if ($(this).html() == username) {
+							matched = true;
+							$option = $(this);
 							return false;
 						}
 					});
+					if (!matched) {
+						$options.each(function() {
+							$option = $(this);
+							return false;
+						});
+					}
+					if ($option) {
+						$('#post_accounts').val($option.attr('value')).change();
+						$('#post_to_service').prop('checked', true);
+						var $author = $parent.find('.social-comment-author a');
+						var author_rel = $author.attr('rel').split(' ');
+						$('#in_reply_to_status_id').val(author_rel[0]);
+						insertTwitterUsername($author, $textarea);
+					}
 				}
 			});
 
