@@ -274,14 +274,7 @@ class Social_Date {
 
 		// Seconds
 		if (empty($hours) and empty($minutes)) {
-			if (!empty($span['seconds'])) {
-				if ($span['seconds'] == '1') {
-					return __('1 second ago', 'social');
-				}
-				else {
-					return sprintf(__('%s seconds ago', 'social'), $span['seconds']);
-				}
-			}
+			return __('just now', 'social');
 		}
 
 		if (!empty($hours)) {
