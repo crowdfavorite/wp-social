@@ -1,0 +1,3 @@
+[submodule "assets/jquery-maxlength-display"]
+	path = assets/jquery-maxlength-display
+	url = git@github.com:crowdfavorite/jquery-maxlength-display.git
