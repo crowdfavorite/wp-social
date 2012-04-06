@@ -186,9 +186,20 @@
 				range.moveStart('character', 0);
 				range.select();
 			}
-
-			
 			e.preventDefault();
+		});
+		
+		var broadcastCheckboxChanged = function($elem) {
+			if ($elem.is(':checked')) {
+				$elem.closest('.broadcast-edit').addClass('checked');
+			}
+			else {
+				$elem.closest('.broadcast-edit').removeClass('checked');
+			}
+		};
+		
+		$('.broadcast-interstitial li.account input[type="checkbox"]').change(function() {
+			broadcastCheckboxChanged($(this));
 		});
 	});
 })(jQuery);

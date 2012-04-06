@@ -585,6 +585,7 @@
 	position: relative;
 }
 .broadcast-interstitial li.account label {
+	cursor: pointer;
 	display: block;
 	height: 32px;
 	left: 0;
@@ -631,6 +632,7 @@
 	font-size: 16px;
 	line-height: 140%;
 	margin: 0;
+	opacity: .3;
 	padding: 6px 7px;
 	width: 90%;
 }
@@ -638,14 +640,25 @@
 	display: block;
 	font-size: 12px;
 	line-height: 100%;
+	opacity: .3;
 	padding-left: 7px;
 }
 .broadcast-interstitial li.account .broadcast-edit textarea {
 	display: none;
 	height: 70px;
 	line-height: 140%;
+	opacity: .3;
 	padding: 5px;
 	width: 90%;
+}
+.broadcast-interstitial li.account .checked .readonly {
+	opacity: 1;
+}
+.broadcast-interstitial li.account .checked a.edit {
+	opacity: 1;
+}
+.broadcast-interstitial li.account .checked textarea {
+	opacity: 1;
 }
 .broadcast-interstitial li.account .broadcast-edit.edit .readonly,
 .broadcast-interstitial li.account .broadcast-edit.edit a.edit {

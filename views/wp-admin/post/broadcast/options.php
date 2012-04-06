@@ -31,7 +31,7 @@ foreach ($_services as $key => $accounts) {
 		foreach ($accounts as $account) {
 ?>
 		<li class="account <?php echo (!empty($account['error']) ? ' error' : ''); ?>">
-			<label for="<?php echo esc_attr($account['field_name_checked']); ?>">
+			<label for="<?php echo esc_attr($account['field_name_checked'].$account['field_value_checked']); ?>">
 				<img src="<?php echo esc_attr($account['avatar']); ?>" width="32" height="32" />
 				<span class="name"><?php echo esc_html($account['name']); ?></span>
 			</label>
@@ -56,8 +56,8 @@ foreach ($_services as $key => $accounts) {
 				echo '<span>'.esc_html($account['error']).'</span>';
 			}
 ?>
-				<div class="broadcast-edit<?php echo ($account['edit'] ? ' edit' : ''); ?>">
-					<input type="checkbox" name="<?php echo esc_attr($account['field_name_checked']); ?>" id="<?php echo esc_attr($account['field_name_checked']); ?>" value="<?php echo esc_attr($account['field_value_checked']); ?>"<?php checked($account['checked'], true); ?> />
+				<div class="broadcast-edit<?php echo ($account['edit'] ? ' edit' : ''); echo ($account['checked'] ? ' checked' : ''); ?>">
+					<input type="checkbox" name="<?php echo esc_attr($account['field_name_checked']); ?>" id="<?php echo esc_attr($account['field_name_checked'].$account['field_value_checked']); ?>" value="<?php echo esc_attr($account['field_value_checked']); ?>"<?php checked($account['checked'], true); ?> />
 					<p class="readonly"><?php echo esc_textarea($account['content']); ?></p>
 					<a href="#" class="edit"><?php _e('Edit', 'social'); ?></a>
 					<textarea name="<?php echo esc_attr($account['field_name_content']); ?>" cols="40" rows="2"><?php echo esc_textarea($account['content']); ?></textarea>
