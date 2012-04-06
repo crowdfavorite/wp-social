@@ -45,31 +45,6 @@
 	margin-top: 10px;
 }
 
-.social-preview-counter {
-	float: right;
-	font-weight: normal;
-	font-size: 12px;
-	color: #aaa;
-}
-
-.form-table .social-preview-counter {
-	float: none;
-}
-
-.social-counter-limit {
-	color: #f00;
-}
-
-.form-table .social-preview-content {
-	width: 300px;
-	height: 50px;
-	margin-bottom: 10px;
-}
-
-.social-counter-limit {
-	color: #f00;
-}
-
 #social_error {
 	background-color: #ffebe8;
 	border: 1px solid #c00;
@@ -143,10 +118,6 @@
 }
 .social-accounts .social-accounts-item label.enabled {
 	right: 8px;
-}
-
-.social-accounts.broadcast-interstitial .social-accounts-item {
-	line-height: normal;
 }
 
 .social-accounts .name a {
@@ -249,71 +220,6 @@
 
 .social-facebook-pages span {
 	top: -1px;
-}
-
-.social-broadcast-options .name span {
-	top: 0;
-}
-
-.social-broadcastables {
-	border-top: 1px solid #e5e5e5;
-	margin-bottom: 10px;
-}
-
-.social-broadcastables li {
-	margin-bottom: 0;
-}
-
-.social-broadcastable {
-	display: block;
-	padding: 5px 10px;
-	cursor: pointer;
-}
-
-.social-broadcastable:hover {
-	background: #eaf2f9;
-}
-
-.social-broadcast-edit {
-	float: right;
-	margin-top: 2px;
-	font-size: 12px;
-}
-
-.social-broadcastable .button {
-	padding: 3px 6px;
-	font-size: 12px!important;
-	font-weight: normal;
-}
-
-.social-broadcast-editable {
-	display: none;
-	margin: 5px 0 5px -34px;
-}
-
-.broadcast-interstitial input,
-.broadcast-interstitial img,
-.broadcast-interstitial .broadcast-content {
-	float: left;
-}
-
-.broadcast-interstitial input {
-	margin-top: 8px;
-}
-
-.social-broadcastable img {
-	margin: 2px 10px 0;
-}
-
-.social-broadcastable input,
-.social-broadcastable img {
-	vertical-align: middle;
-}
-
-.social-broadcastable p {
-	margin: 0;
-	line-height: normal;
-	min-height: 12px;
 }
 
 .social-accounts-item.error .social-broadcast-editable span {
@@ -664,3 +570,95 @@
 .error ul.social-posting-errors li {
 	list-style: disc;
 }
+
+/* Interstitial */
+.broadcast-interstitial {
+}
+.broadcast-interstitial ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.broadcast-interstitial li.account {
+	margin: 0 0 18px;
+	padding: 0;
+	position: relative;
+}
+.broadcast-interstitial li.account label {
+	display: block;
+	height: 32px;
+	left: 0;
+	position: absolute;
+	top: 5px;
+	width: 200px;
+}
+.broadcast-interstitial li.account label img {
+	position: absolute;
+}
+.broadcast-interstitial li.account label span {
+	display: block;
+	height: 32px;
+	line-height: 32px;
+	margin-left: 40px;
+}
+.broadcast-interstitial li.account .broadcast-content {
+	margin-left: 200px;
+	position: relative;
+}
+.broadcast-interstitial li.account .broadcast-content h3 {
+	color: #666;
+	font-size: 11px;
+	font-weight: normal;
+	margin: 0 0 0 27px;
+}
+.broadcast-interstitial ul.broadcasts {
+	margin-left: 27px;
+}
+.broadcast-interstitial ul.broadcasts li,
+.broadcast-interstitial ul.broadcasts li p {
+	font-size: 12px;
+}
+.broadcast-interstitial li.account .broadcast-edit {
+	padding-left: 20px;
+	position: relative;
+}
+.broadcast-interstitial li.account .broadcast-edit input {
+	left: -5px;
+	position: absolute;
+	top: 7px;
+}
+.broadcast-interstitial li.account .broadcast-edit .readonly {
+	font-size: 16px;
+	line-height: 140%;
+	margin: 0;
+	padding: 6px 7px;
+	width: 90%;
+}
+.broadcast-interstitial li.account .broadcast-edit a.edit {
+	display: block;
+	font-size: 12px;
+	line-height: 100%;
+	padding-left: 7px;
+}
+.broadcast-interstitial li.account .broadcast-edit textarea {
+	display: none;
+	height: 70px;
+	line-height: 140%;
+	padding: 5px;
+	width: 90%;
+}
+.broadcast-interstitial li.account .broadcast-edit.edit .readonly,
+.broadcast-interstitial li.account .broadcast-edit.edit a.edit {
+	display: none;
+}
+.broadcast-interstitial li.account .broadcast-edit.edit textarea {
+	display: block;
+}
+.broadcast-interstitial p.step {
+	padding: 20px;
+	text-align: center;
+}
+.broadcast-interstitial p.step input {
+	margin-right: 5px;
+}
+

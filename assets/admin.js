@@ -170,37 +170,25 @@
 			});
 		});
 
-		$('.social-broadcast-edit').click(function(e){
-			e.preventDefault();
-			var $parent = $(this).parent();
-
-			$(this).hide();
-			$parent.find('.social-broadcast-editable').fadeIn().find('textarea').focus();
-		});
-
-		$('.social-broadcast-save, .social-broadcast-cancel').click(function(e){
-			e.preventDefault();
-
-			var $parent = $(this).parent();
-			var $p = $parent.parent().find('p');
-			var $input = $parent.find('input');
+		$('.broadcast-interstitial .broadcast-edit a.edit').click(function(e) {
+			var $parent = $(this).closest('.broadcast-edit');
+			$parent.addClass('edit').find('input[type="checkbox"]').prop('checked', true);
 			var $textarea = $parent.find('textarea');
-
-			if ($(this).hasClass('social-broadcast-save')) {
-				$input.val($textarea.val());
-				$p.html($textarea.val());
-			} else {
-				$p.html($input.val());
-				$textarea.val($input.val());
+			var len = $textarea.val().length;
+			if ($textarea.get(0).setSelectionRange) {
+				$textarea.get(0).focus();
+				$textarea.get(0).setSelectionRange(0, len);
+			}
+			else if ($textarea.createTextRange) {
+				var range = $textarea.get(0).createTextRange();
+				range.collapse(true);
+				range.moveEnd('character', len);
+				range.moveStart('character', 0);
+				range.select();
 			}
 
-			$parent.hide();
-			$parent.parent().parent().find('.social-broadcast-edit').fadeIn();
-		});
-
-		$('.social-broadcast-editable textarea').click(function(e){
+			
 			e.preventDefault();
-			$(this).focus();
 		});
 	});
 })(jQuery);
