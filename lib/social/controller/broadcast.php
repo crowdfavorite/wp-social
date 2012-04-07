@@ -269,6 +269,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 							'field_name_checked' => 'social_facebook_pages['.$account->id().']',
 							'field_value_checked' => $child_account->id,
 							'edit' => false,
+							'maxlength' => $service->max_broadcast_length(),
 						);
 						if ($i == 0) {
 							$data['edit'] = true;

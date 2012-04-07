@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" <?php language_attributes(); ?>>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title><?php _e('Social Broadcasting Options', 'social'); ?></title>
+	<title><?php _e('Social Broadcasts', 'social'); ?></title>
 <?php
 wp_admin_css('install', true);
 // Need to do this because we are enqueuing some styles for the admin in social.php
@@ -60,7 +60,8 @@ foreach ($_services as $key => $accounts) {
 					<input type="checkbox" name="<?php echo esc_attr($account['field_name_checked']); ?>" id="<?php echo esc_attr($account['field_name_checked'].$account['field_value_checked']); ?>" value="<?php echo esc_attr($account['field_value_checked']); ?>"<?php checked($account['checked'], true); ?> />
 					<p class="readonly"><?php echo esc_textarea($account['content']); ?></p>
 					<a href="#" class="edit"><?php _e('Edit', 'social'); ?></a>
-					<textarea name="<?php echo esc_attr($account['field_name_content']); ?>" cols="40" rows="2"><?php echo esc_textarea($account['content']); ?></textarea>
+					<textarea name="<?php echo esc_attr($account['field_name_content']); ?>" cols="40" rows="2" maxlength="<?php echo esc_attr($account['maxlength']); ?>"><?php echo esc_textarea($account['content']); ?></textarea>
+					<span class="counter"></span>
 				</div>
 			</div>
 		</li>
@@ -81,6 +82,7 @@ foreach ($_services as $key => $accounts) {
 </p>
 </form>
 <script type="text/javascript" src="<?php echo esc_url(includes_url('/js/jquery/jquery.js')); ?>"></script>
+<script type="text/javascript" src="<?php echo esc_url(Social::$plugins_url.'assets/jquery-maxlength-display/jquery.maxlength.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo esc_url(SOCIAL_ADMIN_JS); ?>"></script>
 </body>
 </html>

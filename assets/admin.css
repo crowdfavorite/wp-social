@@ -645,26 +645,36 @@
 }
 .broadcast-interstitial li.account .broadcast-edit textarea {
 	display: none;
+	font-size: 16px;
 	height: 70px;
 	line-height: 140%;
 	opacity: .3;
 	padding: 5px;
 	width: 90%;
 }
-.broadcast-interstitial li.account .checked .readonly {
-	opacity: 1;
+.broadcast-interstitial li.account .broadcast-edit .counter {
+	color: #999;
+	display: none;
+	font-size: 11px;
+	left: -35px;
+	opacity: .3;
+	position: absolute;
+	text-align: right;
+	top: 65px;
+	width: 50px;
 }
-.broadcast-interstitial li.account .checked a.edit {
-	opacity: 1;
-}
-.broadcast-interstitial li.account .checked textarea {
+.broadcast-interstitial li.account .checked .readonly,
+.broadcast-interstitial li.account .checked a.edit,
+.broadcast-interstitial li.account .checked textarea,
+.broadcast-interstitial li.account .checked .counter {
 	opacity: 1;
 }
 .broadcast-interstitial li.account .broadcast-edit.edit .readonly,
 .broadcast-interstitial li.account .broadcast-edit.edit a.edit {
 	display: none;
 }
-.broadcast-interstitial li.account .broadcast-edit.edit textarea {
+.broadcast-interstitial li.account .broadcast-edit.edit textarea,
+.broadcast-interstitial li.account .broadcast-edit.edit .counter {
 	display: block;
 }
 .broadcast-interstitial p.step {
