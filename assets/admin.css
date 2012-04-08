@@ -45,30 +45,6 @@
 	margin-top: 10px;
 }
 
-.social-preview-counter {
-	float: right;
-	font-weight: normal;
-	font-size: 12px;
-	color: #aaa;
-}
-
-.form-table .social-preview-counter {
-	float: none;
-}
-
-.social-counter-limit {
-	color: #f00;
-}
-
-.form-table .social-preview-content {
-	width: 99%;
-	margin-bottom: 10px;
-}
-
-.social-counter-limit {
-	color: #f00;
-}
-
 #social_error {
 	background-color: #ffebe8;
 	border: 1px solid #c00;
@@ -246,38 +222,10 @@
 	top: -1px;
 }
 
-.social-broadcast-options .name span {
-	top: 0;
-}
-
-.social-broadcastables {
-	border-top: 1px solid #e5e5e5;
-	margin-bottom: 10px;
-}
-
-.social-broadcastables li {
-	margin-bottom: 0;
-}
-
-.social-broadcastable {
+.social-accounts-item.error .social-broadcast-editable span {
 	display: block;
-	height: 24px;
-	line-height: 24px;
-	padding: 5px 10px;
-	cursor: pointer;
-}
-
-.social-broadcastable:hover {
-	background: #eaf2f9;
-}
-
-.social-broadcastable img {
-	margin: 0 10px;
-}
-
-.social-broadcastable input,
-.social-broadcastable img {
-	vertical-align: middle;
+	font-size: 11px;
+	color: #f00;
 }
 
 #social-default-accounts .name span {
@@ -621,4 +569,135 @@
 }
 .error ul.social-posting-errors li {
 	list-style: disc;
+}
+
+/* Interstitial */
+.social-broadcast-options section {
+	margin-bottom: 30px;
+}
+.broadcast-interstitial {
+}
+.broadcast-interstitial ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.broadcast-interstitial li.account {
+	margin: 0 0 18px;
+	padding: 0;
+	position: relative;
+}
+.broadcast-interstitial li.account p.error {
+	background: #f00;
+	color: #fff;
+	font-size: 12px;
+	line-height: 120%;
+	margin: 0 0 0 20px;
+	padding: 5px 8px;
+	position: relative;
+}
+.broadcast-interstitial li.account label {
+	cursor: pointer;
+	display: block;
+	height: 32px;
+	left: 0;
+	position: absolute;
+	top: 5px;
+	width: 200px;
+}
+.broadcast-interstitial li.account label img {
+	position: absolute;
+}
+.broadcast-interstitial li.account label span {
+	display: block;
+	height: 32px;
+	line-height: 32px;
+	margin-left: 40px;
+}
+.broadcast-interstitial li.account .broadcast-content {
+	margin-left: 200px;
+	position: relative;
+}
+.broadcast-interstitial li.account .broadcast-content h3 {
+	color: #666;
+	font-size: 11px;
+	font-weight: normal;
+	margin: 0 0 0 27px;
+}
+.broadcast-interstitial ul.broadcasts {
+	margin-left: 27px;
+}
+.broadcast-interstitial ul.broadcasts li,
+.broadcast-interstitial ul.broadcasts li p {
+	font-size: 12px;
+}
+.broadcast-interstitial li.account .broadcast-edit {
+	padding-left: 20px;
+	position: relative;
+}
+.broadcast-interstitial li.account .broadcast-edit input {
+	left: -5px;
+	position: absolute;
+	top: 7px;
+}
+.broadcast-interstitial li.account .broadcast-edit .readonly {
+	font-size: 16px;
+	line-height: 140%;
+	margin: 0;
+	opacity: .3;
+	padding: 6px 7px;
+	width: 90%;
+}
+.broadcast-interstitial li.account .broadcast-edit a.edit {
+	display: block;
+	font-size: 12px;
+	line-height: 100%;
+	opacity: .3;
+	padding-left: 7px;
+}
+.broadcast-interstitial li.account .broadcast-edit textarea {
+	display: none;
+	font-size: 16px;
+	height: 70px;
+	line-height: 140%;
+	opacity: .3;
+	padding: 5px;
+	width: 90%;
+}
+.broadcast-interstitial li.account .broadcast-edit .counter {
+	color: #999;
+	display: none;
+	font-size: 11px;
+	left: -35px;
+	opacity: .3;
+	position: absolute;
+	text-align: right;
+	top: 65px;
+	width: 50px;
+}
+.broadcast-interstitial li.account .checked .readonly,
+.broadcast-interstitial li.account .checked a.edit,
+.broadcast-interstitial li.account .checked textarea,
+.broadcast-interstitial li.account .checked .counter,
+.broadcast-interstitial li.account .broadcast-edit:hover a.edit {
+	opacity: 1;
+}
+.broadcast-interstitial li.account .broadcast-edit.edit .readonly,
+.broadcast-interstitial li.account .broadcast-edit.edit a.edit {
+	display: none;
+}
+.broadcast-interstitial li.account .broadcast-edit.edit textarea,
+.broadcast-interstitial li.account .broadcast-edit.edit .counter {
+	display: block;
+}
+.broadcast-interstitial p.step {
+	padding: 20px;
+	text-align: center;
+}
+.broadcast-interstitial p.step input {
+	margin-right: 5px;
+}
+
+.broadcast-interstitial li.account .broadcast-edit.edit .maxlength-remaining-short {
+	color: #900;
 }

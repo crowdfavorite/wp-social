@@ -169,6 +169,42 @@
 				$this.parent().parent().fadeOut();
 			});
 		});
+		
+		$('.broadcast-interstitial .broadcast-edit a.edit').click(function(e) {
+			$(this).closest('.broadcast-edit').addClass('edit')
+				.find('input[type="checkbox"]').prop('checked', true).end()
+				.find('textarea').focus().select().end()
+				.find('input[type="checkbox"]').change();
+			e.preventDefault();
+		});
+		
+		$('.broadcast-interstitial li.account input[type="checkbox"]').change(function() {
+			var $parent = $(this).closest('.broadcast-edit');
+			if ($(this).is(':checked')) {
+				$parent.addClass('checked').find('textarea:visible').focus().select();
+			}
+			else {
+				$parent.removeClass('checked');
+			}
+		});
+
+		$('.broadcast-interstitial .broadcast-edit textarea').on('keyup change click focus', function() {
+			$counter = $(this).closest('.broadcast-edit').find('.counter');
+			var diff = parseInt($(this).attr('maxlength')) - parseInt($(this).val().length),
+				diffClass = '';
+			if (diff < 10) {
+				diffClass = 'maxlength-remaining-short';
+			}
+			$counter.removeClass('maxlength-remaining-short').addClass(diffClass).html(diff);
+		}).change();
+
+		$('body.clean ul.accounts li.proto .broadcast-edit textarea').on('keyup change click focus', function() {
+			var val = $(this).val();
+			$(this).closest('ul.accounts').find('.broadcast-edit').not('.edit').each(function() {
+				$(this).find('.readonly').text(val).end()
+					.find('textarea').val(val);
+			});
+		});
 
 	});
 })(jQuery);
