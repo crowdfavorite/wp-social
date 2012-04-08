@@ -254,6 +254,8 @@ final class Social_Controller_Broadcast extends Social_Controller {
 							}
 							$content = wpautop($content);
 							$data['broadcasts'][] = $content;
+							// already broadcasted? not editable by default
+							$data['edit'] = false;
 						}
 					}
 // assign errors
@@ -271,9 +273,6 @@ final class Social_Controller_Broadcast extends Social_Controller {
 							'edit' => false,
 							'maxlength' => $service->max_broadcast_length(),
 						);
-						if ($i == 0) {
-							$data['edit'] = true;
-						}
 // assign previous broadcasts
 						if (isset($broadcasted_ids[$key]) && isset($broadcasted_ids[$key][$child_account->id])) {
 							$data['broadcasts'] = $broadcasted_ids[$key][$child_account->id];
@@ -310,10 +309,14 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			$broadcast_content = array();
 		}
 
+		// check to see if we have any previous broadcasts or saved content
+		$previous_activity = 0;
+
 		foreach ($_services as $key => $accounts) {
 			$broadcast_default = $services[$key]->format_content($post, Social::option('broadcast_format'));
 // set content format and checked status for each
 			foreach ($accounts as $id => $data) {
+				$previous_activity += count($data['broadcasts']);
 //  check for error - populate with previouly posted content
 				if (count($errors)) {
 					$content = stripslashes($_POST['social_account_content'][$key][$id]);
@@ -326,6 +329,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 // check for saved broadcast
 					if (isset($broadcast_content[$key]) && isset($broadcast_content[$key][$id])) {
 						$content = $broadcast_content[$key][$id];
+						$previous_activity++;
 					}
 					if (count($broadcast_accounts) && isset($broadcast_accounts[$key]) && isset($broadcast_accounts[$key][$id])) {
 						$checked = true;
@@ -343,6 +347,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 		}
 
 		echo Social_View::factory('wp-admin/post/broadcast/options', array(
+			'clean' => ($previous_activity ? '' : 'clean'),
 			'services' => $services,
 			'_services' => $_services,
 			'post' => $post,

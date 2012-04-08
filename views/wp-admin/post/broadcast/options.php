@@ -10,7 +10,7 @@ do_action('admin_enqueue_scripts');
 do_action('admin_print_styles');
 ?>
 </head>
-<body>
+<body class="<?php echo esc_attr($clean); ?>">
 <h1 id="logo"><?php _e('Social Broadcasts', 'social'); ?></h1>
 <form id="setup" method="post" class="broadcast-interstitial" action="<?php echo esc_url(admin_url('post.php?social_controller=broadcast&social_action=options')); ?>">
 <?php wp_nonce_field(); ?>
@@ -28,9 +28,17 @@ foreach ($_services as $key => $accounts) {
 	</header>
 	<ul class="accounts">
 <?php
+		$i = 0;
 		foreach ($accounts as $account) {
+			$classes = array();
+			if ($i == 0) {
+				$classes[] = 'proto';
+			}
+			if (!empty($account['error'])) {
+				$classes[] = 'error';
+			}
 ?>
-		<li class="account <?php echo (!empty($account['error']) ? ' error' : ''); ?>">
+		<li class="account <?php echo implode(' ', $classes); ?>">
 			<label for="<?php echo esc_attr($account['field_name_checked'].$account['field_value_checked']); ?>">
 				<img src="<?php echo esc_attr($account['avatar']); ?>" width="32" height="32" />
 				<span class="name"><?php echo esc_html($account['name']); ?></span>
@@ -66,6 +74,7 @@ foreach ($_services as $key => $accounts) {
 			</div>
 		</li>
 <?php
+			$i++;
 		}
 ?>
 	</ul>

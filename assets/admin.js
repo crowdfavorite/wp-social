@@ -189,11 +189,28 @@
 		}).change();
 
 		$('.broadcast-interstitial .broadcast-edit textarea').each(function() {
-			$(this).maxLengthDisplay({
-				displayTarget: $(this).closest('.broadcast-edit').find('.counter')
-			});
+// 			$(this).maxLengthDisplay({
+// 				'displayTarget': $(this).closest('.broadcast-edit').find('.counter'),
+// 				'lengths': {
+// 					'short': 10,
+// 					'empty': 0
+// 				}
+// 			});
 		});
 		
+		$('body.clean ul.accounts li.proto .broadcast-edit textarea').change(function() {
+			var val = $(this).val();
+			$(this).closest('ul.accounts').find('.broadcast-edit').not('.edit').each(function() {
+				$(this).find('.readonly').text(val).end()
+					.find('textarea').val(val);
+			});
+		}).keypress(function() {
+			$(this).change();
+		}).click(function() {
+			$(this).change();
+		}).focus(function() {
+			$(this).change();
+		});
 
 	});
 })(jQuery);

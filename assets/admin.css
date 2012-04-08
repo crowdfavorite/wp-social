@@ -666,7 +666,8 @@
 .broadcast-interstitial li.account .checked .readonly,
 .broadcast-interstitial li.account .checked a.edit,
 .broadcast-interstitial li.account .checked textarea,
-.broadcast-interstitial li.account .checked .counter {
+.broadcast-interstitial li.account .checked .counter,
+.broadcast-interstitial li.account .broadcast-edit:hover a.edit {
 	opacity: 1;
 }
 .broadcast-interstitial li.account .broadcast-edit.edit .readonly,
@@ -685,3 +686,10 @@
 	margin-right: 5px;
 }
 
+.maxlength-remaining-short {
+	color: #900;
+}
+.maxlength-remaining-empty {
+	color: #900;
+	font-weight: bold;
+}
