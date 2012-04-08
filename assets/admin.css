@@ -686,10 +686,6 @@
 	margin-right: 5px;
 }
 
-.maxlength-remaining-short {
+.broadcast-interstitial li.account .broadcast-edit.edit .maxlength-remaining-short {
 	color: #900;
-}
-.maxlength-remaining-empty {
-	color: #900;
-	font-weight: bold;
 }

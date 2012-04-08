@@ -91,7 +91,6 @@ foreach ($_services as $key => $accounts) {
 </p>
 </form>
 <script type="text/javascript" src="<?php echo esc_url(includes_url('/js/jquery/jquery.js')); ?>"></script>
-<script type="text/javascript" src="<?php echo esc_url(Social::$plugins_url.'assets/jquery-maxlength-display/jquery.maxlength.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo esc_url(SOCIAL_ADMIN_JS); ?>"></script>
 </body>
 </html>
