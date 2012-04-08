@@ -225,7 +225,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 						'name' => $account->name(),
 						'avatar' => $account->avatar(),
 						'field_name_content' => 'social_account_content['.$key.']['.$account->id().']',
-						'field_name_checked' => 'social_account_content['.$key.']',
+						'field_name_checked' => 'social_accounts['.$key.'][]',
 						'field_value_checked' => $account->id().($account->universal() ? '|true' : ''),
 						'edit' => false,
 						'maxlength' => $service->max_broadcast_length(),
@@ -320,7 +320,11 @@ final class Social_Controller_Broadcast extends Social_Controller {
 //  check for error - populate with previouly posted content
 				if (count($errors)) {
 					$content = stripslashes($_POST['social_account_content'][$key][$id]);
-					$checked = (isset($_POST[$data['field_name_checked']]) && in_array($id, $_POST[$data['field_name_checked']]));
+					$checked = (
+						isset($_POST['social_accounts']) && 
+						isset($_POST['social_accounts'][$key]) && 
+						in_array($data['field_value_checked'], $_POST['social_accounts'][$key])
+					);
 				}
 // use defaults or saved broadcast info
 				else {

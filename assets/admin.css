@@ -572,6 +572,9 @@
 }
 
 /* Interstitial */
+.social-broadcast-options section {
+	margin-bottom: 30px;
+}
 .broadcast-interstitial {
 }
 .broadcast-interstitial ul {
@@ -582,6 +585,15 @@
 .broadcast-interstitial li.account {
 	margin: 0 0 18px;
 	padding: 0;
+	position: relative;
+}
+.broadcast-interstitial li.account p.error {
+	background: #f00;
+	color: #fff;
+	font-size: 12px;
+	line-height: 120%;
+	margin: 0 0 0 20px;
+	padding: 5px 8px;
 	position: relative;
 }
 .broadcast-interstitial li.account label {

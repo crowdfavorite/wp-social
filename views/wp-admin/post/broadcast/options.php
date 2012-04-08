@@ -61,7 +61,7 @@ foreach ($_services as $key => $accounts) {
 <?php
 			}
 			if (!empty($account['error'])) {
-				echo '<span>'.esc_html($account['error']).'</span>';
+				echo '<p class="error">'.esc_html($account['error']).'</p>';
 			}
 ?>
 				<div class="broadcast-edit<?php echo ($account['edit'] ? ' edit' : ''); echo ($account['checked'] ? ' checked' : ''); ?>">
