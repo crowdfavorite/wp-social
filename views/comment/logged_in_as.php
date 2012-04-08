@@ -42,7 +42,7 @@
 	<p class="social-input-row">
 		<span class="social-<?php echo $key; ?>-icon">
 			<?php echo esc_html($account->name()); ?>
-			<small class="social-psst"><?php echo $service->disconnect_url($account); ?></small>
+			<small class="social-psst"><?php echo $service->disconnect_link($account); ?></small>
 		</span>
 	</p>
 	<input type="hidden" name="social_post_account" value="<?php echo esc_attr($account->id()); ?>" />

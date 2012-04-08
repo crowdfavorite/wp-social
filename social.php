@@ -675,9 +675,21 @@ final class Social {
 		if (empty($default_accounts)) {
 			$default_accounts = array();
 		}
+		$accounts = array();
+		foreach ($this->services() as $key => $service) {
+			if (!isset($accounts[$key])) {
+				$accounts[$key] = array();
+			}
+			foreach ($service->accounts() as $account) {
+				if ($account->personal()) {
+					$accounts[$key][] = $account->id();
+				}
+			}
+		}
 		echo Social_View::factory('wp-admin/profile', array(
-			'default_accounts' => $default_accounts,
-			'services' => $this->services()
+			'defaults' => $default_accounts,
+			'services' => $this->services(),
+			'accounts' => $accounts,
 		));
 	}
 
@@ -1222,7 +1234,7 @@ final class Social {
 				foreach ($this->services() as $key => $service) {
 					$account = reset($service->accounts());
 					if ($account) {
-						return $service->disconnect_url($account);
+						return $service->disconnect_link($account);
 					}
 				}
 			}
@@ -2050,6 +2062,7 @@ add_action('admin_enqueue_scripts', array($social, 'admin_enqueue_assets'));
 add_action('admin_bar_menu', array($social, 'admin_bar_menu'), 95);
 add_action('wp_after_admin_bar_render', array($social, 'admin_bar_footer_css'));
 add_action('set_user_role', array($social, 'set_user_role'), 10, 2);
+add_filter('social_settings_save', array('Social_Service_Facebook', 'social_settings_save'));
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));
@@ -2071,6 +2084,7 @@ add_filter('loginout', array($social, 'loginout'));
 add_filter('post_row_actions', array($social, 'post_row_actions'), 10, 2);
 add_filter('social_comments_array', array($social, 'comments_array'), 100, 2);
 add_filter('comment_feed_where', array($social, 'comments_feed_exclusions'));
+add_filter('social_settings_default_accounts', array('Social_Service_Facebook', 'social_settings_default_accounts'), 10, 2);
 
 // Service filters
 add_filter('social_auto_load_class', array($social, 'auto_load_class'));

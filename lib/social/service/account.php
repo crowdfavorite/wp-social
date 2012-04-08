@@ -129,7 +129,7 @@ abstract class Social_Service_Account {
 	 * @return string
 	 */
 	public function _avatar() {
-		return 'http://www.gravatar.com/avatar/a06082e4f876182b547f635d945e744e?s=16&d=mm';
+		return 'http://www.gravatar.com/avatar/a06082e4f876182b547f635d945e744e?s=32&d=mm';
 	}
 
 	/**
@@ -148,6 +148,44 @@ abstract class Social_Service_Account {
 	 */
 	public function _username() {
 		return __('Removed Account', 'social');
+	}
+	
+	/**
+	 * Return child accounts (Facebook pages, for example)
+	 *
+	 * @return array
+	 */
+	public function child_accounts($update = false) {
+		if ($update) {
+			$this->fetch_child_accounts();
+		}
+		return array();
+	}
+
+	/**
+	 * Get child account list from service.
+	 *
+	 * @return void
+	 */
+	public function fetch_child_accounts() {
+	}
+
+	/**
+	 * Child account key.
+	 *
+	 * @return string
+	 */
+	public function child_account_key() {
+		return '';
+	}
+
+	/**
+	 * Child account avatar.
+	 *
+	 * @return string
+	 */
+	public function child_account_avatar() {
+		return $this->_avatar();
 	}
 
 } // End Social_Service_Account

@@ -1,13 +1,5 @@
 (function($) {
 	$(function() {
-		$('.social-collapsible').each(function() {
-			var $t = $(this);
-			$t.find('.social-title a').click(function(e) {
-				$t.toggleClass('social-open');
-				e.preventDefault();
-			});
-		});
-
 		function counter($object, $counter, max) {
 			var content = $object.val();
 			$counter.html(max - content.length);
@@ -178,78 +170,5 @@
 			});
 		});
 
-		/**
-		 * Facebook Pages support
-		 */
-		var originalHref = '';
-		$('#social-facebook-pages').click(function(){
-			var href = $('#facebook_signin').attr('href');
-
-			if (originalHref == '') {
-				originalHref = href;
-			}
-
-			if ($(this).is(':checked')) {
-				href += '&use_pages=true';
-			}
-			else {
-				href = originalHref;
-			}
-
-			$('#facebook_signin').attr('href', href);
-		});
-
-		$('.social-manage-facebook-pages').click(function(e){
-			e.preventDefault();
-
-			var $this = $(this);
-			var $parent = $this.closest('.social-accounts-item');
-			var $spinner = $parent.find('.social-facebook-pages-spinner');
-			$this.hide();
-			$spinner.fadeIn();
-
-			$.get($this.attr('href'), {}, function(data){
-				$spinner.hide();
-				if (data.result == 'success') {
-					var slide = false;
-					var $output = $parent.find('.social-facebook-pages');
-					if ($output.is(':visible')) {
-						$output.hide();
-					}
-					else {
-						slide = true;
-					}
-
-					$output.html(data.html);
-					if (slide) {
-						$output.slideDown();
-					}
-					else {
-						$output.fadeIn();
-					}
-
-					$this.parent().hide();
-				}
-				else {
-					$spinner.hide();
-					$this.parent().html(' - '+data.html).fadeIn();
-				}
-			}, 'json');
-		});
-
-		$('#social-accounts .social-facebook-pages input[type=checkbox]').live('change', function(){
-			var $parent = $(this).closest('.social-accounts-item');
-			var data = { 'page_ids[]' : [] };
-			$parent.find('input[type=checkbox]:checked').each(function(){
-				data['page_ids[]'].push($(this).val());
-			});
-			$.post($parent.find('input[name=social_save_url]').val(), data);
-		});
-
-		$('.social-show-facebook-pages').click(function(e){
-			e.preventDefault();
-			$(this).parent().hide();
-			$(this).closest('.social-accounts-item').find('.social-facebook-pages').slideDown();
-		});
 	});
 })(jQuery);

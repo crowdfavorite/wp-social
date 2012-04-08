@@ -95,27 +95,39 @@ abstract class Social_Service {
 		);
 
 		if ($is_admin) {
-			$personal = false;
-			if (defined('IS_PROFILE_PAGE')) {
-				$personal = true;
-			}
+			$personal = defined('IS_PROFILE_PAGE');
 			$url = Social::settings_url($params, $personal);
-			$text = '<span title="'.__('Disconnect', 'social').'" class="social-disconnect social-ir">'.__('Disconnect', 'social').'</span>';
 		}
 		else {
+			$params['redirect_to'] = (isset($_GET['redirect_to']) ? $_GET['redirect_to'] : $_SERVER['REQUEST_URI']);
 			foreach ($params as $key => $value) {
 				$params[$key] = urlencode($value);
 			}
-
-			$params['redirect_to'] = $_SERVER['REQUEST_URI'];
-			if (isset($_GET['redirect_to'])) {
-				$params['redirect_to'] = $_GET['redirect_to'];
-			}
-
 			$url = add_query_arg($params, home_url());
+		}
+		return $url;
+	}
+
+	/**
+	 * Returns the disconnect link.
+	 *
+	 * @static
+	 *
+	 * @param  object  $account
+	 * @param  bool    $is_admin
+	 * @param  string  $before
+	 * @param  string  $after
+	 *
+	 * @return string
+	 */
+	public function disconnect_link($account, $is_admin = false, $before = '', $after = '') {
+		$url = $this->disconnect_url($account, $is_admin, $before, $after);
+		if ($is_admin) {
+			$text = '<span title="'.__('Disconnect', 'social').'" class="social-disconnect">'.__('Disconnect', 'social').'</span>';
+		}
+		else {
 			$text = __('Disconnect', 'social');
 		}
-
 		return sprintf('%s<a href="%s">%s</a>%s', $before, esc_url($url), $text, $after);
 	}
 
@@ -680,26 +692,6 @@ abstract class Social_Service {
 		$title = apply_filters('social_item_output_title', $item->comment_author, $this->key());
 		$image = sprintf('<img src="%s" width="%s" height="%s" alt="%s" />', esc_url($item->social_profile_image_url), esc_attr($width), esc_attr($height), esc_attr($title));
 		return sprintf('<a href="%s" title="%s"%s>%s</a>', esc_url($status_url), esc_attr($title), $style, $image);
-	}
-
-	/**
-	 * Displays the auth item output.
-	 *
-	 * @param  Social_Service_Account  $account
-	 * @return Social_View
-	 */
-	public function auth_output(Social_Service_Account $account) {
-		$profile_url = esc_url($account->url());
-		$profile_name = esc_html($account->name());
-		$disconnect = $this->disconnect_url($account, true);
-		$name = sprintf('<a href="%s">%s</a>', $profile_url, $profile_name);
-
-		return Social_View::factory('wp-admin/parts/auth_output', array(
-			'account' => $account,
-			'key' => $this->key(),
-			'name' => $name,
-			'disconnect' => $disconnect,
-		));
 	}
 
 	/**

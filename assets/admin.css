@@ -41,16 +41,6 @@
 	width: 111px;
 }
 
-.social-disconnect {
-	background: url(delete-sprite.png) 0 0 no-repeat;
-	height: 14px;
-	width: 14px;
-}
-
-.social-disconnect:hover {
-	background-position: 0 -100px;
-}
-
 #social_proxy_keys {
 	margin-top: 10px;
 }
@@ -97,34 +87,64 @@
 }
 
 .social-accounts {
-	margin: 10px 0;
+	margin: 20px 0 0;
 	max-width: 60em;
 }
-.social-view .form-table .social-accounts {
+.social-accounts:first-child {
 	margin-top: 0;
+}
+
+.social-accounts .social-connect-button {
+	margin-bottom: 3px;
 }
 
 .social-accounts ul {
 	border-top: 1px solid #e5e5e5;
-	font-size: 16px;
 	margin-top: 0;
 }
 
-.social-accounts ul ul {
-	border-top: 0;
-	font-size: 12px;
+.social-accounts ul li {
+	background: #fff;
+	margin: 0;
+	padding: 0;
+}
+
+.social-accounts ul ul li {
+	background: url(child-account-bullet.gif) no-repeat;
+	padding-left: 32px;
 }
 
 .social-accounts .social-accounts-item {
 	border-bottom: 1px solid #e5e5e5;
-	min-height: 30px;
-	line-height: 30px;
+	min-height: 32px;
+	line-height: 32px;
 	margin: 0;
-	padding: 5px 5px 5px 30px;
 	position: relative;
 }
+.social-accounts .social-accounts-item .social-accounts-item:last-child {
+	border-bottom: 0;
+}
+.social-accounts .social-accounts-item img {
+	position: absolute;
+}
+.social-accounts .social-accounts-item .name {
+	padding-left: 38px;
+}
+.social-accounts .social-accounts-item label {
+	display: block;
+	height: 32px;
+	line-height: 32px;
+	position: absolute;
+	top: 0;
+}
+.social-accounts .social-accounts-item label.default {
+	right: 100px;
+}
+.social-accounts .social-accounts-item label.enabled {
+	right: 8px;
+}
 
-.social-accounts a {
+.social-accounts .name a {
 	font-weight: bold;
 	text-decoration: none;
 }
@@ -157,22 +177,6 @@
 	top: -2px;
 }
 
-.social-accounts ul ul input {
-	margin-right: 5px;
-}
-
-.social-accounts .social-twitter-icon,
-.social-accounts .social-facebook-icon,
-.social-accounts .disconnect {
-	position: absolute;
-}
-
-.social-accounts .social-twitter-icon,
-.social-accounts .social-facebook-icon {
-	top: 12px;
-	left: 5px;
-}
-
 .social-accounts-item .name span {
 	position: relative;
 	top: -1px;
@@ -197,8 +201,12 @@
 }
 
 .social-accounts .disconnect {
-	top: 11px;
-	right: 5px;
+	display: block;
+	height: 32px;
+	line-height: 32px;
+	position: absolute;
+	right: 8px;
+	top: 0;
 }
 
 .social-broadcast-options .social-accounts ul {
@@ -286,46 +294,12 @@
 
 .social-login {
 	display: inline-block;
-	margin: 2px;
 	width: 150px;
 	height: 22px;
 }
 
 .social-disconnect {
 	position: relative;
-	top: 2px;
-}
-
-.social-collapsible {
-	margin: 20px 0;
-}
-
-.social-collapsible > .social-title {
-	background: url(e5e5e5.gif) repeat-x 0 center;
-	font-size: 14px;
-	margin: 0 10px 20px;
-}
-
-.social-collapsible > .social-title a {
-	background: #fff url(toggle.gif) no-repeat 0 0;
-	display: -moz-inline-box; /* FF2 */
-	display: inline-block; /* Standard. IE8+, Saf, FF3+ */
-	padding: 0 5px 0 15px;
-	text-decoration: none;
-}
-
-.social-collapsible .social-content {
-	display: none;
-	overflow: hidden;
-	zoom: 1;
-}
-
-.social-collapsible.social-open .social-title a {
-	background-position: 0 -100px;
-}
-
-.social-collapsible.social-open .social-content {
-	display: block;
 }
 
 /**
@@ -362,11 +336,11 @@
 .social-connect-button input,
 .social-connect-button label {
 	float: left;
-	margin: 8px 0 0 5px;
+	margin: 7px 0 0 10px;
 }
 
 .social-connect-button label {
-	margin-top: 4px;
+	margin: 4px 0 0 4px;
 }
 
 .social-connect-button a {
