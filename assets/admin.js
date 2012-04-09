@@ -1,36 +1,11 @@
 (function($) {
 	$(function() {
-		function counter($object, $counter, max) {
-			var content = $object.val();
-			$counter.html(max - content.length);
-
-			var counter = parseFloat($counter.html());
-			$counter.removeClass('social-counter-limit');
-			if (counter <= 10) {
-				$counter.addClass('social-counter-limit');
-			}
-		}
-
-		/**
-		 * Post Meta Box
-		 */
-		$('#social_meta_broadcast .social-toggle').click(function() {
-			var $target = $(this).parent().find('.form-wrap');
-			var $textarea = $target.find('textarea');
-
-			if ($(this).val() == '1') {
-				$target.slideDown();
-			} else {
-				$textarea.html('');
-				$target.slideUp();
-			}
-		});
-
-		$('textarea[id$="_preview"]').bind('change keyup paste', function() {
-			if (typeof maxLength != 'undefined') {
-				var id = $(this).attr('id').split('_');
-				counter($(this), $('#' + id[0] + '_counter'), maxLength[id[0]]);
-			}
+		$('.social-collapsible').each(function() {
+			var $t = $(this);
+			$t.find('.social-title a').click(function(e) {
+				$t.toggleClass('social-open');
+				e.preventDefault();
+			});
 		});
 
 		/**
