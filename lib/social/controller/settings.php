@@ -62,14 +62,6 @@ final class Social_Controller_Settings extends Social_Controller {
 				}
 			}
 			
-			// don't warn when there are no Social accounts
-			if (isset($_POST['social_disable_no_accounts_warning'])) {
-				Social::option('disable_no_accounts_warning', '1');
-			}
-			else {
-				delete_option('social_disable_no_accounts_warning');
-			}
-
 			// Disable Social's comment display feature
 			if (isset($_POST['social_use_standard_comments'])) {
 				Social::option('use_standard_comments', '1');
@@ -110,6 +102,15 @@ final class Social_Controller_Settings extends Social_Controller {
 	 */
 	public function action_suppress_enable_notice() {
 		update_user_meta(get_current_user_id(), 'social_suppress_enable_notice', 'true');
+	}
+
+	/**
+	 * Supress the no accounts notice.
+	 *
+	 * @return void
+	 */
+	public function action_suppress_no_accounts_notice() {
+		update_user_meta(get_current_user_id(), 'social_suppress_no_accounts_notice', 'true');
 	}
 
 	/**
