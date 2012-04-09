@@ -118,7 +118,7 @@ final class Social_Controller_Settings extends Social_Controller {
 	 * @return void
 	 */
 	public function action_suppress_no_accounts_notice() {
-		update_user_meta(get_current_user_id(), 'suppress_no_accounts_notice', 'true');
+		update_user_meta(get_current_user_id(), 'social_suppress_no_accounts_notice', 'true');
 	}
 
 	/**
