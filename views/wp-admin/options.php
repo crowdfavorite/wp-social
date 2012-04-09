@@ -116,12 +116,6 @@ $toggle = ((!empty($fetch) and $fetch != '1') or Social::option('debug') == '1')
 										<?php _e("Don't use Social's comment display (use standard theme output instead).", 'social'); ?>
 									</label>
 								</li>
-								<li>
-									<label for="social_disable_no_accounts_warning">
-										<input type="checkbox" name="social_disable_no_accounts_warning" id="social_disable_no_accounts_warning" value="1" <?php checked(Social::option('disable_no_accounts_warning'), '1'); ?> />
-										<?php _e('Hide the "add an account" banner.', 'social'); ?>
-									</label>
-								</li>
 							</ul>
 						</td>
 					</tr>

@@ -70,7 +70,6 @@ final class Social {
 		'system_cron_api_key' => null,
 		'fetch_comments' => '1',
 		'broadcast_by_default' => '0',
-		'disable_no_accounts_warning' => '0',
 		'use_standard_comments' => '0',
 	);
 
