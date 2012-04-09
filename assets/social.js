@@ -221,12 +221,12 @@
 					}
 					if ($option) {
 						$('#post_accounts').val($option.attr('value')).change();
-						$('#post_to_service').prop('checked', true);
-						var $author = $parent.find('.social-comment-author a');
-						var author_rel = $author.attr('rel').split(' ');
-						$('#in_reply_to_status_id').val(author_rel[0]);
-						insertTwitterUsername($author, $textarea);
 					}
+					$('#post_to_service').prop('checked', true);
+					var $author = $parent.find('.social-comment-author a');
+					var author_rel = $author.attr('rel').split(' ');
+					$('#in_reply_to_status_id').val(author_rel[0]);
+					insertTwitterUsername($author, $textarea);
 				}
 			});
 
