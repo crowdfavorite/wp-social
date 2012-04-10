@@ -390,6 +390,9 @@ final class Social {
 		if (SOCIAL_COMMENTS_JS !== false) {
 			wp_enqueue_script('jquery');
 			wp_enqueue_script('social_js', SOCIAL_COMMENTS_JS, array('jquery'), Social::$version, true);
+			wp_localize_script('social_js', 'Sociali18n', array(
+				'commentReplyTitle' => __('Post a Reply', 'social'),
+			));
 		}
 
 		if (!is_admin()) {

@@ -332,24 +332,6 @@ final class Social_Comment_Form {
 	}
 
 	/**
-	 * Hook for 'comment_form_before' action.
-	 *
-	 * @return void
-	 */
-	public function before() {
-		if ($this->is_logged_in) {
-			$tab = __('Post a Comment', 'social');
-		}
-		else {
-			$tab = __('Profile', 'social');
-		}
-
-		echo Social_View::factory('comment/before', array(
-			'tab' => $tab
-		));
-	}
-
-	/**
 	 * Hook for 'comment_form_top' action.
 	 *
 	 * @return void

@@ -192,9 +192,17 @@
 			$('.comment-reply-link').click(function() {
 				$('.comment-reply-link').show();
 				$(this).hide();
-				var $parent = $(this).closest('li'),
+				var $title = $('#reply-title'),
+					$cancel = null,
+					$parent = $(this).closest('li'),
 					$textarea = $parent.find('textarea'),
 					$form = $('#commentform');
+				// set data attr for current title
+				// set title to Sociali18n.commentReplyTitle
+				$cancel = $title.find('small').hide().appendTo($title);
+				$title.data('orig-title', $title.find('span').text())
+					.find('span').html(Sociali18n.commentReplyTitle + ' ')
+					.append($cancel.show());
 				if ($parent.hasClass('social-twitter')) {
 					// check to see if the current user has a Twitter profile
 					if ($('#post_accounts option[data-type="twitter"]').size() == 0 &&
@@ -229,8 +237,8 @@
 						$('#post_accounts').val($option.attr('value')).change();
 					}
 					$('#post_to_service').prop('checked', true);
-					var $author = $parent.find('.social-comment-author a');
-					var author_rel = $author.attr('rel').split(' ');
+					var $author = $parent.find('.social-comment-author a'),
+						author_rel = $author.attr('rel').split(' ');
 					$('#in_reply_to_status_id').val(author_rel[0]);
 					insertTwitterUsername($author, $textarea);
 				}
@@ -240,15 +248,20 @@
 				$('.comment-reply-link').show();
 				$('#post_to_service').prop('checked', false);
 				$('#in_reply_to_status_id').val('');
-				var $parent = $(this).closest('li');
-				var $textarea = $parent.find('textarea');
-				var $author = $parent.find('.social-comment-author a');
+				var $title = $('#reply-title'),
+					$cancel = null,
+					$parent = $(this).closest('li'),
+					$textarea = $parent.find('textarea'),
+					$author = $parent.find('.social-comment-author a');
+				// restore title
+				$cancel = $title.find('small').hide().appendTo($title);
+				$title.find('span').html($title.data('orig-title') + ' ').append($cancel);
 				removeTwitterUsername($author, $textarea);
 			});
 
 			var $avatar = $('#commentform .avatar');
 			var original_avatar = $avatar.attr('src');
-			$('#post_accounts').live('change', function() {
+			$('#post_accounts').on('change', function() {
 				$(this).find('option:selected').each(function() {
 					var avatar = $(this).attr('rel');
 					if (avatar !== undefined) {
