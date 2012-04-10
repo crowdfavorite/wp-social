@@ -758,7 +758,7 @@ final class Social {
 	public function do_meta_boxes() {
 		global $post;
 
-		if ($post !== null) {
+		if ($post !== null && Social::option('disable_broadcasting') != 1) {
 			foreach (self::broadcasting_enabled_post_types() as $post_type) {
 				add_meta_box('social_meta_broadcast', __('Social Broadcasting', 'social'), array(
 					$this,

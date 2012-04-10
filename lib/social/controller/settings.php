@@ -70,6 +70,14 @@ final class Social_Controller_Settings extends Social_Controller {
 				delete_option('social_use_standard_comments');
 			}
 
+			// Disable Social's broadcast feature
+			if (isset($_POST['social_disable_broadcasting'])) {
+				Social::option('disable_broadcasting', '1');
+			}
+			else {
+				delete_option('social_disable_broadcasting');
+			}
+
 			do_action('social_settings_save', $this);
 
 			wp_redirect(Social::settings_url(array('saved' => 'true')));

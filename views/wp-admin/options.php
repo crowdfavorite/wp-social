@@ -98,7 +98,12 @@ foreach (Social::comment_broadcast_tokens() as $token => $description) {
 		</table>
 <?php
 $fetch = Social::option('fetch_comments');
-$toggle = ((!empty($fetch) and $fetch != '1') or Social::option('debug') == '1') ? ' social-open' : '';
+$toggle = (
+	(!empty($fetch) and $fetch != '1') or
+	Social::option('debug') == '1' or
+	Social::option('use_standard_comments') == 1 or
+	Social::option('disable_broadcasting') == 1
+) ? ' social-open' : '';
 ?>
 		<div class="social-collapsible<?php echo $toggle; ?>">
 			<h3 class="social-title"><a href="#social-advanced"><?php _e('Advanced Options', 'social'); ?></a></h3>
@@ -113,7 +118,13 @@ $toggle = ((!empty($fetch) and $fetch != '1') or Social::option('debug') == '1')
 								<li>
 									<label for="social_use_standard_comments">
 										<input type="checkbox" name="social_use_standard_comments" id="social_use_standard_comments" value="1" <?php checked(Social::option('use_standard_comments'), '1'); ?> />
-										<?php _e("Don't use Social's comment display (use standard theme output instead).", 'social'); ?>
+										<?php _e("Disable Social's comment display (use standard theme output instead).", 'social'); ?>
+									</label>
+								</li>
+								<li>
+									<label for="social_disable_broadcasting">
+										<input type="checkbox" name="social_disable_broadcasting" id="social_disable_broadcasting" value="1" <?php checked(Social::option('disable_broadcasting'), '1'); ?> />
+										<?php _e("Disable Social's broadcasting feature.", 'social'); ?>
 									</label>
 								</li>
 							</ul>
