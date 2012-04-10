@@ -193,8 +193,14 @@
 				$('.comment-reply-link').show();
 				$(this).hide();
 				var $parent = $(this).closest('li'),
-					$textarea = $parent.find('textarea');
+					$textarea = $parent.find('textarea'),
+					$form = $('#commentform');
 				if ($parent.hasClass('social-twitter')) {
+					// check to see if the current user has a Twitter profile
+					if ($('#post_accounts option[data-type="twitter"]').size() == 0 &&
+						$form.find('.social-identity .social-twitter-icon').size() == 0) {
+						return;
+					}
 					// look for a username at the beginning of the comment
 					// if we have that account available, use it
 					// if not, select the first account for that service
