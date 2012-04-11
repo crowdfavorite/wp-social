@@ -253,10 +253,13 @@
 					$parent = $(this).closest('li'),
 					$textarea = $parent.find('textarea'),
 					$author = $parent.find('.social-comment-author a');
-				// restore title
-				$cancel = $title.find('small').hide().appendTo($title);
-				$title.find('span').html($title.data('orig-title') + ' ').append($cancel);
-				removeTwitterUsername($author, $textarea);
+				// if click invoked programatically, do nothing.
+				if ($textarea.size()) {
+					// restore title
+					$cancel = $title.find('small').hide().appendTo($title);
+					$title.find('span').html($title.data('orig-title') + ' ').append($cancel);
+					removeTwitterUsername($author, $textarea);
+				}
 			});
 
 			var $avatar = $('#commentform .avatar');
