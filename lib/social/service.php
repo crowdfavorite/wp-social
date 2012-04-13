@@ -342,6 +342,17 @@ abstract class Social_Service {
 
 		return $this;
 	}
+	
+	/**
+	 * Removes all accounts from the service.
+	 *
+	 * @abstract
+	 * @return Social_Service
+	 */
+	public function clear_accounts() {
+		$this->_accounts = array();
+		return $this;
+	}
 
 	/**
 	 * Formats the broadcast content.
