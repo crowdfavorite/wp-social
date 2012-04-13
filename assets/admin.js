@@ -145,6 +145,21 @@
 			});
 		});
 		
+		/**
+		 * Facebook Pages support
+		 */
+		$('#social-facebook-pages').click(function() {
+			var href = $(this).data('href');
+			if (typeof href == 'undefined') {
+				href = $('#facebook_signin').attr('href');
+				$(this).data('href', href);
+			}
+			if ($(this).is(':checked')) {
+				href += '&use_pages=true';
+			}
+			$('#facebook_signin').attr('href', href);
+		});
+
 		$('.broadcast-interstitial .broadcast-edit a.edit').click(function(e) {
 			$(this).closest('.broadcast-edit').addClass('edit')
 				.find('input[type="checkbox"]').prop('checked', true).end()
