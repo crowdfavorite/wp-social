@@ -1678,7 +1678,7 @@ final class Social {
 		) {
 			$wp_admin_bar->add_menu(array(
 				'parent' => 'comments',
-				'id' => 'social_find_comments',
+				'id' => 'social-find-comments',
 				'title' => __('Find Social Comments', 'social')
 					.'<span class="social-aggregation-spinner" style="display: none;">&nbsp;(
 						<span class="social-dot dot-active">.</span>
@@ -1686,6 +1686,16 @@ final class Social {
 						<span class="social-dot">.</span>
 					)</span>',
 				'href' => esc_url(wp_nonce_url(admin_url('index.php?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run')),
+			));
+			$wp_admin_bar->add_menu(array(
+				'parent' => 'comments',
+				'id' => 'social-add-tweet-by-url',
+				'title' => __('Add Tweet by URL', 'social')
+					.'<form class="social-add-tweet" style="display: none;" method="get" action="'.esc_url(wp_nonce_url(admin_url('index.php?social_controller=import&social_action=from_url&social_service=twitter&post_id='.$current_object->ID), 'from_url')).'">
+						<input type="text" size="20" name="url" value="" autocomplete="off" />
+						<input type="submit" name="social-add-tweet-button" name="social-add-tweet-button" value="'.__('Add Tweet by URL', 'social').'" />
+					</form>',
+				'href' => esc_url(get_edit_post_link($current_object->ID)),
 			));
 		}
 	}
@@ -1700,7 +1710,53 @@ final class Social {
 #wpadminbar .social-aggregation-spinner .dot-active {
 	font-weight: bold;
 }
+#wpadminbar #wp-admin-bar-social-add-tweet-by-url form {
+	display: block;
+	line-height: 100%;
+	margin: 0;
+	padding: 5px;
+}
+#wpadminbar #wp-admin-bar-social-add-tweet-by-url input {
+	color: #333;
+	font-size: 11px;
+	font-weight: normal;
+	line-height: 1;
+	margin-bottom: 3px;
+	padding: 3px;
+	text-shadow: none;
+	width: 90%;
+}
+#wpadminbar #wp-admin-bar-social-add-tweet-by-url input[type="submit"] {
+	margin: 0;
+}
+#wpadminbar #wp-admin-bar-social-add-tweet-by-url .loading {
+	background: url(<?php echo admin_url('images/wpspin_light.gif'); ?>) center center no-repeat;
+}
+#wpadminbar #wp-admin-bar-social-add-tweet-by-url p.msg {
+	color: #333;
+	font-size: 12px;
+	font-weight: normal;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	text-shadow: none;
+}
+#wpadminbar #wp-admin-bar-social-add-tweet-by-url p.error {
+	color: #900;
+}
 </style>
+<?php
+	}
+
+	function admin_bar_footer_js() {
+?>
+<script type="text/javascript">
+var socialAdminBarMsgs = {
+	'protected': '<?php echo esc_js(__('Protected Tweet', 'social')); ?>',
+	'invalid': '<?php echo esc_js(__('Invalid URL', 'social')); ?>',
+	'success': '<?php echo esc_js(__('Tweet Imported!', 'social')); ?>'
+};
+</script>
 <?php
 	}
 
@@ -2065,6 +2121,7 @@ add_action('load-settings_page_social', array($social, 'enqueue_assets'));
 add_action('admin_enqueue_scripts', array($social, 'admin_enqueue_assets'));
 add_action('admin_bar_menu', array($social, 'admin_bar_menu'), 95);
 add_action('wp_after_admin_bar_render', array($social, 'admin_bar_footer_css'));
+add_action('wp_after_admin_bar_render', array($social, 'admin_bar_footer_js'));
 add_action('set_user_role', array($social, 'set_user_role'), 10, 2);
 add_filter('social_settings_save', array('Social_Service_Facebook', 'social_settings_save'));
 

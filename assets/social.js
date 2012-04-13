@@ -288,7 +288,7 @@
 		/**
 		 * Manual Aggregation
 		 */
-		var $social_comments_adminbar_item = $('#wp-admin-bar-social_find_comments');
+		var $social_comments_adminbar_item = $('#wp-admin-bar-social-find-comments');
 		if ($social_comments_adminbar_item.size()) {
 			var $social_spinner = $social_comments_adminbar_item.find('.social-aggregation-spinner');
 			var $social_aggregation = $('#social_aggregation');
@@ -369,6 +369,50 @@
 				}
 			});
 		}
+		$('#wp-admin-bar-social-add-tweet-by-url a').each(function() {
+			$form = $(this).find('form');
+			$form.data('running-import', false).keydown(function(e) {
+				e.stopPropagation();
+			}).submit(function() {
+				if (!$(this).data('running-import')) {
+					var $this = $(this),
+						$inputs = $this.find('input');
+					$this.data('running-import', true);
+					$inputs.attr('disabled', 'disabled');
+					
+					var $loading = $('<div class="loading"></div>')
+						.height($this.height())
+						.width($this.width());
+					$this.hide().closest('li')
+							.find('.msg').remove().end()
+						.end()
+						.after($loading);
+	
+					$.get($this.attr('action'), {
+						url: $('input[name=url]').val()
+					}, function(response) {
+						var msg = msgClass = '';
+						switch (response) {
+							case 'protected':
+							case 'invalid':
+								msg = socialAdminBarMsgs[response];
+								msgClass = ' error';
+								break;
+							default:
+								msg = socialAdminBarMsgs['success'];
+						}
+						$loading.remove();
+						$this.data('running-import', false).show()
+							.after('<p class="msg' + msgClass + '">' + msg + '</p>');
+						$inputs.removeAttr('disabled').filter(':text').val('').focus();
+					});
+				}
+				return false;
+			}).appendTo($(this).closest('li'));
+		}).click(function(e) {
+			$(this).hide().closest('li').find('form').show().find(':text').focus().select();
+			return false;
+		});
 
 		/**
 		 * Twitter @Anywhere
