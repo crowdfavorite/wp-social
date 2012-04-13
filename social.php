@@ -1876,6 +1876,7 @@ final class Social {
 		}
 
 		if ($services === false) {
+			$services = array();
 			// Register services
 			$registered_services = apply_filters('social_register_service', array());
 			if (is_array($registered_services) and count($registered_services)) {
@@ -1901,7 +1902,6 @@ final class Social {
 						$services[$service] = new $class($service_accounts);
 					}
 				}
-
 				wp_cache_set('services', $services, 'social');
 			}
 		}
@@ -1917,7 +1917,9 @@ final class Social {
 // don't return global services for commenters
 		$commenter = get_user_meta(get_current_user_id(), 'social_commenter', true);
 		if ($commenter == 'true' && !current_user_can('publish_posts')) {
-			$services = array();
+			foreach ($services as $key => $accounts) {
+				$services[$key]->clear_accounts();
+			}
 		}
 
 		$personal_accounts = get_user_meta(get_current_user_id(), 'social_accounts', true);
@@ -1928,13 +1930,11 @@ final class Social {
 					foreach ($_accounts as $account_id => $account) {
 						// TODO Shouldn't have to do this. Fix later.
 						$account->universal = '0';
-
 						if ($services[$key]->account_exists($account_id) and !defined('IS_PROFILE_PAGE')) {
 							$account = $this->merge_accounts($services[$key]->account($account_id)->as_object(), $account, $key);
 						}
 						$account = new $class((object) $account);
 						$services[$key]->account($account);
-
 						// Flag social as enabled, we have at least one account.
 						if ($this->_enabled === null) {
 							$this->_enabled = true;
