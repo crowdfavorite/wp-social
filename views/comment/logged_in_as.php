@@ -36,17 +36,19 @@
 			
 			foreach ($services as $key => $service) {
 				if (count($service->accounts())) {
-					$account = reset($service->accounts());
-					if ($account->personal()) {
+					foreach ($service->accounts() as $account) {
+						if ($account->personal()) {
 	?>
 	<p class="social-input-row">
-		<span class="social-<?php echo $key; ?>-icon">
+		<span class="social-<?php echo esc_attr($key); ?>-icon">
 			<?php echo esc_html($account->name()); ?>
 			<small class="social-psst"><?php echo $service->disconnect_link($account); ?></small>
 		</span>
 	</p>
 	<input type="hidden" name="social_post_account" value="<?php echo esc_attr($account->id()); ?>" />
 	<?php
+							break;
+						}
 					}
 				}
 			}
