@@ -318,8 +318,8 @@ final class Social_Comment_Form {
 							if ($account->personal()) {
 								$text = sprintf(__('Also post to %s', 'social'), $service->title());
 								$post_to .= $this->to_tag('label', $checkbox . ' ' . $text, $label_base);
+								break;
 							}
-							break;
 						}
 					}
 				}
