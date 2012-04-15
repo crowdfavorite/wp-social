@@ -383,6 +383,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 							'profile_image_url' => $response->user->profile_image_url,
 							'in_reply_to_status_id' => $response->in_reply_to_status_id,
 							'raw' => $response,
+							'comment_type' => 'social-'.$this->_key,
 						);
 
 						$this->save_aggregated_comments($post, true);

@@ -17,7 +17,10 @@ final class Social_Controller_Import extends Social_Controller {
 
 		$service = $this->social->service('twitter');
 		if ($service !== false) {
-			$response = $service->import_tweet_by_url($this->request->query('post_id'), $this->request->query('url'));
+			$response = $service->import_tweet_by_url(
+				$this->request->query('post_id'),
+				$this->request->query('url')
+			);
 			if ($response !== true) {
 				echo $response;
 				exit;
