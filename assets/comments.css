@@ -284,7 +284,7 @@ override submit styles in TwentyEleven theme */
 #social .social-twitter-icon,
 #social .social-facebook-icon,
 #social .social-facebook-like-icon {
-	background: url(social.png) 0 -150px no-repeat;
+	background: url(sprite-y-24-icons.png) 0 -99px no-repeat;
 	display: block;
 	padding-left: 21px;
 	/**
@@ -297,7 +297,7 @@ override submit styles in TwentyEleven theme */
 
 #social .social-facebook-icon,
 #social .social-facebook-like-icon {
-	background-position: 0 -250px;
+	background-position: 0 -199px;
 }
 
 #social .social-sign-in-links {
