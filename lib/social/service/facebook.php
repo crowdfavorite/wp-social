@@ -33,20 +33,25 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 */
 	public function broadcast($account, $message, array $args = array(), $post_id = null) {
 		global $post;
-		if (function_exists('has_post_thumbnail') and has_post_thumbnail($post_id)) {
-			$post = get_post($post_id);
-			$image = wp_get_attachment_image_src(get_post_thumbnail_id($post_id), 'single-post-thumbnail');
-			$args = $args + array(
-				'link' => get_post_permalink($post_id),
-				'title' => $post->post_title,
-				'picture' => $image[0],
-				'description' => get_the_excerpt(),
-			);
-		}
+		$post = get_post($post_id);
 
 		$args = $args + array(
 			'message' => $message,
 		);
+
+		if (get_post_format($post->ID) !== 'status') {
+			$args = $args + array(
+				'link' => get_post_permalink($post->ID),
+				'title' => $post->post_title,
+				'description' => get_the_excerpt(),
+			);
+			if (function_exists('has_post_thumbnail') and has_post_thumbnail($post->ID)) {
+				$image = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID), 'single-post-thumbnail');
+				$args = $args + array(
+					'picture' => $image[0],
+				);
+			}
+		}
 
 		// Set access token?
 		$broadcast_account = $account->broadcast_page();
@@ -116,6 +121,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * @return array
 	 */
 	public function aggregate_by_api(&$post) {
+		// find broadcasts for service
 		$accounts = $this->get_aggregation_accounts($post);
 
 		if (isset($accounts[$this->_key]) and count($accounts[$this->_key])) {
@@ -124,7 +130,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				if (isset($post->broadcasted_ids[$this->_key][$account->id()])) {
 					foreach ($post->broadcasted_ids[$this->_key][$account->id()] as $broadcasted_id => $data) {
 						$id = explode('_', $broadcasted_id);
-						$response = $this->request($account, $id[1].'/comments')->body();
+						$response = $this->request($account, $broadcasted_id.'/comments')->body();
 						if ($response !== false and isset($response->response) and isset($response->response->data) and is_array($response->response->data) and count($response->response->data)) {
 							foreach ($response->response->data as $result) {
 								$data = array(
@@ -141,14 +147,12 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 								}
 
 								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
-								$post->aggregated_ids[$this->_key][] = $result->id;
-
 								$result->status_id = $broadcasted_id;
 								$post->results[$this->_key][$result->id] = $result;
 							}
 						}
 
-						$this->search_for_likes($account, $id[1], $id[0], $post, $like_count);
+						$this->search_for_likes($account, $broadcasted_id, $id[0], $post, $like_count);
 					}
 				}
 			}
@@ -195,6 +199,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		}
 
 		if (isset($response->paging) and isset($response->paging->next)) {
+// TODO - fix this
 			$next = explode('/likes', $response->paging->next);
 			$this->search_for_likes($account, $id, $parent_id, $post, $like_count, $next[1]);
 		}
