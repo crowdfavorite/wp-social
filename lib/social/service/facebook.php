@@ -376,7 +376,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * @return bool
 	 */
 	public function deauthorized($response, $check_invalid_key = false) {
-		if (($check_invalid_key and $response = 'invalid key') or $response == 'Error validating access token') {
+		if (($check_invalid_key and $response == 'invalid key') or $response == 'Error validating access token') {
 			return true;
 		}
 		return false;
