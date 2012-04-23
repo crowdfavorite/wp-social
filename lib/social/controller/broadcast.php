@@ -172,7 +172,8 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			}
 		}
 
-		$step_text = 'Publish';
+		$step = 'Publish';
+		$step_text = __('Publish', 'social');
 		if ($this->request->post('social_broadcast') !== null or $this->request->post('social_action') !== null) {
 			if (($this->request->post('social_action') === null and $this->request->post('social_broadcast') == 'Edit') or
 				$this->request->post('social_action') == 'Update')

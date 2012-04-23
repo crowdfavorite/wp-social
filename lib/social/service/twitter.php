@@ -462,7 +462,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 * @return bool
 	 */
 	public function deauthorized($response, $check_invalid_key = false) {
-		if (($check_invalid_key and $response = 'invalid key') or $response == 'Could not authenticate with OAuth.') {
+		if (($check_invalid_key and $response == 'invalid key') or $response == 'Could not authenticate with OAuth.') {
 			return true;
 		}
 		return false;

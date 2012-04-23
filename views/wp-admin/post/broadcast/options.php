@@ -30,7 +30,7 @@ foreach ($_services as $key => $accounts) {
 <?php
 		$i = 0;
 		foreach ($accounts as $account) {
-			$classes = array();
+			$classes = array($service->key());
 			if ($i == 0) {
 				$classes[] = 'proto';
 			}
@@ -70,8 +70,11 @@ foreach ($_services as $key => $accounts) {
 					<a href="#" class="edit"><?php _e('Edit', 'social'); ?></a>
 					<textarea name="<?php echo esc_attr($account['field_name_content']); ?>" cols="40" rows="2" maxlength="<?php echo esc_attr($account['maxlength']); ?>"><?php echo esc_textarea($account['content']); ?></textarea>
 					<span class="counter"></span>
+<?php do_action('social_broadcast_form_item_edit', $post, $service, $account); ?>
 				</div>
+<?php do_action('social_broadcast_form_item_content', $post, $service, $account); ?>
 			</div>
+<?php do_action('social_broadcast_form_item', $post, $service, $account); ?>
 		</li>
 <?php
 			$i++;
