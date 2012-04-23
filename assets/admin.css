@@ -740,10 +740,16 @@
 	color: #900;
 }
 .broadcast-interstitial .facebook-link-preview {
-	min-height: 90px;
-	padding: 8px 0 0 27px;
+	border-left: 2px solid #ccc;
+	margin: 8px 0 0 27px;
+	padding: 0 0 0 10px;
 	position: relative;
 	width: 380px;
+}
+.broadcast-interstitial .facebook-link-preview.has-img {
+	border-left: 0;
+	min-height: 90px;
+	padding: 0;
 }
 .broadcast-interstitial .facebook-link-preview img {
 	height: 90px;
