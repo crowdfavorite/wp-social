@@ -22,6 +22,20 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	}
 
 	/**
+	 * Handles the requests to the proxy.
+	 *
+	 * @param  Social_Service_Account|int  $account
+	 * @param  string                      $api
+	 * @param  array                       $args
+	 * @param  string                      $method
+	 * @return Social_Response|bool
+	 */
+	public function request($account, $api, array $args = array(), $method = 'GET') {
+		$api = urlencode($api);
+		return parent::request($account, $api, $args, $method);
+	}
+
+	/**
 	 * Broadcasts the message to the specified account. Returns the broadcasted ID.
 	 *
 	 * @param  Social_Service_Facebook_Account|object  $account  account to broadcast to

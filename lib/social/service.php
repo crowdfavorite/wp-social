@@ -511,7 +511,7 @@ abstract class Social_Service {
 			$request = wp_remote_post($proxy, array(
 				'sslverify' => false,
 				'body' => array(
-					'api' => urlencode($api),
+					'api' => $api,
 					'method' => $method,
 					'public_key' => $account->public_key(),
 					'hash' => sha1($account->public_key().$account->private_key()),

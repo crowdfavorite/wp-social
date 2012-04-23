@@ -301,6 +301,7 @@ final class Social_Facebook {
 				if (isset($pages[$account->id])) {
 					$found = true;
 					$account = $_account->broadcast_page($pages[$account->id]);
+					break;
 				}
 			}
 
@@ -313,6 +314,7 @@ final class Social_Facebook {
 						if (isset($pages[$account->id])) {
 							$found = true;
 							$account = $_account->broadcast_page($pages[$account->id]);
+							break;
 						}
 					}
 				}
