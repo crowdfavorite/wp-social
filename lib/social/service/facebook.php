@@ -48,7 +48,6 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 */
 	public function broadcast($account, $message, array $args = array(), $post_id = null, $comment_id = null) {
 		global $post;
-
 		// if post ID is set, this is a broadcast of a post, 
 		// if the comment ID is set it is a broadcast of a comment
 		// TODO - add wrapper functions that abstract these actions out to separate methods
@@ -91,6 +90,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 			$post = get_post($post_id);
 			$type = 'post';
 		}
+		setup_postdata($post);
 		
 		$link_args = array(
 			'link' => get_post_permalink($post->ID),
@@ -103,6 +103,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				'picture' => $image[0],
 			);
 		}
+		wp_reset_postdata();
 		
 		if ($type == 'comment' || ($type == 'post' && get_post_format($post->ID) !== 'status')) {
 			$args = $args + $link_args;
