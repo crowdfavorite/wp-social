@@ -71,7 +71,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 						// we have a Facebook post to reply to
 						$args = apply_filters($this->key().'_broadcast_args', $args, $post_id, $comment_id);
 						$response = $this->request($account, $status_id.'/comments', $args, 'POST');
-						if ($response !== false or $response->id() !== false) {
+						if ($response !== false && $response->id() !== '0') {
 							// post succeeded, return response
 							return $response;
 						}
