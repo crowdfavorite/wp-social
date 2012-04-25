@@ -1382,13 +1382,11 @@ final class Social {
 									delete_comment_meta($comment_ID, 'social_in_reply_to_status_id');
 								}
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s.', 'social'), $comment_ID, $service->title(), $account->id()));
-								$response = $service->broadcast($account, $output, $args);
-								if ($response === false or $response->id() === false) {
+								$response = $service->broadcast($account, $output, $args, null, $comment_ID);
+								if ($response === false or $response->id() === '0') {
 									wp_delete_comment($comment_ID);
-									$message = sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_ID, $service->title(), $account->id());
-
-									Social::log($message);
-									wp_die($message);
+									Social::log(sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_ID, esc_html($service->title()), esc_html($account->id())));
+									wp_die(sprintf(__('Error: Your comment could not be sent to %s, please go back and try again.', 'social'), esc_html($service->title())));
 								}
 
 								$wpdb->query($wpdb->prepare("
@@ -1473,7 +1471,7 @@ final class Social {
 								}
 
 								$output = $service->format_comment_content($comment, Social::option('comment_broadcast_format'));
-								$response = $service->broadcast($account, $output, $args);
+								$response = $service->broadcast($account, $output, $args, null, $comment_id);
 								if ($response === false or $response->id() === false) {
 									wp_delete_comment($comment_id);
 									Social::log(sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_id, $service->title(), $account->id()));

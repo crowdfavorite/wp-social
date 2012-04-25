@@ -38,33 +38,79 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	/**
 	 * Broadcasts the message to the specified account. Returns the broadcasted ID.
 	 *
-	 * @param  Social_Service_Facebook_Account|object  $account  account to broadcast to
-	 * @param  string                                  $message  message to broadcast
-	 * @param  array                                   $args     extra arguments to pass to the request
-	 * @param  int                                     $post_id  post ID being broadcasted
+	 * @param  Social_Service_Facebook_Account|object  $account     account to broadcast to
+	 * @param  string                                  $message     message to broadcast
+	 * @param  array                                   $args        extra arguments to pass to the request
+	 * @param  int                                     $post_id     post ID being broadcasted
+	 * @param  int                                     $comment_id  comment ID being broadcasted
 	 *
 	 * @return Social_Response
 	 */
-	public function broadcast($account, $message, array $args = array(), $post_id = null) {
+	public function broadcast($account, $message, array $args = array(), $post_id = null, $comment_id = null) {
 		global $post;
-		$post = get_post($post_id);
+		// if post ID is set, this is a broadcast of a post, 
+		// if the comment ID is set it is a broadcast of a comment
+		// TODO - add wrapper functions that abstract these actions out to separate methods
+
+		// check comment being replied to, if it is a facebook comment on a post then
+		// send the comment as a reply on the same post.
+		// If that fails, then send as posting a link with a comment.
 
 		$args = $args + array(
 			'message' => $message,
 		);
 
-		if (get_post_format($post->ID) !== 'status') {
-			$args = $args + array(
-				'link' => get_post_permalink($post->ID),
-				'title' => $post->post_title,
-				'description' => get_the_excerpt(),
-			);
-			if (function_exists('has_post_thumbnail') and has_post_thumbnail($post->ID)) {
-				$image = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID), 'single-post-thumbnail');
-				$args = $args + array(
-					'picture' => $image[0],
-				);
+		// first try to send comment to an existing Fb post
+		if (!is_null($comment_id)) {
+			$comment = get_comment($comment_id);
+			if (!empty($comment->comment_parent)) {
+				$parent_comment = get_comment($comment->comment_parent);
+				if (!is_null($parent_comment) && in_array($parent_comment->comment_type, self::comment_types())) {
+					$status_id = get_comment_meta($parent_comment->comment_ID, 'social_status_id', true);
+					if (!empty($status_id)) {
+						// we have a Facebook post to reply to
+						$parts = explode('_', $status_id);
+						if (count($parts) == 3) {
+							$status_id = $parts[0].'_'.$parts[1];
+						}
+						$args = apply_filters($this->key().'_broadcast_args', $args, $post_id, $comment_id);
+						$response = $this->request($account, $status_id.'/comments', $args, 'POST');
+						if ($response !== false && $response->id() !== '0') {
+							// post succeeded, return response
+							return $response;
+						}
+						// ...broadcast failed, continue and send as post to feed
+					}
+				}
 			}
+		}
+
+		// prep data
+		if (!is_null($comment_id)) {
+			$post = get_post($comment->comment_post_ID);
+			$type = 'comment';
+		}
+		if (!is_null($post_id)) {
+			$post = get_post($post_id);
+			$type = 'post';
+		}
+		setup_postdata($post);
+		
+		$link_args = array(
+			'link' => get_post_permalink($post->ID),
+			'title' => $post->post_title,
+			'description' => get_the_excerpt(),
+		);
+		if (function_exists('has_post_thumbnail') and has_post_thumbnail($post->ID)) {
+			$image = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID), 'single-post-thumbnail');
+			$link_args = $link_args + array(
+				'picture' => $image[0],
+			);
+		}
+		wp_reset_postdata();
+		
+		if ($type == 'comment' || ($type == 'post' && get_post_format($post->ID) !== 'status')) {
+			$args = $args + $link_args;
 		}
 
 		// Set access token?
@@ -76,7 +122,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 			);
 		}
 
-		$args = apply_filters($this->key().'_broadcast_args', $args, $post_id);
+		$args = apply_filters($this->key().'_broadcast_args', $args, $post_id, $comment_id);
 		return $this->request($account, 'feed', $args, 'POST');
 	}
 
@@ -205,7 +251,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				$post->aggregated_ids[$this->_key][] = $result->id;
 				$post->results[$this->_key][$result->id] = (object) array_merge(array(
 					'like' => true,
-					'status_id' => $parent_id.'_'.$id,
+					'status_id' => $id,
 					'raw' => $result,
 				), (array) $result);
 				++$like_count;
