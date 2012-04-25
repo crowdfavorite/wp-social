@@ -3,6 +3,20 @@
 if (strpos($comment_type, 'social-') === false) {
 	$comment_type = 'social-'.$comment_type;
 }
+
+// set up the comment meta class (used for icon indicator)
+switch ($comment_type) {
+	case 'social-twitter':
+	case 'social-facebook':
+	case 'social-pingback':
+	case 'social-wordpress':
+		$parts = explode('-', $comment_type);
+		$comment_meta_class = $parts[0].'-comment-meta-'.$parts[1];
+	break;
+	default:
+		$comment_meta_class = 'social-comment-meta-wordpress';
+}
+
 ?>
 <li <?php comment_class('social-comment social-clearfix '.esc_attr($comment_type)); ?> id="li-comment-<?php comment_ID(); ?>">
 <div class="social-comment-inner social-clearfix" id="comment-<?php comment_ID(); ?>">
@@ -28,7 +42,7 @@ if (strpos($comment_type, 'social-') === false) {
 			?>
 		</div>
 		<!-- .comment-author .vcard -->
-		<div class="social-comment-meta">
+		<div class="social-comment-meta <?php echo esc_attr($comment_meta_class); ?>">
 			<span class="social-posted-from">
 				<?php if ($status_url !== null): ?>
 				<a href="<?php echo esc_url($status_url); ?>" title="<?php _e(sprintf('View on %s', $service->title()), 'social'); ?>" target="_blank">

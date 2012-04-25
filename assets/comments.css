@@ -606,25 +606,19 @@ override submit styles in TwentyEleven theme */
 	text-align: right;
 }
 
-#social .social-comment .social-comment-meta,
-#social ol li ul li.social-comment .social-comment-meta {
+#social .social-comment-meta {
 	background-position: right -1px;
 }
 
-#social .social-twitter .social-comment-meta,
-#social ol li ul li.social-twitter .social-comment-meta {
+#social .social-comment-meta-twitter {
 	background-position: right -100px;
 }
 
-#social .social-facebook .social-comment-meta,
-#social .social-facebook-like .social-comment-meta,
-#social ol li ul li.social-facebook .social-comment-meta,
-#social ol li ul li.social-facebook-like .social-comment-meta {
+#social .social-comment-meta-facebook {
 	background-position: right -200px;
 }
 
-#social .social-pingback .social-comment-meta,
-#social ol li ul li.social-pingback .social-comment-meta {
+#social .social-comment-meta-pingback {
 	background-position: right -400px;
 }
 
