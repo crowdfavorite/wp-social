@@ -69,6 +69,10 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					$status_id = get_comment_meta($parent_comment->comment_ID, 'social_status_id', true);
 					if (!empty($status_id)) {
 						// we have a Facebook post to reply to
+						$parts = explode('_', $status_id);
+						if (count($parts) == 3) {
+							$status_id = $parts[0].'_'.$parts[1];
+						}
 						$args = apply_filters($this->key().'_broadcast_args', $args, $post_id, $comment_id);
 						$response = $this->request($account, $status_id.'/comments', $args, 'POST');
 						if ($response !== false && $response->id() !== '0') {
