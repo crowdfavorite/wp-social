@@ -42,7 +42,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * @return array
 	 */
 	public function get_broadcast_extras($account_id, $post, $args = array()) {
-		if (get_post_format($post->ID) !== 'status')) {
+		if (get_post_format($post->ID) !== 'status') {
 			setup_postdata($post);
 			$link_args = array(
 				'link' => get_post_permalink($post->ID),
