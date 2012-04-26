@@ -109,6 +109,12 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					}
 				}
 			}
+			
+			// posting with a link, do not include URL in comment.
+			$format = trim(str_replace('{url}', '', Social::option('comment_broadcast_format')));
+			$message = $service->format_comment_content($comment, $format);
+			$args['message'] = $message;
+
 			// prep data
 			$post = get_post($comment->comment_post_ID);
 			setup_postdata($post);
