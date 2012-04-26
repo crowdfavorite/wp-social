@@ -98,7 +98,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		
 		$link_args = array(
 			'link' => get_post_permalink($post->ID),
-			'title' => $post->post_title,
+			'title' => get_the_title($post->ID),
 			'description' => get_the_excerpt(),
 		);
 		if (function_exists('has_post_thumbnail') and has_post_thumbnail($post->ID)) {

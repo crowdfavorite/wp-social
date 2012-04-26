@@ -762,4 +762,14 @@ abstract class Social_Service {
 		return array();
 	}
 
+	/**
+	 * Any additional parameters that should be passed with a broadcast.
+	 *
+	 * @static
+	 * @return array
+	 */
+	public function get_broadcast_extras($account_id, $post, $args = array()) {
+		return apply_filters($this->key().'_broadcast_extras', $args, $this, $account_id, $post);
+	}
+
 } // End Social_Service

@@ -24,6 +24,24 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	public function max_broadcast_length() {
 		return 140;
 	}
+	
+	/**
+	 * Any additional parameters that should be passed with a broadcast.
+	 *
+	 * @static
+	 * @return array
+	 */
+	public function get_broadcast_extras($account_id, $post, $args = array()) {
+		if (isset($_POST['social_account_in_reply_to']) &&
+			isset($_POST['social_account_in_reply_to'][$this->key()]) &&
+			!empty($_POST['social_account_in_reply_to'][$this->key()][$account_id])) {
+			$id = $this->tweet_url_to_id(stripslashes($_POST['social_account_in_reply_to'][$this->key()][$account_id]));
+			if (!empty($id)) {
+				$args['in_reply_to_status_id'] = $id;
+			}
+		}
+		return parent::get_broadcast_extras($account_id, $post, $args);
+	}
 
 	/**
 	 * Broadcasts the message to the specified account. Returns the broadcasted ID.
@@ -324,6 +342,17 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		}
 		return '';
 	}
+	
+	/**
+	 * Parse a Twitter URL and return the tweet ID.
+	 *
+	 * @param  string  $url
+	 * @return string
+	 */
+	public function tweet_url_to_id($url) {
+		$url = explode('/', $url);
+		return end($url);
+	}
 
 	/**
 	 * Imports a Tweet by URL.
@@ -341,8 +370,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		}
 
 		$invalid = false;
-		$url = explode('/', $url);
-		$id = end($url);
+		$id = $this->tweet_url_to_id($url);
 		if (!empty($id) and !$this->is_original_broadcast($post, $id)) {
 			Social::log('Importing tweet. -- ID: :id -- URL: :url', array(
 				'id' => $id,

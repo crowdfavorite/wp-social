@@ -30,12 +30,11 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			$service_accounts = $this->request->post('social_accounts');
 			$account_content = $this->request->post('social_account_content');
 
-			$account_content_meta = array();
+			$account_content_meta = $account_service_meta = array();
 			foreach ($services as $key => $service) {
 				if (count($service->accounts())) {
 					if (isset($service_accounts[$key])) {
 						$accounts_selected = true;
-
 						foreach ($service_accounts[$key] as $account_id) {
 							$account_id = explode('|', $account_id);
 							if (!isset($account_content[$key][$account_id[0]]) or empty($account_content[$key][$account_id[0]])) {
@@ -52,10 +51,12 @@ final class Social_Controller_Broadcast extends Social_Controller {
 								}
 								else {
 									if (!isset($account_content_meta[$key])) {
-										$account_content_meta[$key] = array();
+										$account_content_meta[$key] = $account_service_meta[$key] = array();
 									}
 
 									$account_content_meta[$key][$account_id[0]] = $account_content[$key][$account_id[0]];
+// TODO
+									$account_service_meta[$key][$account_id[0]] = $service->get_broadcast_extras($account_id[0], $post);
 								}
 							}
 						}
@@ -156,6 +157,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 
 				// Store the content
 				update_post_meta($post->ID, '_social_broadcast_content', $account_content_meta);
+				update_post_meta($post->ID, '_social_broadcast_meta', $account_service_meta);
 				update_post_meta($post->ID, '_social_broadcast_accounts', $broadcast_accounts);
 
 				if (!in_array($this->request->post('social_action'), array('Schedule', 'Update'))) {
@@ -399,6 +401,10 @@ final class Social_Controller_Broadcast extends Social_Controller {
 		if (empty($account_content)) {
 			$account_content = array();
 		}
+		$account_meta = get_post_meta($post->ID, '_social_broadcast_meta', true);
+		if (empty($account_meta)) {
+			$account_meta = array();
+		}
 
 		Social::log('About to start broadcasting.');
 		foreach ($broadcast_accounts as $key => $accounts) {
@@ -434,6 +440,10 @@ final class Social_Controller_Broadcast extends Social_Controller {
 						if (isset($account_content[$key][$_account->id])) {
 							$message = $account_content[$key][$_account->id];
 						}
+						$args = array();
+						if (isset($account_meta[$key][$_account->id])) {
+							$args = $account_meta[$key][$_account->id];
+						}
 
 						if (!empty($message)) {
 							Social::log('Broadcasting to :username, account #:id. (:service)', array(
@@ -442,7 +452,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 								'service' => $service->title(),
 							));
 							
-							$response = $service->broadcast($account, $message, array(), $post->ID);
+							$response = $service->broadcast($account, $message, $args, $post->ID);
 							if ($response !== false) {
 								if ($response->limit_reached()) {
 									if (!isset($errored_accounts[$key])) {

@@ -705,8 +705,9 @@
 	padding: 5px 0 0 7px;
 }
 .broadcast-interstitial li.account .broadcast-edit .tweet-reply-fields label {
-	font-size: 12px;
-	height: 18px;
+	color: #666;
+	font-size: 11px;
+	height: 15px;
 	position: relative;
 	top: 0;
 }

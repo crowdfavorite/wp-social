@@ -191,6 +191,7 @@
 			$(this).hide().closest('.broadcast-edit')
 				.find('input[type="checkbox"]').prop('checked', true).change().end()
 				.find('.tweet-reply-fields').show().find(':input').focus();
+			e.preventDefault();
 		});
 
 		$('body.clean ul.accounts li.proto .broadcast-edit textarea').on('keyup change click focus', function() {

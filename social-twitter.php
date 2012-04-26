@@ -366,7 +366,7 @@ final class Social_Twitter {
 		}
 		$field_name = str_replace('_content', '_in_reply_to', $account['field_name_content']);
 ?>
-<a href="#" class="tweet-reply-link"><?php _e('Reply to Tweet', 'social'); ?></a>
+<a href="#" class="tweet-reply-link"><?php _e('Send as a reply', 'social'); ?></a>
 <div class="tweet-reply-fields">
 	<label for="<?php echo esc_attr($field_name); ?>"><?php _e('URL of Tweet (to reply to)', 'social'); ?></label>
 	<input type="text" class="tweet-reply-field" name="<?php echo esc_attr($field_name); ?>" value="" id="<?php echo esc_attr($field_name); ?>" />
