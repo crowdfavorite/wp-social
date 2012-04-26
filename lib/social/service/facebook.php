@@ -36,6 +36,32 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	}
 
 	/**
+	 * Any additional parameters that should be passed with a broadcast.
+	 *
+	 * @static
+	 * @return array
+	 */
+	public function get_broadcast_extras($account_id, $post, $args = array()) {
+		if (get_post_format($post->ID) !== 'status')) {
+			setup_postdata($post);
+			$link_args = array(
+				'link' => get_post_permalink($post->ID),
+				'title' => get_the_title($post->ID),
+				'description' => get_the_excerpt(),
+			);
+			if (function_exists('has_post_thumbnail') and has_post_thumbnail($post->ID)) {
+				$image = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID), 'single-post-thumbnail');
+				$link_args = $link_args + array(
+					'picture' => $image[0],
+				);
+			}
+			wp_reset_postdata();
+			$args = $args + $link_args;
+		}
+		return parent::get_broadcast_extras($account_id, $post, $args);
+	}
+
+	/**
 	 * Broadcasts the message to the specified account. Returns the broadcasted ID.
 	 *
 	 * @param  Social_Service_Facebook_Account|object  $account     account to broadcast to
@@ -83,33 +109,21 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					}
 				}
 			}
-		}
-
-		// prep data
-		if (!is_null($comment_id)) {
+			// prep data
 			$post = get_post($comment->comment_post_ID);
-			$type = 'comment';
-		}
-		if (!is_null($post_id)) {
-			$post = get_post($post_id);
-			$type = 'post';
-		}
-		setup_postdata($post);
-		
-		$link_args = array(
-			'link' => get_post_permalink($post->ID),
-			'title' => get_the_title($post->ID),
-			'description' => get_the_excerpt(),
-		);
-		if (function_exists('has_post_thumbnail') and has_post_thumbnail($post->ID)) {
-			$image = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID), 'single-post-thumbnail');
-			$link_args = $link_args + array(
-				'picture' => $image[0],
+			setup_postdata($post);
+			$link_args = array(
+				'link' => get_post_permalink($post->ID),
+				'title' => get_the_title($post->ID),
+				'description' => get_the_excerpt(),
 			);
-		}
-		wp_reset_postdata();
-		
-		if ($type == 'comment' || ($type == 'post' && get_post_format($post->ID) !== 'status')) {
+			if (function_exists('has_post_thumbnail') and has_post_thumbnail($post->ID)) {
+				$image = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID), 'single-post-thumbnail');
+				$link_args = $link_args + array(
+					'picture' => $image[0],
+				);
+			}
+			wp_reset_postdata();
 			$args = $args + $link_args;
 		}
 
