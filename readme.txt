@@ -252,6 +252,9 @@ The following code should add "meta" comments such as Likes as Retweets to your 
 	}
 	add_action('init', 'social_enable_meta_comments_in_feed');
 
+= Does Social output Facebook Open Graph tags for my site? =
+
+No it does not. If you would like to have these tags on your site, please install one of the many available plugins that add this feature.
 
 == Screenshots ==
 
