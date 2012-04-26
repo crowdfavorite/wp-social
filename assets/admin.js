@@ -162,9 +162,8 @@
 
 		$('.broadcast-interstitial .broadcast-edit a.edit').click(function(e) {
 			$(this).closest('.broadcast-edit').addClass('edit')
-				.find('input[type="checkbox"]').prop('checked', true).end()
-				.find('textarea').focus().select().end()
-				.find('input[type="checkbox"]').change();
+				.find('input[type="checkbox"]').prop('checked', true).change().end()
+				.find('textarea').focus().select();
 			e.preventDefault();
 		});
 		
@@ -187,6 +186,13 @@
 			}
 			$counter.removeClass('maxlength-remaining-short').addClass(diffClass).html(diff);
 		}).change();
+		
+		$('.broadcast-interstitial .broadcast-edit a.tweet-reply-link').click(function() {
+			$(this).hide().closest('.broadcast-edit')
+				.find('input[type="checkbox"]').prop('checked', true).change().end()
+				.find('.tweet-reply-fields').show().find(':input').focus();
+			e.preventDefault();
+		});
 
 		$('body.clean ul.accounts li.proto .broadcast-edit textarea').on('keyup change click focus', function() {
 			var val = $(this).val();

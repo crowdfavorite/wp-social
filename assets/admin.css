@@ -667,7 +667,7 @@
 	padding-left: 20px;
 	position: relative;
 }
-.broadcast-interstitial li.account .broadcast-edit input {
+.broadcast-interstitial li.account .broadcast-edit input[type="checkbox"] {
 	left: -5px;
 	position: absolute;
 	top: 7px;
@@ -680,8 +680,8 @@
 	padding: 6px 7px;
 	width: 90%;
 }
-.broadcast-interstitial li.account .broadcast-edit a.edit {
-	display: block;
+.broadcast-interstitial li.account .broadcast-edit a.edit,
+.broadcast-interstitial li.account .broadcast-edit a.tweet-reply-link {
 	font-size: 12px;
 	line-height: 100%;
 	opacity: .3;
@@ -699,6 +699,22 @@
 .broadcast-interstitial li.account.facebook .broadcast-edit textarea {
 	height: 180px;
 }
+.broadcast-interstitial li.account .broadcast-edit .tweet-reply-fields {
+	display: none;
+	opacity: .3;
+	padding: 5px 0 0 7px;
+}
+.broadcast-interstitial li.account .broadcast-edit .tweet-reply-fields label {
+	color: #666;
+	font-size: 11px;
+	height: 15px;
+	position: relative;
+	top: 0;
+}
+.broadcast-interstitial li.account .broadcast-edit .tweet-reply-fields input {
+	padding: 5px;
+	width: 85%;
+}
 .broadcast-interstitial li.account .broadcast-edit .counter {
 	color: #999;
 	display: none;
@@ -715,9 +731,12 @@
 }
 .broadcast-interstitial li.account .checked .readonly,
 .broadcast-interstitial li.account .checked a.edit,
+.broadcast-interstitial li.account .checked a.tweet-reply-link,
 .broadcast-interstitial li.account .checked textarea,
+.broadcast-interstitial li.account .checked .tweet-reply-fields,
 .broadcast-interstitial li.account .checked .counter,
-.broadcast-interstitial li.account .broadcast-edit:hover a.edit {
+.broadcast-interstitial li.account .broadcast-edit:hover a.edit,
+.broadcast-interstitial li.account .broadcast-edit:hover a.tweet-reply-link {
 	opacity: 1;
 }
 .broadcast-interstitial li.account .broadcast-edit.edit .readonly,
