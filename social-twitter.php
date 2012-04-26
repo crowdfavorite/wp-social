@@ -350,6 +350,29 @@ final class Social_Twitter {
 
 		return $title;
 	}
+	
+	/**
+	 * Add a "reply to" field to broadcast form.
+	 *
+	 * @static
+	 * @param  obj  $post
+	 * @param  obj  $service
+	 * @param  obj  $account
+	 * @return void
+	 */
+	public static function social_broadcast_form_item_edit($post, $service, $account) {
+		if ($service->key() != 'twitter') {
+			return;
+		}
+		$field_name = str_replace('_content', '_in_reply_to', $account['field_name_content']);
+?>
+<a href="#" class="tweet-reply-link"><?php _e('Reply to Tweet', 'social'); ?></a>
+<div class="tweet-reply-fields">
+	<label for="<?php echo esc_attr($field_name); ?>"><?php _e('URL of Tweet (to reply to)', 'social'); ?></label>
+	<input type="text" class="tweet-reply-field" name="<?php echo esc_attr($field_name); ?>" value="" id="<?php echo esc_attr($field_name); ?>" />
+</div>
+<?php
+	}
 
 } // End Social_Twitter
 
@@ -362,5 +385,6 @@ add_filter('social_comments_array', array('Social_Twitter', 'comments_array'), 1
 add_filter('social_save_broadcasted_ids_data', array('Social_Twitter', 'social_save_broadcasted_ids_data'), 10, 5);
 add_filter('social_item_output_title', array('Social_Twitter', 'social_item_output_title'), 10, 2);
 add_action('wp_enqueue_scripts', array('Social_Twitter', 'enqueue_assets'));
+add_action('social_broadcast_form_item_edit', array('Social_Twitter', 'social_broadcast_form_item_edit'), 10, 3);
 
 }

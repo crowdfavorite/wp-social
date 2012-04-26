@@ -66,9 +66,9 @@ foreach ($_services as $key => $accounts) {
 ?>
 				<div class="broadcast-edit<?php echo ($account['edit'] ? ' edit' : ''); echo ($account['checked'] ? ' checked' : ''); ?>">
 					<input type="checkbox" name="<?php echo esc_attr($account['field_name_checked']); ?>" id="<?php echo esc_attr($account['field_name_checked'].$account['field_value_checked']); ?>" value="<?php echo esc_attr($account['field_value_checked']); ?>"<?php checked($account['checked'], true); ?> />
+					<textarea name="<?php echo esc_attr($account['field_name_content']); ?>" cols="40" rows="2" maxlength="<?php echo esc_attr($account['maxlength']); ?>"><?php echo esc_textarea($account['content']); ?></textarea>
 					<p class="readonly"><?php echo esc_textarea($account['content']); ?></p>
 					<a href="#" class="edit"><?php _e('Edit', 'social'); ?></a>
-					<textarea name="<?php echo esc_attr($account['field_name_content']); ?>" cols="40" rows="2" maxlength="<?php echo esc_attr($account['maxlength']); ?>"><?php echo esc_textarea($account['content']); ?></textarea>
 					<span class="counter"></span>
 <?php do_action('social_broadcast_form_item_edit', $post, $service, $account); ?>
 				</div>
