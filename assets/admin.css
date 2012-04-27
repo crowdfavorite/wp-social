@@ -71,7 +71,7 @@
 }
 
 .social-accounts .social-connect-button {
-	margin-bottom: 3px;
+	margin-bottom: 5px;
 }
 
 .social-accounts ul {
@@ -316,7 +316,8 @@
 .social-connect-button input,
 .social-connect-button label {
 	float: left;
-	margin: 7px 0 0 10px;
+	margin: 6px 0 0 10px;
+	line-height: 16px;
 }
 
 .social-connect-button label {
