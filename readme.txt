@@ -256,6 +256,10 @@ The following code should add "meta" comments such as Likes as Retweets to your 
 
 No it does not. If you would like to have these tags on your site, please install one of the many available plugins that add this feature.
 
+= I have a lot of comments and loading the avatars makes the page load slowly, what can I do? =
+
+Social supports the [Lazy Load plugin](http://wordpress.org/extend/plugins/lazy-load/). Install this plugin and Social's avatars will hang out on the couch eating potato chips and watching TV until they are needed.
+
 == Screenshots ==
 
 1. Allow your visitors to leave a comment as their Facebook or Twitter identities
@@ -267,6 +271,9 @@ No it does not. If you would like to have these tags on your site, please instal
 4. View of replies imported from Twitter as comments, @anywhere support 
 
 == Changelog ==
+
+= 2.5 =
+* TODO
 
 = 2.0.1 =
 * Localization fixes (props thomasclausen)

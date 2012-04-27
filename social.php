@@ -1344,7 +1344,8 @@ final class Social {
 			}
 
 			$image = esc_url($image);
-			return "<img alt='{$alt}' src='{$image}' class='avatar avatar-{$size} photo {$type}' height='{$size}' width='{$size}' />";
+			$image_format = apply_filters('social_get_avatar_image_format', '<img alt="%1$s" src="%2$s" class="avatar avatar-%3$s photo %4$s" height="%3$s" width="%3$s" />');
+			return sprintf($image_format, $alt, $image, $size, $type);
 		}
 
 		return $avatar;
@@ -2056,6 +2057,12 @@ var socialAdminBarMsgs = {
 		return $url;
 	}
 	
+	/**
+	 * Filter the where clause for pulling comments for feeds (to exclude meta comments).
+	 *
+	 * @param  string  $where
+	 * @return string
+	 */
 	public static function comments_feed_exclusions($where) {
 		global $wpdb;
 		$meta_types = array();
@@ -2070,6 +2077,36 @@ var socialAdminBarMsgs = {
 			$where .= " AND comment_type NOT IN ('".implode("', '", array_map('social_wpdb_escape', $meta_types))."') ";
 		}
 		return $where;
+	}
+	
+	/**
+	 * Filter the image tag to implement lazy loading support for meta comments.
+	 *
+	 * @param  string  $image_format
+	 * @return string
+	 */
+	public static function social_item_output_image_format($image_format) {
+		if (class_exists('LazyLoad_Images')) {
+			// would be great if the plugin provided an API for this, until then we'll copy the code
+			$placeholder_image = apply_filters( 'lazyload_images_placeholder_image', LazyLoad_Images::get_url( 'images/1x1.trans.gif' ) );
+			$image_format = '<img src="'.esc_url($placeholder_image).'" data-lazy-src="%1$s" width="%2$s" height="%3$s" alt="%4$s" /><noscript>'.$image_format.'</noscript>';
+		}
+		return $image_format;
+	}
+
+	/**
+	 * Filter the image tag to implement lazy loading support for avatars.
+	 *
+	 * @param  string  $image_format
+	 * @return string
+	 */
+	public static function social_get_avatar_image_format($image_format) {
+		if (class_exists('LazyLoad_Images')) {
+			// would be great if the plugin provided an API for this, until then we'll copy the code
+			$placeholder_image = apply_filters( 'lazyload_images_placeholder_image', LazyLoad_Images::get_url( 'images/1x1.trans.gif' ) );
+			$image_format = '<img alt="%1$s" src="'.esc_url($placeholder_image).'" data-lazy-src="%2$s" class="avatar avatar-%3$s photo %4$s" height="%3$s" width="%3$s" /><noscript>'.$image_format.'</noscript>';
+		}
+		return $image_format;
 	}
 
 } // End Social
@@ -2144,6 +2181,8 @@ add_filter('post_row_actions', array($social, 'post_row_actions'), 10, 2);
 add_filter('social_comments_array', array($social, 'comments_array'), 100, 2);
 add_filter('comment_feed_where', array($social, 'comments_feed_exclusions'));
 add_filter('social_settings_default_accounts', array('Social_Service_Facebook', 'social_settings_default_accounts'), 10, 2);
+add_filter('social_item_output_image_format', array($social, 'social_item_output_image_format'));
+add_filter('social_get_avatar_image_format', array($social, 'social_get_avatar_image_format'));
 
 // Service filters
 add_filter('social_auto_load_class', array($social, 'auto_load_class'));
