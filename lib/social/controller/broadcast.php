@@ -333,6 +333,20 @@ final class Social_Controller_Broadcast extends Social_Controller {
 				else {
 					$content = $broadcast_default;
 					$checked = (isset($default_accounts[$key]) && in_array($id, $default_accounts[$key]));
+					// TODO - abstract this
+					// check to see if a facebook page should be selected by default
+					// our data structure currently makes this awkward
+					if (!$checked && $key == 'facebook' && 
+						isset($default_accounts[$key]) && 
+						isset($default_accounts[$key]['pages']) &&
+						is_array($default_accounts[$key]['pages'])) {
+						foreach ($default_accounts[$key]['pages'] as $page_parent_account) {
+							if (in_array($id, $page_parent_account)) {
+								$checked = true;
+								break;
+							}
+						}
+					}
 // check for saved broadcast
 					if (isset($broadcast_content[$key]) && isset($broadcast_content[$key][$id])) {
 						$content = $broadcast_content[$key][$id];
