@@ -696,6 +696,9 @@
 	padding: 5px;
 	width: 90%;
 }
+.broadcast-interstitial li.account.twitter .broadcast-edit textarea {
+	margin-bottom: 5px;
+}
 .broadcast-interstitial li.account.facebook .broadcast-edit textarea {
 	height: 180px;
 }
