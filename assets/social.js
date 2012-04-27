@@ -233,7 +233,10 @@
 							var $author = $parent.find('.social-comment-author a'),
 								author_rel = $author.attr('rel').split(' ');
 							$('#in_reply_to_status_id').val(author_rel[0]);
-							insertTwitterUsername($author, $textarea);
+							// if click invoked programatically, do nothing.
+							if ($textarea.size()) {
+								insertTwitterUsername($author, $textarea);
+							}
 						break;
 						case 'facebook':
 						break;
