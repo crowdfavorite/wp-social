@@ -36,7 +36,7 @@
 								var $parent = $cancel.closest('li');
 								$cancel.click();
 								$('#respond').replaceWith(response.html);
-								$parent.find('.comment-reply-link').click();
+								$parent.find('.comment-reply-link:first').click();
 
 								$('#primary').find('#social_login').parent().html(response.disconnect_url);
 							}
