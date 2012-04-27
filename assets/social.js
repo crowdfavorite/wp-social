@@ -271,7 +271,7 @@
 
 			var $avatar = $('#commentform .avatar');
 			var original_avatar = $avatar.attr('src');
-			$('#post_accounts').on('change', function() {
+			$(document).on('change', '#post_accounts', function() {
 				$(this).find('option:selected').each(function() {
 					var avatar = $(this).attr('rel');
 					if (avatar !== undefined) {
