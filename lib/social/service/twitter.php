@@ -95,6 +95,8 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 							continue;
 						}
 					}
+					
+					$result->comment_type = (Social_Twitter::is_retweet(null, $result) ? 'social-'.$this->_key.'-rt' : 'social-'.$this->_key);
 
 					Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url', false, $data);
 					$post->aggregated_ids[$this->_key][] = $result->id;
@@ -186,6 +188,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 								)) {
 								continue;
 							}
+
 							Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
 							$post->aggregated_ids[$this->_key][] = $result->id;
 							$post->results[$this->_key][$result->id] = (object) array(
@@ -197,7 +200,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 								'profile_image_url' => $result->user->profile_image_url,
 								'in_reply_to_status_id' => $result->in_reply_to_status_id,
 								'raw' => $result,
-								'comment_type' => 'social-'.$this->_key,
+								'comment_type' => (Social_Twitter::is_retweet(null, $result) ? 'social-'.$this->_key.'-rt' : 'social-'.$this->_key),
 							);
 						}
 					}

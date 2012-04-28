@@ -284,13 +284,23 @@ final class Social_Twitter {
 	 * @param  stdClass  $comment
 	 * @return bool
 	 */
-	private static function is_retweet($comment) {
+	public static function is_retweet($comment = null, $tweet = null) {
 		$is_retweet = false;
-		if (isset($comment->social_raw_data) and !empty($comment->social_raw_data->retweeted_status)) {
-			$is_retweet = true;
+		if (!is_null($comment)) {
+			if (isset($comment->social_raw_data) and !empty($comment->social_raw_data->retweeted_status)) {
+				$is_retweet = true;
+			}
+			if (substr($comment->comment_content, 0, 4) == 'RT @') {
+				$is_retweet = true;
+			}
 		}
-		if (substr($comment->comment_content, 0, 4) == 'RT @') {
-			$is_retweet = true;
+		else if (!is_null($tweet)) {
+			if (!empty($tweet->retweeted_status)) {
+				$is_retweet = true;
+			}
+			if (substr($tweet->text, 0, 4) == 'RT @') {
+				$is_retweet = true;
+			}
 		}
 		return $is_retweet;
 	}
