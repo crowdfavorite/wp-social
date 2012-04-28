@@ -32,20 +32,19 @@
 								// Add logged-in body class since we're not going to be refreshing the page.
 								$('body').addClass('logged-in');
 
-								var $cancel = $('#cancel-comment-reply-link');
-								var $parent = $cancel.closest('li');
+								var $cancel = $('#cancel-comment-reply-link'),
+									$parent = $cancel.closest('li'),
+									$clone = $cancel.clone(true);
 								$cancel.click();
 								$('#respond').replaceWith(response.html);
+								// replace the cancel button with the one we cloned, to retain actions
+								$('#respond').find('#cancel-comment-reply-link').remove().end()
+									.find('#reply-title small:first').append($clone);
 								$parent.find('.comment-reply-link:first').click();
 
 								$('#primary').find('#social_login').parent().html(response.disconnect_url);
 							}
 						}, 'json');
-
-						// Fix for the missing reply link
-						$('#cancel-comment-reply-link').live('click', function() {
-							jQuery('.comment-reply-link').show();
-						});
 					}
 				}
 			}, 100);
@@ -54,10 +53,10 @@
 		// comments.php
 		if ($('#social').length) {
 			// MCC Tabs
-			var $prevLink = null;
-			var prevLink = null;
-			var $nextLink = null;
-			var nextLink = null;
+			var $prevLink = null,
+				prevLink = null,
+				$nextLink = null,
+				nextLink = null;
 			if ($('#comments .nav-previous a').length) {
 				$prevLink = $('#comments .nav-previous a');
 				prevLink = $prevLink.attr('href');
@@ -254,10 +253,15 @@
 				}
 			});
 
-			$('#cancel-comment-reply-link').click(function() {
+			// some actions need the "live" treatment
+			$(document).on('click', '#cancel-comment-reply-link', function() {
 				$('.comment-reply-link').show();
 				$('#post_to_service').prop('checked', false);
 				$('#in_reply_to_status_id').val('');
+			});
+			// due to the way WP's comment JS works, we can't run this on the "live" action above
+			// by the time this runs, the node is moved and $parent is an empty set
+			$('#cancel-comment-reply-link').click(function() {
 				var $title = $('#reply-title'),
 					$cancel = null,
 					$parent = $(this).closest('li'),
@@ -276,6 +280,17 @@
 			var original_avatar = $avatar.attr('src');
 			$(document).on('change', '#post_accounts', function() {
 				$(this).find('option:selected').each(function() {
+					var $parent = $(this).closest('li'),
+						$textarea = $parent.find('textarea'),
+						$author = $parent.find('.social-comment-author a');
+					if ($textarea.size()) {
+						if ($(this).data('type') == 'twitter') {
+							insertTwitterUsername($author, $textarea);
+						}
+						else {
+							removeTwitterUsername($author, $textarea);
+						}
+					}
 					var avatar = $(this).attr('rel');
 					if (avatar !== undefined) {
 						$avatar.attr('src', avatar);
