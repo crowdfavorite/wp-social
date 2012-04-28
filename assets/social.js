@@ -41,11 +41,6 @@
 								$('#primary').find('#social_login').parent().html(response.disconnect_url);
 							}
 						}, 'json');
-
-						// Fix for the missing reply link
-						$('#cancel-comment-reply-link').live('click', function() {
-							jQuery('.comment-reply-link').show();
-						});
 					}
 				}
 			}, 100);
@@ -54,10 +49,10 @@
 		// comments.php
 		if ($('#social').length) {
 			// MCC Tabs
-			var $prevLink = null;
-			var prevLink = null;
-			var $nextLink = null;
-			var nextLink = null;
+			var $prevLink = null,
+				prevLink = null,
+				$nextLink = null,
+				nextLink = null;
 			if ($('#comments .nav-previous a').length) {
 				$prevLink = $('#comments .nav-previous a');
 				prevLink = $prevLink.attr('href');
@@ -254,10 +249,15 @@
 				}
 			});
 
-			$('#cancel-comment-reply-link').click(function() {
+			// some actions need the "live" treatment
+			$(document).on('click', '#cancel-comment-reply-link', function() {
 				$('.comment-reply-link').show();
 				$('#post_to_service').prop('checked', false);
 				$('#in_reply_to_status_id').val('');
+			}
+			// due to the way WP's comment JS works, we can't run this on the "live" action above
+			// by the time this runs, the node is moved and $parent is an empty set
+			$('#cancel-comment-reply-link').click(function() {
 				var $title = $('#reply-title'),
 					$cancel = null,
 					$parent = $(this).closest('li'),
