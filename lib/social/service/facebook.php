@@ -315,7 +315,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 						$account = new $class($account);
 
 						$commentdata = array_merge($commentdata, array(
-							'comment_type' => 'social-'.$this->_key,
+							'comment_type' => 'social-facebook',
 							'comment_author' => $wpdb->escape($result->from->name),
 							'comment_author_url' => $account->url(),
 							'comment_content' => $wpdb->escape($result->message),
@@ -327,7 +327,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				else {
 					$url = 'http://facebook.com/profile.php?id='.$result->id;
 					$commentdata = array_merge($commentdata, array(
-						'comment_type' => 'social-'.$this->_key.'-like',
+						'comment_type' => 'social-facebook-like',
 						'comment_author' => $wpdb->escape($result->name),
 						'comment_author_url' => $url,
 						'comment_content' => $wpdb->escape('<a href="'.$url.'" target="_blank">'.$result->name.'</a> liked this on Facebook.'),

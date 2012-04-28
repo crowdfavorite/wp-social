@@ -96,7 +96,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						}
 					}
 					
-					$result->comment_type = (Social_Twitter::is_retweet(null, $result) ? 'social-'.$this->_key.'-rt' : 'social-'.$this->_key);
+					$result->comment_type = (Social_Twitter::is_retweet(null, $result) ? 'social-twitter-rt' : 'social-twitter');
 
 					Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url', false, $data);
 					$post->aggregated_ids[$this->_key][] = $result->id;
@@ -156,7 +156,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 									'profile_image_url' => $result->user->profile_image_url,
 									'in_reply_to_status_id' => $result->in_reply_to_status_id,
 									'raw' => $result,
-									'comment_type' => 'social-'.$this->_key.'-rt',
+									'comment_type' => 'social-twitter-rt',
 								);
 							}
 						}
@@ -200,7 +200,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 								'profile_image_url' => $result->user->profile_image_url,
 								'in_reply_to_status_id' => $result->in_reply_to_status_id,
 								'raw' => $result,
-								'comment_type' => (Social_Twitter::is_retweet(null, $result) ? 'social-'.$this->_key.'-rt' : 'social-'.$this->_key),
+								'comment_type' => (Social_Twitter::is_retweet(null, $result) ? 'social-twitter-rt' : 'social-twitter'),
 							);
 						}
 					}
@@ -415,7 +415,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 							'profile_image_url' => $response->user->profile_image_url,
 							'in_reply_to_status_id' => $response->in_reply_to_status_id,
 							'raw' => $response,
-							'comment_type' => 'social-'.$this->_key,
+							'comment_type' => 'social-twitter',
 						);
 
 						$this->save_aggregated_comments($post, true);
