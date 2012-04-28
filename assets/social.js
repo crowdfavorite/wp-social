@@ -254,7 +254,7 @@
 				$('.comment-reply-link').show();
 				$('#post_to_service').prop('checked', false);
 				$('#in_reply_to_status_id').val('');
-			}
+			});
 			// due to the way WP's comment JS works, we can't run this on the "live" action above
 			// by the time this runs, the node is moved and $parent is an empty set
 			$('#cancel-comment-reply-link').click(function() {
@@ -276,6 +276,17 @@
 			var original_avatar = $avatar.attr('src');
 			$(document).on('change', '#post_accounts', function() {
 				$(this).find('option:selected').each(function() {
+					var $parent = $(this).closest('li'),
+						$textarea = $parent.find('textarea'),
+						$author = $parent.find('.social-comment-author a');
+					if ($textarea.size()) {
+						if ($(this).data('type') == 'twitter') {
+							insertTwitterUsername($author, $textarea);
+						}
+						else {
+							removeTwitterUsername($author, $textarea);
+						}
+					}
 					var avatar = $(this).attr('rel');
 					if (avatar !== undefined) {
 						$avatar.attr('src', avatar);
