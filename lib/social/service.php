@@ -385,17 +385,16 @@ abstract class Social_Service {
 					$content = esc_url($url);
 					break;
 				case '{title}':
-					$content = $post->post_title;
+					$content = htmlspecialchars_decode($post->post_title);
 					break;
 				case '{content}':
-					$content = strip_tags($post->post_content);
+					$content = htmlspecialchars_decode(strip_tags($post->post_content));
+ 					$content = str_replace(array("\n", "\r", PHP_EOL, '&nbsp;'), ' ', $content);
 					$content = preg_replace('/\s+/', ' ', $content);
-					$content = str_replace(array("\n", "\r", PHP_EOL), ' ', $content);
-					$content = str_replace('&nbsp;', ' ', $content);
 					break;
 				case '{author}':
 					$user = get_userdata($post->post_author);
-					$content = $user->display_name;
+					$content = htmlspecialchars_decode($user->display_name);
 					break;
 				case '{date}':
 					$content = get_date_from_gmt($post->post_date_gmt);
