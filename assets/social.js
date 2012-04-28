@@ -35,9 +35,10 @@
 								var $cancel = $('#cancel-comment-reply-link');
 								var $parent = $cancel.closest('li');
 								$cancel.click();
+								$newCancel = $cancel.clone(true);
 								$('#respond').replaceWith(response.html)
 									.find('#cancel-comment-reply-link').remove().end()
-									.find('#reply-title small').append($cancel);
+									.find('#reply-title small').append($newCancel);
 								$parent.find('.comment-reply-link:first').click();
 
 								$('#primary').find('#social_login').parent().html(response.disconnect_url);
