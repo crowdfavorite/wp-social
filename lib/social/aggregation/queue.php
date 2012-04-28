@@ -249,10 +249,6 @@ final class Social_Aggregation_Queue {
 		else {
 			$next_run = Social_Date::fuzzy_span($timetamp, $current_time);
 		}
-
-		// Things set by Kohana_Date::fuzzy_span()
-		$next_run = str_replace('in ', '', $next_run);
-		$next_run = str_replace(' ago', '', $next_run);
 		return $next_run;
 	}
 
