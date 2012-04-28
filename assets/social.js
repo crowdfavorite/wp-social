@@ -32,13 +32,14 @@
 								// Add logged-in body class since we're not going to be refreshing the page.
 								$('body').addClass('logged-in');
 
-								var $cancel = $('#cancel-comment-reply-link');
-								var $parent = $cancel.closest('li');
+								var $cancel = $('#cancel-comment-reply-link'),
+									$parent = $cancel.closest('li'),
+									$clone = $cancel.clone(true);
 								$cancel.click();
-								$newCancel = $cancel.clone(true);
-								$('#respond').replaceWith(response.html)
-									.find('#cancel-comment-reply-link').remove().end()
-									.find('#reply-title small').append($newCancel);
+								$('#respond').replaceWith(response.html);
+								// replace the cancel button with the one we cloned, to retain actions
+								$('#respond').find('#cancel-comment-reply-link').remove().end()
+									.find('#reply-title small:first').append($clone);
 								$parent.find('.comment-reply-link:first').click();
 
 								$('#primary').find('#social_login').parent().html(response.disconnect_url);
