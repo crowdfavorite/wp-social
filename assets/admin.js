@@ -32,9 +32,9 @@
 					$('input[name=source_url]').removeAttr('disabled').val('');
 					$this.removeAttr('disabled');
 					if (response == 'protected') {
-						$('#social-import-error').html('Protected Tweet').fadeIn();
+						$('#social-import-error').html(socialAdminL10n.protectedTweet).fadeIn();
 					} else if (response == 'invalid') {
-						$('#social-import-error').html('Invalid URL.').fadeIn();
+						$('#social-import-error').html(socialAdminL10n.invalidUrl).fadeIn();
 					} else {
 						$('#aggregation_log').hide().html(response).find('.parent:not(:first)').hide().end().fadeIn();
 					}

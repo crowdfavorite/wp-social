@@ -427,6 +427,11 @@ final class Social {
 
 		if (SOCIAL_ADMIN_JS !== false) {
 			wp_enqueue_script('social_admin', SOCIAL_ADMIN_JS, array(), Social::$version, true);
+			$data = apply_filters('social_admin_js_strings', array(
+				'protectedTweet' => __('Protected Tweet', 'social'),
+				'invalidUrl' => __('Invalid URL', 'social'),
+			));
+			wp_localize_script('social_admin', 'socialAdminL10n', $data);
 		}
 	}
 
