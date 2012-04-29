@@ -616,9 +616,13 @@
 	padding: 0;
 }
 .broadcast-interstitial li.account {
+	border-bottom: 1px solid #ddd;
 	margin: 0 0 18px;
-	padding: 0;
+	padding: 0 0 18px;
 	position: relative;
+}
+.broadcast-interstitial li.account:last-child {
+	border: 0;
 }
 .broadcast-interstitial li.account p.error {
 	background: #f00;
