@@ -210,9 +210,11 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				if (isset($post->broadcasted_ids[$this->_key][$account->id()])) {
 					foreach ($post->broadcasted_ids[$this->_key][$account->id()] as $broadcasted_id => $data) {
 						$id = explode('_', $broadcasted_id);
-						$response = $this->request($account, $broadcasted_id.'/comments')->body();
-						if ($response !== false and isset($response->response) and isset($response->response->data) and is_array($response->response->data) and count($response->response->data)) {
-							foreach ($response->response->data as $result) {
+						$response = $this->request($account, $broadcasted_id.'/comments');
+						if ($response !== false and isset($response->body()->response) and
+							isset($response->body()->response->data) and is_array($response->body()->response->data) and
+							count($response->body()->response->data)) {
+							foreach ($response->body()->response->data as $result) {
 								$data = array(
 									'parent_id' => $broadcasted_id,
 								);
