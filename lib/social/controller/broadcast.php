@@ -394,6 +394,10 @@ final class Social_Controller_Broadcast extends Social_Controller {
 					if (count($data['broadcasts'])) {
 						$checked = false;
 					}
+// override for scheduled broadcasts
+					if ($post->post_status == 'future') {
+						$checked = (count($broadcast_accounts) && isset($broadcast_accounts[$key]) && isset($broadcast_accounts[$key][$id]));
+					}
 				}
 				$_services[$key][$id]['content'] = $content;
 				$_services[$key][$id]['checked'] = $checked;
