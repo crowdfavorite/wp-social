@@ -27,8 +27,8 @@ final class Social_Controller_Broadcast extends Social_Controller {
 
 		$accounts_selected = false;
 		if ($this->request->post('social_action') !== null) {
-			$service_accounts = $this->request->post('social_accounts');
-			$account_content = $this->request->post('social_account_content');
+			$service_accounts = stripslashes_deep($this->request->post('social_accounts'));
+			$account_content = stripslashes_deep($this->request->post('social_account_content'));
 
 			$account_content_meta = $account_service_meta = array();
 			foreach ($services as $key => $service) {
@@ -45,7 +45,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 								$errors[$key][$account_id[0]] = __('Please enter content to be broadcasted.', 'social');
 							}
 							else {
-								$account_content[$key][$account_id[0]] = stripslashes($account_content[$key][$account_id[0]]);
+								$account_content[$key][$account_id[0]] = $account_content[$key][$account_id[0]];
 								if (strlen($account_content[$key][$account_id[0]]) > $service->max_broadcast_length()) {
 									$errors[$key][$account_id[0]] = sprintf(__('Content must not be longer than %s characters.', 'social'), $service->max_broadcast_length());
 								}
@@ -76,7 +76,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 										$errors[$key][$page_id] = __('Please enter content to be broadcasted.', 'social');
 									}
 									else {
-										$account_content[$key][$page_id] = stripslashes($account_content[$key][$page_id]);
+										$account_content[$key][$page_id] = $account_content[$key][$page_id];
 										if (strlen($account_content[$key][$page_id]) > $service->max_broadcast_length()) {
 											$errors[$key][$page_id] = sprintf(__('Content must not be longer than %s characters.', 'social'), $service->max_broadcast_length());
 										}
@@ -156,9 +156,9 @@ final class Social_Controller_Broadcast extends Social_Controller {
 				}
 
 				// Store the content
-				update_post_meta($post->ID, '_social_broadcast_content', $account_content_meta);
-				update_post_meta($post->ID, '_social_broadcast_meta', $account_service_meta);
-				update_post_meta($post->ID, '_social_broadcast_accounts', $broadcast_accounts);
+				update_post_meta($post->ID, '_social_broadcast_content', addslashes_deep($account_content_meta));
+				update_post_meta($post->ID, '_social_broadcast_meta', addslashes_deep($account_service_meta));
+				update_post_meta($post->ID, '_social_broadcast_accounts', addslashes_deep($broadcast_accounts));
 
 				if (!in_array($this->request->post('social_action'), array('Schedule', 'Update'))) {
 					$this->action_run($post);

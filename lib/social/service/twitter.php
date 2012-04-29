@@ -558,7 +558,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						)
 					);
 					$broadcasted['twitter'][$account_id][$id] = $data;
-					update_post_meta($post_id, '_social_broadcasted_ids', $broadcasted);
+					update_post_meta($post_id, '_social_broadcasted_ids', addslashes_deep($broadcasted));
 					return true;
 				}
 			}
@@ -586,7 +586,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						'account' => $body->user
 					);
 
-					update_post_meta($post_id, '_social_broadcasted_ids', $post_meta);
+					update_post_meta($post_id, '_social_broadcasted_ids', addslashes_deep($post_meta));
 				}
 				return $body;
 			}

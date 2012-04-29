@@ -501,7 +501,6 @@ abstract class Social_Service {
 		if (!is_object($account)) {
 			$account = $this->account($account);
 		}
-
 		if ($account !== false) {
 			$proxy = apply_filters('social_api_proxy', Social::$api_url.$this->_key, $this->_key);
 			$api = apply_filters('social_api_endpoint', $api, $this->_key);
@@ -514,14 +513,14 @@ abstract class Social_Service {
 					'method' => $method,
 					'public_key' => $account->public_key(),
 					'hash' => sha1($account->public_key().$account->private_key()),
-					'params' => json_encode(stripslashes_deep($args))
+					'params' => json_encode($args)
 				)
 			));
 			if (!is_wp_error($request)) {
 				$request['body'] = apply_filters('social_response_body', $request['body'], $this->_key);
 				if (is_string($request['body'])) {
 					// slashes are normalized (always added) by WordPress
-					$request['body'] = stripslashes_deep(json_decode($request['body']));
+					$request['body'] = json_decode(stripslashes_deep($request['body']));
 				}
 				return Social_Response::factory($this, $request, $account);
 			}
@@ -529,7 +528,6 @@ abstract class Social_Service {
 				Social::log('Service::request() error: '.$request->get_error_message());
 			}
 		}
-
 		return false;
 	}
 
