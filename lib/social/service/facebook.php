@@ -210,27 +210,28 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				if (isset($post->broadcasted_ids[$this->_key][$account->id()])) {
 					foreach ($post->broadcasted_ids[$this->_key][$account->id()] as $broadcasted_id => $data) {
 						$id = explode('_', $broadcasted_id);
-						$response = $this->request($account, $broadcasted_id.'/comments');
-						if ($response !== false and isset($response->body()->response) and
-							isset($response->body()->response->data) and is_array($response->body()->response->data) and
-							count($response->body()->response->data)) {
-							foreach ($response->body()->response->data as $result) {
-								$data = array(
-									'parent_id' => $broadcasted_id,
-								);
-								if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
-									Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', true, $data);
-									continue;
-								}
-								else {
-									if ($this->is_original_broadcast($post, $result->id)) {
+						$request = $this->request($account, $broadcasted_id.'/comments');
+						if ($request !== false && isset($request->body()->response)) {
+							$response = $request->body()->response;
+							if (isset($response->data) and is_array($response->data) and count($response->data)) {
+								foreach ($response->data as $result) {
+									$data = array(
+										'parent_id' => $broadcasted_id,
+									);
+									if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
+										Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', true, $data);
 										continue;
 									}
+									else {
+										if ($this->is_original_broadcast($post, $result->id)) {
+											continue;
+										}
+									}
+	
+									Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
+									$result->status_id = $broadcasted_id;
+									$post->results[$this->_key][$result->id] = $result;
 								}
-
-								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
-								$result->status_id = $broadcasted_id;
-								$post->results[$this->_key][$result->id] = $result;
 							}
 						}
 
@@ -258,32 +259,42 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 */
 	private function search_for_likes(&$account, $id, $parent_id, &$post, &$like_count, $next = false) {
 		$url = $id.'/likes';
+		$args = array(
+			'limit' => '100'
+		);
 		if ($next !== false) {
-			$url .= $next;
+			$args['offset'] = $next;
 		}
 
-		$response = $this->request($account, $url, array('limit' => '100'))->body();
-		if ($response !== false and isset($response->response) and isset($response->response->data) and is_array($response->response->data) and count($response->response->data)) {
-			foreach ($response->response->data as $result) {
-				if ((isset($post->results) and isset($post->results[$this->_key]) and isset($post->results[$this->_key][$result->id])) or
-					(in_array($result->id, $post->aggregated_ids[$this->_key]))
-				) {
-					continue;
+		$request = $this->request($account, $url, $args);
+		if ($request !== false && isset($request->body()->response)) {
+			$response = $request->body()->response;
+			if (isset($response->data) && is_array($response->data) && count($response->data)) {
+				foreach ($response->data as $result) {
+					if ((isset($post->results) && isset($post->results[$this->_key]) && isset($post->results[$this->_key][$result->id])) ||
+						(in_array($result->id, $post->aggregated_ids[$this->_key]))
+					) {
+						continue;
+					}
+					$post->aggregated_ids[$this->_key][] = $result->id;
+					$post->results[$this->_key][$result->id] = (object) array_merge(array(
+						'like' => true,
+						'status_id' => $id,
+						'raw' => $result,
+					), (array) $result);
+					++$like_count;
 				}
-				$post->aggregated_ids[$this->_key][] = $result->id;
-				$post->results[$this->_key][$result->id] = (object) array_merge(array(
-					'like' => true,
-					'status_id' => $id,
-					'raw' => $result,
-				), (array) $result);
-				++$like_count;
 			}
-		}
 
-		if (isset($response->paging) and isset($response->paging->next)) {
-// TODO - fix this
-			$next = explode('/likes', $response->paging->next);
-			$this->search_for_likes($account, $id, $parent_id, $post, $like_count, $next[1]);
+			if (isset($response->paging) && isset($response->paging->next)) {
+				$url = parse_url($response->paging->next);
+				if (!empty($url['query'])) {
+					parse_str($url['query'], $query);
+					if (!empty($query['offset'])) {
+						$this->search_for_likes($account, $id, $parent_id, $post, $like_count, $query['offset']);
+					}
+				}
+			}
 		}
 	}
 
