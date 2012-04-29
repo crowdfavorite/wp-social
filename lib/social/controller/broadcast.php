@@ -27,6 +27,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 
 		$accounts_selected = false;
 		if ($this->request->post('social_action') !== null) {
+			// this is coming from $_POST unmodified, WP normalizes with slashes - strip them.
 			$service_accounts = stripslashes_deep($this->request->post('social_accounts'));
 			$account_content = stripslashes_deep($this->request->post('social_account_content'));
 
@@ -55,7 +56,6 @@ final class Social_Controller_Broadcast extends Social_Controller {
 									}
 
 									$account_content_meta[$key][$account_id[0]] = $account_content[$key][$account_id[0]];
-// TODO
 									$account_service_meta[$key][$account_id[0]] = $service->get_broadcast_extras($account_id[0], $post);
 								}
 							}
@@ -155,7 +155,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 					}
 				}
 
-				// Store the content
+				// Store the content, add slashes since update_post_meta() strips them
 				update_post_meta($post->ID, '_social_broadcast_content', addslashes_deep($account_content_meta));
 				update_post_meta($post->ID, '_social_broadcast_meta', addslashes_deep($account_service_meta));
 				update_post_meta($post->ID, '_social_broadcast_accounts', addslashes_deep($broadcast_accounts));
