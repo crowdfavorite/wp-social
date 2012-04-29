@@ -8,6 +8,34 @@
 final class Social_Controller_Broadcast extends Social_Controller {
 
 	/**
+	 * Formats previous broadcasts for display.
+	 * 
+	 * @param  string $broadcasted_id
+	 * @param  array  $broadcast
+	 * @param  object $account
+	 * @param  object $service
+	 * @return string
+	 */
+	private function previous_broadcast_excerpt($broadcasted_id, $broadcast, $account, $service) {
+		$content = false;
+		if (($content = base64_decode($broadcast['message'])) !== false) {
+			if ($content = json_decode($content)) {
+				if (isset($content->text)) {
+					$content = $content->text;
+				}
+			}
+		}
+		if (!$content) {
+			$content = $broadcast['message'];
+		}
+		$content = esc_html($content);
+		if ($account->has_user() or $service->key() != 'twitter') {
+			$content .= ' &middot; <a href="'.esc_url($service->status_url($account->username(), $broadcasted_id)).'" target="_blank">'.sprintf(__('View on %s', 'social'), esc_html($service->title())).'</a>';
+		}
+		$content = wpautop($content);
+		return $content;
+	}
+	/**
 	 * Displays the broadcast options form.
 	 * 
 	 * @return void
@@ -240,23 +268,17 @@ final class Social_Controller_Broadcast extends Social_Controller {
 // assign previous broadcasts
 					if (isset($broadcasted_ids[$key]) && isset($broadcasted_ids[$key][$account->id()])) {
 						foreach ($broadcasted_ids[$key][$account->id()] as $broadcasted_id => $broadcast) {
-							$content = false;
-							if (($content = base64_decode($broadcast['message'])) !== false) {
-								if ($content = json_decode($content)) {
-									if (isset($content->text)) {
-										$content = $content->text;
-									}
-								}
+							// TODO - shouldn't need to do Facebook specific checks here
+							if ($key == 'facebook' && isset($broadcast['page']) && !empty($broadcast['page']->id)) {
+								// this was broadcast to a page, don't attach it here.
+								continue;
 							}
-							if (!$content) {
-								$content = $broadcast['message'];
-							}
-							$content = esc_html($content);
-							if ($account->has_user() or $service->key() != 'twitter') {
-								$content .= ' &middot; <a href="'.esc_url($service->status_url($account->username(), $broadcasted_id)).'" target="_blank">'.sprintf(__('View on %s', 'social'), esc_html($service->title())).'</a>';
-							}
-							$content = wpautop($content);
-							$data['broadcasts'][] = $content;
+							$data['broadcasts'][] = $this->previous_broadcast_excerpt(
+								$broadcasted_id,
+								$broadcast,
+								$account,
+								$service
+							);
 							// already broadcasted? not editable by default
 							$data['edit'] = false;
 						}
@@ -277,8 +299,22 @@ final class Social_Controller_Broadcast extends Social_Controller {
 							'maxlength' => $service->max_broadcast_length(),
 						);
 // assign previous broadcasts
-						if (isset($broadcasted_ids[$key]) && isset($broadcasted_ids[$key][$child_account->id])) {
-							$data['broadcasts'] = $broadcasted_ids[$key][$child_account->id];
+						if (isset($broadcasted_ids[$key]) && isset($broadcasted_ids[$key][$account->id()])) {
+							foreach ($broadcasted_ids[$key][$account->id()] as $broadcasted_id => $broadcast) {
+							
+							// TODO - shouldn't need to do Facebook specific checks here
+								if ($key == 'facebook' && isset($broadcast['page']) &&
+									!empty($broadcast['page']->id) && $broadcast['page']->id == $child_account->id) {
+									$data['broadcasts'][] = $this->previous_broadcast_excerpt(
+										$broadcasted_id,
+										$broadcast,
+										$account,
+										$service
+									);
+									// already broadcasted? not editable by default
+									$data['edit'] = false;
+								}
+							}
 						}
 // assign errors
 						if (isset($errors[$key]) && isset($errors[$key][$child_account->id])) {
