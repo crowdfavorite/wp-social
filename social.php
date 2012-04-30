@@ -1034,14 +1034,14 @@ final class Social {
 					// Content
 					if (isset($broadcast_accounts[$service_key])) {
 						$content = $service->format_content($post, Social::option('broadcast_format'));
-						update_post_meta($post->ID, '_social_'.$service_key.'_content', $content);
+						update_post_meta($post->ID, '_social_'.$service_key.'_content', addslashes_deep($content));
 					}
 				}
 			}
 
 			if (count($broadcast_accounts)) {
 				Social::log('There are default accounts, running broadcast');
-				update_post_meta($post->ID, '_social_broadcast_accounts', $broadcast_accounts);
+				update_post_meta($post->ID, '_social_broadcast_accounts', addslashes_deep($broadcast_accounts));
 			}
 		}
 	}
@@ -2115,6 +2115,34 @@ var socialAdminBarMsgs = {
 	}
 
 } // End Social
+
+if (!function_exists('addslashes_deep')) {
+/**
+ * Navigates through an array and adds slashes to the values.
+ *
+ * If an array is passed, the array_map() function causes a callback to pass the
+ * value back to the function. Slashes will be added to this value.
+ *
+ * @since 3.4.0?
+ *
+ * @param array|string $value The array or string to be slashed.
+ * @return array|string Slashed array (or string in the callback).
+ */
+function addslashes_deep($value) {
+	if ( is_array($value) ) {
+		$value = array_map('addslashes_deep', $value);
+	} elseif ( is_object($value) ) {
+		$vars = get_object_vars( $value );
+		foreach ($vars as $key=>$data) {
+			$value->{$key} = addslashes_deep( $data );
+		}
+	} else {
+		$value = addslashes($value);
+	}
+
+	return $value;
+}
+}
 
 function social_wpdb_escape($str) {
 	global $wpdb;
