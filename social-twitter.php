@@ -32,7 +32,7 @@ final class Social_Twitter {
 	 * @return array
 	 */
 	public static function get_avatar_comment_types(array $types) {
-		return array_merge($types, array('social-twitter'));
+		return array_merge($types, Social_Service_Twitter::comment_types());
 	}
 
 	/**
@@ -57,12 +57,12 @@ final class Social_Twitter {
 		foreach ($comments as $key => $comment) {
 			if (is_object($comment)) {
 				$_comments['id_'.$comment->comment_ID] = $comment;
-				if ($comment->comment_type == 'social-twitter') {
+				if (in_array($comment->comment_type, Social_Service_Twitter::comment_types())) {
 					$comment_ids[] = $comment->comment_ID;
 					$tweet_comments['id_'.$comment->comment_ID] = $comment;
 				}
 			}
-			else {
+			else { // social items
 				$_comments[$key] = $comment;
 			}
 		}
@@ -87,7 +87,7 @@ final class Social_Twitter {
 					$broadcasted_social_ids[] = $id;
 					// if we don't have a message saved for a tweet, try to get it so that we can use it next time
 					if (empty($data['message'])) {
-						$url = wp_nonce_url(site_url('?social_controller=aggregation&social_action=retrieve_twitter_content&broadcasted_id='.$id.'&post_id='.$post_id), 'retrieve_twitter_content');
+						$url = wp_nonce_url(home_url('index.php?social_controller=aggregation&social_action=retrieve_twitter_content&broadcasted_id='.$id.'&post_id='.$post_id), 'retrieve_twitter_content');
 						wp_remote_get(str_replace('&amp;', '&', $url), array(
 							'timeout' => 0.01,
 							'blocking' => false,
@@ -284,13 +284,23 @@ final class Social_Twitter {
 	 * @param  stdClass  $comment
 	 * @return bool
 	 */
-	private static function is_retweet($comment) {
+	public static function is_retweet($comment = null, $tweet = null) {
 		$is_retweet = false;
-		if (isset($comment->social_raw_data) and !empty($comment->social_raw_data->retweeted_status)) {
-			$is_retweet = true;
+		if (!is_null($comment)) {
+			if (isset($comment->social_raw_data) and !empty($comment->social_raw_data->retweeted_status)) {
+				$is_retweet = true;
+			}
+			if (substr($comment->comment_content, 0, 4) == 'RT @') {
+				$is_retweet = true;
+			}
 		}
-		if (substr($comment->comment_content, 0, 4) == 'RT @') {
-			$is_retweet = true;
+		else if (!is_null($tweet)) {
+			if (!empty($tweet->retweeted_status)) {
+				$is_retweet = true;
+			}
+			if (substr($tweet->text, 0, 4) == 'RT @') {
+				$is_retweet = true;
+			}
 		}
 		return $is_retweet;
 	}
@@ -350,6 +360,29 @@ final class Social_Twitter {
 
 		return $title;
 	}
+	
+	/**
+	 * Add a "reply to" field to broadcast form.
+	 *
+	 * @static
+	 * @param  obj  $post
+	 * @param  obj  $service
+	 * @param  obj  $account
+	 * @return void
+	 */
+	public static function social_broadcast_form_item_edit($post, $service, $account) {
+		if ($service->key() != 'twitter') {
+			return;
+		}
+		$field_name = str_replace('_content', '_in_reply_to', $account['field_name_content']);
+?>
+<a href="#" class="tweet-reply-link"><?php _e('Send as a reply', 'social'); ?></a>
+<div class="tweet-reply-fields">
+	<label for="<?php echo esc_attr($field_name); ?>"><?php _e('URL of Tweet (to reply to)', 'social'); ?></label>
+	<input type="text" class="tweet-reply-field" name="<?php echo esc_attr($field_name); ?>" value="" id="<?php echo esc_attr($field_name); ?>" />
+</div>
+<?php
+	}
 
 } // End Social_Twitter
 
@@ -362,5 +395,6 @@ add_filter('social_comments_array', array('Social_Twitter', 'comments_array'), 1
 add_filter('social_save_broadcasted_ids_data', array('Social_Twitter', 'social_save_broadcasted_ids_data'), 10, 5);
 add_filter('social_item_output_title', array('Social_Twitter', 'social_item_output_title'), 10, 2);
 add_action('wp_enqueue_scripts', array('Social_Twitter', 'enqueue_assets'));
+add_action('social_broadcast_form_item_edit', array('Social_Twitter', 'social_broadcast_form_item_edit'), 10, 3);
 
 }

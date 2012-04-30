@@ -13,51 +13,20 @@
 	</div>
 	<div class="social-view">
 		<table class="form-table">
-			<tr>
-				<th><?php _e('Accounts', 'social'); ?></th>
-				<td nowrap="nowrap">
-					<?php
-						$have_accounts = false;
-						$items = $service_buttons = '';
-						foreach ($services as $key => $service) {
-							foreach ($service->accounts() as $account) {
-								if ($account->universal()) {
-									$have_accounts = true;
-									$items .= $service->auth_output($account);
-								}
-							}
-
-							$button = '<div class="social-connect-button cf-clearfix"><a href="'.esc_url($service->authorize_url()).'" id="'.esc_attr($key).'_signin" class="social-login" target="_blank"><span>'.sprintf(__('Sign in with %s.', 'social'), esc_html($service->title())).'</span></a></div>';
-							$button = apply_filters('social_service_button', $button, $service);
-							$service_buttons .= $button;
-						}
-
-						echo '
-						<div id="social-accounts" class="social-accounts">
-							<ul>
-						';
-						if (!empty($items)) {
-							echo $items;
-						}
-						else {
-							echo '
-							<li class="social-accounts-item none">
-								<div class="social-facebook-icon"><i style="background: url(http://www.gravatar.com/avatar/a06082e4f876182b547f635d945e744e?s=16&d=mm) no-repeat;"></i></div>
-								<span class="name">'.__('No Accounts', 'social').'</span>
-							</li>
-							';
-						}
-						echo '
-							</ul>
-						</div>
-						';
-						echo '<div>'.$service_buttons.'</div>'
-						   . '<p class="description">'.sprintf(__('Connected accounts are available to all blog authors. Add accounts that only you can use in <a href="%s">your profile</a>.', 'social'), admin_url('profile.php#social-accounts')).'</p>';
-
-					?>
+			<tr id="social-accounts">
+				<th>
+					<?php _e('Accounts', 'social'); ?>
+					<p class="description" style="padding-top: 40px;"><?php printf(__('Available to all blog authors. Add accounts that only you can use in <a href="%s">your profile</a>.', 'social'), esc_url(admin_url('profile.php#social-accounts'))); ?></p>
+				</th>
+				<td>
+<?php
+echo Social_View::factory(
+	'wp-admin/parts/accounts',
+	compact('services', 'accounts', 'defaults')
+);
+?>
 				</td>
 			</tr>
-			<?php if ($have_accounts): ?>
 			<tr>
 				<th><?php _e('Broadcasting is on by default', 'social'); ?></th>
 				<td>
@@ -69,96 +38,26 @@
 				</td>
 			</tr>
 			<tr>
-				<th><?php _e('Default accounts', 'social'); ?></th>
-				<td>
-					<ul id="social-default-accounts">
-						<?php
-							$default_accounts = Social::option('default_accounts');
-							foreach ($services as $key => $service) {
-								foreach ($service->accounts() as $account_id => $account) {
-									if ($key != 'pages') {
-										if ($account->universal()) {
-
-						?>
-						<li class="social-accounts-item">
-							<label class="social-broadcastable" for="<?php echo esc_attr($key.$account->id()); ?>" style="cursor:pointer">
-								<input type="checkbox" name="social_default_accounts[]" id="<?php echo esc_attr($key.$account->id()); ?>" value="<?php echo esc_attr($key.'|'.$account->id()); ?>"<?php echo ((isset($default_accounts[$key]) and in_array($account->id(), array_values($default_accounts[$key]))) ? ' checked="checked"' : ''); ?> />
-								<img src="<?php echo esc_attr($account->avatar()); ?>" width="24" height="24" />
-								<span class="name">
-									<?php
-										$show_pages = false;
-										$pages_output = '';
-
-										echo esc_html($account->name());
-										if ($service->key() == 'facebook') {
-											$pages = $account->pages(null, false);
-
-											if ($account->use_pages() and count($pages)) {
-												$pages_output .= '<h5>'.__('Account Pages', 'social').'</h5><ul>';
-												foreach ($pages as $page) {
-													$checked = '';
-													if (isset($default_accounts['facebook']) and
-														isset($default_accounts['facebook']['pages']) and
-														isset($default_accounts['facebook']['pages'][$account->id()]) and
-														in_array($page->id, $default_accounts['facebook']['pages'][$account->id()])
-													) {
-														$show_pages = true;
-														$checked = ' checked="checked"';
-													}
-													$pages_output .= '<li>'
-														.'    <input type="checkbox" name="social_default_pages['.esc_attr($account->id()).'][]" value="'.esc_attr($page->id).'"'.$checked.' />'
-														.'    <img src="'.esc_url($service->page_image_url($page)).'" width="24" height="24" />'
-														.'    <span>'.esc_html($page->name).'</span>'
-														.'</li>';
-												}
-												$pages_output .= '</ul>';
-
-												if (!$show_pages) {
-													echo '<span> - <a href="#" class="social-show-facebook-pages">'.__('Show Pages', 'social').'</a></span>';
-												}
-											}
-										}
-									?>
-								</span>
-							</label>
-							<?php
-								if (!empty($pages_output)) {
-									echo '<div class="social-facebook-pages"'.($show_pages ? ' style="display:block"' : '').'>'
-									   . $pages_output
-									   . '</div>';
-								}
-							?>
-						</li>
-						<?php
-										}
-									}
-								}
-							}
-						?>
-					</ul>
-					<p class="description"><?php _e('Accounts that will be selected by default; and will auto-broadcast in the default teaser format when you publish via XML-RPC or email.', 'social'); ?></p>
-				</td>
-			</tr>
-			<?php endif ?>
-			<tr>
 				<th>
 					<label for="social_broadcast_format"><?php _e('Post broadcast format', 'social'); ?></label>
 				</th>
 				<td>
 					<input type="text" class="regular-text" name="social_broadcast_format" id="social_broadcast_format" value="<?php echo esc_attr(Social::option('broadcast_format')); ?>" />
-					<p class="description"><?php _e('How you would like posts to be formatted when broadcasting to Twitter or Facebook?'); ?></p>
+					<p class="description"><?php _e('How you would like posts to be formatted when broadcasting to Twitter or Facebook?', 'social'); ?></p>
 
 					<div class="description">
 						<?php _e('Tokens:', 'social'); ?>
 						<ul>
-							<?php 
-							foreach (Social::broadcast_tokens() as $token => $description): 
-								if (!empty($description)) {
-									$description = ' - '.$description;
-								}
-							?>
+<?php 
+foreach (Social::broadcast_tokens() as $token => $description) {
+	if (!empty($description)) {
+		$description = ' - '.$description;
+	}
+?>
 							<li><b><?php echo esc_html($token); ?></b><?php echo esc_html($description); ?></li>
-							<?php endforeach; ?>
+<?php
+}
+?>
 						</ul>
 					</div>
 				</td>
@@ -169,19 +68,21 @@
 				</th>
 				<td>
 					<input type="text" class="regular-text" name="social_comment_broadcast_format" id="social_comment_broadcast_format" value="<?php echo esc_attr(Social::option('comment_broadcast_format')); ?>" />
-					<p class="description"><?php _e('How you would like comments to be formatted when broadcasting to Twitter or Facebook?'); ?></p>
+					<p class="description"><?php _e('How you would like comments to be formatted when broadcasting to Twitter or Facebook.', 'social'); ?></p>
 
 					<div class="description">
 						<?php _e('Tokens:', 'social'); ?>
 						<ul>
-							<?php 
-							foreach (Social::comment_broadcast_tokens() as $token => $description): 
-								if (!empty($description)) {
-									$description = ' - '.$description;
-								}
-							?>
+<?php 
+foreach (Social::comment_broadcast_tokens() as $token => $description) {
+	if (!empty($description)) {
+		$description = ' - '.$description;
+	}
+?>
 							<li><b><?php echo esc_html($token); ?></b><?php echo esc_html($description); ?></li>
-							<?php endforeach; ?>
+<?php
+}
+?>
 						</ul>
 					</div>
 				</td>
@@ -195,14 +96,40 @@
 				</td>
 			</tr>
 		</table>
-		<?php
-			$fetch = Social::option('fetch_comments');
-			$toggle = ((!empty($fetch) and $fetch != '1') or Social::option('debug') == '1') ? ' social-open' : '';
-		?>
+<?php
+$fetch = Social::option('fetch_comments');
+$toggle = (
+	(!empty($fetch) and $fetch != '1') or
+	Social::option('debug') == '1' or
+	Social::option('use_standard_comments') == 1 or
+	Social::option('disable_broadcasting') == 1
+) ? ' social-open' : '';
+?>
 		<div class="social-collapsible<?php echo $toggle; ?>">
 			<h3 class="social-title"><a href="#social-advanced"><?php _e('Advanced Options', 'social'); ?></a></h3>
 			<div class="social-content">
 				<table id="social-advanced" class="form-table">
+					<tr>
+						<th>
+							<?php _e('Misc.', 'social'); ?>
+						</th>
+						<td>
+							<ul>
+								<li>
+									<label for="social_use_standard_comments">
+										<input type="checkbox" name="social_use_standard_comments" id="social_use_standard_comments" value="1" <?php checked(Social::option('use_standard_comments'), '1'); ?> />
+										<?php _e("Disable Social's comment display (use standard theme output instead).", 'social'); ?>
+									</label>
+								</li>
+								<li>
+									<label for="social_disable_broadcasting">
+										<input type="checkbox" name="social_disable_broadcasting" id="social_disable_broadcasting" value="1" <?php checked(Social::option('disable_broadcasting'), '1'); ?> />
+										<?php _e("Disable Social's broadcasting feature.", 'social'); ?>
+									</label>
+								</li>
+							</ul>
+						</td>
+					</tr>
 					<tr>
 						<th><?php _e('Fetch new comments', 'social'); ?></th>
 						<td>
@@ -226,7 +153,7 @@
 										<input type="radio" name="social_fetch_comments" value="2" id="fetch_comments_cron" style="position:relative;top:-1px"<?php echo Social::option('fetch_comments') == '2' ? ' checked="checked"' : ''; ?> />
 										<?php _e('Using a custom CRON job <span class="description">(advanced)</span>', 'social'); ?>
 									</label>
-									<p class="description"><?php _e('If you select this option, new tweets and Facebook posts will not be fetched unless you set up a system CRON job or fetch new items manually from the post edit screen. More help is also available in&nbsp;<code>readme.txt</code>.', 'social'); ?></p>
+									<p class="description"><?php _e('If you select this option, new tweets and Facebook posts will not be fetched unless you set up a system CRON job or fetch new items manually from the post edit screen. More help is also available in&nbsp;<code>README.txt</code>.', 'social'); ?></p>
 									<?php if (Social::option('fetch_comments') == '2'): ?>
 									<div class="social-callout">
 										<h3 class="social-title"><?php _e('CRON Setup', 'social'); ?></h3>
@@ -237,7 +164,7 @@
 											</dd>
 										</dl>
 										<p><?php _e('For your system CRON to run correctly, make sure it is pointing towards a URL that looks something like the following:', 'social'); ?></p>
-										<code><?php echo esc_url(site_url('?social_controller=cron&social_action=cron_15&api_key='.Social::option('system_cron_api_key'))); ?></code>
+										<code><?php echo esc_url(home_url('index.php?social_controller=cron&social_action=cron_15&api_key='.Social::option('system_cron_api_key'))); ?></code>
 										<?php endif; ?>
 									</div>
 								</li>
@@ -266,12 +193,14 @@
 								</li>
 							</ul>
 
-							<strong><?php _e('Debug log location:', 'social'); ?></strong> <code><?php echo SOCIAL_PATH.'debug_log.txt'; ?></code>
+							<strong><?php _e('Debug log location:', 'social'); ?></strong> <code><?php echo Social::$plugins_path.'debug_log.txt'; ?></code>
 						</td>
 					</tr>
 				</table>
 			</div>
-			<?php do_action('social_advanced_options'); ?>
+<?php
+do_action('social_advanced_options');
+?>
 		</div>
 		<p class="submit" style="clear:both">
 			<input type="submit" name="submit" value="Save Settings" class="button-primary" />

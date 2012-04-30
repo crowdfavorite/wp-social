@@ -12,10 +12,11 @@
 	</p>
 </div><!-- .social-meta-box-block -->
 
+<?php if (in_array(Social::option('fetch_comments'), array('1', '2'))) { ?>
 <div class="social-meta-box-block cf-clearfix">
 	<h4>
 		<?php _e('Manual Refresh', 'social'); ?>
-		<span id="social-next-run">(<?php echo sprintf(__('Next automatic run in <span>%s</span>', 'social'), $next_run); ?>)</span>
+		<span id="social-next-run">(<?php echo sprintf(__('Next automatic run <span>%s</span>', 'social'), $next_run); ?>)</span>
 	</h4>
 
 	<p class="submit" style="clear:both;float:none;padding:0;">
@@ -23,6 +24,7 @@
 		<img src="<?php echo esc_url(admin_url('images/wpspin_light.gif')); ?>" style="float:left;position:relative;top:4px;left:5px;display:none;" id="run_aggregation_loader" />
 	</p>
 </div><!-- .social-meta-box-block -->
+<?php } ?>
 
 <div class="social-meta-box-block">
 	<h4><?php _e('Log', 'social'); ?></h4>

@@ -15,6 +15,7 @@ final class Social_Controller_Settings extends Social_Controller {
 	public function action_index() {
 		if ($this->request->post('submit')) {
 			Social::option('broadcast_format', $this->request->post('social_broadcast_format'));
+			Social::option('comment_broadcast_format', $this->request->post('social_comment_broadcast_format'));
 			Social::option('debug', $this->request->post('social_debug'));
 
 			if (!Social::option('debug')) {
@@ -36,16 +37,8 @@ final class Social_Controller_Settings extends Social_Controller {
 					$accounts[$account[0]][] = $account[1];
 				}
 			}
-
-			// TODO abstract this to the facebook plugin
-			if (is_array($this->request->post('social_default_pages'))) {
-				if (!isset($accounts['facebook'])) {
-					$accounts['facebook'] = array(
-						'pages' => array()
-					);
-				}
-				$accounts['facebook']['pages'] = $this->request->post('social_default_pages');
-			}
+			
+			$accounts = apply_filters('social_settings_default_accounts', $accounts, $this);
 
 			if (count($accounts)) {
 				Social::option('default_accounts', $accounts);
@@ -68,15 +61,45 @@ final class Social_Controller_Settings extends Social_Controller {
 					wp_unschedule_event($timestamp, 'social_cron_15_init');
 				}
 			}
+			
+			// Disable Social's comment display feature
+			if (isset($_POST['social_use_standard_comments'])) {
+				Social::option('use_standard_comments', '1');
+			}
+			else {
+				delete_option('social_use_standard_comments');
+			}
 
-			do_action('social_settings_save');
+			// Disable Social's broadcast feature
+			if (isset($_POST['social_disable_broadcasting'])) {
+				Social::option('disable_broadcasting', '1');
+			}
+			else {
+				delete_option('social_disable_broadcasting');
+			}
+
+			do_action('social_settings_save', $this);
 
 			wp_redirect(Social::settings_url(array('saved' => 'true')));
 			exit;
 		}
+		
+		$accounts = array();
+		foreach ($this->social->services() as $key => $service) {
+			if (!isset($accounts[$key])) {
+				$accounts[$key] = array();
+			}
+			foreach ($service->accounts() as $account) {
+				if ($account->universal()) {
+					$accounts[$key][] = $account->id();
+				}
+			}
+		}
 
 		echo Social_View::factory('wp-admin/options', array(
 			'services' => $this->social->services(),
+			'accounts' => $accounts,
+			'defaults' => Social::option('default_accounts'),
 		));
 	}
 
@@ -87,6 +110,15 @@ final class Social_Controller_Settings extends Social_Controller {
 	 */
 	public function action_suppress_enable_notice() {
 		update_user_meta(get_current_user_id(), 'social_suppress_enable_notice', 'true');
+	}
+
+	/**
+	 * Supress the no accounts notice.
+	 *
+	 * @return void
+	 */
+	public function action_suppress_no_accounts_notice() {
+		update_user_meta(get_current_user_id(), 'social_suppress_no_accounts_notice', 'true');
 	}
 
 	/**
@@ -122,85 +154,6 @@ final class Social_Controller_Settings extends Social_Controller {
 	 */
 	public function action_clear_2_0_upgrade() {
 		delete_user_meta(get_current_user_id(), 'social_2.0_upgrade');
-	}
-
-	/**
-	 * Loads the account's Facebook pages.
-	 *
-	 * @return void
-	 */
-	public function action_get_facebook_pages() {
-		if (!$this->request->is_ajax()) {
-			wp_die('Oops, this method can only be accessed via an AJAX request');
-		}
-
-		$account_id = $this->request->query('account_id');
-		$is_profile = ($this->request->query('profile') == 'true');
-		$service = $this->social->service('facebook');
-		if ($service !== false) {
-			$accounts = $service->accounts();
-			if (isset($accounts[$account_id])) {
-				$pages = $service->get_pages($accounts[$account_id], $is_profile,false);
-				if (count($pages)) {
-					$html = Social_View::factory('wp-admin/parts/facebook/page/settings', array(
-						'service' => $service,
-						'account' => $accounts[$account_id],
-						'pages' => $pages,
-						'is_profile' => $is_profile,
-					));
-					echo json_encode(array(
-						'result' => 'success',
-						'html' => $html->render()
-					));
-					exit;
-				}
-			}
-		}
-
-		echo json_encode(array(
-			'result' => 'error',
-			'html' => 'No Pages Found'
-		));
-		exit;
-	}
-
-	/**
-	 * Save Facebook Pages
-	 *
-	 * @return void
-	 */
-	public function action_save_facebook_pages() {
-		if (!$this->request->is_ajax()) {
-			wp_die('Oops, this method can only be accessed via an AJAX request.');
-		}
-
-		$account_id = $this->request->query('account_id');
-		$is_profile = ($this->request->query('profile') == 'true');
-		$page_ids = $this->request->post('page_ids');
-
-		if ($is_profile and !defined('IS_PROFILE_PAGE')) {
-			define('IS_PROFILE_PAGE', true);
-		}
-
-		$service = $this->social->service('facebook');
-		if ($service !== false) {
-			$accounts = $service->accounts();
-			if (isset($accounts[$account_id])) {
-				$pages = $service->get_pages($accounts[$account_id], $is_profile);
-				$accounts[$account_id]->pages(array(), $is_profile);
-				foreach ($page_ids as $page_id) {
-					if (isset($pages[$page_id])) {
-						$accounts[$account_id]->page($pages[$page_id], $is_profile);
-					}
-				}
-			}
-
-			foreach ($accounts as $account_id => $account) {
-				$accounts[$account_id] = $account->as_object();
-			}
-
-			$service->accounts($accounts)->save($is_profile);
-		}
 	}
 
 	/**

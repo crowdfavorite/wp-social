@@ -3,7 +3,7 @@
 Plugin Name: Social
 Plugin URI: http://mailchimp.com/social-plugin-for-wordpress/
 Description: Broadcast newly published posts and pull in discussions using integrations with Twitter and Facebook. Brought to you by <a href="http://mailchimp.com">MailChimp</a>.
-Version: 2.0
+Version: 2.5b1
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com/
 */
@@ -25,7 +25,7 @@ final class Social {
 	/**
 	 * @var  string  version number
 	 */
-	public static $version = '2.0';
+	public static $version = '2.5b1';
 
 	/**
 	 * @var  string  CRON lock directory.
@@ -38,9 +38,19 @@ final class Social {
 	public static $plugins_url = '';
 
 	/**
+	 * @var  string  plugins file path
+	 */
+	public static $plugins_path = '';
+
+	/**
 	 * @var  bool  loaded by theme?
 	 */
 	public static $loaded_by_theme = false;
+
+	/**
+	 * @var  string  duplicate comment message
+	 */
+	public static $duplicate_comment_message = 'duplicate comment';
 
 	/**
 	 * @var  Social_Log  logger
@@ -60,6 +70,7 @@ final class Social {
 		'system_cron_api_key' => null,
 		'fetch_comments' => '1',
 		'broadcast_by_default' => '0',
+		'use_standard_comments' => '0',
 	);
 
 	/**
@@ -93,7 +104,7 @@ final class Social {
 	public static function auto_load($class) {
 		if (substr($class, 0, 7) == 'Social_' or substr($class, 0, 7) == 'Kohana_') {
 			try {
-				$file = SOCIAL_PATH.'lib/'.str_replace('_', '/', strtolower($class)).'.php';
+				$file = Social::$plugins_path.'lib/'.str_replace('_', '/', strtolower($class)).'.php';
 				$file = apply_filters('social_auto_load_file', $file, $class);
 				if (file_exists($file)) {
 					require $file;
@@ -130,7 +141,7 @@ final class Social {
 			$date = get_date_from_gmt($post->post_date_gmt);
 		}
 		else {
-			$url = site_url('?p=123');
+			$url = home_url('?p=123');
 			$date = get_date_from_gmt(current_time('mysql', true));
 		}
 
@@ -221,6 +232,33 @@ final class Social {
 	}
 
 	/**
+	 * Sets the customer die handler.
+	 *
+	 * @static
+	 * @param  string  $handler
+	 * @return array
+	 */
+	public static function wp_die_handler($handler) {
+		return array('Social', 'wp_comment_die_handler');
+	}
+
+	/**
+	 * Don't actually die for aggregation runs.
+	 *
+	 * @static
+	 * @param  string  $message
+	 * @param  string  $title
+	 * @param  array   $args
+	 * @return mixed
+	 */
+	public static function wp_comment_die_handler($message, $title, $args) {
+		if ($message == __('Duplicate comment detected; it looks as though you&#8217;ve already said that!')) {
+			// Keep going
+			throw new Exception(Social::$duplicate_comment_message);
+		}
+	}
+
+	/**
 	 * @var  bool  is Social enabled?
 	 */
 	private $_enabled = null;
@@ -250,18 +288,34 @@ final class Social {
 	 *     $twitter = Social::instance()->service('twitter');
 	 *
 	 * @param  string  $key    service key
-	 * @return Social_Service|Social_Service_Twitter|Social_Service_Facebook
+	 * @return mixed Social_Service|Social_Service_Twitter|Social_Service_Facebook|false
 	 */
 	public function service($key) {
 		$services = $this->load_services();
-
-		$key = str_replace('social-', '', $key);
-		$key = apply_filters('social_comment_type_to_service', $key);
-		if (empty($key) or !isset($services[$key])) {
+		if (!isset($services[$key])) {
 			return false;
 		}
-
 		return $services[$key];
+	}
+	
+	/**
+	 * Returns a service by comment type.
+	 *
+	 * Loading a service:
+	 *
+	 *     $twitter = Social::instance()->service_for_comment_type('social-twitter-rt');
+	 *
+	 * @param  string  $key    service key
+	 * @return mixed  Social_Service|Social_Service_Twitter|Social_Service_Facebook|false
+	 */
+	public function service_for_comment_type($comment_type) {
+		$services = $this->load_services();
+		foreach ($services as $service) {
+			if (in_array($comment_type, $service->comment_types())) {
+				return $service;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -273,7 +327,7 @@ final class Social {
 	public function init() {
 		// Load the language translations
 		if (Social::$loaded_by_theme) {
-			$path = trailingslashit(SOCIAL_PATH).'lang';
+			$path = trailingslashit(Social::$plugins_path).'lang';
 			load_theme_textdomain('social', $path);
 		}
 		else {
@@ -286,9 +340,6 @@ final class Social {
 			wp_die(__("Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers.", 'social'));
 		}
 
-		// Set the logger
-		Social::$log = Social_Log::factory();
-
 		// Just activated?
 		if (!Social::option('install_date')) {
 			Social::option('install_date', current_time('timestamp', 1));
@@ -298,6 +349,15 @@ final class Social {
 		// Plugins URL
 		$url = plugins_url('', SOCIAL_FILE);
 		Social::$plugins_url = trailingslashit(apply_filters('social_plugins_url', $url));
+
+		Social::$plugins_path = trailingslashit(apply_filters('social_plugins_path', SOCIAL_PATH));
+
+		// Set the logger
+		Social::$log = Social_Log::factory();
+
+		// Require Facebook and Twitter by default.
+		require Social::$plugins_path.'social-twitter.php';
+		require Social::$plugins_path.'social-facebook.php';
 	}
 
 	/**
@@ -320,27 +380,30 @@ final class Social {
 	 * @return void
 	 */
 	public function enqueue_assets() {
+		if (Social::option('use_standard_comments') == '1') {
+			return;
+		}
 		// JS/CSS
 		if (!defined('SOCIAL_COMMENTS_JS')) {
 			define('SOCIAL_COMMENTS_JS', Social::$plugins_url.'assets/social.js');
+		}
+		if (SOCIAL_COMMENTS_JS !== false) {
+			wp_enqueue_script('jquery');
+			wp_enqueue_script('social_js', SOCIAL_COMMENTS_JS, array('jquery'), Social::$version, true);
+			wp_localize_script('social_js', 'Sociali18n', array(
+				'commentReplyTitle' => __('Post a Reply', 'social'),
+			));
 		}
 
 		if (!is_admin()) {
 			if (!defined('SOCIAL_COMMENTS_CSS')) {
 				define('SOCIAL_COMMENTS_CSS', Social::$plugins_url.'assets/comments.css');
 			}
-
-			// JS/CSS
 			if (SOCIAL_COMMENTS_CSS !== false) {
 				wp_enqueue_style('social_comments', SOCIAL_COMMENTS_CSS, array(), Social::$version, 'screen');
 			}
 		}
 
-		// JS/CSS
-		if (SOCIAL_COMMENTS_JS !== false) {
-			wp_enqueue_script('jquery');
-			wp_enqueue_script('social_js', SOCIAL_COMMENTS_JS, array('jquery'), Social::$version, true);
-		}
 	}
 
 	/**
@@ -364,6 +427,11 @@ final class Social {
 
 		if (SOCIAL_ADMIN_JS !== false) {
 			wp_enqueue_script('social_admin', SOCIAL_ADMIN_JS, array(), Social::$version, true);
+			$data = apply_filters('social_admin_js_strings', array(
+				'protectedTweet' => __('Protected Tweet', 'social'),
+				'invalidUrl' => __('Invalid URL', 'social'),
+			));
+			wp_localize_script('social_admin', 'socialAdminL10n', $data);
 		}
 	}
 
@@ -430,7 +498,7 @@ final class Social {
 					'social_controller' => 'cron',
 					'social_action' => 'check_crons',
 					'social_api_key' => Social::option('system_cron_api_key')
-				))),
+				), null, '&')),
 				array(
 					'timeout' => 0.01,
 					'blocking' => false,
@@ -486,7 +554,7 @@ final class Social {
 		}
 
 		if ($file == $this_plugin) {
-			$settings_link = '<a href="'.esc_url(admin_url('options-general.php?page=social.php')).'">'.__("Settings", "photosmash-galleries").'</a>';
+			$settings_link = '<a href="'.esc_url(admin_url('options-general.php?page=social.php')).'">'.__('Settings', 'social').'</a>';
 			array_unshift($links, $settings_link);
 		}
 		return $links;
@@ -506,24 +574,26 @@ final class Social {
 				echo '<div class="error"><p>'.$message.'</p></div>';
 			}
 
-			if (!$this->_enabled and (!isset($_GET['page']) or $_GET['page'] != basename(SOCIAL_FILE))) {
+			$suppress_no_accounts_notice = get_user_meta(get_current_user_id(), 'social_suppress_no_accounts_notice', true);
+			if (!$this->_enabled and (!isset($_GET['page']) or $_GET['page'] != basename(SOCIAL_FILE)) and empty($suppress_no_accounts_notice)) {
+				$dismiss = sprintf(__('<a href="%s" class="social_dismiss">[Dismiss]</a>', 'social'), esc_url(admin_url('index.php?social_controller=settings&social_action=suppress_no_accounts_notice')));
 				$message = sprintf(__('To start using Social, please <a href="%s">add an account</a>.', 'social'), esc_url(Social::settings_url()));
-				echo '<div class="error"><p>'.$message.'</p></div>';
+				echo '<div class="error"><p>'.$message.' '.$dismiss.'</p></div>';
 			}
 
 			if (isset($_GET['page']) and $_GET['page'] == basename(SOCIAL_FILE)) {
 				// CRON Lock
 				if (Social::option('cron_lock_error') !== null) {
 					$upload_dir = wp_upload_dir();
-					if (is_writeable(SOCIAL_PATH) or (isset($upload_dir['basedir']) and is_writeable($upload_dir['basedir']))) {
+					if (is_writeable(Social::$plugins_path) or (isset($upload_dir['basedir']) and is_writeable($upload_dir['basedir']))) {
 						delete_option('social_cron_lock_error');
 					}
 					else {
 						if (isset($upload_dir['basedir'])) {
-							$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', 'social'), esc_html(SOCIAL_PATH), esc_html($upload_dir['basedir']));
+							$message = sprintf(__('Social requires that either %s or %s be writable for CRON jobs.', 'social'), esc_html(Social::$plugins_path), esc_html($upload_dir['basedir']));
 						}
 						else {
-							$message = sprintf(__('Social requires that %s is writable for CRON jobs.', 'social'), esc_html(SOCIAL_PATH));
+							$message = sprintf(__('Social requires that %s is writable for CRON jobs.', 'social'), esc_html(Social::$plugins_path));
 						}
 
 						echo '<div class="error"><p>'.esc_html($message).'</p></div>';
@@ -543,7 +613,7 @@ final class Social {
 			$error = Social::option('log_write_error');
 			if ($error == '1') {
 				echo '<div class="error"><p>'.
-					sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_dismiss">[Dismiss]</a>', 'social'), esc_html(SOCIAL_PATH), esc_url(admin_url('index.php?social_controller=settings&social_action=clear_log_write_error'))).
+					sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_dismiss">[Dismiss]</a>', 'social'), esc_html(Social::$plugins_path), esc_url(admin_url('index.php?social_controller=settings&social_action=clear_log_write_error'))).
 					'</p></div>';
 			}
 		}
@@ -613,9 +683,21 @@ final class Social {
 		if (empty($default_accounts)) {
 			$default_accounts = array();
 		}
+		$accounts = array();
+		foreach ($this->services() as $key => $service) {
+			if (!isset($accounts[$key])) {
+				$accounts[$key] = array();
+			}
+			foreach ($service->accounts() as $account) {
+				if ($account->personal()) {
+					$accounts[$key][] = $account->id();
+				}
+			}
+		}
 		echo Social_View::factory('wp-admin/profile', array(
-			'default_accounts' => $default_accounts,
-			'services' => $this->services()
+			'defaults' => $default_accounts,
+			'services' => $this->services(),
+			'accounts' => $accounts,
 		));
 	}
 
@@ -684,7 +766,7 @@ final class Social {
 	public function do_meta_boxes() {
 		global $post;
 
-		if ($post !== null) {
+		if ($post !== null && Social::option('disable_broadcasting') != 1) {
 			foreach (self::broadcasting_enabled_post_types() as $post_type) {
 				add_meta_box('social_meta_broadcast', __('Social Broadcasting', 'social'), array(
 					$this,
@@ -1095,7 +1177,7 @@ final class Social {
 				if ($post !== null) {
 					$queue->add($id, $interval)->save();
 					$semaphore->increment();
-					$this->request(site_url('?social_controller=aggregation&social_action=run&post_id='.$id), 'run');
+					$this->request(home_url('index.php?social_controller=aggregation&social_action=run&post_id='.$id), 'run');
 				}
 				else {
 					$queue->remove($id, $timestamp)->save();
@@ -1160,7 +1242,7 @@ final class Social {
 				foreach ($this->services() as $key => $service) {
 					$account = reset($service->accounts());
 					if ($account) {
-						return $service->disconnect_url($account);
+						return $service->disconnect_link($account);
 					}
 				}
 			}
@@ -1201,11 +1283,15 @@ final class Social {
 	 * @wp-filter  comments_template
 	 * @return string
 	 */
-	public function comments_template() {
+	public function comments_template($path) {
 		global $post;
 
-		if (!(is_singular() and (have_comments() or $post->comment_status == 'open'))) {
-			return;
+		if (!(
+			is_singular() and 
+			(have_comments() or $post->comment_status == 'open') and 
+			Social::option('use_standard_comments') != '1'
+		)) {
+			return $path;
 		}
 
 		if (!defined('SOCIAL_COMMENTS_FILE')) {
@@ -1255,13 +1341,16 @@ final class Social {
 		}
 
 		if ($image !== null) {
+			$image = esc_url($image);
+			$size = esc_attr($size);
 			$type = '';
 			if (is_object($comment)) {
-				$type = $comment->comment_type;
+				$type = esc_attr($comment->comment_type);
 			}
 
 			$image = esc_url($image);
-			return "<img alt='{$alt}' src='{$image}' class='avatar avatar-{$size} photo {$type}' height='{$size}' width='{$size}' />";
+			$image_format = apply_filters('social_get_avatar_image_format', '<img alt="%1$s" src="%2$s" class="avatar avatar-%3$s photo %4$s" height="%3$s" width="%3$s" />');
+			return sprintf($image_format, $alt, $image, $size, $type);
 		}
 
 		return $avatar;
@@ -1299,13 +1388,11 @@ final class Social {
 									delete_comment_meta($comment_ID, 'social_in_reply_to_status_id');
 								}
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s.', 'social'), $comment_ID, $service->title(), $account->id()));
-								$response = $service->broadcast($account, $output, $args);
-								if ($response === false or $response->id() === false) {
+								$response = $service->broadcast($account, $output, $args, null, $comment_ID);
+								if ($response === false or $response->id() === '0') {
 									wp_delete_comment($comment_ID);
-									$message = sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_ID, $service->title(), $account->id());
-
-									Social::log($message);
-									wp_die($message);
+									Social::log(sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_ID, esc_html($service->title()), esc_html($account->id())));
+									wp_die(sprintf(__('Error: Your comment could not be sent to %s, please go back and try again.', 'social'), esc_html($service->title())));
 								}
 
 								$wpdb->query($wpdb->prepare("
@@ -1390,7 +1477,7 @@ final class Social {
 								}
 
 								$output = $service->format_comment_content($comment, Social::option('comment_broadcast_format'));
-								$response = $service->broadcast($account, $output, $args);
+								$response = $service->broadcast($account, $output, $args, null, $comment_id);
 								if ($response === false or $response->id() === false) {
 									wp_delete_comment($comment_id);
 									Social::log(sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_id, $service->title(), $account->id()));
@@ -1511,20 +1598,21 @@ final class Social {
 		$social_items = '';
 		$status_url = null;
 		$comment_type = $comment->comment_type;
-		if (!($service = $this->service($comment->comment_type))) {
-			$comment_type = 'wordpress';
-		}
-		if (!in_array($comment->comment_type, apply_filters('social_ignored_comment_types', array(
+		$ignored_types = apply_filters('social_ignored_comment_types', array(
 			'wordpress',
 			'pingback'
-		)))
-		) {
-
+		));
+		// set the comment type to WordPress if we can't load the Social service (perhaps it was deactivated)
+		// and the type isn't an ignored type
+		if (!($service = $this->service_for_comment_type($comment->comment_type)) && !in_array($comment->comment_type, $ignored_types)) {
+			$comment_type = 'wordpress';
+		}
+		// set Social Items for Social comments
+		if (!in_array($comment->comment_type, $ignored_types)) {
 			$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
 			if (!empty($status_id)) {
 				$status_url = $service->status_url(get_comment_author(), $status_id);
 			}
-
 			// Social items?
 			if (!empty($comment->social_items)) {
 				if (is_object($service) && method_exists($service, 'key')) {
@@ -1565,7 +1653,7 @@ final class Social {
 	 * @return array
 	 */
 	public function post_row_actions(array $actions, $post) {
-		if ($post->post_status == 'publish') {
+		if ($post->post_status == 'publish' && in_array(Social::option('fetch_comments'), array('1', '2'))) {
 			$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', 'social'), esc_url(wp_nonce_url(admin_url('index.php?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID).
 				'<img src="'.esc_url(admin_url('images/wpspin_light.gif')).'" class="social_run_aggregation_loader" />';
 		}
@@ -1590,10 +1678,11 @@ final class Social {
 			and ($post_type_object = get_post_type_object($current_object->post_type))
 				and current_user_can($post_type_object->cap->edit_post, $current_object->ID)
 					and ($post_type_object->show_ui or 'attachment' == $current_object->post_type)
+						and (in_array(Social::option('fetch_comments'), array('1', '2')))
 		) {
 			$wp_admin_bar->add_menu(array(
 				'parent' => 'comments',
-				'id' => 'social_find_comments',
+				'id' => 'social-find-comments',
 				'title' => __('Find Social Comments', 'social')
 					.'<span class="social-aggregation-spinner" style="display: none;">&nbsp;(
 						<span class="social-dot dot-active">.</span>
@@ -1601,6 +1690,16 @@ final class Social {
 						<span class="social-dot">.</span>
 					)</span>',
 				'href' => esc_url(wp_nonce_url(admin_url('index.php?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run')),
+			));
+			$wp_admin_bar->add_menu(array(
+				'parent' => 'comments',
+				'id' => 'social-add-tweet-by-url',
+				'title' => __('Add Tweet by URL', 'social')
+					.'<form class="social-add-tweet" style="display: none;" method="get" action="'.esc_url(wp_nonce_url(admin_url('index.php?social_controller=import&social_action=from_url&social_service=twitter&post_id='.$current_object->ID), 'from_url')).'">
+						<input type="text" size="20" name="url" value="" autocomplete="off" />
+						<input type="submit" name="social-add-tweet-button" name="social-add-tweet-button" value="'.__('Add Tweet by URL', 'social').'" />
+					</form>',
+				'href' => esc_url(get_edit_post_link($current_object->ID)),
 			));
 		}
 	}
@@ -1615,7 +1714,53 @@ final class Social {
 #wpadminbar .social-aggregation-spinner .dot-active {
 	font-weight: bold;
 }
+#wpadminbar #wp-admin-bar-social-add-tweet-by-url form {
+	display: block;
+	line-height: 100%;
+	margin: 0;
+	padding: 5px;
+}
+#wpadminbar #wp-admin-bar-social-add-tweet-by-url input {
+	color: #333;
+	font-size: 11px;
+	font-weight: normal;
+	line-height: 1;
+	margin-bottom: 3px;
+	padding: 3px;
+	text-shadow: none;
+	width: 90%;
+}
+#wpadminbar #wp-admin-bar-social-add-tweet-by-url input[type="submit"] {
+	margin: 0;
+}
+#wpadminbar #wp-admin-bar-social-add-tweet-by-url .loading {
+	background: url(<?php echo admin_url('images/wpspin_light.gif'); ?>) center center no-repeat;
+}
+#wpadminbar #wp-admin-bar-social-add-tweet-by-url p.msg {
+	color: #333;
+	font-size: 12px;
+	font-weight: normal;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	text-shadow: none;
+}
+#wpadminbar #wp-admin-bar-social-add-tweet-by-url p.error {
+	color: #900;
+}
 </style>
+<?php
+	}
+
+	function admin_bar_footer_js() {
+?>
+<script type="text/javascript">
+var socialAdminBarMsgs = {
+	'protected': '<?php echo esc_js(__('Protected Tweet', 'social')); ?>',
+	'invalid': '<?php echo esc_js(__('Invalid URL', 'social')); ?>',
+	'success': '<?php echo esc_js(__('Tweet Imported!', 'social')); ?>'
+};
+</script>
 <?php
 	}
 
@@ -1629,7 +1774,7 @@ final class Social {
 		global $wpdb; // Don't delete, this is used in upgrade files.
 
 		$upgrades = array(
-			SOCIAL_PATH.'upgrades/2.0.php',
+			Social::$plugins_path.'upgrades/2.0.php',
 		);
 		$upgrades = apply_filters('social_upgrade_files', $upgrades);
 		foreach ($upgrades as $file) {
@@ -1639,6 +1784,21 @@ final class Social {
 		}
 
 		Social::option('installed_version', Social::$version);
+	}
+
+	/**
+	 * Are there accounts connected?
+	 *
+	 * @return bool
+	 */
+	public function have_accounts() {
+		foreach ($this->services() as $service) {
+			if (count($service->accounts())) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -1776,15 +1936,11 @@ final class Social {
 		}
 
 		if ($services === false) {
+			$services = array();
 			// Register services
 			$registered_services = apply_filters('social_register_service', array());
 			if (is_array($registered_services) and count($registered_services)) {
-				$accounts = array();
-				$commenter = get_user_meta(get_current_user_id(), 'social_commenter', true);
-
-				if ($commenter != 'true') {
-					$accounts = Social::option('accounts');
-				}
+				$accounts = Social::option('accounts');
 				foreach ($registered_services as $service) {
 					if (!isset($services[$service])) {
 						$service_accounts = array();
@@ -1806,39 +1962,44 @@ final class Social {
 						$services[$service] = new $class($service_accounts);
 					}
 				}
-
-				$personal_accounts = get_user_meta(get_current_user_id(), 'social_accounts', true);
-				if (is_array($personal_accounts)) {
-					foreach ($personal_accounts as $key => $_accounts) {
-						if (count($_accounts) and isset($services[$key])) {
-							$class = 'Social_Service_'.$key.'_Account';
-							foreach ($_accounts as $account_id => $account) {
-								// TODO Shouldn't have to do this. Fix later.
-								$account->universal = '0';
-
-								if ($services[$key]->account_exists($account_id) and !defined('IS_PROFILE_PAGE')) {
-									$account = $this->merge_accounts($services[$key]->account($account_id)->as_object(), $account, $key);
-								}
-								$account = new $class((object) $account);
-								$services[$key]->account($account);
-
-								// Flag social as enabled, we have at least one account.
-								if ($this->_enabled === null) {
-									$this->_enabled = true;
-								}
-							}
-						}
-					}
-				}
+				wp_cache_set('services', $services, 'social');
 			}
-
-			wp_cache_set('services', $services, 'social');
 		}
 		else if ($this->_enabled === null and is_array($services)) {
 			foreach ($services as $service) {
 				if (count($service->accounts())) {
 					$this->_enabled = true;
 					break;
+				}
+			}
+		}
+
+// don't return global services for commenters
+		$commenter = get_user_meta(get_current_user_id(), 'social_commenter', true);
+		if ($commenter == 'true' && !current_user_can('publish_posts')) {
+			foreach ($services as $key => $accounts) {
+				$services[$key]->clear_accounts();
+			}
+		}
+
+		$personal_accounts = get_user_meta(get_current_user_id(), 'social_accounts', true);
+		if (is_array($personal_accounts)) {
+			foreach ($personal_accounts as $key => $_accounts) {
+				if (count($_accounts) and isset($services[$key])) {
+					$class = 'Social_Service_'.$key.'_Account';
+					foreach ($_accounts as $account_id => $account) {
+						// TODO Shouldn't have to do this. Fix later.
+						$account->universal = '0';
+						if ($services[$key]->account_exists($account_id) and !defined('IS_PROFILE_PAGE')) {
+							$account = $this->merge_accounts($services[$key]->account($account_id)->as_object(), $account, $key);
+						}
+						$account = new $class((object) $account);
+						$services[$key]->account($account);
+						// Flag social as enabled, we have at least one account.
+						if ($this->_enabled === null) {
+							$this->_enabled = true;
+						}
+					}
 				}
 			}
 		}
@@ -1900,8 +2061,65 @@ final class Social {
 
 		return $url;
 	}
+	
+	/**
+	 * Filter the where clause for pulling comments for feeds (to exclude meta comments).
+	 *
+	 * @param  string  $where
+	 * @return string
+	 */
+	public static function comments_feed_exclusions($where) {
+		global $wpdb;
+		$meta_types = array();
+// get services
+		$services = Social::instance()->services();
+// ask each service for it's "meta" comment types
+		foreach ($services as $service) {
+			$meta_types = array_merge($meta_types, $service->comment_types_meta());
+		}
+		$meta_types = array_unique($meta_types);
+		if (count($meta_types)) {
+			$where .= " AND comment_type NOT IN ('".implode("', '", array_map('social_wpdb_escape', $meta_types))."') ";
+		}
+		return $where;
+	}
+	
+	/**
+	 * Filter the image tag to implement lazy loading support for meta comments.
+	 *
+	 * @param  string  $image_format
+	 * @return string
+	 */
+	public static function social_item_output_image_format($image_format) {
+		if (class_exists('LazyLoad_Images')) {
+			// would be great if the plugin provided an API for this, until then we'll copy the code
+			$placeholder_image = apply_filters( 'lazyload_images_placeholder_image', LazyLoad_Images::get_url( 'images/1x1.trans.gif' ) );
+			$image_format = '<img src="'.esc_url($placeholder_image).'" data-lazy-src="%1$s" width="%2$s" height="%3$s" alt="%4$s" /><noscript>'.$image_format.'</noscript>';
+		}
+		return $image_format;
+	}
+
+	/**
+	 * Filter the image tag to implement lazy loading support for avatars.
+	 *
+	 * @param  string  $image_format
+	 * @return string
+	 */
+	public static function social_get_avatar_image_format($image_format) {
+		if (class_exists('LazyLoad_Images')) {
+			// would be great if the plugin provided an API for this, until then we'll copy the code
+			$placeholder_image = apply_filters( 'lazyload_images_placeholder_image', LazyLoad_Images::get_url( 'images/1x1.trans.gif' ) );
+			$image_format = '<img alt="%1$s" src="'.esc_url($placeholder_image).'" data-lazy-src="%2$s" class="avatar avatar-%3$s photo %4$s" height="%3$s" width="%3$s" /><noscript>'.$image_format.'</noscript>';
+		}
+		return $image_format;
+	}
 
 } // End Social
+
+function social_wpdb_escape($str) {
+	global $wpdb;
+	return $wpdb->escape($str);
+}
 
 $social_file = __FILE__;
 if (isset($plugin)) {
@@ -1915,7 +2133,7 @@ else if (isset($network_plugin)) {
 }
 
 define('SOCIAL_FILE', $social_file);
-define('SOCIAL_PATH', dirname(__FILE__).'/');
+define('SOCIAL_PATH', WP_PLUGIN_DIR.'/'.basename(dirname($social_file)).'/');
 
 // Register Social's autoloading
 spl_autoload_register(array('Social', 'auto_load'));
@@ -1943,7 +2161,9 @@ add_action('load-settings_page_social', array($social, 'enqueue_assets'));
 add_action('admin_enqueue_scripts', array($social, 'admin_enqueue_assets'));
 add_action('admin_bar_menu', array($social, 'admin_bar_menu'), 95);
 add_action('wp_after_admin_bar_render', array($social, 'admin_bar_footer_css'));
+add_action('wp_after_admin_bar_render', array($social, 'admin_bar_footer_js'));
 add_action('set_user_role', array($social, 'set_user_role'), 10, 2);
+add_filter('social_settings_save', array('Social_Service_Facebook', 'social_settings_save'));
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));
@@ -1964,12 +2184,12 @@ add_filter('register', array($social, 'register'));
 add_filter('loginout', array($social, 'loginout'));
 add_filter('post_row_actions', array($social, 'post_row_actions'), 10, 2);
 add_filter('social_comments_array', array($social, 'comments_array'), 100, 2);
+add_filter('comment_feed_where', array($social, 'comments_feed_exclusions'));
+add_filter('social_settings_default_accounts', array('Social_Service_Facebook', 'social_settings_default_accounts'), 10, 2);
+add_filter('social_item_output_image_format', array($social, 'social_item_output_image_format'));
+add_filter('social_get_avatar_image_format', array($social, 'social_get_avatar_image_format'));
 
 // Service filters
 add_filter('social_auto_load_class', array($social, 'auto_load_class'));
-
-// Require Facebook and Twitter by default.
-require SOCIAL_PATH.'social-twitter.php';
-require SOCIAL_PATH.'social-facebook.php';
 
 } // End class_exists check

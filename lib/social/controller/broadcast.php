@@ -8,6 +8,34 @@
 final class Social_Controller_Broadcast extends Social_Controller {
 
 	/**
+	 * Formats previous broadcasts for display.
+	 * 
+	 * @param  string $broadcasted_id
+	 * @param  array  $broadcast
+	 * @param  object $account
+	 * @param  object $service
+	 * @return string
+	 */
+	private function previous_broadcast_excerpt($broadcasted_id, $broadcast, $account, $service) {
+		$content = false;
+		if (($content = base64_decode($broadcast['message'])) !== false) {
+			if ($content = json_decode($content)) {
+				if (isset($content->text)) {
+					$content = $content->text;
+				}
+			}
+		}
+		if (!$content) {
+			$content = $broadcast['message'];
+		}
+		$content = esc_html($content);
+		if ($account->has_user() or $service->key() != 'twitter') {
+			$content .= ' &middot; <a href="'.esc_url($service->status_url($account->username(), $broadcasted_id)).'" target="_blank">'.sprintf(__('View on %s', 'social'), esc_html($service->title())).'</a>';
+		}
+		$content = wpautop($content);
+		return $content;
+	}
+	/**
 	 * Displays the broadcast options form.
 	 * 
 	 * @return void
@@ -24,38 +52,72 @@ final class Social_Controller_Broadcast extends Social_Controller {
 
 		$errors = array();
 		$services = $this->social->services();
-		$broadcasted_ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
-		if (empty($broadcasted_ids)) {
-			$broadcasted_ids = array();
-		}
 
 		$accounts_selected = false;
 		if ($this->request->post('social_action') !== null) {
+			$service_accounts = $this->request->post('social_accounts');
+			$account_content = $this->request->post('social_account_content');
+
+			$account_content_meta = $account_service_meta = array();
 			foreach ($services as $key => $service) {
-				$content = stripslashes($this->request->post('social_'.$key.'_content'));
 				if (count($service->accounts())) {
-					$run_checks = false;
-					if ($this->request->post('social_'.$key.'_accounts') !== null) {
+					if (isset($service_accounts[$key])) {
 						$accounts_selected = true;
-						$run_checks = true;
-					}
-					else {
-						foreach ($service->accounts() as $account) {
-							$pages = $this->request->post('social_facebook_pages');
-							if ($pages !== null and isset($pages[$account->id()])) {
-								$accounts_selected = true;
-								$run_checks = true;
-							    break;
+						foreach ($service_accounts[$key] as $account_id) {
+							$account_id = explode('|', $account_id);
+							if (!isset($account_content[$key][$account_id[0]]) or empty($account_content[$key][$account_id[0]])) {
+								if (isset($errors[$key])) {
+									$errors[$key] = array();
+								}
+
+								$errors[$key][$account_id[0]] = __('Please enter content to be broadcasted.', 'social');
+							}
+							else {
+								$account_content[$key][$account_id[0]] = stripslashes($account_content[$key][$account_id[0]]);
+								if (strlen($account_content[$key][$account_id[0]]) > $service->max_broadcast_length()) {
+									$errors[$key][$account_id[0]] = sprintf(__('Content must not be longer than %s characters.', 'social'), $service->max_broadcast_length());
+								}
+								else {
+									if (!isset($account_content_meta[$key])) {
+										$account_content_meta[$key] = $account_service_meta[$key] = array();
+									}
+
+									$account_content_meta[$key][$account_id[0]] = $account_content[$key][$account_id[0]];
+// TODO
+									$account_service_meta[$key][$account_id[0]] = $service->get_broadcast_extras($account_id[0], $post);
+								}
 							}
 						}
 					}
+					else {
+						$pages = $this->request->post('social_facebook_pages');
+						foreach ($service->accounts() as $account) {
+							if (!empty($pages) and isset($pages[$account->id()])) {
+								$accounts_selected = true;
 
-					if ($run_checks) {
-						if (empty($content)) {
-							$errors[$key] = sprintf(__('Please enter some content for %s.', 'social'), $service->title());
-						}
-						else if (strlen($content) > $service->max_broadcast_length()) {
-							$errors[$key] = sprintf(__('Content for %s must not be longer than %s characters.', 'social'), $service->title(), $service->max_broadcast_length());
+								foreach ($pages[$account->id()] as $page_id) {
+									if (!isset($account_content[$key][$page_id]) or empty($account_content[$key][$page_id])) {
+										if (isset($errors[$key])) {
+											$errors[$key] = array();
+										}
+
+										$errors[$key][$page_id] = __('Please enter content to be broadcasted.', 'social');
+									}
+									else {
+										$account_content[$key][$page_id] = stripslashes($account_content[$key][$page_id]);
+										if (strlen($account_content[$key][$page_id]) > $service->max_broadcast_length()) {
+											$errors[$key][$page_id] = sprintf(__('Content must not be longer than %s characters.', 'social'), $service->max_broadcast_length());
+										}
+										else {
+											if (!isset($account_content_meta[$key])) {
+												$account_content_meta[$key] = array();
+											}
+
+											$account_content_meta[$key][$page_id] = $account_content[$key][$page_id];
+										}
+									}
+								}
+							}
 						}
 					}
 				}
@@ -68,10 +130,9 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			if (!count($errors)) {
 				$broadcast_accounts = array();
 				foreach ($services as $key => $service) {
-					$store_meta = false;
-					if ($this->request->post('social_'.$key.'_accounts') !== null) {
+					if (isset($service_accounts[$key])) {
 						$accounts = array();
-						foreach ($this->request->post('social_'.$key.'_accounts') as $account) {
+						foreach ($service_accounts[$key] as $account) {
 							$account = explode('|', $account);
 
 							$accounts[$account[0]] = (object) array(
@@ -83,8 +144,6 @@ final class Social_Controller_Broadcast extends Social_Controller {
 						if (!empty($accounts)) {
 							$broadcast_accounts[$key] = $accounts;
 						}
-
-						$store_meta = true;
 					}
 
 					// TODO abstract to Facebook plugin.
@@ -102,7 +161,6 @@ final class Social_Controller_Broadcast extends Social_Controller {
 
 									if (!isset($broadcast_accounts[$key][$page_id])) {
 										if (isset($universal_pages[$page_id])) {
-											$store_meta = true;
 											$broadcast_accounts[$key][$page_id] = (object) array(
 												'id' => $page_id,
 												'name' => $universal_pages[$page_id]->name,
@@ -123,12 +181,11 @@ final class Social_Controller_Broadcast extends Social_Controller {
 							}
 						}
 					}
-
-					if ($store_meta) {
-						update_post_meta($post->ID, '_social_'.$key.'_content', $_POST['social_'.$key.'_content']);
-					}
 				}
 
+				// Store the content
+				update_post_meta($post->ID, '_social_broadcast_content', $account_content_meta);
+				update_post_meta($post->ID, '_social_broadcast_meta', $account_service_meta);
 				update_post_meta($post->ID, '_social_broadcast_accounts', $broadcast_accounts);
 
 				if (!in_array($this->request->post('social_action'), array('Schedule', 'Update'))) {
@@ -145,20 +202,132 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			}
 		}
 
-		$step_text = 'Publish';
+		$step = 'Publish';
+		$step_text = __('Publish', 'social');
 		if ($this->request->post('social_broadcast') !== null or $this->request->post('social_action') !== null) {
 			if (($this->request->post('social_action') === null and $this->request->post('social_broadcast') == 'Edit') or
 				$this->request->post('social_action') == 'Update')
 			{
-				$step_text = 'Update';
+				$step = 'Update';
+				$step_text = __('Update', 'social');
 			}
 			else if ($this->request->post('social_action') != 'Publish') {
-				$step_text = 'Broadcast';
+				$step = 'Broadcast';
+				$step_text = __('Broadcast', 'social');
 			}
 		}
 		else if ($post->post_status == 'future' or ($this->request->post('publish') == 'Schedule')) {
-			$step_text = 'Schedule';
+			$step = 'Schedule';
+			$step_text = __('Schedule', 'social');
 		}
+
+// find previous broadcasts
+		$broadcasted_ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
+		if (empty($broadcasted_ids)) {
+			$broadcasted_ids = array();
+		}
+
+// consolidate accounts (merge child accounts into single list)
+		$_services = array(); // the data we prep for the view will be in here
+		$_defaults = array(
+			'name' => '',
+			'avatar' => '',
+			'field_name_content' => '',
+			'field_name_checked' => '',
+			'field_value_checked' => '',
+			'checked' => false,
+			'content' => '',
+			'broadcasts' => array(),
+			'error' => '',
+		);
+		foreach ($services as $key => $service) {
+			$_services[$key] = array();
+			if (isset($broadcasted_ids[$key])) {
+				$service_broadcasts = $broadcasted_ids[$key];
+			}
+			else {
+				$service_broadcasts = array();
+			}
+			$accounts = $service->accounts();
+			if (count($accounts)) {
+				$i = 0;
+				foreach ($accounts as $account) {
+					$data = array(
+						'name' => $account->name(),
+						'avatar' => $account->avatar(),
+						'field_name_content' => 'social_account_content['.$key.']['.$account->id().']',
+						'field_name_checked' => 'social_accounts['.$key.'][]',
+						'field_value_checked' => $account->id().($account->universal() ? '|true' : ''),
+						'edit' => false,
+						'maxlength' => $service->max_broadcast_length(),
+					);
+					if ($i == 0) {
+						$data['edit'] = true;
+					}
+					$i++;
+// assign previous broadcasts
+					if (isset($broadcasted_ids[$key]) && isset($broadcasted_ids[$key][$account->id()])) {
+						foreach ($broadcasted_ids[$key][$account->id()] as $broadcasted_id => $broadcast) {
+							// TODO - shouldn't need to do Facebook specific checks here
+							if ($key == 'facebook' && isset($broadcast['page']) && !empty($broadcast['page']->id)) {
+								// this was broadcast to a page, don't attach it here.
+								continue;
+							}
+							$data['broadcasts'][] = $this->previous_broadcast_excerpt(
+								$broadcasted_id,
+								$broadcast,
+								$account,
+								$service
+							);
+							// already broadcasted? not editable by default
+							$data['edit'] = false;
+						}
+					}
+// assign errors
+					if (isset($errors[$key]) && isset($errors[$key][$account->id()])) {
+						$data['error'] = $errors[$key][$account->id()];
+					}
+					$_services[$key][$account->id()] = array_merge($_defaults, $data);
+					foreach ($account->child_accounts() as $child_account) {
+						$data = array(
+							'name' => $child_account->name,
+							'avatar' => $service->page_image_url($child_account),
+							'field_name_content' => 'social_account_content['.$key.']['.$child_account->id.']',
+							'field_name_checked' => 'social_facebook_pages['.$account->id().'][]',
+							'field_value_checked' => $child_account->id,
+							'edit' => false,
+							'maxlength' => $service->max_broadcast_length(),
+						);
+// assign previous broadcasts
+						if (isset($broadcasted_ids[$key]) && isset($broadcasted_ids[$key][$account->id()])) {
+							foreach ($broadcasted_ids[$key][$account->id()] as $broadcasted_id => $broadcast) {
+							
+							// TODO - shouldn't need to do Facebook specific checks here
+								if ($key == 'facebook' && isset($broadcast['page']) &&
+									!empty($broadcast['page']->id) && $broadcast['page']->id == $child_account->id) {
+									$data['broadcasts'][] = $this->previous_broadcast_excerpt(
+										$broadcasted_id,
+										$broadcast,
+										$account,
+										$service
+									);
+									// already broadcasted? not editable by default
+									$data['edit'] = false;
+								}
+							}
+						}
+// assign errors
+						if (isset($errors[$key]) && isset($errors[$key][$child_account->id])) {
+							$data['error'] = $errors[$key][$child_account->id];
+						}
+						$_services[$key][$child_account->id] = array_merge($_defaults, $data);
+						$i++;
+					}
+				}
+			}
+		}
+		
+		$default_accounts = $this->social->default_accounts($post);
 
 		$broadcast_accounts = array();
 		$_broadcast_accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
@@ -174,14 +343,76 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			}
 		}
 
-		$default_accounts = $this->social->default_accounts($post);
+		$broadcast_content = get_post_meta($post->ID, '_social_broadcast_content', true);
+		if (empty($broadcast_content)) {
+			$broadcast_content = array();
+		}
+
+		// check to see if we have any previous broadcasts or saved content
+		$previous_activity = 0;
+
+		foreach ($_services as $key => $accounts) {
+			$broadcast_default = $services[$key]->format_content($post, Social::option('broadcast_format'));
+// set content format and checked status for each
+			foreach ($accounts as $id => $data) {
+				$previous_activity += count($data['broadcasts']);
+//  check for error - populate with previouly posted content
+				if (count($errors)) {
+					$content = stripslashes($_POST['social_account_content'][$key][$id]);
+					$checked = (
+						isset($_POST['social_accounts']) && 
+						isset($_POST['social_accounts'][$key]) && 
+						in_array($data['field_value_checked'], $_POST['social_accounts'][$key])
+					);
+				}
+// use defaults or saved broadcast info
+				else {
+					$content = $broadcast_default;
+					$checked = (isset($default_accounts[$key]) && in_array($id, $default_accounts[$key]));
+					// TODO - abstract this
+					// check to see if a facebook page should be selected by default
+					// our data structure currently makes this awkward
+					if (!$checked && $key == 'facebook' && 
+						isset($default_accounts[$key]) && 
+						isset($default_accounts[$key]['pages']) &&
+						is_array($default_accounts[$key]['pages'])) {
+						foreach ($default_accounts[$key]['pages'] as $page_parent_account) {
+							if (in_array($id, $page_parent_account)) {
+								$checked = true;
+								break;
+							}
+						}
+					}
+// check for saved broadcast
+					if (isset($broadcast_content[$key]) && isset($broadcast_content[$key][$id])) {
+						$content = $broadcast_content[$key][$id];
+						$previous_activity++;
+					}
+					if (count($broadcast_accounts) && isset($broadcast_accounts[$key]) && isset($broadcast_accounts[$key][$id])) {
+						$checked = true;
+					}
+					if (count($data['broadcasts'])) {
+						$checked = false;
+					}
+// override for scheduled broadcasts
+					if ($post->post_status == 'future') {
+						$checked = (count($broadcast_accounts) && isset($broadcast_accounts[$key]) && isset($broadcast_accounts[$key][$id]));
+					}
+				}
+				$_services[$key][$id]['content'] = $content;
+				$_services[$key][$id]['checked'] = $checked;
+				if ($content != $broadcast_default) {
+					$_services[$key][$id]['edit'] = true;
+				}
+			}
+		}
+
 		echo Social_View::factory('wp-admin/post/broadcast/options', array(
-			'errors' => $errors,
+			'clean' => ($previous_activity ? '' : 'clean'),
 			'services' => $services,
+			'_services' => $_services,
 			'post' => $post,
-			'default_accounts' => $default_accounts,
-			'broadcasted_ids' => $broadcasted_ids,
-			'broadcast_accounts' => $broadcast_accounts,
+			'step' => $step,
 			'step_text' => $step_text,
 			'location' => $this->request->post('location'),
 		));
@@ -220,13 +451,21 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			$broadcasted_ids = array();
 		}
 
+		$account_content = get_post_meta($post->ID, '_social_broadcast_content', true);
+		if (empty($account_content)) {
+			$account_content = array();
+		}
+		$account_meta = get_post_meta($post->ID, '_social_broadcast_meta', true);
+		if (empty($account_meta)) {
+			$account_meta = array();
+		}
+
 		Social::log('About to start broadcasting.');
 		foreach ($broadcast_accounts as $key => $accounts) {
 			Social::log('Loading service :service', array('service' => $key));
 			$service = $this->social->service($key);
 			if ($service) {
 				Social::log('Found service :service', array('service' => $key));
-				$message = null;
 				foreach ($accounts as $_account) {
 					if ($_account->universal != '1') {
 						if ($personal_accounts === null) {
@@ -251,8 +490,13 @@ final class Social_Controller_Broadcast extends Social_Controller {
 
 					if ($account !== false) {
 						// Load the message
-						if ($message === null) {
-							$message = get_post_meta($post->ID, '_social_'.$key.'_content', true);
+						$message = '';
+						if (isset($account_content[$key][$_account->id])) {
+							$message = $account_content[$key][$_account->id];
+						}
+						$args = array();
+						if (isset($account_meta[$key][$_account->id])) {
+							$args = $account_meta[$key][$_account->id];
 						}
 
 						if (!empty($message)) {
@@ -262,7 +506,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 								'service' => $service->title(),
 							));
 							
-							$response = $service->broadcast($account, $message, array(), $post->ID);
+							$response = $service->broadcast($account, $message, $args, $post->ID);
 							if ($response !== false) {
 								if ($response->limit_reached()) {
 									if (!isset($errored_accounts[$key])) {
@@ -352,10 +596,6 @@ final class Social_Controller_Broadcast extends Social_Controller {
 					}
 				}
 			}
-
-			if (!isset($broadcasted_ids[$key])) {
-				delete_post_meta($post->ID, '_social_'.$key.'_content');
-			}
 		}
 
 		// Errored accounts?
@@ -416,9 +656,6 @@ final class Social_Controller_Broadcast extends Social_Controller {
 		}
 		else {
 			delete_post_meta($post->ID, '_social_broadcast_accounts');
-			foreach ($this->social->services() as $service) {
-				delete_post_meta($post->ID, '_social_'.$service->key().'_content');
-			}
 		}
 	}
 

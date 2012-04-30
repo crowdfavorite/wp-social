@@ -41,42 +41,8 @@
 	width: 111px;
 }
 
-.social-disconnect {
-	background: url(delete-sprite.png) 0 0 no-repeat;
-	height: 14px;
-	width: 14px;
-}
-
-.social-disconnect:hover {
-	background-position: 0 -100px;
-}
-
 #social_proxy_keys {
 	margin-top: 10px;
-}
-
-.social-preview-counter {
-	float: right;
-	font-weight: normal;
-	font-size: 12px;
-	color: #aaa;
-}
-
-.form-table .social-preview-counter {
-	float: none;
-}
-
-.social-counter-limit {
-	color: #f00;
-}
-
-.form-table .social-preview-content {
-	width: 99%;
-	margin-bottom: 10px;
-}
-
-.social-counter-limit {
-	color: #f00;
 }
 
 #social_error {
@@ -97,34 +63,64 @@
 }
 
 .social-accounts {
-	margin: 10px 0;
+	margin: 20px 0 0;
 	max-width: 60em;
 }
-.social-view .form-table .social-accounts {
+.social-accounts:first-child {
 	margin-top: 0;
+}
+
+.social-accounts .social-connect-button {
+	margin-bottom: 5px;
 }
 
 .social-accounts ul {
 	border-top: 1px solid #e5e5e5;
-	font-size: 16px;
 	margin-top: 0;
 }
 
-.social-accounts ul ul {
-	border-top: 0;
-	font-size: 12px;
+.social-accounts ul li {
+	background: #fff;
+	margin: 0;
+	padding: 0;
+}
+
+.social-accounts ul ul li {
+	background: url(child-account-bullet.gif) no-repeat;
+	padding-left: 32px;
 }
 
 .social-accounts .social-accounts-item {
 	border-bottom: 1px solid #e5e5e5;
-	min-height: 30px;
-	line-height: 30px;
+	min-height: 32px;
+	line-height: 32px;
 	margin: 0;
-	padding: 5px 5px 5px 30px;
 	position: relative;
 }
+.social-accounts .social-accounts-item .social-accounts-item:last-child {
+	border-bottom: 0;
+}
+.social-accounts .social-accounts-item img {
+	position: absolute;
+}
+.social-accounts .social-accounts-item .name {
+	padding-left: 38px;
+}
+.social-accounts .social-accounts-item label {
+	display: block;
+	height: 32px;
+	line-height: 32px;
+	position: absolute;
+	top: 0;
+}
+.social-accounts .social-accounts-item label.default {
+	right: 100px;
+}
+.social-accounts .social-accounts-item label.enabled {
+	right: 8px;
+}
 
-.social-accounts a {
+.social-accounts .name a {
 	font-weight: bold;
 	text-decoration: none;
 }
@@ -157,22 +153,6 @@
 	top: -2px;
 }
 
-.social-accounts ul ul input {
-	margin-right: 5px;
-}
-
-.social-accounts .social-twitter-icon,
-.social-accounts .social-facebook-icon,
-.social-accounts .disconnect {
-	position: absolute;
-}
-
-.social-accounts .social-twitter-icon,
-.social-accounts .social-facebook-icon {
-	top: 12px;
-	left: 5px;
-}
-
 .social-accounts-item .name span {
 	position: relative;
 	top: -1px;
@@ -197,8 +177,12 @@
 }
 
 .social-accounts .disconnect {
-	top: 11px;
-	right: 5px;
+	display: block;
+	height: 32px;
+	line-height: 32px;
+	position: absolute;
+	right: 8px;
+	top: 0;
 }
 
 .social-broadcast-options .social-accounts ul {
@@ -238,38 +222,10 @@
 	top: -1px;
 }
 
-.social-broadcast-options .name span {
-	top: 0;
-}
-
-.social-broadcastables {
-	border-top: 1px solid #e5e5e5;
-	margin-bottom: 10px;
-}
-
-.social-broadcastables li {
-	margin-bottom: 0;
-}
-
-.social-broadcastable {
+.social-accounts-item.error .social-broadcast-editable span {
 	display: block;
-	height: 24px;
-	line-height: 24px;
-	padding: 5px 10px;
-	cursor: pointer;
-}
-
-.social-broadcastable:hover {
-	background: #eaf2f9;
-}
-
-.social-broadcastable img {
-	margin: 0 10px;
-}
-
-.social-broadcastable input,
-.social-broadcastable img {
-	vertical-align: middle;
+	font-size: 11px;
+	color: #f00;
 }
 
 #social-default-accounts .name span {
@@ -286,14 +242,12 @@
 
 .social-login {
 	display: inline-block;
-	margin: 2px;
 	width: 150px;
 	height: 22px;
 }
 
 .social-disconnect {
 	position: relative;
-	top: 2px;
 }
 
 .social-collapsible {
@@ -362,11 +316,12 @@
 .social-connect-button input,
 .social-connect-button label {
 	float: left;
-	margin: 8px 0 0 5px;
+	margin: 6px 0 0 10px;
+	line-height: 16px;
 }
 
 .social-connect-button label {
-	margin-top: 4px;
+	margin: 4px 0 0 4px;
 }
 
 .social-connect-button a {
@@ -647,4 +602,207 @@
 }
 .error ul.social-posting-errors li {
 	list-style: disc;
+}
+
+/* Interstitial */
+.social-broadcast-options section {
+	margin-bottom: 30px;
+}
+.broadcast-interstitial {
+}
+.broadcast-interstitial ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.broadcast-interstitial li.account {
+	border-bottom: 1px solid #ddd;
+	margin: 0 0 18px;
+	padding: 0 0 18px;
+	position: relative;
+}
+.broadcast-interstitial li.account:last-child {
+	border: 0;
+}
+.broadcast-interstitial li.account p.error {
+	background: #f00;
+	color: #fff;
+	font-size: 12px;
+	line-height: 120%;
+	margin: 0 0 0 20px;
+	padding: 5px 8px;
+	position: relative;
+}
+.broadcast-interstitial li.account label {
+	cursor: pointer;
+	display: block;
+	height: 32px;
+	left: 0;
+	position: absolute;
+	top: 5px;
+	width: 200px;
+}
+.broadcast-interstitial li.account label img {
+	position: absolute;
+}
+.broadcast-interstitial li.account label span {
+	display: block;
+	height: 32px;
+	line-height: 32px;
+	margin-left: 40px;
+}
+.broadcast-interstitial li.account .broadcast-content {
+	margin-left: 200px;
+	position: relative;
+}
+.broadcast-interstitial li.account .broadcast-content h3 {
+	color: #666;
+	font-size: 11px;
+	font-weight: normal;
+	margin: 0 0 0 27px;
+}
+.broadcast-interstitial ul.broadcasts {
+	margin-left: 27px;
+}
+.broadcast-interstitial ul.broadcasts li,
+.broadcast-interstitial ul.broadcasts li p {
+	font-size: 12px;
+}
+.broadcast-interstitial li.account .broadcast-edit {
+	padding-left: 20px;
+	position: relative;
+}
+.broadcast-interstitial li.account .broadcast-edit input[type="checkbox"] {
+	left: -5px;
+	position: absolute;
+	top: 7px;
+}
+.broadcast-interstitial li.account .broadcast-edit .readonly {
+	font-size: 16px;
+	line-height: 140%;
+	margin: 0;
+	opacity: .3;
+	padding: 6px 7px;
+	width: 90%;
+}
+.broadcast-interstitial li.account .broadcast-edit a.edit,
+.broadcast-interstitial li.account .broadcast-edit a.tweet-reply-link {
+	font-size: 12px;
+	line-height: 100%;
+	opacity: .3;
+	padding-left: 7px;
+}
+.broadcast-interstitial li.account .broadcast-edit textarea {
+	display: none;
+	font-size: 16px;
+	height: 70px;
+	line-height: 140%;
+	opacity: .3;
+	padding: 5px;
+	width: 90%;
+}
+.broadcast-interstitial li.account.twitter .broadcast-edit textarea {
+	margin-bottom: 5px;
+}
+.broadcast-interstitial li.account.facebook .broadcast-edit textarea {
+	height: 180px;
+}
+.broadcast-interstitial li.account .broadcast-edit .tweet-reply-fields {
+	display: none;
+	opacity: .3;
+	padding: 5px 0 0 7px;
+}
+.broadcast-interstitial li.account .broadcast-edit .tweet-reply-fields label {
+	color: #666;
+	font-size: 11px;
+	height: 15px;
+	position: relative;
+	top: 0;
+}
+.broadcast-interstitial li.account .broadcast-edit .tweet-reply-fields input {
+	padding: 5px;
+	width: 85%;
+}
+.broadcast-interstitial li.account .broadcast-edit .counter {
+	color: #999;
+	display: none;
+	font-size: 11px;
+	left: -35px;
+	opacity: .3;
+	position: absolute;
+	text-align: right;
+	top: 65px;
+	width: 50px;
+}
+.broadcast-interstitial li.account.facebook .broadcast-edit .counter {
+	top: 174px;
+}
+.broadcast-interstitial li.account .checked .readonly,
+.broadcast-interstitial li.account .checked a.edit,
+.broadcast-interstitial li.account .checked a.tweet-reply-link,
+.broadcast-interstitial li.account .checked textarea,
+.broadcast-interstitial li.account .checked .tweet-reply-fields,
+.broadcast-interstitial li.account .checked .counter,
+.broadcast-interstitial li.account .broadcast-edit:hover a.edit,
+.broadcast-interstitial li.account .broadcast-edit:hover a.tweet-reply-link {
+	opacity: 1;
+}
+.broadcast-interstitial li.account .broadcast-edit.edit .readonly,
+.broadcast-interstitial li.account .broadcast-edit.edit a.edit {
+	display: none;
+}
+.broadcast-interstitial li.account .broadcast-edit.edit textarea,
+.broadcast-interstitial li.account .broadcast-edit.edit .counter {
+	display: block;
+}
+.broadcast-interstitial p.step {
+	padding: 20px;
+	text-align: center;
+}
+.broadcast-interstitial p.step input {
+	margin-right: 5px;
+}
+
+.broadcast-interstitial li.account .broadcast-edit.edit .maxlength-remaining-short {
+	color: #900;
+}
+.broadcast-interstitial .facebook-link-preview {
+	border-left: 2px solid #ccc;
+	margin: 8px 0 0 27px;
+	padding: 0 0 0 10px;
+	position: relative;
+	width: 380px;
+}
+.broadcast-interstitial .facebook-link-preview.has-img {
+	border-left: 0;
+	min-height: 90px;
+	padding: 0;
+}
+.broadcast-interstitial .facebook-link-preview img {
+	height: 90px;
+	position: absolute;
+	width: 90px;
+}
+.broadcast-interstitial .facebook-link-preview h4,
+.broadcast-interstitial .facebook-link-preview h5,
+.broadcast-interstitial .facebook-link-preview p {
+	color: gray;
+	font: normal 11px "lucida grande",tahoma,verdana,arial,sans-serif;
+	line-height: 14px;
+	margin: 0;
+	padding: 0;
+}
+.broadcast-interstitial .facebook-link-preview.has-img h4,
+.broadcast-interstitial .facebook-link-preview.has-img h5,
+.broadcast-interstitial .facebook-link-preview.has-img p {
+	padding: 0 0 0 100px;
+}
+.broadcast-interstitial .facebook-link-preview h4,
+.broadcast-interstitial .facebook-link-preview h4 a,
+.broadcast-interstitial .facebook-link-preview h4 a:visited {
+	color: #3B5998;
+	font-weight: bold;
+}
+.broadcast-interstitial .facebook-link-preview p {
+	margin-top: 5px;
 }

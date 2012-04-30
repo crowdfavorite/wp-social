@@ -127,11 +127,12 @@ final class Social_Response {
 	 * @return string
 	 */
 	public function id() {
-		$body = $this->body();
-		if (isset($body->response)) {
-			return $body->response->{$this->_service->response_id_key()};
+		if ($body = $this->body()) {
+			if (isset($body->response) && isset($body->response->{$this->_service->response_id_key()})) {
+				return $body->response->{$this->_service->response_id_key()};
+			}
 		}
-		return 0;
+		return '0';
 	}
 
 	/**
@@ -140,7 +141,7 @@ final class Social_Response {
 	 * @return bool|object
 	 */
 	public function body() {
-		if (isset($this->_request['body']) and isset($this->_request['body'])) {
+		if (isset($this->_request['body'])) {
 			return $this->_request['body'];
 		}
 

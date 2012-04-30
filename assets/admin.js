@@ -8,39 +8,6 @@
 			});
 		});
 
-		function counter($object, $counter, max) {
-			var content = $object.val();
-			$counter.html(max - content.length);
-
-			var counter = parseFloat($counter.html());
-			$counter.removeClass('social-counter-limit');
-			if (counter <= 10) {
-				$counter.addClass('social-counter-limit');
-			}
-		}
-
-		/**
-		 * Post Meta Box
-		 */
-		$('#social_meta_broadcast .social-toggle').click(function() {
-			var $target = $(this).parent().find('.form-wrap');
-			var $textarea = $target.find('textarea');
-
-			if ($(this).val() == '1') {
-				$target.slideDown();
-			} else {
-				$textarea.html('');
-				$target.slideUp();
-			}
-		});
-
-		$('textarea[id$="_preview"]').bind('change keyup paste', function() {
-			if (typeof maxLength != 'undefined') {
-				var id = $(this).attr('id').split('_');
-				counter($(this), $('#' + id[0] + '_counter'), maxLength[id[0]]);
-			}
-		});
-
 		/**
 		 * Import from URL
 		 */
@@ -65,9 +32,9 @@
 					$('input[name=source_url]').removeAttr('disabled').val('');
 					$this.removeAttr('disabled');
 					if (response == 'protected') {
-						$('#social-import-error').html('Protected Tweet').fadeIn();
+						$('#social-import-error').html(socialAdminL10n.protectedTweet).fadeIn();
 					} else if (response == 'invalid') {
-						$('#social-import-error').html('Invalid URL.').fadeIn();
+						$('#social-import-error').html(socialAdminL10n.invalidUrl).fadeIn();
 					} else {
 						$('#aggregation_log').hide().html(response).find('.parent:not(:first)').hide().end().fadeIn();
 					}
@@ -177,79 +144,63 @@
 				$this.parent().parent().fadeOut();
 			});
 		});
-
+		
 		/**
 		 * Facebook Pages support
 		 */
-		var originalHref = '';
-		$('#social-facebook-pages').click(function(){
-			var href = $('#facebook_signin').attr('href');
-
-			if (originalHref == '') {
-				originalHref = href;
+		$('#social-facebook-pages').click(function() {
+			var href = $(this).data('href');
+			if (typeof href == 'undefined') {
+				href = $('#facebook_signin').attr('href');
+				$(this).data('href', href);
 			}
-
 			if ($(this).is(':checked')) {
 				href += '&use_pages=true';
 			}
-			else {
-				href = originalHref;
-			}
-
 			$('#facebook_signin').attr('href', href);
 		});
 
-		$('.social-manage-facebook-pages').click(function(e){
+		$('.broadcast-interstitial .broadcast-edit a.edit').click(function(e) {
+			$(this).closest('.broadcast-edit').addClass('edit')
+				.find('input[type="checkbox"]').prop('checked', true).change().end()
+				.find('textarea').focus().select();
 			e.preventDefault();
-
-			var $this = $(this);
-			var $parent = $this.closest('.social-accounts-item');
-			var $spinner = $parent.find('.social-facebook-pages-spinner');
-			$this.hide();
-			$spinner.fadeIn();
-
-			$.get($this.attr('href'), {}, function(data){
-				$spinner.hide();
-				if (data.result == 'success') {
-					var slide = false;
-					var $output = $parent.find('.social-facebook-pages');
-					if ($output.is(':visible')) {
-						$output.hide();
-					}
-					else {
-						slide = true;
-					}
-
-					$output.html(data.html);
-					if (slide) {
-						$output.slideDown();
-					}
-					else {
-						$output.fadeIn();
-					}
-
-					$this.parent().hide();
-				}
-				else {
-					$spinner.hide();
-					$this.parent().html(' - '+data.html).fadeIn();
-				}
-			}, 'json');
+		});
+		
+		$('.broadcast-interstitial li.account input[type="checkbox"]').change(function() {
+			var $parent = $(this).closest('.broadcast-edit');
+			if ($(this).is(':checked')) {
+				$parent.addClass('checked').find('textarea:visible').focus().select();
+			}
+			else {
+				$parent.removeClass('checked');
+			}
 		});
 
-		$('#social-accounts .social-facebook-pages input[type=checkbox]').live('change', function(){
-			var $parent = $(this).closest('.social-accounts-item');
-			var data = { 'page_ids[]' : [] };
-			$parent.find('input[type=checkbox]:checked').each(function(){
-				data['page_ids[]'].push($(this).val());
+		$('.broadcast-interstitial .broadcast-edit textarea').on('keyup change click focus', function() {
+			$counter = $(this).closest('.broadcast-edit').find('.counter');
+			var diff = parseInt($(this).attr('maxlength')) - parseInt($(this).val().length),
+				diffClass = '';
+			if (diff < 10) {
+				diffClass = 'maxlength-remaining-short';
+			}
+			$counter.removeClass('maxlength-remaining-short').addClass(diffClass).html(diff);
+		}).change();
+		
+		$('.broadcast-interstitial .broadcast-edit a.tweet-reply-link').click(function() {
+			$(this).hide().closest('.broadcast-edit')
+				.find('input[type="checkbox"]').prop('checked', true).change().end()
+				.find('.tweet-reply-fields').show().find(':input').focus();
+			e.preventDefault();
+		});
+
+		$('body.clean ul.accounts li.proto .broadcast-edit textarea').on('keyup change click focus', function() {
+			var val = $(this).val();
+			$(this).closest('ul.accounts').find('.broadcast-edit').not('.edit').each(function() {
+				$(this).find('.readonly').text(val).end()
+					.find('textarea').val(val);
 			});
-			$.post($parent.find('input[name=social_save_url]').val(), data);
 		});
 
-		$('.social-show-facebook-pages').click(function(e){
-			e.preventDefault();
-			$(this).parent().hide();
-			$(this).closest('.social-accounts-item').find('.social-facebook-pages').slideDown();
-		});
 	});
 })(jQuery);
