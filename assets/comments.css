@@ -645,6 +645,7 @@ override submit styles in TwentyEleven theme */
 	font-size: 12px;
 	min-height: 18px;
 	opacity: .3;
+	padding-left: 35px;
 }
 
 #social .social-facebook-like {
@@ -679,7 +680,6 @@ override submit styles in TwentyEleven theme */
 #social .social-comment-collapse > .social-comment-inner > .social-comment-header > .social-comment-author img {
 	width: 16px;
 	height: 16px;
-	left: 15px;
 	top: -1px;
 }
 
