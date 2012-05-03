@@ -75,7 +75,7 @@ final class Social_Facebook {
 			if ($image !== null) {
 				$size = esc_attr($size);
 				$type = esc_attr($comment->comment_type);
-				return "<img alt='{$alt}' src='{$image}' class='avatar avatar-{$size} photo {$type}' height='25' width='25' />";
+				return '<img alt="'.$alt.'" src="'.$image.'" class="avatar avatar-'.$size.' photo '.$type.'" height="'.$size.'" width="'.$size.'" />';
 			}
 		}
 		return $avatar;
