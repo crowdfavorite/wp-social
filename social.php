@@ -1378,7 +1378,7 @@ final class Social {
 							if ($comment->comment_approved == '0') {
 								update_comment_meta($comment_ID, 'social_to_broadcast', $_POST['social_post_account']);
 								if (!empty($in_reply_to_status_id)) {
-									update_comment_meta($comment_ID, 'social_in_reply_to_status_id', $in_reply_to_status_id);
+									update_comment_meta($comment_ID, 'social_in_reply_to_status_id', addslashes_deep($in_reply_to_status_id));
 								}
 							}
 							else {
@@ -1402,15 +1402,15 @@ final class Social {
 								", 'social-'.$service->key(), $comment_ID));
 
 								$this->set_comment_aggregated_id($comment_ID, $service->key(), $response->id());
-								update_comment_meta($comment_ID, 'social_status_id', $response->id());
-								update_comment_meta($comment_ID, 'social_raw_data', base64_encode(json_encode($response->body()->response)));
+								update_comment_meta($comment_ID, 'social_status_id', addslashes_deep($response->id()));
+								update_comment_meta($comment_ID, 'social_raw_data', addslashes_deep(base64_encode(json_encode($response->body()->response))));
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', 'social'), $comment_ID, $service->title(), $account->id()));
 							}
 						}
 
-						update_comment_meta($comment_ID, 'social_account_id', $account_id);
-						update_comment_meta($comment_ID, 'social_profile_image_url', $account->avatar());
-						update_comment_meta($comment_ID, 'social_comment_type', 'social-'.$service->key());
+						update_comment_meta($comment_ID, 'social_account_id', addslashes_deep($account_id));
+						update_comment_meta($comment_ID, 'social_profile_image_url', addslashes_deep($account->avatar()));
+						update_comment_meta($comment_ID, 'social_comment_type', addslashes_deep('social-'.$service->key()));
 
 						if ($comment->user_id != '0') {
 							$comment->comment_author = $account->name();
@@ -1490,8 +1490,8 @@ final class Social {
 								", 'social-'.$service->key(), $comment_id));
 
 								$this->set_comment_aggregated_id($comment_id, $service->key(), $response->id());
-								update_comment_meta($comment_id, 'social_status_id', $response->id());
-								update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($response->body()->response)));
+								update_comment_meta($comment_id, 'social_status_id', addslashes_deep($response->id()));
+								update_comment_meta($comment_id, 'social_raw_data', addslashes_deep(base64_encode(json_encode($response->body()->response))));
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', 'social'), $comment_id, $service->title(), $account->id()));
 							}
 						}
