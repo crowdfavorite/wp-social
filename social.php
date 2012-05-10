@@ -743,7 +743,7 @@ final class Social {
 	 * @return array
 	 */
 	public static function broadcasting_enabled_post_types() {
-		return apply_filters('social_broadcasting_enabled_post_types', array('post'));
+		return apply_filters('social_broadcasting_enabled_post_types', get_post_types(array('public' => true, 'hierarchical' => false), 'names'));
 	}
 	
 	/**
