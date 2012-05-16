@@ -162,6 +162,9 @@ final class Social_Controller_Settings extends Social_Controller {
 	 * @return void
 	 */
 	public function action_regenerate_api_key() {
+
+		$this->verify_nonce();
+
 		if (!$this->request->is_ajax()) {
 			wp_die('Oops, this method can only be accessed via an AJAX request.');
 		}
