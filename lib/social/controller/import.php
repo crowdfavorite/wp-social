@@ -13,6 +13,9 @@ final class Social_Controller_Import extends Social_Controller {
 	 * @return void
 	 */
 	public function action_from_url() {
+
+		$this->verify_nonce();
+
 		Social::log('Import tweet by URL started.');
 
 		$service = $this->social->service('twitter');
