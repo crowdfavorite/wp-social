@@ -5,6 +5,17 @@
  */
 final class Social_Controller_Auth extends Social_Controller {
 
+	private function auth_nonce_key($salt = null) {
+		if (is_null($salt)) {
+			$salt = $this->auth_nonce_salt();
+		}
+		return md5('social_authentication'.AUTH_KEY.$salt);
+	}
+	
+	private function auth_nonce_salt() {
+		return md5(microtime().$_SERVER['SERVER_ADDR']);
+	}
+
 	/**
 	 * Sets the nonce cookie then redirects to Sopresto.
 	 *
@@ -13,11 +24,13 @@ final class Social_Controller_Auth extends Social_Controller {
 	public function action_authorize() {
 		$proxy = urldecode($this->request->query('target'));
 		if (strpos($proxy, Social::$api_url) !== false) {
-			$id = wp_create_nonce('social_authentication');
+			$salt = $this->auth_nonce_salt();
+			$id = wp_create_nonce($this->auth_nonce_key($salt));
 			$url = home_url('index.php');
 			$args = array(
 				'social_controller' => 'auth',
 				'social_action' => 'authorized',
+				'salt' => $salt,
 			);
 
 			if (is_admin()) {
@@ -58,14 +71,15 @@ final class Social_Controller_Auth extends Social_Controller {
 	 * @return void
 	 */
 	public function action_authorized() {
-		// User ID on the request?
-		$user_id = $this->request->query('user_id');
+		// User ID on the request? Must be set before nonce comparison
+		$user_id = stripslashes($this->request->query('user_id'));
 		if ($user_id !== null) {
 			wp_set_current_user($user_id);
 		}
 
-		$nonce = $this->request->post('id');
-		if (wp_verify_nonce($nonce, 'social_authentication') === false) {
+		$nonce = stripslashes($this->request->post('id'));
+		$salt = stripslashes($this->request->query('salt'));
+		if (wp_verify_nonce($nonce, $this->auth_nonce_key($salt)) === false) {
 			Social::log('Failed to verify authentication nonce.');
 			echo json_encode(array(
 				'result' => 'error',
@@ -195,18 +209,19 @@ final class Social_Controller_Auth extends Social_Controller {
 		}
 
 		if (isset($_COOKIE['social_auth_nonce']) and wp_verify_nonce($_COOKIE['social_auth_nonce'], 'social_authentication')) {
+			$cookie_nonce = stripslashes($_COOKIE['social_auth_nonce']);
 			// Find the user by NONCE.
 			global $wpdb;
 			$user_id = $wpdb->get_var($wpdb->prepare("
 				SELECT user_id
 				  FROM $wpdb->usermeta
 				 WHERE meta_key = %s
-			", 'social_auth_nonce_'.$_COOKIE['social_auth_nonce']));
+			", 'social_auth_nonce_'.$cookie_nonce));
 
 			if ($user_id !== null) {
 				Social::log('Found user #:id using nonce :nonce.', array(
 					'id' => $user_id,
-					'nonce' => $_COOKIE['social_auth_nonce']
+					'nonce' => $cookie_nonce
 				));
 
 				// Log the user in
@@ -215,7 +230,7 @@ final class Social_Controller_Auth extends Social_Controller {
 				wp_set_auth_cookie($user_id, true);
 				remove_filter('auth_cookie_expiration', array($this->social, 'auth_cookie_expiration'));
 
-				delete_user_meta($user_id, 'social_auth_nonce_'.stripslashes($_COOKIE['social_auth_nonce']));
+				delete_user_meta($user_id, 'social_auth_nonce_'.$cookie_nonce));
 				setcookie('social_auth_nonce', '', -3600, '/');
 
 				$post_id = $this->request->query('post_id');
