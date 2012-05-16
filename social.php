@@ -1619,13 +1619,14 @@ final class Social {
 			// Social items?
 			if (!empty($comment->social_items)) {
 				if (is_object($service) && method_exists($service, 'key')) {
+					$avatar_size = apply_filters('social_items_avatar_size', array(
+						'width' => 18,
+						'height' => 18,
+					));
 					$social_items = Social_View::factory('comment/social_item', array(
 						'items' => $comment->social_items,
 						'service' => $service,
-						'avatar_size' => array(
-							'width' => 18,
-							'height' => 18,
-						)
+						'avatar_size' => $avatar_size
 					));
 				}
 				else {
