@@ -116,6 +116,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 												}
 		
 												$account_content_meta[$key][$page_id] = $account_content[$key][$page_id];
+												$account_service_meta[$key][$page_id] = $service->get_broadcast_extras($page_id, $post);
 											}
 										}
 									}
