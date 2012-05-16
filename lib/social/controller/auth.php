@@ -208,7 +208,7 @@ final class Social_Controller_Auth extends Social_Controller {
 			exit;
 		}
 
-		if (isset($_COOKIE['social_auth_nonce']) and wp_verify_nonce($_COOKIE['social_auth_nonce'], 'social_authentication')) {
+		if (isset($_COOKIE['social_auth_nonce'])) {
 			$cookie_nonce = stripslashes($_COOKIE['social_auth_nonce']);
 			// Find the user by NONCE.
 			global $wpdb;
