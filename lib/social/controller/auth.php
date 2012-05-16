@@ -230,7 +230,7 @@ final class Social_Controller_Auth extends Social_Controller {
 				wp_set_auth_cookie($user_id, true);
 				remove_filter('auth_cookie_expiration', array($this->social, 'auth_cookie_expiration'));
 
-				delete_user_meta($user_id, 'social_auth_nonce_'.$cookie_nonce));
+				delete_user_meta($user_id, 'social_auth_nonce_'.$cookie_nonce);
 				setcookie('social_auth_nonce', '', -3600, '/');
 
 				$post_id = $this->request->query('post_id');
