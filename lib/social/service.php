@@ -140,11 +140,17 @@ abstract class Social_Service {
 	 */
 	public function create_user($account, $nonce = null) {
 		$username = $account->username();
-		$username = str_replace(' ', '_', $username);
+		$username = sanitize_user($username, true);
 		if (!empty($username)) {
 			$user = get_user_by('login', $this->_key.'_'.$username);
 			if ($user === false) {
 				$id = wp_create_user($this->_key.'_'.$username, wp_generate_password(20, false), $this->_key.'.'.$username.'@example.com');
+				if (is_wp_error($id)) {
+					Social::log('Failed to create/find user with username of :username.', array(
+						'username' => $username,
+					));
+					return false;
+				}
 
 				$role = '';
 				if (get_option('users_can_register') == '1') {

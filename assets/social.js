@@ -9,14 +9,12 @@
 	c.className += ' social-js';
 
 	$(function() {
-		var $window = null;
-		var $auth_window = null;
-		var auth_poll = null;
 		$('.social-login').click(function(e) {
 			e.preventDefault();
 
-			$window = $(this);
-			$auth_window = window.open($(this).attr('href'), "ServiceAssociate", 'width=700,height=400');
+			var $window = $(this),
+				$auth_window = window.open($(this).attr('href'), "ServiceAssociate", 'width=700,height=400'),
+				auth_poll = null;
 
 			auth_poll = setInterval(function() {
 				if ($auth_window.closed) {
