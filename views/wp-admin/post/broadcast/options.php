@@ -5,10 +5,10 @@
 	<title><?php _e('Social Broadcasts', 'social'); ?></title>
 <?php
 wp_admin_css('install', true);
-// Need to do this because we are enqueuing some styles for the admin in social.php
-do_action('admin_enqueue_scripts');
-do_action('admin_print_styles');
+$social = Social::instance();
+$social->admin_enqueue_assets();
 ?>
+	<link rel="stylesheet" id="social-css" href="<?php echo esc_url(SOCIAL_ADMIN_CSS); ?>" type="text/css" media="all" />
 </head>
 <body class="<?php echo esc_attr($clean); ?>">
 <h1 id="logo"><?php _e('Social Broadcasts', 'social'); ?></h1>
