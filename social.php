@@ -1779,6 +1779,7 @@ var socialAdminBarMsgs = {
 
 		$upgrades = array(
 			Social::$plugins_path.'upgrades/2.0.php',
+			Social::$plugins_path.'upgrades/2.5.php',
 		);
 		$upgrades = apply_filters('social_upgrade_files', $upgrades);
 		foreach ($upgrades as $file) {
