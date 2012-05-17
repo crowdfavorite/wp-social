@@ -266,6 +266,7 @@ Social supports the [Lazy Load plugin](http://wordpress.org/extend/plugins/lazy-
 
 4. View of replies imported from Twitter as comments, @anywhere support 
 
+
 == Upgrade Notice ==
 
 = 2.5 =
