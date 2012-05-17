@@ -8,7 +8,7 @@
 				++$i;
 			}
 
-			if ($i >= 10) {
+			if ($i > 10) {
 				printf(__('<a href="%s" class="social-items-and-more">... and %s more</a>', 'social'), '#', ($i - 10));
 			}
 		?>

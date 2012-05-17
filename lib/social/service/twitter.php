@@ -269,9 +269,9 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 					{
 						$comment_id = wp_insert_comment($commentdata);
 
-						update_comment_meta($comment_id, 'social_account_id', $result->from_user_id);
-						update_comment_meta($comment_id, 'social_profile_image_url', $result->profile_image_url);
-						update_comment_meta($comment_id, 'social_status_id', $result->id);
+						update_comment_meta($comment_id, 'social_account_id', addslashes_deep($result->from_user_id));
+						update_comment_meta($comment_id, 'social_profile_image_url', addslashes_deep($result->profile_image_url));
+						update_comment_meta($comment_id, 'social_status_id', addslashes_deep($result->id));
 
 						// Attempt to see if the comment is in response to an existing Tweet.
 						if (!isset($result->in_reply_to_status_id)) {
@@ -289,13 +289,13 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						}
 
 						if (isset($result->in_reply_to_status_id)) {
-							update_comment_meta($comment_id, 'social_in_reply_to_status_id', $result->in_reply_to_status_id);
+							update_comment_meta($comment_id, 'social_in_reply_to_status_id', addslashes_deep($result->in_reply_to_status_id));
 						}
 
 						if (!isset($result->raw)) {
 							$result = (object) array_merge((array) $result, array('raw' => $result));
 						}
-						update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($result->raw)));
+						update_comment_meta($comment_id, 'social_raw_data', addslashes_deep(base64_encode(json_encode($result->raw))));
 
 						if ($commentdata['comment_approved'] !== 'spam') {
 							if ($commentdata['comment_approved'] == '0') {

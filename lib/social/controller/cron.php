@@ -24,9 +24,8 @@ final class Social_Controller_CRON extends Social_Controller {
 					wp_die('Oops, you have provided an invalid API key.');
 				}
 			}
-			else if (!$this->nonce_verified) {
-				Social::log('Nonce failed');
-				wp_die('Oops, invalid request.');
+			else {
+				$this->verify_nonce();
 			}
 		}
 	}

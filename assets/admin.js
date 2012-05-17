@@ -187,7 +187,7 @@
 			$counter.removeClass('maxlength-remaining-short').addClass(diffClass).html(diff);
 		}).change();
 		
-		$('.broadcast-interstitial .broadcast-edit a.tweet-reply-link').click(function() {
+		$('.broadcast-interstitial .broadcast-edit a.tweet-reply-link').click(function(e) {
 			$(this).hide().closest('.broadcast-edit')
 				.find('input[type="checkbox"]').prop('checked', true).change().end()
 				.find('.tweet-reply-fields').show().find(':input').focus();

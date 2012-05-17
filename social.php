@@ -3,7 +3,7 @@
 Plugin Name: Social
 Plugin URI: http://mailchimp.com/social-plugin-for-wordpress/
 Description: Broadcast newly published posts and pull in discussions using integrations with Twitter and Facebook. Brought to you by <a href="http://mailchimp.com">MailChimp</a>.
-Version: 2.5b1
+Version: 2.5b2
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com/
 */
@@ -25,7 +25,7 @@ final class Social {
 	/**
 	 * @var  string  version number
 	 */
-	public static $version = '2.5b1';
+	public static $version = '2.5b2';
 
 	/**
 	 * @var  string  CRON lock directory.
@@ -570,7 +570,7 @@ final class Social {
 		if (current_user_can('manage_options') or current_user_can('publish_posts')) {
 			// Upgrade notice
 			if (version_compare(Social::option('installed_version'), Social::$version, '<')) {
-				$message = sprintf(__('Social requires an upgrade. Please <a href="%s">click here</a> to upgrade.', 'social'), esc_url(Social::settings_url()));
+				$message = sprintf(__('Social is shiny and new! Please <a href="%s">verify and save your settings</a> to complete the upgrade.', 'social'), esc_url(Social::settings_url()));
 				echo '<div class="error"><p>'.$message.'</p></div>';
 			}
 
@@ -743,7 +743,10 @@ final class Social {
 	 * @return array
 	 */
 	public static function broadcasting_enabled_post_types() {
-		return apply_filters('social_broadcasting_enabled_post_types', array('post'));
+		return apply_filters('social_broadcasting_enabled_post_types', get_post_types(array(
+			'public' => true,
+			'hierarchical' => false
+		)));
 	}
 	
 	/**
@@ -1378,7 +1381,7 @@ final class Social {
 							if ($comment->comment_approved == '0') {
 								update_comment_meta($comment_ID, 'social_to_broadcast', $_POST['social_post_account']);
 								if (!empty($in_reply_to_status_id)) {
-									update_comment_meta($comment_ID, 'social_in_reply_to_status_id', $in_reply_to_status_id);
+									update_comment_meta($comment_ID, 'social_in_reply_to_status_id', addslashes_deep($in_reply_to_status_id));
 								}
 							}
 							else {
@@ -1402,15 +1405,15 @@ final class Social {
 								", 'social-'.$service->key(), $comment_ID));
 
 								$this->set_comment_aggregated_id($comment_ID, $service->key(), $response->id());
-								update_comment_meta($comment_ID, 'social_status_id', $response->id());
-								update_comment_meta($comment_ID, 'social_raw_data', base64_encode(json_encode($response->body()->response)));
+								update_comment_meta($comment_ID, 'social_status_id', addslashes_deep($response->id()));
+								update_comment_meta($comment_ID, 'social_raw_data', addslashes_deep(base64_encode(json_encode($response->body()->response))));
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', 'social'), $comment_ID, $service->title(), $account->id()));
 							}
 						}
 
-						update_comment_meta($comment_ID, 'social_account_id', $account_id);
-						update_comment_meta($comment_ID, 'social_profile_image_url', $account->avatar());
-						update_comment_meta($comment_ID, 'social_comment_type', 'social-'.$service->key());
+						update_comment_meta($comment_ID, 'social_account_id', addslashes_deep($account_id));
+						update_comment_meta($comment_ID, 'social_profile_image_url', addslashes_deep($account->avatar()));
+						update_comment_meta($comment_ID, 'social_comment_type', addslashes_deep('social-'.$service->key()));
 
 						if ($comment->user_id != '0') {
 							$comment->comment_author = $account->name();
@@ -1490,8 +1493,8 @@ final class Social {
 								", 'social-'.$service->key(), $comment_id));
 
 								$this->set_comment_aggregated_id($comment_id, $service->key(), $response->id());
-								update_comment_meta($comment_id, 'social_status_id', $response->id());
-								update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($response->body()->response)));
+								update_comment_meta($comment_id, 'social_status_id', addslashes_deep($response->id()));
+								update_comment_meta($comment_id, 'social_raw_data', addslashes_deep(base64_encode(json_encode($response->body()->response))));
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', 'social'), $comment_id, $service->title(), $account->id()));
 							}
 						}
@@ -1616,13 +1619,14 @@ final class Social {
 			// Social items?
 			if (!empty($comment->social_items)) {
 				if (is_object($service) && method_exists($service, 'key')) {
+					$avatar_size = apply_filters('social_items_avatar_size', array(
+						'width' => 18,
+						'height' => 18,
+					));
 					$social_items = Social_View::factory('comment/social_item', array(
 						'items' => $comment->social_items,
 						'service' => $service,
-						'avatar_size' => array(
-							'width' => 18,
-							'height' => 18,
-						)
+						'avatar_size' => $avatar_size
 					));
 				}
 				else {

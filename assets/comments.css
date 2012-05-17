@@ -477,7 +477,7 @@ override submit styles in TwentyEleven theme */
 }
 
 #social .social-comment-header .avatar {
-	left: -50px;
+	left: 0px;
 	position: absolute;
 	/**
 	 * Align with visual text top
@@ -497,9 +497,15 @@ override submit styles in TwentyEleven theme */
 
 #social .social-comment-inner {
 	margin-right: 10px;
-	padding: 7px 0 0 60px;
+	padding: 7px 0 0 10px;
 	position: relative;
 	zoom: 1;
+}
+
+#social .social-comment-header,
+#social .social-comment-body,
+#social .social-comment-entry-meta {
+	padding-left: 50px;
 }
 
 #social .social-comment-body {
@@ -580,6 +586,7 @@ override submit styles in TwentyEleven theme */
 
 #social .social-comment-meta .social-posted-from a,
 #social .social-comment-meta .social-posted-from {
+	display: block;
 	position: absolute;
 	right: 0;
 	width: 16px;
@@ -635,8 +642,10 @@ override submit styles in TwentyEleven theme */
 #social .social-comment-collapse > .social-comment-inner > .social-comment-header,
 #social .social-comment-collapse.social-facebook-like > .social-comment-inner > .social-comment-body {
 	filter: alpha(opacity = 30);
-	opacity: .3;
 	font-size: 12px;
+	min-height: 18px;
+	opacity: .3;
+	padding-left: 35px;
 }
 
 #social .social-facebook-like {
@@ -671,7 +680,6 @@ override submit styles in TwentyEleven theme */
 #social .social-comment-collapse > .social-comment-inner > .social-comment-header > .social-comment-author img {
 	width: 16px;
 	height: 16px;
-	left: -35px;
 	top: -1px;
 }
 

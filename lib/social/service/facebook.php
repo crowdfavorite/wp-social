@@ -377,14 +377,14 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				{
 					$comment_id = wp_insert_comment($commentdata);
 
-					update_comment_meta($comment_id, 'social_account_id', $user_id);
-					update_comment_meta($comment_id, 'social_profile_image_url', 'http://graph.facebook.com/'.$user_id.'/picture');
-					update_comment_meta($comment_id, 'social_status_id', (isset($result->status_id) ? $result->status_id : $result->id));
+					update_comment_meta($comment_id, 'social_account_id', addslashes_deep($user_id));
+					update_comment_meta($comment_id, 'social_profile_image_url', addslashes_deep('http://graph.facebook.com/'.$user_id.'/picture'));
+					update_comment_meta($comment_id, 'social_status_id', addslashes_deep((isset($result->status_id) ? $result->status_id : $result->id)));
 
 					if (!isset($result->raw)) {
 						$result = (object) array_merge((array) $result, array('raw' => $result));
 					}
-					update_comment_meta($comment_id, 'social_raw_data', base64_encode(json_encode($result->raw)));
+					update_comment_meta($comment_id, 'social_raw_data', addslashes_deep(base64_encode(json_encode($result->raw))));
 
 					if ($commentdata['comment_approved'] !== 'spam') {
 						if ($commentdata['comment_approved'] == '0') {

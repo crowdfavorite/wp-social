@@ -13,6 +13,9 @@ final class Social_Controller_Aggregation extends Social_Controller {
 	 * @return void
 	 */
 	public function action_run() {
+
+		$this->verify_nonce();
+
 		$fetch = Social::option('fetch_comments');
 		if (empty($fetch)) {
 			Social::log('Aggregation has been disabled, exiting.');
@@ -178,6 +181,9 @@ final class Social_Controller_Aggregation extends Social_Controller {
 	 * @return void
 	 */
 	public function action_retrieve_twitter_content() {
+
+		$this->verify_nonce();
+
 		$broadcasted_id = $this->request->query('broadcasted_id');
 		if ($broadcasted_id === null) {
 			exit;
