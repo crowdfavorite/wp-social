@@ -570,7 +570,7 @@ final class Social {
 		if (current_user_can('manage_options') or current_user_can('publish_posts')) {
 			// Upgrade notice
 			if (version_compare(Social::option('installed_version'), Social::$version, '<')) {
-				$message = sprintf(__('Social requires an upgrade. Please <a href="%s">click here</a> to upgrade.', 'social'), esc_url(Social::settings_url()));
+				$message = sprintf(__('Social is shiny and new! Please <a href="%s">verify and save your settings</a> to complete the upgrade.', 'social'), esc_url(Social::settings_url()));
 				echo '<div class="error"><p>'.$message.'</p></div>';
 			}
 
