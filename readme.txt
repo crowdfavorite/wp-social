@@ -1,11 +1,13 @@
 === Social ===
 Contributors: crowdfavorite, alexkingorg
-Tags: comments, facebook, twitter
+Tags: comments, facebook, twitter, social, broadcast, import, integrate, integration
 Requires at least: 3.2
-Tested up to: 3.3.1
-Stable tag: 2.0.1
+Tested up to: 3.3.2
+Stable tag: 2.5
+License: GPLv2
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Broadcast posts to Twitter and/or Facebook, pull in items from each as comments, and allow commenters to use their Twitter/Facebook identities.
+Broadcast posts to Twitter and/or Facebook, pull in reactions from each (replies, retweets, comments, "likes") as comments, and allow commenters to log in with their Twitter/Facebook identities.
 
 == Description ==
 
@@ -270,10 +272,32 @@ Social supports the [Lazy Load plugin](http://wordpress.org/extend/plugins/lazy-
 
 4. View of replies imported from Twitter as comments, @anywhere support 
 
+== Upgrade Notice ==
+
+= 2.5 =
+This version fixes an issue where users could be authenticated incorrectly (they would be logged in as someone else) when more than one user was logging in at exactly the same time.
+
 == Changelog ==
 
 = 2.5 =
-* TODO
+* Fix race condition that could cause users to be authenticated as the wrong user when both requests happened simultaneously.
+* Improve Facebook posting (post links with comments and broadcasts, except for status posts)
+* Improve Social as a platform (can disable broadcasting, comment display, comment importing, "add an account" alert is dismissable)
+* Revise broadcasting screen to allow sending different messages to each account
+* Revise account management UI
+* Add a Manual Tweet Import field on the front-end (via admin bar)
+* Twitter search expanded to receive 100 results per request
+* Import replies via Twitter to broadcasted comments (if found)
+* Automatically select proper social account when replying to a comment
+* When posting a comment back to Facebook, attempt to reply in an existing comment thread where appropriate
+* Automatically check the "broadcast" box when replying to a social comment and authenticated as a user on the same social network
+* Don't include Retweet and Like comments in comment RSS/Atom feeds
+* Improved relative date functions for comments (3 months ago, etc.)
+* Support lazy loading of avatars (via plugin)
+* Change comment header title based on context (creating a new comment, replying to a comment, etc.)
+* Fix issue causing reactions to Facebook broadcasts to not be imported consistently as comments 
+* Various bug fixes and improvements
+
 
 = 2.0.1 =
 * Localization fixes (props thomasclausen)
