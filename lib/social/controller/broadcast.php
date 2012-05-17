@@ -355,13 +355,12 @@ final class Social_Controller_Broadcast extends Social_Controller {
 
 		// check to see if we have any previous broadcasts or saved content
 		$previous_activity = 0;
-
 		foreach ($_services as $key => $accounts) {
 			$broadcast_default = $services[$key]->format_content($post, Social::option('broadcast_format'));
 // set content format and checked status for each
 			foreach ($accounts as $id => $data) {
 				$previous_activity += count($data['broadcasts']);
-//  check for error - populate with previouly posted content
+// check for error - populate with previouly posted content
 				if (count($errors)) {
 					$content = stripslashes($_POST['social_account_content'][$key][$id]);
 					$checked = (
@@ -369,6 +368,18 @@ final class Social_Controller_Broadcast extends Social_Controller {
 						isset($_POST['social_accounts'][$key]) && 
 						in_array($data['field_value_checked'], $_POST['social_accounts'][$key])
 					);
+					// TODO - Facebook pages check, abstract this
+					if (!$checked && $key == 'facebook') {
+						if (isset($_POST['social_facebook_pages']) &&
+							is_array($_POST['social_facebook_pages'])) {
+							foreach ($_POST['social_facebook_pages'] as $account) {
+								if (in_array($data['field_value_checked'], $account)) {
+									$checked = true;
+									break;
+								}
+							}
+						}
+					}
 				}
 // use defaults or saved broadcast info
 				else {
