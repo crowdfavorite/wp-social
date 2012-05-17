@@ -52,12 +52,6 @@ Please [fork, contribute and file technical bugs on GitHub](https://github.com/c
 5. Make sure your plugin or uploads directory writable to allow the cron jobs to fetch new comments from Twitter and Facebook
 6. (Optional) Register for and add your [Twitter @anywhere API key](http://dev.twitter.com/anywhere) to the settings page to enable Twitter hovercards
 
-== Upgrade Notice ==
-
-Social 2.0 is a ground-up rewrite from 1.x and a highly recommended upgrade for all users. Enhancements include posting to Facebook Pages, bringing in Facebook Likes, improved Retweet comment display and numerous bug fixes and changes to increase reliability.
-
-If you have customized your Social comment templates or CSS, please refer to the [Upgrade Guide on GitHub](https://github.com/crowdfavorite/wp-social/wiki/Upgrading-from-1.x-to-2.0).
-
 == Frequently Asked Questions ==
 
 = Who created this plugin? =
@@ -275,7 +269,7 @@ Social supports the [Lazy Load plugin](http://wordpress.org/extend/plugins/lazy-
 == Upgrade Notice ==
 
 = 2.5 =
-This version fixes an issue where users could be authenticated incorrectly (they would be logged in as someone else) when more than one user was logging in at exactly the same time.
+This version fixes an issue where users could be authenticated incorrectly (they would be logged in as someone else) when more than one user was logging in at exactly the same time. We also added a bunch of great new features and enhancements, as well as changes to improve reliability.
 
 == Changelog ==
 
