@@ -1619,7 +1619,7 @@ final class Social {
 			// Social items?
 			if (!empty($comment->social_items)) {
 				if (is_object($service) && method_exists($service, 'key')) {
-					$avatar_size = apply_filters('social_items_avatar_size', array(
+					$avatar_size = apply_filters('social_items_comment_avatar_size', array(
 						'width' => 18,
 						'height' => 18,
 					));
