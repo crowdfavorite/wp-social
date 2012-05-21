@@ -106,10 +106,11 @@ ob_start();
 					foreach ($social_items as $group => $items) {
 						$service = Social::instance()->service($group);
 						if ($service !== false and count($items)) {
-							echo Social_View::factory('comment/social_item', array(
-								'items' => $items,
-								'service' => $service,
+							$avatar_size = apply_filters('social_items_avatar_size', array(
+								'width' => 24,
+								'height' => 24,
 							));
+							echo Social_View::factory('comment/social_item', compact('items', 'service', 'avatar_size'));
 						}
 					}
 					echo '</div>';

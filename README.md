@@ -265,13 +265,15 @@ Social supports the [Lazy Load plugin](http://wordpress.org/extend/plugins/lazy-
 
 3. Post edit screen settings: broadcast the post, manually import comments, view a log of imported items
 
-4. View of replies imported from Twitter as comments, @anywhere support 
+4. Send customized broadcasts to each social account 
+
+5. View of replies imported from Twitter as comments, @anywhere support 
 
 ## Upgrade Notice
 
 ** 2.5 **
 
-This version fixes an issue where users could be authenticated incorrectly (they would be logged in as someone else) when more than one user was logging in at exactly the same time. We also added a bunch of great new features and enhancements, as well as changes to improve reliability.
+This version fixes an issue where users could be authenticated incorrectly (they would be logged in as someone else) when more than one user was logging in at exactly the same time. We also added a bunch of great new features and enhancements, as well as changes to improve reliability of comment importing from Facebook.
 
 ## Changelog
 
@@ -284,6 +286,7 @@ This version fixes an issue where users could be authenticated incorrectly (they
 * Revise account management UI
 * Add a Manual Tweet Import field on the front-end (via admin bar)
 * Twitter search expanded to receive 100 results per request
+* Ability to reply to a tweet with a broadcast
 * Import replies via Twitter to broadcasted comments (if found)
 * Automatically select proper social account when replying to a comment
 * When posting a comment back to Facebook, attempt to reply in an existing comment thread where appropriate
