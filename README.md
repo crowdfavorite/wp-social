@@ -273,7 +273,7 @@ Social supports the [Lazy Load plugin](http://wordpress.org/extend/plugins/lazy-
 
 ** 2.5 **
 
-This version fixes an issue where users could be authenticated incorrectly (they would be logged in as someone else) when more than one user was logging in at exactly the same time. We also added a bunch of great new features and enhancements, as well as changes to improve reliability.
+This version fixes an issue where users could be authenticated incorrectly (they would be logged in as someone else) when more than one user was logging in at exactly the same time. We also added a bunch of great new features and enhancements, as well as changes to improve reliability of comment importing from Facebook.
 
 ## Changelog
 
