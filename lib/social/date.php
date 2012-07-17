@@ -140,7 +140,7 @@ class Social_Date {
 				return __('1 week', 'social');
 			}
 			else {
-				return sprintf(__('%s weeks', $span['weeks']), $span['weeks']);
+				return sprintf(__('%s weeks', 'social'), $span['weeks']);
 			}
 		}
 
@@ -236,7 +236,7 @@ class Social_Date {
 				return __('1 week ago', 'social');
 			}
 			else {
-				return sprintf(__('%s weeks ago', $span['weeks']), $span['weeks']);
+				return sprintf(__('%s weeks ago', 'social'), $span['weeks']);
 			}
 		}
 
