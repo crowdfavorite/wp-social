@@ -244,7 +244,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						'comment_agent' => 'Social Aggregator',
 					);
 
-					if ($skip_approval) {
+					if ($skip_approval || apply_filter('social_approve_likes_and_retweets', true)) {
 						$commentdata['comment_approved'] = '1';
 					}
 					else if (($commentdata = $this->allow_comment($commentdata, $result->id, $post)) === false) {

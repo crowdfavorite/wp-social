@@ -335,6 +335,10 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 							'comment_date' => date('Y-m-d H:i:s', strtotime($result->created_time) + (get_option('gmt_offset') * 3600)),
 							'comment_date_gmt' => gmdate('Y-m-d H:i:s', strtotime($result->created_time)),
 						));
+
+						if (apply_filters('social_approve_likes_and_retweets', true)) {
+							$commentdata['comment_approval'] = 1;
+						}
 					}
 				}
 				else {
