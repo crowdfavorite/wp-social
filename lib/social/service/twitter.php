@@ -24,7 +24,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	public function max_broadcast_length() {
 		return 140;
 	}
-	
+
 	/**
 	 * Any additional parameters that should be passed with a broadcast.
 	 *
@@ -95,7 +95,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 							continue;
 						}
 					}
-					
+
 					$result->comment_type = (Social_Twitter::is_retweet(null, $result) ? 'social-twitter-rt' : 'social-twitter');
 
 					Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url', false, $data);
@@ -181,9 +181,9 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 								continue;
 							}
 							// not a reply to a broadcast, or a reply to an aggregated (or broadcast) comment
-							if (!isset($broadcasted_ids[$result->in_reply_to_status_id]) && 
+							if (!isset($broadcasted_ids[$result->in_reply_to_status_id]) &&
 								(
-									!isset($post->aggregated_ids[$this->_key]) || 
+									!isset($post->aggregated_ids[$this->_key]) ||
 									!in_array($result->in_reply_to_status_id, $post->aggregated_ids[$this->_key])
 								)) {
 								continue;
@@ -345,7 +345,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		}
 		return '';
 	}
-	
+
 	/**
 	 * Parse a Twitter URL and return the tweet ID.
 	 *
@@ -638,7 +638,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 
 		return $url;
 	}
-	
+
 	/**
 	 * Comment types for this service.
 	 *
