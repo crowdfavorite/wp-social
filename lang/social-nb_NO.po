@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Social\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/social\n"
 "POT-Creation-Date: 2012-05-22 18:40:54+00:00\n"
-"PO-Revision-Date: 2012-08-23 12:40+0100\n"
-"Last-Translator: Kristian Kalvå <kristian@momentas.no>\n"
+"PO-Revision-Date: 2012-08-26 19:21+0100\n"
+"Last-Translator: Kristian Kalvå <kkalvaa@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -14,6 +14,7 @@ msgstr ""
 "X-Poedit-Language: Norwegian Bokmal\n"
 "X-Poedit-Country: NORWAY\n"
 "X-Poedit-SourceCharset: utf-8\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Poedit-SearchPath-0: ..\n"
 
 #: lib/social/aggregation/log.php:60
@@ -575,19 +576,27 @@ msgstr "% svar"
 
 #: views/comments.php:91
 msgid "1 Comment"
-msgstr "1 kommentar"
+msgid_plural "%1$s Comments"
+msgstr[0] "1 kommentar"
+msgstr[1] "%1$s kommentarer"
 
 #: views/comments.php:92
 msgid "1 Tweet"
-msgstr "1 tweet"
+msgid_plural "%1$s Tweets"
+msgstr[0] "1 tweet"
+msgstr[1] "%1$s tweets"
 
 #: views/comments.php:93
 msgid "1 Facebook"
-msgstr "1 facebook"
+msgid_plural "%1$s Facebook"
+msgstr[0] "1 facebook"
+msgstr[1] "%1$s facebooks"
 
 #: views/comments.php:94
 msgid "1 Pingback"
-msgstr "1 pingback"
+msgid_plural "%1$s Pingbacks"
+msgstr[0] "1 pingback"
+msgstr[1] "%1$s pingbacks"
 
 #: views/comments.php:102
 msgid "Last reply was %s"

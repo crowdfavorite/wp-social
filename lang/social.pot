@@ -8,9 +8,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2012-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2012-08-26 19:22+0100\n"
+"Last-Translator: Kristian Kalvå <kkalvaa@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 
 #: lib/social/aggregation/log.php:60
 msgid "Social failed to initialize the Aggregation_Log for post #%s."
@@ -60,7 +61,8 @@ msgstr ""
 msgid "Post a Comment"
 msgstr ""
 
-#: lib/social/comment/form.php:309 lib/social/comment/form.php:319
+#: lib/social/comment/form.php:309
+#: lib/social/comment/form.php:319
 msgid "Also post to %s"
 msgstr ""
 
@@ -142,7 +144,8 @@ msgstr ""
 msgid "%s weeks"
 msgstr ""
 
-#: lib/social/date.php:150 lib/social/date.php:246
+#: lib/social/date.php:150
+#: lib/social/date.php:246
 msgid "1 day"
 msgstr ""
 
@@ -150,19 +153,23 @@ msgstr ""
 msgid "%s days"
 msgstr ""
 
-#: lib/social/date.php:161 lib/social/date.php:257
+#: lib/social/date.php:161
+#: lib/social/date.php:257
 msgid "1 hour"
 msgstr ""
 
-#: lib/social/date.php:164 lib/social/date.php:260
+#: lib/social/date.php:164
+#: lib/social/date.php:260
 msgid "%s hours"
 msgstr ""
 
-#: lib/social/date.php:172 lib/social/date.php:268
+#: lib/social/date.php:172
+#: lib/social/date.php:268
 msgid "1 minute"
 msgstr ""
 
-#: lib/social/date.php:175 lib/social/date.php:271
+#: lib/social/date.php:175
+#: lib/social/date.php:271
 msgid "%s minutes"
 msgstr ""
 
@@ -198,7 +205,9 @@ msgstr ""
 msgid "just now"
 msgstr ""
 
-#: lib/social/date.php:282 lib/social/date.php:285 lib/social/date.php:289
+#: lib/social/date.php:282
+#: lib/social/date.php:285
+#: lib/social/date.php:289
 msgid "%s ago"
 msgstr ""
 
@@ -291,12 +300,11 @@ msgid "in %s"
 msgstr ""
 
 #: lib/social/response.php:96
-msgid ""
-"Unable to publish to %s with account %s. Please <a href=\"%\">re-authorize</"
-"a> this account."
+msgid "Unable to publish to %s with account %s. Please <a href=\"%\">re-authorize</a> this account."
 msgstr ""
 
-#: lib/social/service/account.php:141 lib/social/service/account.php:150
+#: lib/social/service/account.php:141
+#: lib/social/service/account.php:150
 msgid "Removed Account"
 msgstr ""
 
@@ -313,7 +321,8 @@ msgstr ""
 msgid "Existing Comment"
 msgstr ""
 
-#: lib/social/service.php:126 lib/social/service.php:129
+#: lib/social/service.php:126
+#: lib/social/service.php:129
 msgid "Disconnect"
 msgstr ""
 
@@ -349,31 +358,30 @@ msgstr ""
 msgid "Failed to auto load class %s."
 msgstr ""
 
-#: social.php:149 social.php:152
+#: social.php:149
+#: social.php:152
 msgid "Example: %s"
 msgstr ""
 
 #: social.php:255
-msgid ""
-"Duplicate comment detected; it looks as though you&#8217;ve already said "
-"that!"
+msgid "Duplicate comment detected; it looks as though you&#8217;ve already said that!"
 msgstr ""
 
 #: social.php:340
-msgid ""
-"Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP "
-"5 as the default on your servers."
+msgid "Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers."
 msgstr ""
 
 #: social.php:394
 msgid "Post a Reply"
 msgstr ""
 
-#: social.php:431 social.php:1763
+#: social.php:431
+#: social.php:1763
 msgid "Protected Tweet"
 msgstr ""
 
-#: social.php:432 social.php:1764
+#: social.php:432
+#: social.php:1764
 msgid "Invalid URL"
 msgstr ""
 
@@ -383,7 +391,8 @@ msgstr ""
 
 #. #-#-#-#-#  plugin.pot (Social 2.5)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
-#: social.php:532 views/wp-admin/options.php:11
+#: social.php:532
+#: views/wp-admin/options.php:11
 msgid "Social"
 msgstr ""
 
@@ -392,12 +401,11 @@ msgid "Settings"
 msgstr ""
 
 #: social.php:573
-msgid ""
-"Social is shiny and new! Please <a href=\"%s\">verify and save your "
-"settings</a> to complete the upgrade."
+msgid "Social is shiny and new! Please <a href=\"%s\">verify and save your settings</a> to complete the upgrade."
 msgstr ""
 
-#: social.php:579 social.php:607
+#: social.php:579
+#: social.php:607
 msgid "<a href=\"%s\" class=\"social_dismiss\">[Dismiss]</a>"
 msgstr ""
 
@@ -414,33 +422,24 @@ msgid "Social requires that %s is writable for CRON jobs."
 msgstr ""
 
 #: social.php:606
-msgid ""
-"When you enable Social, users will be created when they log in with Facebook "
-"or Twitter to comment. These users are created without a role and will be "
-"prevented from accessing the admin side of WordPress until an administrator "
-"edits the user to give them a role."
+msgid "When you enable Social, users will be created when they log in with Facebook or Twitter to comment. These users are created without a role and will be prevented from accessing the admin side of WordPress until an administrator edits the user to give them a role."
 msgstr ""
 
 #: social.php:616
-msgid ""
-"%s needs to be writable for Social's logging. <a href=\"%\" class="
-"\"social_dismiss\">[Dismiss]</a>"
+msgid "%s needs to be writable for Social's logging. <a href=\"%\" class=\"social_dismiss\">[Dismiss]</a>"
 msgstr ""
 
-#: social.php:626 social.php:660
+#: social.php:626
+#: social.php:660
 msgid "<a href=\"%s\" class=\"%s\">[Dismiss]</a>"
 msgstr ""
 
 #: social.php:652
-msgid ""
-"Social needs to re-authorize your Facebook account(s). Please re-connect "
-"your <a href=\"%s\">global</a> and <a href=\"%s\">personal</a> accounts."
+msgid "Social needs to re-authorize your Facebook account(s). Please re-connect your <a href=\"%s\">global</a> and <a href=\"%s\">personal</a> accounts."
 msgstr ""
 
 #: social.php:656
-msgid ""
-"Social needs to re-authorize your Facebook account(s).. Please re-connect "
-"your <a href=\"%s\">personal</a> accounts."
+msgid "Social needs to re-authorize your Facebook account(s).. Please re-connect your <a href=\"%s\">personal</a> accounts."
 msgstr ""
 
 #: social.php:774
@@ -455,26 +454,27 @@ msgstr ""
 msgid "Not Scheduled"
 msgstr ""
 
-#: social.php:1254 social.php:1255
+#: social.php:1254
+#: social.php:1255
 msgid "Log in"
 msgstr ""
 
-#: social.php:1393 social.php:1472
+#: social.php:1393
+#: social.php:1472
 msgid "Broadcasting comment #%s to %s using account #%s."
 msgstr ""
 
-#: social.php:1397 social.php:1486
-msgid ""
-"Error: Broadcast comment #%s to %s using account #%s, please go back and try "
-"again."
+#: social.php:1397
+#: social.php:1486
+msgid "Error: Broadcast comment #%s to %s using account #%s, please go back and try again."
 msgstr ""
 
 #: social.php:1398
-msgid ""
-"Error: Your comment could not be sent to %s, please go back and try again."
+msgid "Error: Your comment could not be sent to %s, please go back and try again."
 msgstr ""
 
-#: social.php:1410 social.php:1498
+#: social.php:1410
+#: social.php:1498
 msgid "Broadcasting comment #%s to %s using account #%s COMPLETE."
 msgstr ""
 
@@ -486,11 +486,14 @@ msgstr ""
 msgid "<a href=\"%s\" rel=\"%s\">Social Comments</a>"
 msgstr ""
 
-#: social.php:1690 views/wp-admin/post/meta/log/shell.php:23
+#: social.php:1690
+#: views/wp-admin/post/meta/log/shell.php:23
 msgid "Find Social Comments"
 msgstr ""
 
-#: social.php:1701 social.php:1704 views/wp-admin/post/meta/log/shell.php:2
+#: social.php:1701
+#: social.php:1704
+#: views/wp-admin/post/meta/log/shell.php:2
 msgid "Add Tweet by URL"
 msgstr ""
 
@@ -514,7 +517,8 @@ msgstr ""
 msgid "Your comment is awaiting moderation."
 msgstr ""
 
-#: views/comment/comment.php:73 views/wp-admin/post/broadcast/options.php:71
+#: views/comment/comment.php:73
+#: views/wp-admin/post/broadcast/options.php:71
 msgid "Edit"
 msgstr ""
 
@@ -539,8 +543,7 @@ msgid "or"
 msgstr ""
 
 #: views/comments.php:6
-msgid ""
-"This post is password protected. Enter the password to view any comments."
+msgid "This post is password protected. Enter the password to view any comments."
 msgstr ""
 
 #: views/comments.php:11
@@ -612,18 +615,16 @@ msgid "Social settings have been updated."
 msgstr ""
 
 #: views/wp-admin/options.php:12
-msgid ""
-"Compliments of <a class=\"social-mailchimp-link\" href=\"%s\">MailChimp</a>"
+msgid "Compliments of <a class=\"social-mailchimp-link\" href=\"%s\">MailChimp</a>"
 msgstr ""
 
-#: views/wp-admin/options.php:18 views/wp-admin/profile.php:5
+#: views/wp-admin/options.php:18
+#: views/wp-admin/profile.php:5
 msgid "Accounts"
 msgstr ""
 
 #: views/wp-admin/options.php:19
-msgid ""
-"Available to all blog authors. Add accounts that only you can use in <a href="
-"\"%s\">your profile</a>."
+msgid "Available to all blog authors. Add accounts that only you can use in <a href=\"%s\">your profile</a>."
 msgstr ""
 
 #: views/wp-admin/options.php:31
@@ -645,12 +646,11 @@ msgid "Post broadcast format"
 msgstr ""
 
 #: views/wp-admin/options.php:46
-msgid ""
-"How you would like posts to be formatted when broadcasting to Twitter or "
-"Facebook?"
+msgid "How you would like posts to be formatted when broadcasting to Twitter or Facebook?"
 msgstr ""
 
-#: views/wp-admin/options.php:49 views/wp-admin/options.php:74
+#: views/wp-admin/options.php:49
+#: views/wp-admin/options.php:74
 msgid "Tokens:"
 msgstr ""
 
@@ -659,9 +659,7 @@ msgid "Comment broadcast format"
 msgstr ""
 
 #: views/wp-admin/options.php:71
-msgid ""
-"How you would like comments to be formatted when broadcasting to Twitter or "
-"Facebook."
+msgid "How you would like comments to be formatted when broadcasting to Twitter or Facebook."
 msgstr ""
 
 #: views/wp-admin/options.php:91
@@ -673,10 +671,7 @@ msgid "Consumer API Key"
 msgstr ""
 
 #: views/wp-admin/options.php:95
-msgid ""
-"To enable Twitter's @anywhere hovercards for Twitter usernames, enter your "
-"application's Consumer API key here. (<a href=\"%1$s\" target=\"_blank"
-"\">Click here to get an API key</a>)"
+msgid "To enable Twitter's @anywhere hovercards for Twitter usernames, enter your application's Consumer API key here. (<a href=\"%1$s\" target=\"_blank\">Click here to get an API key</a>)"
 msgstr ""
 
 #: views/wp-admin/options.php:109
@@ -720,11 +715,7 @@ msgid "Using a custom CRON job <span class=\"description\">(advanced)</span>"
 msgstr ""
 
 #: views/wp-admin/options.php:156
-msgid ""
-"If you select this option, new tweets and Facebook posts will not be fetched "
-"unless you set up a system CRON job or fetch new items manually from the "
-"post edit screen. More help is also available in&nbsp;<code>README.txt</"
-"code>."
+msgid "If you select this option, new tweets and Facebook posts will not be fetched unless you set up a system CRON job or fetch new items manually from the post edit screen. More help is also available in&nbsp;<code>README.txt</code>."
 msgstr ""
 
 #: views/wp-admin/options.php:159
@@ -740,9 +731,7 @@ msgid "regenerate"
 msgstr ""
 
 #: views/wp-admin/options.php:166
-msgid ""
-"For your system CRON to run correctly, make sure it is pointing towards a "
-"URL that looks something like the following:"
+msgid "For your system CRON to run correctly, make sure it is pointing towards a URL that looks something like the following:"
 msgstr ""
 
 #: views/wp-admin/options.php:176
@@ -754,9 +743,7 @@ msgid "(nerds only)"
 msgstr ""
 
 #: views/wp-admin/options.php:180
-msgid ""
-"If you turn debug on, Social will save additional information in "
-"<code>debug_log.txt</code> file. Not recommended for production environments."
+msgid "If you turn debug on, Social will save additional information in <code>debug_log.txt</code> file. Not recommended for production environments."
 msgstr ""
 
 #: views/wp-admin/options.php:185
@@ -775,7 +762,8 @@ msgstr ""
 msgid "Sign in with %s."
 msgstr ""
 
-#: views/wp-admin/parts/accounts.php:30 views/wp-admin/parts/accounts.php:64
+#: views/wp-admin/parts/accounts.php:30
+#: views/wp-admin/parts/accounts.php:64
 msgid "Default"
 msgstr ""
 
@@ -788,8 +776,7 @@ msgid "No Accounts"
 msgstr ""
 
 #: views/wp-admin/parts/accounts.php:97
-msgid ""
-"Default accounts will auto-broadcast when you publish via XML-RPC or email."
+msgid "Default accounts will auto-broadcast when you publish via XML-RPC or email."
 msgstr ""
 
 #: views/wp-admin/post/broadcast/error/email.php:4
@@ -798,9 +785,7 @@ msgstr ""
 
 #: views/wp-admin/post/broadcast/error/email.php:5
 #: views/wp-admin/post/broadcast/error/notice.php:4
-msgid ""
-"Social failed to broadcast the blog post \"%s\" to one or more of your "
-"Social accounts."
+msgid "Social failed to broadcast the blog post \"%s\" to one or more of your Social accounts."
 msgstr ""
 
 #: views/wp-admin/post/broadcast/error/email.php:24
@@ -809,15 +794,11 @@ msgid "Possible fixes:"
 msgstr ""
 
 #: views/wp-admin/post/broadcast/error/email.php:33
-msgid ""
-"To reauthorize the deauthorized %s account above, please login and edit your "
-"accounts."
+msgid "To reauthorize the deauthorized %s account above, please login and edit your accounts."
 msgstr ""
 
 #: views/wp-admin/post/broadcast/error/email.php:36
-msgid ""
-"To reauthorize the deauthorized accounts above, please login and edit your "
-"accounts."
+msgid "To reauthorize the deauthorized accounts above, please login and edit your accounts."
 msgstr ""
 
 #: views/wp-admin/post/broadcast/error/email.php:39
@@ -830,23 +811,16 @@ msgstr ""
 
 #: views/wp-admin/post/broadcast/error/email.php:51
 #: views/wp-admin/post/broadcast/error/notice.php:57
-msgid ""
-"It is possible you have reached your broadcast limit, please try to "
-"broadcast again in an hour."
+msgid "It is possible you have reached your broadcast limit, please try to broadcast again in an hour."
 msgstr ""
 
 #: views/wp-admin/post/broadcast/error/email.php:54
 #: views/wp-admin/post/broadcast/error/notice.php:60
-msgid ""
-"It is possible you have broadcasted a duplicate message, please tweak your "
-"content a little and try again."
+msgid "It is possible you have broadcasted a duplicate message, please tweak your content a little and try again."
 msgstr ""
 
 #: views/wp-admin/post/broadcast/error/email.php:57
-msgid ""
-"Social was not successful in broadcasting this post (perhaps the service is "
-"down?), please try broadcasting again. If you receive this message "
-"repeatedly, you can try the support forums."
+msgid "Social was not successful in broadcasting this post (perhaps the service is down?), please try broadcasting again. If you receive this message repeatedly, you can try the support forums."
 msgstr ""
 
 #: views/wp-admin/post/broadcast/error/email.php:58
@@ -854,34 +828,23 @@ msgid "Support forums:"
 msgstr ""
 
 #: views/wp-admin/post/broadcast/error/notice.php:36
-msgid ""
-"To reauthorize the deauthorized %s account above, please edit your <a href="
-"\"%s\">global accounts</a> or your <a href=\"%s\">personal accounts</a>."
+msgid "To reauthorize the deauthorized %s account above, please edit your <a href=\"%s\">global accounts</a> or your <a href=\"%s\">personal accounts</a>."
 msgstr ""
 
 #: views/wp-admin/post/broadcast/error/notice.php:39
-msgid ""
-"To reauthorize the deauthorized %s account above, please edit your <a href="
-"\"%s\">personal accounts</a>."
+msgid "To reauthorize the deauthorized %s account above, please edit your <a href=\"%s\">personal accounts</a>."
 msgstr ""
 
 #: views/wp-admin/post/broadcast/error/notice.php:44
-msgid ""
-"To reauthorize the deauthorized accounts above, please edit your <a href=\"%s"
-"\">global accounts</a> or your <a href=\"%s\">personal accounts</a>."
+msgid "To reauthorize the deauthorized accounts above, please edit your <a href=\"%s\">global accounts</a> or your <a href=\"%s\">personal accounts</a>."
 msgstr ""
 
 #: views/wp-admin/post/broadcast/error/notice.php:47
-msgid ""
-"To reauthorize the deauthorized account above, please edit your <a href=\"%s"
-"\">personal accounts</a>."
+msgid "To reauthorize the deauthorized account above, please edit your <a href=\"%s\">personal accounts</a>."
 msgstr ""
 
 #: views/wp-admin/post/broadcast/error/notice.php:63
-msgid ""
-"Social was not successful in broadcasting this post (perhaps the service is "
-"down?), please try broadcasting again. If you receive this message "
-"repeatedly, you can try the <a href=\"%s\">support forums</a>."
+msgid "Social was not successful in broadcasting this post (perhaps the service is down?), please try broadcasting again. If you receive this message repeatedly, you can try the <a href=\"%s\">support forums</a>."
 msgstr ""
 
 #: views/wp-admin/post/broadcast/facebook-link-preview.php:14
@@ -926,9 +889,7 @@ msgid "Broadcasting is disabled for private posts."
 msgstr ""
 
 #: views/wp-admin/post/meta/broadcast/scheduled.php:5
-msgid ""
-"This post is scheduled to be published at a later date. However, it is not "
-"scheduled to be broadcasted to any of your social accounts."
+msgid "This post is scheduled to be published at a later date. However, it is not scheduled to be broadcasted to any of your social accounts."
 msgstr ""
 
 #: views/wp-admin/post/meta/broadcast/scheduled.php:9
@@ -992,10 +953,7 @@ msgid "http://mailchimp.com/social-plugin-for-wordpress/"
 msgstr ""
 
 #. Description of the plugin/theme
-msgid ""
-"Broadcast newly published posts and pull in discussions using integrations "
-"with Twitter and Facebook. Brought to you by <a href=\"http://mailchimp.com"
-"\">MailChimp</a>."
+msgid "Broadcast newly published posts and pull in discussions using integrations with Twitter and Facebook. Brought to you by <a href=\"http://mailchimp.com\">MailChimp</a>."
 msgstr ""
 
 #. Author of the plugin/theme
@@ -1005,3 +963,4 @@ msgstr ""
 #. Author URI of the plugin/theme
 msgid "http://crowdfavorite.com/"
 msgstr ""
+
