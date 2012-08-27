@@ -494,7 +494,7 @@ final class Social {
 				wp_schedule_event(time() + 900, 'every15min', 'social_cron_15_init');
 			}
 			wp_remote_get(
-				admin_url('index.php?'.http_build_query(array(
+				admin_url('options_general.php?'.http_build_query(array(
 					'social_controller' => 'cron',
 					'social_action' => 'check_crons',
 					'social_api_key' => Social::option('system_cron_api_key')
@@ -576,7 +576,7 @@ final class Social {
 
 			$suppress_no_accounts_notice = get_user_meta(get_current_user_id(), 'social_suppress_no_accounts_notice', true);
 			if (!$this->_enabled and (!isset($_GET['page']) or $_GET['page'] != basename(SOCIAL_FILE)) and empty($suppress_no_accounts_notice)) {
-				$dismiss = sprintf(__('<a href="%s" class="social_dismiss">[Dismiss]</a>', 'social'), esc_url(admin_url('index.php?social_controller=settings&social_action=suppress_no_accounts_notice')));
+				$dismiss = sprintf(__('<a href="%s" class="social_dismiss">[Dismiss]</a>', 'social'), esc_url(admin_url('options-general.php?social_controller=settings&social_action=suppress_no_accounts_notice')));
 				$message = sprintf(__('To start using Social, please <a href="%s">add an account</a>.', 'social'), esc_url(Social::settings_url()));
 				echo '<div class="error"><p>'.$message.' '.$dismiss.'</p></div>';
 			}
@@ -604,7 +604,7 @@ final class Social {
 				$suppress_enable_notice = get_user_meta(get_current_user_id(), 'social_suppress_enable_notice', true);
 				if (empty($suppress_enable_notice)) {
 					$message = __('When you enable Social, users will be created when they log in with Facebook or Twitter to comment. These users are created without a role and will be prevented from accessing the admin side of WordPress until an administrator edits the user to give them a role.', 'social');
-					$dismiss = sprintf(__('<a href="%s" class="social_dismiss">[Dismiss]</a>', 'social'), esc_url(admin_url('index.php?social_controller=settings&social_action=suppress_enable_notice')));
+					$dismiss = sprintf(__('<a href="%s" class="social_dismiss">[Dismiss]</a>', 'social'), esc_url(admin_url('options-general.php?social_controller=settings&social_action=suppress_enable_notice')));
 					echo '<div class="updated"><p>'.$message.' '.$dismiss.'</p></div>';
 				}
 			}
@@ -613,7 +613,7 @@ final class Social {
 			$error = Social::option('log_write_error');
 			if ($error == '1') {
 				echo '<div class="error"><p>'.
-					sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_dismiss">[Dismiss]</a>', 'social'), esc_html(Social::$plugins_path), esc_url(admin_url('index.php?social_controller=settings&social_action=clear_log_write_error'))).
+					sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_dismiss">[Dismiss]</a>', 'social'), esc_html(Social::$plugins_path), esc_url(admin_url('options-general.php?social_controller=settings&social_action=clear_log_write_error'))).
 					'</p></div>';
 			}
 		}
@@ -623,7 +623,7 @@ final class Social {
 		if (!empty($deauthed)) {
 			foreach ($deauthed as $service => $data) {
 				foreach ($data as $id => $message) {
-					$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', 'social'), esc_url(admin_url('index.php?social_controller=settings&social_action=clear_deauth&id='.$id.'&service='.$service)), 'social_dismiss');
+					$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', 'social'), esc_url(admin_url('options-general.php?social_controller=settings&social_action=clear_deauth&id='.$id.'&service='.$service)), 'social_dismiss');
 					echo '<div class="error"><p>'.esc_html($message).' '.$dismiss.'</p></div>';
 				}
 			}
@@ -657,7 +657,7 @@ final class Social {
 				$output = sprintf($output, esc_url(admin_url('profile.php#social-networks')));
 			}
 
-			$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', 'social'), esc_url(admin_url('index.php?social_controller=settings&social_action=clear_2_0_upgrade')), 'social_dismiss');
+			$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', 'social'), esc_url(admin_url('options-general.php?social_controller=settings&social_action=clear_2_0_upgrade')), 'social_dismiss');
 			echo '<div class="error"><p>'.$output.' '.$dismiss.'</p></div>';
 		}
 	}
@@ -1658,7 +1658,7 @@ final class Social {
 	 */
 	public function post_row_actions(array $actions, $post) {
 		if ($post->post_status == 'publish' && in_array(Social::option('fetch_comments'), array('1', '2'))) {
-			$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', 'social'), esc_url(wp_nonce_url(admin_url('index.php?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID).
+			$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', 'social'), esc_url(wp_nonce_url(admin_url('options-general.php?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID).
 				'<img src="'.esc_url(admin_url('images/wpspin_light.gif')).'" class="social_run_aggregation_loader" />';
 		}
 		return $actions;
@@ -1693,13 +1693,13 @@ final class Social {
 						<span class="social-dot">.</span>
 						<span class="social-dot">.</span>
 					)</span>',
-				'href' => esc_url(wp_nonce_url(admin_url('index.php?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run')),
+				'href' => esc_url(wp_nonce_url(admin_url('options-general.php?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run')),
 			));
 			$wp_admin_bar->add_menu(array(
 				'parent' => 'comments',
 				'id' => 'social-add-tweet-by-url',
 				'title' => __('Add Tweet by URL', 'social')
-					.'<form class="social-add-tweet" style="display: none;" method="get" action="'.esc_url(wp_nonce_url(admin_url('index.php?social_controller=import&social_action=from_url&social_service=twitter&post_id='.$current_object->ID), 'from_url')).'">
+					.'<form class="social-add-tweet" style="display: none;" method="get" action="'.esc_url(wp_nonce_url(admin_url('options-general.php?social_controller=import&social_action=from_url&social_service=twitter&post_id='.$current_object->ID), 'from_url')).'">
 						<input type="text" size="20" name="url" value="" autocomplete="off" />
 						<input type="submit" name="social-add-tweet-button" name="social-add-tweet-button" value="'.__('Add Tweet by URL', 'social').'" />
 					</form>',
