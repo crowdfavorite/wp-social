@@ -1251,8 +1251,8 @@ final class Social {
 			}
 		}
 		else {
-			$link = explode('>'.__('Log in', 'social'), $link);
-			$link = $link[0].' id="social_login">'.__('Log in', 'social').$link[1];
+			$link = explode('>'.__('Log in'), $link);
+			$link = $link[0].' id="social_login">'.__('Log in').$link[1];
 		}
 
 		return $link;
