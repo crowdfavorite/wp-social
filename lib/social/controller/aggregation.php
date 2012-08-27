@@ -21,7 +21,7 @@ final class Social_Controller_Aggregation extends Social_Controller {
 			Social::log('Aggregation has been disabled, exiting.');
 			return;
 		}
-		
+
 		$post = get_post($this->request->query('post_id'));
 		if ($post === null) {
 			return;
@@ -65,7 +65,7 @@ final class Social_Controller_Aggregation extends Social_Controller {
 			if (!isset($post->aggregated_ids[$key])) {
 				$post->aggregated_ids[$key] = array();
 			}
-			
+
 			if (isset($broadcasted_ids[$key]) and count($broadcasted_ids[$key])) {
 				$service->aggregate_by_api($post);
 
