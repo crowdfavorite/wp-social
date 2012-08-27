@@ -249,6 +249,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 							$skip_approval = true;
 						}
 					}
+
 					if ($skip_approval) {
 						$commentdata['comment_approved'] = '1';
 					}
@@ -272,6 +273,9 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 					$comment_id = 0;
 					try
 					{
+						Social::Log('Attempting to save commentdata: :commentdata', array(
+							'commentdata' => $commentdata
+						));
 						$comment_id = wp_insert_comment($commentdata);
 
 						update_comment_meta($comment_id, 'social_account_id', addslashes_deep($result->from_user_id));

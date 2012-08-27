@@ -379,6 +379,9 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				$comment_id = 0;
 				try
 				{
+					Social::Log('Attempting to save commentdata: :commentdata', array(
+						'commentdata' => $commentdata
+					));
 					$comment_id = wp_insert_comment($commentdata);
 
 					update_comment_meta($comment_id, 'social_account_id', addslashes_deep($user_id));
