@@ -348,10 +348,6 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 						'comment_date' => current_time('mysql'),
 						'comment_date_gmt' => current_time('mysql', 1),
 					));
-
-					if (apply_filters('social_approve_likes_and_retweets', true)) {
-						$commentdata['comment_approved'] = 1;
-					}
 				}
 
 				$user_id = (isset($result->like) ? $result->id : $result->from->id);
@@ -361,7 +357,10 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				));
 
 				$result_id = (isset($result->status_id) ? $result->status_id : $result->id);
-				if (($commentdata = $this->allow_comment($commentdata, $result_id, $post)) === false) {
+				if (apply_filters('social_approve_likes_and_retweets', true) && isset($result->like)) {
+					$commentdata['comment_approved'] = 1;
+				}
+				else if (($commentdata = $this->allow_comment($commentdata, $result_id, $post)) === false) {
 					continue;
 				}
 
@@ -380,7 +379,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				$comment_id = 0;
 				try
 				{
-					Social::Log('[facebook] Attempting to save commentdata: :commentdata', array(
+					Social::Log('Attempting to save commentdata: :commentdata', array(
 						'commentdata' => print_r($commentdata, true)
 					));
 					$comment_id = wp_insert_comment($commentdata);
