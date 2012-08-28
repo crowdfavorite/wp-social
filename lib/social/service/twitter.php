@@ -244,14 +244,8 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						'comment_agent' => 'Social Aggregator',
 					);
 
-					if (apply_filters('social_approve_likes_and_retweets', true)) {
-						if (Social_Twitter::is_retweet($result)) {
-							$skip_approval = true;
-						}
-					}
-
-					if ($skip_approval) {
-						$commentdata['comment_approved'] = '1';
+					if ($skip_approval || (apply_filters('social_approve_likes_and_retweets', true) && Social_Twitter::is_retweet(null, $result))) {
+						$commentdata['comment_approved'] = 1;
 					}
 					else if (($commentdata = $this->allow_comment($commentdata, $result->id, $post)) === false) {
 						continue;
@@ -273,7 +267,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 					$comment_id = 0;
 					try
 					{
-						Social::Log('[twitter] Attempting to save commentdata: :commentdata', array(
+						Social::Log('Attempting to save commentdata: :commentdata', array(
 							'commentdata' => print_r($commentdata, true)
 						));
 						$comment_id = wp_insert_comment($commentdata);
