@@ -143,6 +143,9 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		}
 
 		$args = apply_filters($this->key().'_broadcast_args', $args, $post_id, $comment_id);
+		Social::Log("service > broadcast args: :args", array(
+			'args' => print_r($args, true)
+		));
 		return $this->request($account, 'feed', $args, 'POST');
 	}
 

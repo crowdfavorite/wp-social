@@ -512,7 +512,7 @@ abstract class Social_Service {
 			$api = apply_filters('social_api_endpoint', $api, $this->_key);
 			$method = apply_filters('social_api_endpoint_method', $method, $this->_key);
 			$args = apply_filters('social_api_endpoint_args', $args, $this->_key);
-			$request = wp_remote_post($proxy, array(
+			$request_args = array(
 				'sslverify' => false,
 				'body' => array(
 					'api' => $api,
@@ -521,7 +521,12 @@ abstract class Social_Service {
 					'hash' => sha1($account->public_key().$account->private_key()),
 					'params' => json_encode($args)
 				)
+			);
+			Social::Log("Request Debug -> proxy: :proxy ... request: :request", array(
+				"proxy" => $proxy,
+				"request" => print_r($request_args,true)
 			));
+			$request = wp_remote_post($proxy,$request_args);
 			if (!is_wp_error($request)) {
 				$request['body'] = apply_filters('social_response_body', $request['body'], $this->_key);
 				if (is_string($request['body'])) {

@@ -522,6 +522,10 @@ final class Social_Controller_Broadcast extends Social_Controller {
 								'service' => $service->title(),
 							));
 
+							Social::log('with args: :args', array(
+								'args' => print_r($args, true)
+							));
+
 							$response = $service->broadcast($account, $message, $args, $post->ID);
 							if ($response !== false) {
 								if ($response->limit_reached()) {
