@@ -966,7 +966,7 @@ final class Social {
 		else {
 			$xmlrpc = false;
 			if ($new == 'publish') {
-				if (defined('XMLRPC_REQUEST') and $old != 'publish') {
+				if ( ( defined('XMLRPC_REQUEST') or defined('WP_MAIL') ) and $old != 'publish') {
 					$xmlrpc = true;
 					$this->xmlrpc_publish_post($post);
 				}
@@ -2175,6 +2175,10 @@ function social_wpdb_escape($str) {
 	return $wpdb->escape($str);
 }
 
+function social_wp_mail_indicator() {
+	define('WP_MAIL', true);
+}
+
 $social_file = __FILE__;
 if (isset($plugin)) {
 	$social_file = $plugin;
@@ -2217,6 +2221,7 @@ add_action('admin_bar_menu', array($social, 'admin_bar_menu'), 95);
 add_action('wp_after_admin_bar_render', array($social, 'admin_bar_footer_css'));
 add_action('wp_after_admin_bar_render', array($social, 'admin_bar_footer_js'));
 add_action('set_user_role', array($social, 'set_user_role'), 10, 2);
+add_action('wp-mail.php', 'social_wp_mail_indicator');
 add_action('social_settings_save', array('Social_Service_Facebook', 'social_settings_save'));
 
 // CRON Actions
