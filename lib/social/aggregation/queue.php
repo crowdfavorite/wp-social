@@ -239,7 +239,10 @@ final class Social_Aggregation_Queue {
 	public static function next_run($timestamp) {
 		$current_time = current_time('timestamp', 1);
 		$diff = $timestamp - $current_time;
-		if ($diff < Social_Date::HOUR) {
+		if ($diff < 0) {
+			$next_run = Social_Date::fuzzy_span($current_time + 1, $current_time);
+		}
+		else if ($diff < Social_Date::HOUR) {
 			$next_run = Social_Date::fuzzy_span($timestamp, $current_time);
 		}
 		else if ($diff < (Social_Date::DAY * 2)) {

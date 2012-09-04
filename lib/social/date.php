@@ -318,7 +318,7 @@ class Social_Date {
 		$offset = abs($local_timestamp - $timestamp);
 
 		if ($offset <= self::MINUTE) {
-			$span = __('moments', 'social');
+			$span = __('a few moments', 'social');
 		}
 		elseif ($offset < (self::MINUTE * 20))
 		{
