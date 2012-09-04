@@ -233,21 +233,21 @@ final class Social_Aggregation_Queue {
 	 * Builds the next run output.
 	 *
 	 * @static
-	 * @param  int  $timetamp
+	 * @param  int  $timestamp
 	 * @return string
 	 */
-	public static function next_run($timetamp) {
+	public static function next_run($timestamp) {
 		$current_time = current_time('timestamp', 1);
-		$diff = $timetamp - $current_time;
+		$diff = $timestamp - $current_time;
 		if ($diff < Social_Date::HOUR) {
-			$next_run = Social_Date::fuzzy_span($timetamp, $current_time);
+			$next_run = Social_Date::fuzzy_span($timestamp, $current_time);
 		}
 		else if ($diff < (Social_Date::DAY * 2)) {
-			$next_run = Social_Date::span_formatted($timetamp, $current_time);
+			$next_run = Social_Date::span_formatted($timestamp, $current_time);
 			$next_run = sprintf(__('approximately %s', 'social'), $next_run);
 		}
 		else {
-			$next_run = Social_Date::fuzzy_span($timetamp, $current_time);
+			$next_run = Social_Date::fuzzy_span($timestamp, $current_time);
 		}
 		return $next_run;
 	}
