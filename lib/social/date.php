@@ -113,44 +113,45 @@ class Social_Date {
 
 		$span = self::span($remote, $local);
 		$timespan = abs($remote - $local);
+		$output = '';
 
 		// Years
 		if (!empty($span['years'])) {
 			if ($span['years'] == '1') {
-				return __('1 year', 'social');
+				$output = __('1 year', 'social');
 			}
 			else {
-				return sprintf(__('%s years', 'social'), $span['years']);
+				$output = sprintf(__('%s years', 'social'), $span['years']);
 			}
 		}
 
 		// Months
 		if (!empty($span['months'])) {
 			if ($span['months'] == '1') {
-				return __('1 month', 'social');
+				$output = __('1 month', 'social');
 			}
 			else {
-				return sprintf(__('%s months', 'social'), $span['months']);
+				$output = sprintf(__('%s months', 'social'), $span['months']);
 			}
 		}
 
 		// Weeks
 		if (!empty($span['weeks'])) {
 			if ($span['weeks'] == '1') {
-				return __('1 week', 'social');
+				$output = __('1 week', 'social');
 			}
 			else {
-				return sprintf(__('%s weeks', $span['weeks']), $span['weeks']);
+				$output = sprintf(__('%s weeks', $span['weeks']), $span['weeks']);
 			}
 		}
 
 		// Days
 		if (!empty($span['days'])) {
 			if ($span['days'] == '1') {
-				return __('1 day', 'social');
+				$output = __('1 day', 'social');
 			}
 			else {
-				return sprintf(__('%s days', 'social'), $span['days']);
+				$output = sprintf(__('%s days', 'social'), $span['days']);
 			}
 		}
 
@@ -180,23 +181,25 @@ class Social_Date {
 		if (empty($hours) and empty($minutes)) {
 			if (!empty($span['seconds'])) {
 				if ($span['seconds'] == '1') {
-					return __('1 second', 'social');
+					$output = __('1 second', 'social');
 				}
 				else {
-					return sprintf(__('%s seconds', 'social'), $span['seconds']);
+					$output = sprintf(__('%s seconds', 'social'), $span['seconds']);
 				}
 			}
 		}
 
 		if (!empty($hours) and !empty($minutes)) {
-			return $hours.' '.$minutes;
+			$output = $hours.' '.$minutes;
 		}
 		else if (!empty($hours)) {
-			return $hours;
+			$output = $hours;
 		}
 		else {
-			return $minutes;
+			$output = $minutes;
 		}
+
+		return apply_filters('social_formatted_date', $output, $remote, $local);
 	}
 
 	/**
@@ -214,39 +217,40 @@ class Social_Date {
 
 		$span = self::span($remote, $local);
 		$timespan = abs($remote - $local);
+		$output = '';
 
 		// Years
 		if (!empty($span['years'])) {
-			return get_comment_date();
+			$output = get_comment_date();
 		}
 
 		// Months
 		if (!empty($span['months'])) {
 			if ($span['months'] == '1') {
-				return __('1 month ago', 'social');
+				$output = __('1 month ago', 'social');
 			}
 			else {
-				return sprintf(__('%s months ago', 'social'), $span['months']);
+				$output = sprintf(__('%s months ago', 'social'), $span['months']);
 			}
 		}
 
 		// Weeks
 		if (!empty($span['weeks'])) {
 			if ($span['weeks'] == '1') {
-				return __('1 week ago', 'social');
+				$output = __('1 week ago', 'social');
 			}
 			else {
-				return sprintf(__('%s weeks ago', $span['weeks']), $span['weeks']);
+				$output = sprintf(__('%s weeks ago', $span['weeks']), $span['weeks']);
 			}
 		}
 
 		// Days
 		if (!empty($span['days'])) {
 			if ($span['days'] == '1') {
-				return __('1 day', 'social');
+				$output = __('1 day', 'social');
 			}
 			else {
-				return sprintf(__('%s days ago', 'social'), $span['days']);
+				$output = sprintf(__('%s days ago', 'social'), $span['days']);
 			}
 		}
 
@@ -274,20 +278,22 @@ class Social_Date {
 
 		// Seconds
 		if (empty($hours) and empty($minutes)) {
-			return __('just now', 'social');
+			$output =  __('just now', 'social');
 		}
 
 		if (!empty($hours)) {
 			if ($span['hours'] > 1) {
-				return sprintf(__('%s ago', 'social'), $hours);
+				$output = sprintf(__('%s ago', 'social'), $hours);
 			}
 			else {
-				return sprintf(__('%s ago', 'social'), $hours.' '.$minutes);
+				$output = sprintf(__('%s ago', 'social'), $hours.' '.$minutes);
 			}
 		}
 		else {
-			return sprintf(__('%s ago', 'social'), $minutes);
+			$output = sprintf(__('%s ago', 'social'), $minutes);
 		}
+
+		return apply_filters('social_comment_date', $output, $remote, $local);
 	}
 
 	/**
@@ -393,13 +399,15 @@ class Social_Date {
 
 		if ($timestamp <= $local_timestamp) {
 			// This is in the past
-			return sprintf(__('% ago', 'social'), $span);
+			$output = sprintf(__('% ago', 'social'), $span);
 		}
 		else
 		{
 			// This in the future
-			return sprintf(__('in %s', 'social'), $span);
+			$output = sprintf(__('in %s', 'social'), $span);
 		}
+
+		return apply_filters('social_fuzzy_date', $output, $remote, $local);
 	}
 
 } // End Social_Date
