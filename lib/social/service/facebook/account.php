@@ -281,7 +281,7 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 */
 	public function fetch_child_accounts() {
 		$pages = array();
-		if ($this->use_pages()) {
+		if ($this->use_pages() or $this->use_pages(false)) {
 			$service = new Social_Service_Facebook;
 			$pages = $service->get_pages($this);
 		}

@@ -734,6 +734,35 @@ final class Social {
 		else {
 			delete_user_meta($user_id, 'social_default_accounts');
 		}
+
+		// Save Enabled pages
+		$is_profile = true;
+		$enabled_pages = $_POST['social_enabled_pages'];
+		if (!is_array($enabled_pages)) {
+			$enabled_pages = array();
+		}
+		$service = Social::instance()->service('facebook');
+		if ($service !== false) {
+			$fb_accounts = $service->accounts();
+			foreach ($fb_accounts as $account) {
+				// reset pages for account
+				$fb_accounts[$account->id()]->pages(array(), $is_profile);
+				if (count($enabled_pages) && isset($enabled_pages[$account->id()])) {
+					// fetch available pages for account
+					$pages = $service->get_pages($account, $is_profile);
+					foreach ($enabled_pages[$account->id()] as $enabled_page_id) {
+						if (isset($pages[$enabled_page_id])) {
+							$fb_accounts[$account->id()]->page($pages[$enabled_page_id], $is_profile);
+						}
+					}
+				}
+			}
+			foreach ($fb_accounts as $account_id => $account) {
+				$fb_accounts[$account_id] = $account->as_object();
+			}
+			$service->accounts($fb_accounts)->save($is_profile);
+		}
+
 	}
 	
 	/**
