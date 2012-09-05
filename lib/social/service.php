@@ -451,7 +451,7 @@ abstract class Social_Service {
 		$available = $this->max_broadcast_length();
 		$used_tokens = array();
 
-		// Gather used tokens
+		// Gather used tokens and subtract remaining characters from available length
 		foreach (Social::comment_broadcast_tokens() as $token => $description) {
 			$replaced = 0;
 			$_format = str_replace($token, '', $_format, $replaced);
@@ -462,7 +462,7 @@ abstract class Social_Service {
 		$available = $available - strlen($_format);
 
 		// Prep token replacement content
-		foreach($used_tokens as $token => &$content) {
+		foreach ($used_tokens as $token => $content) {
 			switch ($token) {
 				case '{url}':
 					$url = wp_get_shortlink($comment->comment_post_ID);
@@ -471,12 +471,12 @@ abstract class Social_Service {
 					}
 					$url .= '#comment-'.$comment->comment_ID;
 					$url = apply_filters('social_comment_broadcast_permalink', $url, $comment, $this);
-					$content = esc_url($url);
+					$used_tokens[$token] = esc_url($url);
 					break;
 				case '{content}':
-					$content = strip_tags($comment->comment_content);
-					$content = str_replace(array("\n", "\r", PHP_EOL), '', $content);
-					$content = str_replace('&nbsp;', '', $content);
+					$used_tokens[$token] = strip_tags($comment->comment_content);
+					$used_tokens[$token] = str_replace(array("\n", "\r", PHP_EOL), '', $used_tokens[$token]);
+					$used_tokens[$token] = str_replace('&nbsp;', '', $used_tokens[$token]);
 					break;
 			}
 		}
@@ -493,11 +493,12 @@ abstract class Social_Service {
 			$used_tokens['{content}'] = substr($used_tokens['{content}'], 0, ($available - 3)).'...';
 		}
 
-		foreach($used_tokens as $token => $replacement) {
+		foreach ($used_tokens as $token => $replacement) {
 			if (strpos($format, $token) !== false) {
 				$format = str_replace($token, $replacement, $format);
 			}
 		}
+
 		$format = apply_filters('social_comment_broadcast_content_formatted', $format, $comment, $this);
 		return $format;
 	}
