@@ -737,10 +737,7 @@ final class Social {
 
 		// Save Enabled pages
 		$is_profile = true;
-		$enabled_pages = $_POST['social_enabled_pages'];
-		if (!is_array($enabled_pages)) {
-			$enabled_pages = array();
-		}
+		$enabled_pages = is_array($_POST['social_enabled_pages']) ? $_POST['social_enabled_pages'] : array();
 		$service = Social::instance()->service('facebook');
 		if ($service !== false) {
 			$fb_accounts = $service->accounts();
@@ -2224,7 +2221,7 @@ add_action('admin_bar_menu', array($social, 'admin_bar_menu'), 95);
 add_action('wp_after_admin_bar_render', array($social, 'admin_bar_footer_css'));
 add_action('wp_after_admin_bar_render', array($social, 'admin_bar_footer_js'));
 add_action('set_user_role', array($social, 'set_user_role'), 10, 2);
-add_filter('social_settings_save', array('Social_Service_Facebook', 'social_settings_save'));
+add_action('social_settings_save', array('Social_Service_Facebook', 'social_settings_save'));
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));
