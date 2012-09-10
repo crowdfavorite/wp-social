@@ -735,33 +735,22 @@ final class Social {
 			delete_user_meta($user_id, 'social_default_accounts');
 		}
 
-		// Save Enabled pages
+		// Save Enabled child accounts
 		$is_profile = true;
-		$enabled_pages = is_array($_POST['social_enabled_pages']) ? $_POST['social_enabled_pages'] : array();
-		$service = Social::instance()->service('facebook');
-		if ($service !== false) {
-			$fb_accounts = $service->accounts();
-			foreach ($fb_accounts as $account) {
-				// reset pages for account
-				$fb_accounts[$account->id()]->pages(array(), $is_profile);
-				if (count($enabled_pages) && isset($enabled_pages[$account->id()])) {
-					// fetch available pages for account
-					$pages = $service->get_pages($account, $is_profile);
-					foreach ($enabled_pages[$account->id()] as $enabled_page_id) {
-						if (isset($pages[$enabled_page_id])) {
-							$fb_accounts[$account->id()]->page($pages[$enabled_page_id], $is_profile);
-						}
-					}
+		$enabled_child_accounts = is_array($_POST['social_enabled_child_accounts']) ? $_POST['social_enabled_child_accounts'] : array();
+		foreach ($enabled_child_accounts as $service_name => $enabled_account_ids) {
+			$service = Social::instance()->service($service_name);
+			if ($service !== false) {
+				$accounts = $service->accounts();
+				foreach ($accounts as $account) {
+					$account->update_enabled_child_accounts($enabled_account_ids);
+					$updated_accounts[$account->id()] = $account->as_object();
 				}
+				$service->accounts($updated_accounts)->save($is_profile);
 			}
-			foreach ($fb_accounts as $account_id => $account) {
-				$fb_accounts[$account_id] = $account->as_object();
-			}
-			$service->accounts($fb_accounts)->save($is_profile);
 		}
-
 	}
-	
+
 	/**
 	 * Return array of enabled social broadcasting post types
 	 *

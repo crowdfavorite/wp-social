@@ -60,11 +60,11 @@ foreach ($services as $key => $service) {
 					<img src="<?php echo esc_url($account->child_account_avatar($child_account)); ?>" width="32" height="32" />
 					<span class="name"><?php echo esc_html($child_account->name); ?></span>
 					<label class="default" for="<?php echo esc_attr($key.$child_account->id); ?>">
-						<input type="checkbox" name="social_default_pages[<?php echo esc_attr($account->id()); ?>][]" id="<?php echo esc_attr($key.$child_account->id); ?>" value="<?php echo esc_attr($child_account->id); ?>"<?php echo $default_checked; ?> />
+						<input type="checkbox" name="social_default_child_accounts[<?php echo esc_attr($account->id()); ?>][]" id="<?php echo esc_attr($key.$child_account->id); ?>" value="<?php echo esc_attr($child_account->id); ?>"<?php echo $default_checked; ?> />
 						<?php _e('Default', 'social'); ?>
 					</label>
-					<label class="enabled" for="social_enabled_pages-<?php echo esc_attr($key.$child_account->id); ?>">
-						<input type="checkbox" name="social_enabled_pages[<?php echo esc_attr($account->id()); ?>][]" id="social_enabled_pages-<?php echo esc_attr($key.$child_account->id); ?>" value="<?php echo esc_attr($child_account->id); ?>"<?php echo $enabled_checked; ?> />
+					<label class="enabled" for="social_enabled_child_accounts-<?php echo esc_attr($key.$child_account->id); ?>">
+						<input type="checkbox" name="social_enabled_child_accounts[<?php echo esc_attr($account->id()); ?>][]" id="social_enabled_child_accounts-<?php echo esc_attr($key.$child_account->id); ?>" value="<?php echo esc_attr($child_account->id); ?>"<?php echo $enabled_checked; ?> />
 						<?php _e('Enabled', 'social'); ?>
 					</label>
 				</li>

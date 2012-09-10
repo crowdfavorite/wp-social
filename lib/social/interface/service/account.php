@@ -86,4 +86,11 @@ interface Social_Interface_Service_Account {
 	 */
 	function private_key();
 
+	/**
+	 * Update child accounts of a service account
+	 * @abstract
+	 * @param array $enabled_child_ids - array of enabled child account ids
+	 */
+	function update_child_accounts($enabled_child_ids);
+
 } // End Social_Interface_Service_Account
