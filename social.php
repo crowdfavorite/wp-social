@@ -738,16 +738,14 @@ final class Social {
 		// Save Enabled child accounts
 		$is_profile = true;
 		$enabled_child_accounts = is_array($_POST['social_enabled_child_accounts']) ? $_POST['social_enabled_child_accounts'] : array();
-		foreach ($enabled_child_accounts as $service_name => $enabled_account_ids) {
-			$service = Social::instance()->service($service_name);
-			if ($service !== false) {
-				$accounts = $service->accounts();
-				foreach ($accounts as $account) {
-					$account->update_enabled_child_accounts($enabled_account_ids);
-					$updated_accounts[$account->id()] = $account->as_object();
-				}
-				$service->accounts($updated_accounts)->save($is_profile);
+		foreach ($this->services() as $key => $service) {
+			$accounts = $service->accounts();
+			$updated_accounts = array();
+			foreach ($accounts as $account) {
+				$account->update_enabled_child_accounts($enabled_account_ids);
+				$updated_accounts[$account->id()] = $account->as_object();
 			}
+			$service->accounts($updated_accounts)->save($is_profile);
 		}
 	}
 
