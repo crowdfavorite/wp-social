@@ -270,7 +270,7 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 		if (count($enabled_child_ids)) {
 			foreach ($enabled_child_ids as $enabled_child_id) {
 				if (isset($pages[$enabled_child_id])) {
-					$this->page($pages[$enabled_page_id], $is_profile);
+					$this->page($pages[$enabled_child_id], $is_profile);
 				}
 			}
 		}
