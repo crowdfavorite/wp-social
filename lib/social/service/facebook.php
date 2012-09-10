@@ -595,7 +595,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		}
 
 		$enabled_child_ids = $controller->request()->post('social_enabled_child_accounts');
-		if (!is_array($enabled_pages)) {
+		if (!is_array($enabled_child_ids)) {
 			$enabled_child_ids = array();
 		}
 		$service = $controller->social()->service('facebook');
@@ -603,7 +603,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 			foreach ($service->accounts() as $account) {
 				$updated_accounts = array();
 				foreach ($service->accounts() as $account) {
-					$account->update_enabled_child_accounts($enabled_child_ids);
+					$account->update_enabled_child_accounts($enabled_child_ids[$service->key()]);
 					$updated_accounts[$account->id()] = $account->as_object();
 				}
 				$service->accounts($updated_accounts)->save($is_profile);
