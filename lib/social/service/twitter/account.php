@@ -69,4 +69,13 @@ final class Social_Service_Twitter_Account extends Social_Service_Account implem
 		return parent::_username();
 	}
 
+	/**
+	 * Update the enabled child accounts
+	 * ( Currently not in use by twitter )
+	 *
+	 * @param array $enabled_child_ids Array of enabled child account ids
+	 */
+	public function update_enabled_child_accounts($enabled_child_ids) {
+	}
+
 } // End Social_Service_Twitter_Account
