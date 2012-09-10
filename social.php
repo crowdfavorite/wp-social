@@ -741,7 +741,10 @@ final class Social {
 		foreach ($this->services() as $service_key => $service) {
 			$updated_accounts = array();
 			foreach ($service->accounts() as $account) {
-				$account->update_enabled_child_accounts($enabled_account_ids[$service_key]);
+				//default service to empty array in case it is not set
+				$enabled_child_accounts[$service_key] = isset($enabled_child_accounts[$service_key]) ? $enabled_child_accounts[$service_key] : array();
+
+				$account->update_enabled_child_accounts($enabled_child_accounts[$service_key]);
 				$updated_accounts[$account->id()] = $account->as_object();
 			}
 			$service->accounts($updated_accounts)->save($is_profile);
