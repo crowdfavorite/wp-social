@@ -594,31 +594,20 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 			define('IS_PROFILE_PAGE', true);
 		}
 
-		$enabled_pages = $controller->request()->post('social_enabled_pages');
+		$enabled_child_ids = $controller->request()->post('social_enabled_child_accounts');
 		if (!is_array($enabled_pages)) {
-			$enabled_pages = array();
+			$enabled_child_ids = array();
 		}
 		$service = $controller->social()->service('facebook');
 		if ($service !== false) {
-			$fb_accounts = $service->accounts();
-			foreach ($fb_accounts as $account) {
-				// reset pages for account
-				$fb_accounts[$account->id()]->pages(array(), $is_profile);
-				if (count($enabled_pages) && isset($enabled_pages[$account->id()])) {
-					// fetch available pages for account
-					$pages = $service->get_pages($account, $is_profile);
-					foreach ($enabled_pages[$account->id()] as $enabled_page_id) {
-						if (isset($pages[$enabled_page_id])) {
-							$fb_accounts[$account->id()]->page($pages[$enabled_page_id], $is_profile);
-						}
-					}
+			foreach ($service->accounts() as $account) {
+				$updated_accounts = array();
+				foreach ($service->accounts() as $account) {
+					$account->update_enabled_child_accounts($enabled_child_ids);
+					$updated_accounts[$account->id()] = $account->as_object();
 				}
-
+				$service->accounts($updated_accounts)->save($is_profile);
 			}
-			foreach ($fb_accounts as $account_id => $account) {
-				$fb_accounts[$account_id] = $account->as_object();
-			}
-			$service->accounts($fb_accounts)->save($is_profile);
 		}
 	}
 

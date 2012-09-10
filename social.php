@@ -739,9 +739,8 @@ final class Social {
 		$is_profile = true;
 		$enabled_child_accounts = is_array($_POST['social_enabled_child_accounts']) ? $_POST['social_enabled_child_accounts'] : array();
 		foreach ($this->services() as $key => $service) {
-			$accounts = $service->accounts();
 			$updated_accounts = array();
-			foreach ($accounts as $account) {
+			foreach ($service->accounts() as $account) {
 				$account->update_enabled_child_accounts($enabled_account_ids);
 				$updated_accounts[$account->id()] = $account->as_object();
 			}
