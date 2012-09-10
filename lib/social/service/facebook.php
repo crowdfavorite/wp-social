@@ -594,9 +594,9 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 			define('IS_PROFILE_PAGE', true);
 		}
 
-		$enabled_child_ids = $controller->request()->post('social_enabled_child_accounts');
-		if (!is_array($enabled_child_ids)) {
-			$enabled_child_ids = array();
+		$enabled_child_accounts = $controller->request()->post('social_enabled_child_accounts');
+		if (!is_array($enabled_child_accounts)) {
+			$enabled_child_accounts = array();
 		}
 		$service = $controller->social()->service('facebook');
 		if ($service !== false) {
@@ -604,9 +604,9 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				$updated_accounts = array();
 				foreach ($service->accounts() as $account) {
 					//default service to empty array in case it is not set
-					$enabled_child_accounts[$service_key] = isset($enabled_child_accounts[$service_key]) ? $enabled_child_accounts[$service_key] : array();
+					$enabled_child_accounts[$service->key()] = isset($enabled_child_accounts[$service->key()]) ? $enabled_child_accounts[$service->key()] : array();
 
-					$account->update_enabled_child_accounts($enabled_child_accounts[$service_key]);
+					$account->update_enabled_child_accounts($enabled_child_accounts[$service->key()]);
 					$updated_accounts[$account->id()] = $account->as_object();
 				}
 				$service->accounts($updated_accounts)->save($is_profile);
