@@ -966,7 +966,7 @@ final class Social {
 		else {
 			$xmlrpc = false;
 			if ($new == 'publish') {
-				if (defined('XMLRPC_REQUEST') and $old != 'publish') {
+				if ( ( defined('XMLRPC_REQUEST') or defined('WP_MAIL') ) and $old != 'publish') {
 					$xmlrpc = true;
 					$this->xmlrpc_publish_post($post);
 				}
@@ -995,9 +995,14 @@ final class Social {
 			Social::log('Broadcasting triggered by XML-RPC.');
 
 			$broadcast_accounts = array();
+			$broadcast_content = array();
+			$broadcast_meta = array();
+
 			foreach ($this->default_accounts($post) as $service_key => $accounts) {
 				$service = $this->service($service_key);
 				if ($service !== false) {
+					$broadcast_content[$service_key] = array();
+					$broadcast_meta[$service_key] = array();
 					foreach ($accounts as $key => $id) {
 						// TODO abstract this to the Facebook plugin
 						if ($service_key == 'facebook' and $key === 'pages') {
@@ -1031,6 +1036,8 @@ final class Social {
 											);
 										}
 									}
+									$broadcast_content[$service_key][$page_id] = $service->format_content($post, Social::option('broadcast_format'));
+									$broadcast_meta[$service_key][$page_id] = $service->get_broadcast_extras($page_id, $post);
 								}
 							}
 						}
@@ -1045,17 +1052,17 @@ final class Social {
 									'id' => $account->id(),
 									'universal' => $account->universal()
 								);
+
+								$broadcast_content[$service_key][$account->id()] = $service->format_content($post, Social::option('broadcast_format'));
+								$broadcast_meta[$service_key][$account->id()] = $service->get_broadcast_extras($account->id(), $post);
 							}
 						}
 					}
-
-					// Content
-					if (isset($broadcast_accounts[$service_key])) {
-						$content = $service->format_content($post, Social::option('broadcast_format'));
-						update_post_meta($post->ID, '_social_'.$service_key.'_content', addslashes_deep($content));
-					}
 				}
 			}
+
+			update_post_meta($post->ID, '_social_broadcast_content', addslashes_deep($broadcast_content));
+			update_post_meta($post->ID, '_social_broadcast_meta', addslashes_deep($broadcast_meta));
 
 			if (count($broadcast_accounts)) {
 				Social::log('There are default accounts, running broadcast');
@@ -2168,6 +2175,10 @@ function social_wpdb_escape($str) {
 	return $wpdb->escape($str);
 }
 
+function social_wp_mail_indicator() {
+	define('WP_MAIL', true);
+}
+
 $social_file = __FILE__;
 if (isset($plugin)) {
 	$social_file = $plugin;
@@ -2210,6 +2221,7 @@ add_action('admin_bar_menu', array($social, 'admin_bar_menu'), 95);
 add_action('wp_after_admin_bar_render', array($social, 'admin_bar_footer_css'));
 add_action('wp_after_admin_bar_render', array($social, 'admin_bar_footer_js'));
 add_action('set_user_role', array($social, 'set_user_role'), 10, 2);
+add_action('wp-mail.php', 'social_wp_mail_indicator');
 add_action('social_settings_save', array('Social_Service_Facebook', 'social_settings_save'));
 
 // CRON Actions
