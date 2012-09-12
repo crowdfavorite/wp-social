@@ -734,8 +734,23 @@ final class Social {
 		else {
 			delete_user_meta($user_id, 'social_default_accounts');
 		}
+
+		// Save Enabled child accounts
+		$is_profile = true;
+		$enabled_child_accounts = is_array($_POST['social_enabled_child_accounts']) ? $_POST['social_enabled_child_accounts'] : array();
+		foreach ($this->services() as $service_key => $service) {
+			$updated_accounts = array();
+			foreach ($service->accounts() as $account) {
+				//default service to empty array in case it is not set
+				$enabled_child_accounts[$service_key] = isset($enabled_child_accounts[$service_key]) ? $enabled_child_accounts[$service_key] : array();
+
+				$account->update_enabled_child_accounts($enabled_child_accounts[$service_key]);
+				$updated_accounts[$account->id()] = $account->as_object();
+			}
+			$service->accounts($updated_accounts)->save($is_profile);
+		}
 	}
-	
+
 	/**
 	 * Return array of enabled social broadcasting post types
 	 *
@@ -2195,7 +2210,7 @@ add_action('admin_bar_menu', array($social, 'admin_bar_menu'), 95);
 add_action('wp_after_admin_bar_render', array($social, 'admin_bar_footer_css'));
 add_action('wp_after_admin_bar_render', array($social, 'admin_bar_footer_js'));
 add_action('set_user_role', array($social, 'set_user_role'), 10, 2);
-add_filter('social_settings_save', array('Social_Service_Facebook', 'social_settings_save'));
+add_action('social_settings_save', array('Social_Service_Facebook', 'social_settings_save'));
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));
