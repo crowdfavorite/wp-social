@@ -399,7 +399,7 @@ class Social_Date {
 
 		if ($timestamp <= $local_timestamp) {
 			// This is in the past
-			return sprintf(__('%s ago', 'social'), $span);
+			$output = sprintf(__('%s ago', 'social'), $span);
 		}
 		else
 		{
