@@ -318,7 +318,7 @@ class Social_Date {
 		$offset = abs($local_timestamp - $timestamp);
 
 		if ($offset <= self::MINUTE) {
-			$span = __('moments', 'social');
+			$span = __('a few moments', 'social');
 		}
 		elseif ($offset < (self::MINUTE * 20))
 		{
@@ -399,7 +399,7 @@ class Social_Date {
 
 		if ($timestamp <= $local_timestamp) {
 			// This is in the past
-			$output = sprintf(__('% ago', 'social'), $span);
+			return sprintf(__('%s ago', 'social'), $span);
 		}
 		else
 		{
