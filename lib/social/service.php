@@ -449,14 +449,20 @@ abstract class Social_Service {
 
 		$_format = $format;
 		$available = $this->max_broadcast_length();
+		$used_tokens = array();
+
+		// Gather used tokens and subtract remaining characters from available length
 		foreach (Social::comment_broadcast_tokens() as $token => $description) {
-			$_format = str_replace($token, '', $_format);
+			$replaced = 0;
+			$_format = str_replace($token, '', $_format, $replaced);
+			if ($replaced) {
+				$used_tokens[$token] = '';
+			}
 		}
 		$available = $available - strlen($_format);
 
-		$_format = explode(' ', $format);
-		foreach (Social::comment_broadcast_tokens() as $token => $description) {
-			$content = '';
+		// Prep token replacement content
+		foreach ($used_tokens as $token => $content) {
 			switch ($token) {
 				case '{url}':
 					$url = wp_get_shortlink($comment->comment_post_ID);
@@ -465,28 +471,31 @@ abstract class Social_Service {
 					}
 					$url .= '#comment-'.$comment->comment_ID;
 					$url = apply_filters('social_comment_broadcast_permalink', $url, $comment, $this);
-					$content = esc_url($url);
+					$used_tokens[$token] = esc_url($url);
 					break;
 				case '{content}':
-					$content = strip_tags($comment->comment_content);
-					$content = str_replace(array("\n", "\r", PHP_EOL), '', $content);
-					$content = str_replace('&nbsp;', '', $content);
+					$used_tokens[$token] = strip_tags($comment->comment_content);
+					$used_tokens[$token] = str_replace(array("\n", "\r", PHP_EOL), '', $used_tokens[$token]);
+					$used_tokens[$token] = str_replace('&nbsp;', '', $used_tokens[$token]);
 					break;
 			}
+		}
 
-			if (strlen($content) > $available) {
-				$content = substr($content, 0, ($available - 3)).'...';
-			}
+		// if {url} is used, pre-allocate its length
+		if (isset($used_tokens['{url}'])) {
+			$available = $available - strlen($used_tokens['{url}']);
+		}
 
-			$content = apply_filters('social_format_comment_content', $content, $comment, $format, $this);
+		$used_tokens['{content}'] = apply_filters('social_format_comment_content', $used_tokens['{content}'], $comment, $format, $this);
 
-			foreach ($_format as $haystack) {
-				if (strpos($haystack, $token) !== false and $available > 0) {
-					$haystack = str_replace($token, $content, $haystack);
-					$available = $available - strlen($haystack);
-					$format = str_replace($token, $content, $format);
-					break;
-				}
+		// Truncate content to size limit
+		if (strlen($used_tokens['{content}']) > $available) {
+			$used_tokens['{content}'] = substr($used_tokens['{content}'], 0, ($available - 3)).'...';
+		}
+
+		foreach ($used_tokens as $token => $replacement) {
+			if (strpos($format, $token) !== false) {
+				$format = str_replace($token, $replacement, $format);
 			}
 		}
 
