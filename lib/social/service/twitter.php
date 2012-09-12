@@ -24,7 +24,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	public function max_broadcast_length() {
 		return 140;
 	}
-	
+
 	/**
 	 * Any additional parameters that should be passed with a broadcast.
 	 *
@@ -95,7 +95,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 							continue;
 						}
 					}
-					
+
 					$result->comment_type = (Social_Twitter::is_retweet(null, $result) ? 'social-twitter-rt' : 'social-twitter');
 
 					Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url', false, $data);
@@ -181,9 +181,9 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 								continue;
 							}
 							// not a reply to a broadcast, or a reply to an aggregated (or broadcast) comment
-							if (!isset($broadcasted_ids[$result->in_reply_to_status_id]) && 
+							if (!isset($broadcasted_ids[$result->in_reply_to_status_id]) &&
 								(
-									!isset($post->aggregated_ids[$this->_key]) || 
+									!isset($post->aggregated_ids[$this->_key]) ||
 									!in_array($result->in_reply_to_status_id, $post->aggregated_ids[$this->_key])
 								)) {
 								continue;
@@ -244,8 +244,8 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						'comment_agent' => 'Social Aggregator',
 					);
 
-					if ($skip_approval) {
-						$commentdata['comment_approved'] = '1';
+					if ($skip_approval || (apply_filters('social_approve_likes_and_retweets', true) && Social_Twitter::is_retweet(null, $result))) {
+						$commentdata['comment_approved'] = 1;
 					}
 					else if (($commentdata = $this->allow_comment($commentdata, $result->id, $post)) === false) {
 						continue;
@@ -267,6 +267,9 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 					$comment_id = 0;
 					try
 					{
+						Social::Log('Attempting to save commentdata: :commentdata', array(
+							'commentdata' => print_r($commentdata, true)
+						));
 						$comment_id = wp_insert_comment($commentdata);
 
 						update_comment_meta($comment_id, 'social_account_id', addslashes_deep($result->from_user_id));
@@ -345,7 +348,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		}
 		return '';
 	}
-	
+
 	/**
 	 * Parse a Twitter URL and return the tweet ID.
 	 *
@@ -638,7 +641,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 
 		return $url;
 	}
-	
+
 	/**
 	 * Comment types for this service.
 	 *

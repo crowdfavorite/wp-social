@@ -276,7 +276,7 @@ final class Social_Twitter {
 
 		return md5(trim($content));
 	}
-	
+
 	/**
 	 * Checks for a retweet via twitter API data and user perception.
 	 *
@@ -360,7 +360,7 @@ final class Social_Twitter {
 
 		return $title;
 	}
-	
+
 	/**
 	 * Add a "reply to" field to broadcast form.
 	 *
