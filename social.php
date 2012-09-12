@@ -966,7 +966,7 @@ final class Social {
 		else {
 			$xmlrpc = false;
 			if ($new == 'publish') {
-				if ( ( defined('XMLRPC_REQUEST') or defined('WP_MAIL') ) and $old != 'publish') {
+				if ( ( defined('XMLRPC_REQUEST') or defined('SOCIAL_MAIL_PUBLISH') ) and $old != 'publish') {
 					$xmlrpc = true;
 					$this->xmlrpc_publish_post($post);
 				}
@@ -2176,7 +2176,7 @@ function social_wpdb_escape($str) {
 }
 
 function social_wp_mail_indicator() {
-	define('WP_MAIL', true);
+	define('SOCIAL_MAIL_PUBLISH', true);
 }
 
 $social_file = __FILE__;
