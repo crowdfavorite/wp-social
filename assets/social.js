@@ -402,7 +402,7 @@
 						$inputs = $this.find('input');
 					$this.data('running-import', true);
 					$inputs.attr('disabled', 'disabled');
-					
+
 					var $loading = $('<div class="loading"></div>')
 						.height($this.height())
 						.width($this.width());
@@ -410,7 +410,7 @@
 							.find('.msg').remove().end()
 						.end()
 						.after($loading);
-	
+
 					$.get($this.attr('action'), {
 						url: $('input[name=url]').val()
 					}, function(response) {
