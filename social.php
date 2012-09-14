@@ -66,7 +66,6 @@ final class Social {
 		'installed_version' => 0,
 		'broadcast_format' => '{title}: {content} {url}',
 		'comment_broadcast_format' => '{content} {url}',
-		'twitter_anywhere_api_key' => null,
 		'system_cron_api_key' => null,
 		'fetch_comments' => '1',
 		'broadcast_by_default' => '0',
