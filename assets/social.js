@@ -438,15 +438,6 @@
 		});
 
 		/**
-		 * Twitter @Anywhere
-		 */
-		if (typeof twttr != 'undefined' && typeof twttr.anywhere != 'undefined') {
-			twttr.anywhere(function(T) {
-				T.hovercards();
-			});
-		}
-
-		/**
 		 * Social items
 		 */
 		if ($('.social-items-and-more').length) {

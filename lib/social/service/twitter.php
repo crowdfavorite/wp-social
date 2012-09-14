@@ -626,15 +626,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		if (in_array($comment->comment_type, self::comment_types())) {
 			$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
 			$output = str_replace("rel='", "rel='".$status_id." ", $url);
-
-			$api_key = Social::option('twitter_anywhere_api_key');
-			if (!empty($api_key)) {
-				$output = str_replace("'>", "' style='display:none'>@", $output);
-				$output .= '@'.get_comment_author($comment->comment_ID);
-			}
-			else {
-				$output = str_replace("'>", "'>@", $output);
-			}
+			$output = str_replace("'>", "'>@", $output);
 
 			return $output;
 		}

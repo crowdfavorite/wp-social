@@ -87,14 +87,6 @@ foreach (Social::comment_broadcast_tokens() as $token => $description) {
 					</div>
 				</td>
 			</tr>
-			<tr>
-				<th><?php _e('Twitter @anywhere', 'social'); ?></th>
-				<td>
-					<label for="social_twitter_anywhere_api_key"><?php _e('Consumer API Key', 'social'); ?></label><br />
-					<input type="text" class="regular-text" name="social_twitter_anywhere_api_key" id="social_twitter_anywhere_api_key" value="<?php echo esc_attr(Social::option('twitter_anywhere_api_key')); ?>" />
-					<p class="description"><?php printf(__('To enable Twitter\'s @anywhere hovercards for Twitter usernames, enter your application\'s Consumer API key here. (<a href="%1$s" target="_blank">Click here to get an API key</a>)', 'social'), 'https://dev.twitter.com/docs/anywhere'); ?></p>
-				</td>
-			</tr>
 		</table>
 <?php
 $fetch = Social::option('fetch_comments');
