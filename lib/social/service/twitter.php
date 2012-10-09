@@ -71,37 +71,47 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 * @return void
 	 */
 	public function aggregate_by_url(&$post, array $urls) {
-		$url = 'http://search.twitter.com/search.json?q='.implode('+OR+', $urls);
+		$accounts = $this->get_aggregation_accounts($post);
+
+		if (!$accounts) {
+			return;
+		}
+
+		$account = $accounts[0];
+
 		Social::log('Searching by URL(s) for post #:post_id. (Query: :url)', array(
 			'post_id' => $post->ID,
 			'url' => $url,
 			'rpp' => 100
 		));
-		$request = wp_remote_get($url);
-		if (!is_wp_error($request)) {
-			$response = apply_filters('social_response_body', $request['body'], $this->_key);
-			if (isset($response->results) and is_array($response->results) and count($response->results)) {
-				foreach ($response->results as $result) {
-					$data = array(
-						'username' => $result->from_user,
-					);
 
-					if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
-						Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url', true, $data);
+		$response = $this->request($account, 'search', array(
+			'q' => implode('+OR+', $urls)
+		));
+
+		$response = apply_filters('social_response_body', $response, $this->_key);
+
+		if (isset($response->results) and is_array($response->results) and count($response->results)) {
+			foreach ($response->results as $result) {
+				$data = array(
+					'username' => $result->from_user,
+				);
+
+				if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
+					Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url', true, $data);
+					continue;
+				}
+				else {
+					if ($this->is_original_broadcast($post, $result->id)) {
 						continue;
 					}
-					else {
-						if ($this->is_original_broadcast($post, $result->id)) {
-							continue;
-						}
-					}
-
-					$result->comment_type = (Social_Twitter::is_retweet(null, $result) ? 'social-twitter-rt' : 'social-twitter');
-
-					Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url', false, $data);
-					$post->aggregated_ids[$this->_key][] = $result->id;
-					$post->results[$this->_key][$result->id] = $result;
 				}
+
+				$result->comment_type = (Social_Twitter::is_retweet(null, $result) ? 'social-twitter-rt' : 'social-twitter');
+
+				Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url', false, $data);
+				$post->aggregated_ids[$this->_key][] = $result->id;
+				$post->results[$this->_key][$result->id] = $result;
 			}
 		}
 		else {
