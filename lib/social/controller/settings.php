@@ -47,6 +47,11 @@ final class Social_Controller_Settings extends Social_Controller {
 				delete_option('social_default_accounts');
 			}
 
+			// API accounts
+			if ($this->request->post('social_api_accounts')) {
+				Social::option('social_api_accounts', $this->request->post('social_api_accounts'));
+			}
+
 			// System CRON
 			if ($this->request->post('social_fetch_comments') !== null) {
 				Social::option('fetch_comments', $this->request->post('social_fetch_comments'));
