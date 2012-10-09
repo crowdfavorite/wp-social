@@ -47,6 +47,11 @@ final class Social_Controller_Settings extends Social_Controller {
 				delete_option('social_default_accounts');
 			}
 
+			// API accounts
+			if ($this->request->post('social_api_accounts')) {
+				Social::option('social_api_accounts', $this->request->post('social_api_accounts'));
+			}
+
 			// Anywhere key
 			if ($this->request->post('social_twitter_anywhere_api_key') !== null) {
 				Social::option('twitter_anywhere_api_key', $this->request->post('social_twitter_anywhere_api_key'));
