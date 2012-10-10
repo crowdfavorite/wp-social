@@ -390,7 +390,10 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		$id = $this->tweet_url_to_id($url);
 		if (!empty($id) and !$this->is_original_broadcast($post, $id)) {
 			Social::log('Importing tweet. -- ID: :id -- URL: :url', array("id" => $id, "url" => $url));
-			$social_response = $this->request($account, 'statuses/show/'.$id);
+			$social_response = $this->request($account, 'statuses/show.json', array(
+				'id' => $id,
+				'include_entities' => 'true',
+			));
 			if ($social_response !== false and is_object($social_response->body()->response)) {
 				$response = $social_response->body()->response;
 				if ($response !== null and !isset($response->error)) {
@@ -589,8 +592,9 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 			return;
 		}
 
-		$social_response = $this->request($account, '/statuses/show.json?id='.$broadcasted_id.'&include_entities=true', array(
-			'include_entities' => true
+		$social_response = $this->request($account, '/statuses/show.json', array(
+			'id' => $braodcasted_id,
+			'include_entities' => true,
 		));
 
 		if ($social_response !== false && is_object($social_response->body()->response)) {
