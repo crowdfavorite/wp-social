@@ -5,8 +5,6 @@
 // $accounts (list of accounts to show for this screen)
 // $defaults (accounts that are checked for default broadcast)
 
-$is_profile = defined('IS_PROFILE_PAGE');
-
 foreach ($services as $key => $service) {
 ?>
 <div class="social-accounts">
@@ -50,6 +48,7 @@ foreach ($services as $key => $service) {
 					else {
 						$default_checked = '';
 					}
+					$is_profile = defined('IS_PROFILE_PAGE');
 					if ($account->page($child_account->id, $is_profile) !== false) {
 						$enabled_checked = ' checked="checked"';
 					}
@@ -96,4 +95,3 @@ foreach ($services as $key => $service) {
 }
 ?>
 <p class="description" style="max-width: 450px;"><?php _e('Default accounts will auto-broadcast when you publish via XML-RPC or email.', 'social'); ?></p>
-
