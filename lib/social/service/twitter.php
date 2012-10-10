@@ -589,7 +589,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 			return;
 		}
 
-		$social_response = $this->request($account, '/statuses/show'.$broadcasted_id, array(
+		$social_response = $this->request($account, '/statuses/show.json?id='.$broadcasted_id.'&include_entities=true', array(
 			'include_entities' => true
 		));
 
