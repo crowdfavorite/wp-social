@@ -91,23 +91,6 @@ foreach ($services as $key => $service) {
 	}
 ?>
 	</ul>
-	<?php if ($key === 'twitter' && !$is_profile): // currently only enable "api accounts" for twitter ?>
-		<?php
-			$social_api_accounts = Social::option('social_api_accounts');
-			$selected_id = $social_api_accounts[$key];
-		?>
-		<div class="twitter-api-account">
-			<label>The Twitter Account</label>
-			<select id="social_api_accounts-<?php echo $key ?>" name="social_api_accounts[<?php echo $key ?>]">
-				<?php foreach ($service->accounts() as $account): $acct_id = $account->id() ?>
-					<?php if (in_array($acct_id, $accounts[$key])): ?>
-						<option value="<?php echo $acct_id ?>" <?php selected($acct_id, $selected_id) ?>><?php echo esc_html($account->name()) ?></option>
-					<?php endif; ?>
-				<?php endforeach; ?>
-			</select>
-		</div>
-		<p class="description" style="max-width: 450px;"><?php _e('This account will be used for interacting with twitter for general (non account specific) interactions.', 'social'); ?></p>
-	<?php endif; ?>
 </div>
 <?php
 }

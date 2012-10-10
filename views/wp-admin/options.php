@@ -127,6 +127,24 @@ $toggle = (
 										<?php _e("Disable Social's broadcasting feature.", 'social'); ?>
 									</label>
 								</li>
+								<li>&nbsp;</li>
+								<li>
+									<?php
+										$twitter_accounts = Social::instance()->service('twitter')->accounts();
+										$social_api_accounts = Social::option('social_api_accounts');
+										$selected_id = $social_api_accounts['twitter'];
+									?>
+									<div class="twitter-api-account">
+										<label>Twitter Default API Account</label>
+										<select id="social_api_accounts-twitter" name="social_api_accounts[twitter]">
+											<?php foreach ($twitter_accounts as $account): $acct_id = $account->id() ?>
+												<?php if ($account->personal()) { continue; } ?>
+												<option value="<?php echo $acct_id ?>" <?php selected($acct_id, $selected_id) ?>><?php echo esc_html($account->name()) ?></option>
+											<?php endforeach; ?>
+										</select>
+									</div>
+									<p class="description" style="max-width: 450px;"><?php _e('Account for general (non account specific) Twitter API interaction.', 'social'); ?></p>
+								</li>
 							</ul>
 						</td>
 					</tr>
