@@ -402,7 +402,7 @@
 						$inputs = $this.find('input');
 					$this.data('running-import', true);
 					$inputs.attr('disabled', 'disabled');
-					
+
 					var $loading = $('<div class="loading"></div>')
 						.height($this.height())
 						.width($this.width());
@@ -410,7 +410,7 @@
 							.find('.msg').remove().end()
 						.end()
 						.after($loading);
-	
+
 					$.get($this.attr('action'), {
 						url: $('input[name=url]').val()
 					}, function(response) {
@@ -436,15 +436,6 @@
 			$(this).hide().closest('li').find('form').show().find(':text').focus().select();
 			return false;
 		});
-
-		/**
-		 * Twitter @Anywhere
-		 */
-		if (typeof twttr != 'undefined' && typeof twttr.anywhere != 'undefined') {
-			twttr.anywhere(function(T) {
-				T.hovercards();
-			});
-		}
 
 		/**
 		 * Social items

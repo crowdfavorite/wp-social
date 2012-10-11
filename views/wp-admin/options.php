@@ -90,9 +90,8 @@ foreach (Social::comment_broadcast_tokens() as $token => $description) {
 			<tr>
 				<th><?php _e('Twitter @anywhere', 'social'); ?></th>
 				<td>
-					<label for="social_twitter_anywhere_api_key"><?php _e('Consumer API Key', 'social'); ?></label><br />
-					<input type="text" class="regular-text" name="social_twitter_anywhere_api_key" id="social_twitter_anywhere_api_key" value="<?php echo esc_attr(Social::option('twitter_anywhere_api_key')); ?>" />
-					<p class="description"><?php printf(__('To enable Twitter\'s @anywhere hovercards for Twitter usernames, enter your application\'s Consumer API key here. (<a href="%1$s" target="_blank">Click here to get an API key</a>)', 'social'), 'https://dev.twitter.com/docs/anywhere'); ?></p>
+					<p>Social Version 2.6 has removed @anywhere support to comply with <a href="https://dev.twitter.com/blog/sunsetting-anywhere">Twitter's decision to sunset the service</a>.</p>
+					<p>If you would like to continue to use @anywhere, <a href="https://www.google.com/search?q=WordPress+@anywhere+plugin" target="_blank">there are many plugins available to accomodate</a>.</p>
 				</td>
 			</tr>
 		</table>
