@@ -144,7 +144,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 
 		$args = apply_filters($this->key().'_broadcast_args', $args, $post_id, $comment_id);
 		$endpoint = isset($args['link']) ? 'links' : 'feed';
-		return $this->request($account, $endpoint, $args, 'POST');
+		return $this->request($account, 'me/'.$endpoint, $args, 'POST');
 	}
 
 	/**
