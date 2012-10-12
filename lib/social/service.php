@@ -302,6 +302,21 @@ abstract class Social_Service {
 	}
 
 	/**
+	 * Gets the specified "api" account.
+	 *
+	 * @return Social_Service_Account|Social_Service|bool
+	 */
+	public function api_account() {
+		if ($social_api_accounts = Social::option('social_api_accounts')) {
+			if (isset($social_api_accounts[$this->key()])) {
+				return $this->account($social_api_accounts[$this->key()]);
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * Acts as a getter and setter for service accounts.
 	 *
 	 * @param  array  $accounts  accounts to add to the service
