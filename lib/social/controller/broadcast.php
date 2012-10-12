@@ -9,7 +9,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 
 	/**
 	 * Formats previous broadcasts for display.
-	 * 
+	 *
 	 * @param  string $broadcasted_id
 	 * @param  array  $broadcast
 	 * @param  object $account
@@ -37,7 +37,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 	}
 	/**
 	 * Displays the broadcast options form.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function action_options() {
@@ -46,7 +46,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 			if ($post === null) {
 				wp_redirect(admin_url('index.php'));
 			}
-			
+
 			return;
 		}
 
@@ -102,7 +102,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 											if (isset($errors[$key])) {
 												$errors[$key] = array();
 											}
-		
+
 											$errors[$key][$page_id] = __('Please enter content to be broadcasted.', 'social');
 										}
 										else {
@@ -114,7 +114,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 												if (!isset($account_content_meta[$key])) {
 													$account_content_meta[$key] = array();
 												}
-		
+
 												$account_content_meta[$key][$page_id] = $account_content[$key][$page_id];
 												$account_service_meta[$key][$page_id] = $service->get_broadcast_extras($page_id, $post);
 											}
@@ -163,7 +163,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 										if (!isset($broadcast_accounts[$key])) {
 											$broadcast_accounts[$key] = array();
 										}
-	
+
 										if (!isset($broadcast_accounts[$key][$page_id])) {
 											if (isset($universal_pages[$page_id])) {
 												$broadcast_accounts[$key][$page_id] = (object) array(
@@ -202,7 +202,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 				if ($location == null) {
 					$location = get_edit_post_link($post->ID, false);
 				}
-				
+
 				wp_redirect($location);
 				exit;
 			}
@@ -331,7 +331,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 				}
 			}
 		}
-		
+
 		$default_accounts = $this->social->default_accounts($post);
 
 		$broadcast_accounts = array();
@@ -364,8 +364,8 @@ final class Social_Controller_Broadcast extends Social_Controller {
 				if (count($errors)) {
 					$content = stripslashes($_POST['social_account_content'][$key][$id]);
 					$checked = (
-						isset($_POST['social_accounts']) && 
-						isset($_POST['social_accounts'][$key]) && 
+						isset($_POST['social_accounts']) &&
+						isset($_POST['social_accounts'][$key]) &&
 						in_array($data['field_value_checked'], $_POST['social_accounts'][$key])
 					);
 					// TODO - Facebook pages check, abstract this
@@ -388,8 +388,8 @@ final class Social_Controller_Broadcast extends Social_Controller {
 					// TODO - abstract this
 					// check to see if a facebook page should be selected by default
 					// our data structure currently makes this awkward
-					if (!$checked && $key == 'facebook' && 
-						isset($default_accounts[$key]) && 
+					if (!$checked && $key == 'facebook' &&
+						isset($default_accounts[$key]) &&
 						isset($default_accounts[$key]['pages']) &&
 						is_array($default_accounts[$key]['pages'])) {
 						foreach ($default_accounts[$key]['pages'] as $page_parent_account) {
@@ -521,7 +521,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 								'username' => $account->name(),
 								'service' => $service->title(),
 							));
-							
+
 							$response = $service->broadcast($account, $message, $args, $post->ID);
 							if ($response !== false) {
 								if ($response->limit_reached()) {

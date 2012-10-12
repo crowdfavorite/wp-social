@@ -255,6 +255,26 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	}
 
 	/**
+	 *
+	 *
+	 */
+	public function update_enabled_child_accounts($enabled_child_ids) {
+		$is_profile = defined('IS_PROFILE_PAGE');
+
+		// reset enabled pages for account
+		$this->pages(array(), $is_profile);
+		// get available pages for account
+		$pages = $this->fetch_child_accounts();
+
+		// rebuild based on selections
+		foreach ($enabled_child_ids as $enabled_child_id) {
+			if (isset($pages[$enabled_child_id])) {
+				$this->page($pages[$enabled_child_id], $is_profile);
+			}
+		}
+	}
+
+	/**
 	 * Get all pages (the accounts are already segregated by personal/universal so we just want all of the pages).
 	 *
 	 * @param  bool  $refresh  Update list of child accounts from service.
@@ -281,7 +301,7 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 */
 	public function fetch_child_accounts() {
 		$pages = array();
-		if ($this->use_pages()) {
+		if ($this->use_pages() or $this->use_pages(true)) {
 			$service = new Social_Service_Facebook;
 			$pages = $service->get_pages($this);
 		}

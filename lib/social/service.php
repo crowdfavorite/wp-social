@@ -64,7 +64,7 @@ abstract class Social_Service {
 
 		$params = '?social_controller=auth&social_action=authorize&target='.urlencode($url);
 		if (is_admin()) {
-			$url = (defined('IS_PROFILE_PAGE') ? 'profile.php' : 'index.php');
+			$url = (defined('IS_PROFILE_PAGE') ? 'profile.php' : 'options-general.php');
 			$url = admin_url($url.$params);
 		}
 		else {
@@ -302,6 +302,21 @@ abstract class Social_Service {
 	}
 
 	/**
+	 * Gets the specified "api" account.
+	 *
+	 * @return Social_Service_Account|Social_Service|bool
+	 */
+	public function api_account() {
+		if ($social_api_accounts = Social::option('social_api_accounts')) {
+			if (isset($social_api_accounts[$this->key()])) {
+				return $this->account($social_api_accounts[$this->key()]);
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * Acts as a getter and setter for service accounts.
 	 *
 	 * @param  array  $accounts  accounts to add to the service
@@ -449,14 +464,20 @@ abstract class Social_Service {
 
 		$_format = $format;
 		$available = $this->max_broadcast_length();
+		$used_tokens = array();
+
+		// Gather used tokens and subtract remaining characters from available length
 		foreach (Social::comment_broadcast_tokens() as $token => $description) {
-			$_format = str_replace($token, '', $_format);
+			$replaced = 0;
+			$_format = str_replace($token, '', $_format, $replaced);
+			if ($replaced) {
+				$used_tokens[$token] = '';
+			}
 		}
 		$available = $available - strlen($_format);
 
-		$_format = explode(' ', $format);
-		foreach (Social::comment_broadcast_tokens() as $token => $description) {
-			$content = '';
+		// Prep token replacement content
+		foreach ($used_tokens as $token => $content) {
 			switch ($token) {
 				case '{url}':
 					$url = wp_get_shortlink($comment->comment_post_ID);
@@ -465,28 +486,31 @@ abstract class Social_Service {
 					}
 					$url .= '#comment-'.$comment->comment_ID;
 					$url = apply_filters('social_comment_broadcast_permalink', $url, $comment, $this);
-					$content = esc_url($url);
+					$used_tokens[$token] = esc_url($url);
 					break;
 				case '{content}':
-					$content = strip_tags($comment->comment_content);
-					$content = str_replace(array("\n", "\r", PHP_EOL), '', $content);
-					$content = str_replace('&nbsp;', '', $content);
+					$used_tokens[$token] = strip_tags($comment->comment_content);
+					$used_tokens[$token] = str_replace(array("\n", "\r", PHP_EOL), '', $used_tokens[$token]);
+					$used_tokens[$token] = str_replace('&nbsp;', '', $used_tokens[$token]);
 					break;
 			}
+		}
 
-			if (strlen($content) > $available) {
-				$content = substr($content, 0, ($available - 3)).'...';
-			}
+		// if {url} is used, pre-allocate its length
+		if (isset($used_tokens['{url}'])) {
+			$available = $available - strlen($used_tokens['{url}']);
+		}
 
-			$content = apply_filters('social_format_comment_content', $content, $comment, $format, $this);
+		$used_tokens['{content}'] = apply_filters('social_format_comment_content', $used_tokens['{content}'], $comment, $format, $this);
 
-			foreach ($_format as $haystack) {
-				if (strpos($haystack, $token) !== false and $available > 0) {
-					$haystack = str_replace($token, $content, $haystack);
-					$available = $available - strlen($haystack);
-					$format = str_replace($token, $content, $format);
-					break;
-				}
+		// Truncate content to size limit
+		if (strlen($used_tokens['{content}']) > $available) {
+			$used_tokens['{content}'] = substr($used_tokens['{content}'], 0, ($available - 3)).'...';
+		}
+
+		foreach ($used_tokens as $token => $replacement) {
+			if (strpos($format, $token) !== false) {
+				$format = str_replace($token, $replacement, $format);
 			}
 		}
 
@@ -513,6 +537,7 @@ abstract class Social_Service {
 			$method = apply_filters('social_api_endpoint_method', $method, $this->_key);
 			$args = apply_filters('social_api_endpoint_args', $args, $this->_key);
 			$request = wp_remote_post($proxy, array(
+				'timeout' => 60, // default of 5 seconds if not set here
 				'sslverify' => false,
 				'body' => array(
 					'api' => $api,

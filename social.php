@@ -66,7 +66,6 @@ final class Social {
 		'installed_version' => 0,
 		'broadcast_format' => '{title}: {content} {url}',
 		'comment_broadcast_format' => '{content} {url}',
-		'twitter_anywhere_api_key' => null,
 		'system_cron_api_key' => null,
 		'fetch_comments' => '1',
 		'broadcast_by_default' => '0',
@@ -494,7 +493,7 @@ final class Social {
 				wp_schedule_event(time() + 900, 'every15min', 'social_cron_15_init');
 			}
 			wp_remote_get(
-				admin_url('index.php?'.http_build_query(array(
+				admin_url('options_general.php?'.http_build_query(array(
 					'social_controller' => 'cron',
 					'social_action' => 'check_crons',
 					'social_api_key' => Social::option('system_cron_api_key')
@@ -576,7 +575,7 @@ final class Social {
 
 			$suppress_no_accounts_notice = get_user_meta(get_current_user_id(), 'social_suppress_no_accounts_notice', true);
 			if (!$this->_enabled and (!isset($_GET['page']) or $_GET['page'] != basename(SOCIAL_FILE)) and empty($suppress_no_accounts_notice)) {
-				$dismiss = sprintf(__('<a href="%s" class="social_dismiss">[Dismiss]</a>', 'social'), esc_url(admin_url('index.php?social_controller=settings&social_action=suppress_no_accounts_notice')));
+				$dismiss = sprintf(__('<a href="%s" class="social_dismiss">[Dismiss]</a>', 'social'), esc_url(admin_url('options-general.php?social_controller=settings&social_action=suppress_no_accounts_notice')));
 				$message = sprintf(__('To start using Social, please <a href="%s">add an account</a>.', 'social'), esc_url(Social::settings_url()));
 				echo '<div class="error"><p>'.$message.' '.$dismiss.'</p></div>';
 			}
@@ -604,7 +603,7 @@ final class Social {
 				$suppress_enable_notice = get_user_meta(get_current_user_id(), 'social_suppress_enable_notice', true);
 				if (empty($suppress_enable_notice)) {
 					$message = __('When you enable Social, users will be created when they log in with Facebook or Twitter to comment. These users are created without a role and will be prevented from accessing the admin side of WordPress until an administrator edits the user to give them a role.', 'social');
-					$dismiss = sprintf(__('<a href="%s" class="social_dismiss">[Dismiss]</a>', 'social'), esc_url(admin_url('index.php?social_controller=settings&social_action=suppress_enable_notice')));
+					$dismiss = sprintf(__('<a href="%s" class="social_dismiss">[Dismiss]</a>', 'social'), esc_url(admin_url('options-general.php?social_controller=settings&social_action=suppress_enable_notice')));
 					echo '<div class="updated"><p>'.$message.' '.$dismiss.'</p></div>';
 				}
 			}
@@ -613,7 +612,7 @@ final class Social {
 			$error = Social::option('log_write_error');
 			if ($error == '1') {
 				echo '<div class="error"><p>'.
-					sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_dismiss">[Dismiss]</a>', 'social'), esc_html(Social::$plugins_path), esc_url(admin_url('index.php?social_controller=settings&social_action=clear_log_write_error'))).
+					sprintf(__('%s needs to be writable for Social\'s logging. <a href="%" class="social_dismiss">[Dismiss]</a>', 'social'), esc_html(Social::$plugins_path), esc_url(admin_url('options-general.php?social_controller=settings&social_action=clear_log_write_error'))).
 					'</p></div>';
 			}
 		}
@@ -623,7 +622,7 @@ final class Social {
 		if (!empty($deauthed)) {
 			foreach ($deauthed as $service => $data) {
 				foreach ($data as $id => $message) {
-					$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', 'social'), esc_url(admin_url('index.php?social_controller=settings&social_action=clear_deauth&id='.$id.'&service='.$service)), 'social_dismiss');
+					$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', 'social'), esc_url(admin_url('options-general.php?social_controller=settings&social_action=clear_deauth&id='.$id.'&service='.$service)), 'social_dismiss');
 					echo '<div class="error"><p>'.esc_html($message).' '.$dismiss.'</p></div>';
 				}
 			}
@@ -657,7 +656,7 @@ final class Social {
 				$output = sprintf($output, esc_url(admin_url('profile.php#social-networks')));
 			}
 
-			$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', 'social'), esc_url(admin_url('index.php?social_controller=settings&social_action=clear_2_0_upgrade')), 'social_dismiss');
+			$dismiss = sprintf(__('<a href="%s" class="%s">[Dismiss]</a>', 'social'), esc_url(admin_url('options-general.php?social_controller=settings&social_action=clear_2_0_upgrade')), 'social_dismiss');
 			echo '<div class="error"><p>'.$output.' '.$dismiss.'</p></div>';
 		}
 	}
@@ -734,8 +733,23 @@ final class Social {
 		else {
 			delete_user_meta($user_id, 'social_default_accounts');
 		}
+
+		// Save Enabled child accounts
+		$is_profile = true;
+		$enabled_child_accounts = is_array($_POST['social_enabled_child_accounts']) ? $_POST['social_enabled_child_accounts'] : array();
+		foreach ($this->services() as $service_key => $service) {
+			$updated_accounts = array();
+			foreach ($service->accounts() as $account) {
+				//default service to empty array in case it is not set
+				$enabled_child_accounts[$service_key] = isset($enabled_child_accounts[$service_key]) ? $enabled_child_accounts[$service_key] : array();
+
+				$account->update_enabled_child_accounts($enabled_child_accounts[$service_key]);
+				$updated_accounts[$account->id()] = $account->as_object();
+			}
+			$service->accounts($updated_accounts)->save($is_profile);
+		}
 	}
-	
+
 	/**
 	 * Return array of enabled social broadcasting post types
 	 *
@@ -951,7 +965,7 @@ final class Social {
 		else {
 			$xmlrpc = false;
 			if ($new == 'publish') {
-				if (defined('XMLRPC_REQUEST') and $old != 'publish') {
+				if ( ( defined('XMLRPC_REQUEST') or defined('SOCIAL_MAIL_PUBLISH') ) and $old != 'publish') {
 					$xmlrpc = true;
 					$this->xmlrpc_publish_post($post);
 				}
@@ -980,9 +994,14 @@ final class Social {
 			Social::log('Broadcasting triggered by XML-RPC.');
 
 			$broadcast_accounts = array();
+			$broadcast_content = array();
+			$broadcast_meta = array();
+
 			foreach ($this->default_accounts($post) as $service_key => $accounts) {
 				$service = $this->service($service_key);
 				if ($service !== false) {
+					$broadcast_content[$service_key] = array();
+					$broadcast_meta[$service_key] = array();
 					foreach ($accounts as $key => $id) {
 						// TODO abstract this to the Facebook plugin
 						if ($service_key == 'facebook' and $key === 'pages') {
@@ -1016,6 +1035,8 @@ final class Social {
 											);
 										}
 									}
+									$broadcast_content[$service_key][$page_id] = $service->format_content($post, Social::option('broadcast_format'));
+									$broadcast_meta[$service_key][$page_id] = $service->get_broadcast_extras($page_id, $post);
 								}
 							}
 						}
@@ -1030,17 +1051,17 @@ final class Social {
 									'id' => $account->id(),
 									'universal' => $account->universal()
 								);
+
+								$broadcast_content[$service_key][$account->id()] = $service->format_content($post, Social::option('broadcast_format'));
+								$broadcast_meta[$service_key][$account->id()] = $service->get_broadcast_extras($account->id(), $post);
 							}
 						}
 					}
-
-					// Content
-					if (isset($broadcast_accounts[$service_key])) {
-						$content = $service->format_content($post, Social::option('broadcast_format'));
-						update_post_meta($post->ID, '_social_'.$service_key.'_content', addslashes_deep($content));
-					}
 				}
 			}
+
+			update_post_meta($post->ID, '_social_broadcast_content', addslashes_deep($broadcast_content));
+			update_post_meta($post->ID, '_social_broadcast_meta', addslashes_deep($broadcast_meta));
 
 			if (count($broadcast_accounts)) {
 				Social::log('There are default accounts, running broadcast');
@@ -1251,8 +1272,8 @@ final class Social {
 			}
 		}
 		else {
-			$link = explode('>'.__('Log in', 'social'), $link);
-			$link = $link[0].' id="social_login">'.__('Log in', 'social').$link[1];
+			$link = explode('>'.__('Log in'), $link);
+			$link = $link[0].' id="social_login">'.__('Log in').$link[1];
 		}
 
 		return $link;
@@ -1658,7 +1679,7 @@ final class Social {
 	 */
 	public function post_row_actions(array $actions, $post) {
 		if ($post->post_status == 'publish' && in_array(Social::option('fetch_comments'), array('1', '2'))) {
-			$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', 'social'), esc_url(wp_nonce_url(admin_url('index.php?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID).
+			$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', 'social'), esc_url(wp_nonce_url(admin_url('options-general.php?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID).
 				'<img src="'.esc_url(admin_url('images/wpspin_light.gif')).'" class="social_run_aggregation_loader" />';
 		}
 		return $actions;
@@ -1693,13 +1714,13 @@ final class Social {
 						<span class="social-dot">.</span>
 						<span class="social-dot">.</span>
 					)</span>',
-				'href' => esc_url(wp_nonce_url(admin_url('index.php?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run')),
+				'href' => esc_url(wp_nonce_url(admin_url('options-general.php?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run')),
 			));
 			$wp_admin_bar->add_menu(array(
 				'parent' => 'comments',
 				'id' => 'social-add-tweet-by-url',
 				'title' => __('Add Tweet by URL', 'social')
-					.'<form class="social-add-tweet" style="display: none;" method="get" action="'.esc_url(wp_nonce_url(admin_url('index.php?social_controller=import&social_action=from_url&social_service=twitter&post_id='.$current_object->ID), 'from_url')).'">
+					.'<form class="social-add-tweet" style="display: none;" method="get" action="'.esc_url(wp_nonce_url(admin_url('options-general.php?social_controller=import&social_action=from_url&social_service=twitter&post_id='.$current_object->ID), 'from_url')).'">
 						<input type="text" size="20" name="url" value="" autocomplete="off" />
 						<input type="submit" name="social-add-tweet-button" name="social-add-tweet-button" value="'.__('Add Tweet by URL', 'social').'" />
 					</form>',
@@ -2153,6 +2174,10 @@ function social_wpdb_escape($str) {
 	return $wpdb->escape($str);
 }
 
+function social_wp_mail_indicator() {
+	define('SOCIAL_MAIL_PUBLISH', true);
+}
+
 $social_file = __FILE__;
 if (isset($plugin)) {
 	$social_file = $plugin;
@@ -2195,7 +2220,8 @@ add_action('admin_bar_menu', array($social, 'admin_bar_menu'), 95);
 add_action('wp_after_admin_bar_render', array($social, 'admin_bar_footer_css'));
 add_action('wp_after_admin_bar_render', array($social, 'admin_bar_footer_js'));
 add_action('set_user_role', array($social, 'set_user_role'), 10, 2);
-add_filter('social_settings_save', array('Social_Service_Facebook', 'social_settings_save'));
+add_action('wp-mail.php', 'social_wp_mail_indicator');
+add_action('social_settings_save', array('Social_Service_Facebook', 'social_settings_save'));
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));

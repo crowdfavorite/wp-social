@@ -3,8 +3,8 @@
 Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter, social, broadcast, import, integrate, integration
 Requires at least: 3.2
-Tested up to: 3.3.2
-Stable tag: 2.5
+Tested up to: 3.4.2
+Stable tag: 2.6
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -36,7 +36,6 @@ When publishing to Facebook and Twitter, the discussion is likely to continue th
 Many individuals use Facebook or Twitter as their primary identity(ies) on the web. Allow your commenters to log in and leave a comment as that identity. Furthermore, they can publish their response directly to their Twitter or Facebook account.
 
 - Allow users to leave comments as Facebook or Twitter identity
-- Twitter hovercard support (with @anywhere API key)
 - Links point back to users' Facebook or Twitter profiles
 - Indicators let you and visitors know people are who they say they are
 
@@ -51,7 +50,6 @@ Please [fork, contribute and file technical bugs on GitHub](https://github.com/c
 3. Visit the settings page under `Settings > Social` to add Twitter and Facebook accounts for all authors on your site
 4. Visit your profile page under `Users > Profile` to add Twitter and Facebook accounts that only you can broadcast to
 5. Make sure your plugin or uploads directory writable to allow the cron jobs to fetch new comments from Twitter and Facebook
-6. (Optional) Register for and add your [Twitter @anywhere API key](http://dev.twitter.com/anywhere) to the settings page to enable Twitter hovercards
 
 ## Frequently Asked Questions
 
@@ -83,7 +81,7 @@ Yes, if you'd rather create more 'advanced' customizations beyond CSS tweaks sim
 
     define('SOCIAL_COMMENTS_FILE', STYLESHEETPATH.'/social-comments.php');
 
-Then you will need to create the `social-comments.php` file with your custom markup (perhaps copy it directly from the provided comments.php in the plugin) into your theme's directory. 
+Then you will need to create the `social-comments.php` file with your custom markup (perhaps copy it directly from the provided comments.php in the plugin) into your theme's directory.
 
 **How can I define custom JS and/or CSS, or disable Social's JS/CSS?**
 
@@ -147,14 +145,6 @@ If you want to hook into a CRON for extra functionality for a service, all you h
 
     <?php add_action('social_cron_15', array('Your_Class', 'your_method')); ?>
 
-**How can I turn on and off Twitter's @Anywhere functionality?**
-
-To utilize Twitter's @Anywhere functionality (hovercards appearing on linked @usernames) you will need to have an @Anywhere application set up. If you don't have an application already created,
-visit http://dev.twitter.com/anywhere.
-
-Once you have an Consumer API key, login to your WordPress installation and navigate to Settings -> Social -> Twitter @Anywhere Settings. Enter your `Consumer key` in the input box and click on "Save Settings".
-
-If you want to disable the @Anywhere functionality, simply remove the API key from the Social settings page and click "Save Settings".
 
 **Does the proxy application have access to my passwords now?**
 
@@ -239,7 +229,7 @@ This is because we completely refactored Social's codebase for 2.0. Chances are 
 
 For a more in-depth look at what you need to be aware of when upgrading from 1.x to 2.0 please have a look at the wiki entry: https://github.com/crowdfavorite/wp-social/wiki/Upgrading-from-1.x-to-2.0
 
-** How do I include Facebook Likes and Twitter Retweets in my comments feed? **
+**How do I include Facebook Likes and Twitter Retweets in my comments feed?**
 
 The following code should add "meta" comments such as Likes as Retweets to your comments RSS and Atom feeds:
 
@@ -249,11 +239,11 @@ The following code should add "meta" comments such as Likes as Retweets to your 
 	}
 	add_action('init', 'social_enable_meta_comments_in_feed');
 
-= Does Social output Facebook Open Graph tags for my site? =
+**Does Social output Facebook Open Graph tags for my site?**
 
 No it does not. If you would like to have these tags on your site, please install one of the many available plugins that add this feature.
 
-= I have a lot of comments and loading the avatars makes the page load slowly, what can I do? =
+**I have a lot of comments and loading the avatars makes the page load slowly, what can I do?**
 
 Social supports the [Lazy Load plugin](http://wordpress.org/extend/plugins/lazy-load/). Install this plugin and Social's avatars will hang out on the couch eating potato chips and watching TV until they are needed.
 
@@ -265,17 +255,36 @@ Social supports the [Lazy Load plugin](http://wordpress.org/extend/plugins/lazy-
 
 3. Post edit screen settings: broadcast the post, manually import comments, view a log of imported items
 
-4. Send customized broadcasts to each social account 
-
-5. View of replies imported from Twitter as comments, @anywhere support 
+4. Send customized broadcasts to each social account
 
 ## Upgrade Notice
 
-** 2.5 **
+**2.6**
+
+This version fixes numerous bugs, provides compatibility with the newest Twitter API, and provides a few new filters to customize the date output.  See the Changelog for details
+
+**2.5**
 
 This version fixes an issue where users could be authenticated incorrectly (they would be logged in as someone else) when more than one user was logging in at exactly the same time. We also added a bunch of great new features and enhancements, as well as changes to improve reliability of comment importing from Facebook.
 
 ## Changelog
+
+**2.6**
+
+* Removed Twitter's @anywhere service
+* Now utilizes the newest Twitter API (1.1)
+* Automatically approve Likes and Retweets
+* New date format filters
+  - `social_formatted_date`
+  - `social_comment_date`
+  - `social_fuzzy_date`
+* Bugfixes
+  - XML-RPC / Email Posts now auto broadcast correctly
+  - Enable Pages support in user profile social accounts
+  - Now utilizing longer timeouts for broadcast requests
+  - Properly post links to facebook
+  - Remove 'social' namespace for login i18n
+  - Properly truncate comment broadcasting, giving the url priority
 
 **2.5**
 
@@ -295,7 +304,7 @@ This version fixes an issue where users could be authenticated incorrectly (they
 * Improved relative date functions for comments (3 months ago, etc.)
 * Support lazy loading of avatars (via plugin)
 * Change comment header title based on context (creating a new comment, replying to a comment, etc.)
-* Fix issue causing reactions to Facebook broadcasts to not be imported consistently as comments 
+* Fix issue causing reactions to Facebook broadcasts to not be imported consistently as comments
 * Various bug fixes and improvements
 
 **2.0.1**
@@ -317,7 +326,7 @@ This version fixes an issue where users could be authenticated incorrectly (they
 * Only public tweets are imported as comments.
 * New authentication scheme improves security.
 * Manual comment check commands from the admin bar and posts list admin page.
-* Improved queue and locking system to reduce the possibility of social reactions being imported twice. 
+* Improved queue and locking system to reduce the possibility of social reactions being imported twice.
 * Filter: social_broadcast_format now contains a third parameter, $service_key.
 * Filter: social_broadcast_permalink now contains a third parameter, $service_key.
 * Filter: social_format_content now contains a fourth parameter, $service_key.

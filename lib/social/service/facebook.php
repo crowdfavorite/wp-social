@@ -74,7 +74,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 */
 	public function broadcast($account, $message, array $args = array(), $post_id = null, $comment_id = null) {
 		global $post;
-		// if post ID is set, this is a broadcast of a post, 
+		// if post ID is set, this is a broadcast of a post,
 		// if the comment ID is set it is a broadcast of a comment
 		// TODO - add wrapper functions that abstract these actions out to separate methods
 
@@ -109,7 +109,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					}
 				}
 			}
-			
+
 			// posting with a link, do not include URL in comment.
 			$format = trim(str_replace('{url}', '', Social::option('comment_broadcast_format')));
 			$message = $this->format_comment_content($comment, $format);
@@ -143,7 +143,8 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		}
 
 		$args = apply_filters($this->key().'_broadcast_args', $args, $post_id, $comment_id);
-		return $this->request($account, 'feed', $args, 'POST');
+		$endpoint = isset($args['link']) ? 'links' : 'feed';
+		return $this->request($account, 'me/'.$endpoint, $args, 'POST');
 	}
 
 	/**
@@ -227,7 +228,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 											continue;
 										}
 									}
-	
+
 									Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
 									$result->status_id = $broadcasted_id;
 									$post->results[$this->_key][$result->id] = $result;
@@ -335,6 +336,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 							'comment_date' => date('Y-m-d H:i:s', strtotime($result->created_time) + (get_option('gmt_offset') * 3600)),
 							'comment_date_gmt' => gmdate('Y-m-d H:i:s', strtotime($result->created_time)),
 						));
+
 					}
 				}
 				else {
@@ -356,7 +358,10 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				));
 
 				$result_id = (isset($result->status_id) ? $result->status_id : $result->id);
-				if (($commentdata = $this->allow_comment($commentdata, $result_id, $post)) === false) {
+				if (apply_filters('social_approve_likes_and_retweets', true) && isset($result->like)) {
+					$commentdata['comment_approved'] = 1;
+				}
+				else if (($commentdata = $this->allow_comment($commentdata, $result_id, $post)) === false) {
 					continue;
 				}
 
@@ -375,6 +380,9 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				$comment_id = 0;
 				try
 				{
+					Social::Log('Attempting to save commentdata: :commentdata', array(
+						'commentdata' => print_r($commentdata, true)
+					));
 					$comment_id = wp_insert_comment($commentdata);
 
 					update_comment_meta($comment_id, 'social_account_id', addslashes_deep($user_id));
@@ -579,42 +587,34 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 			'social-facebook-like',
 		);
 	}
-	
+
 	public static function social_settings_save($controller) {
 		// Save Facebook pages
 		$is_profile = ($controller->request()->post('social_profile') == 'true');
 		if ($is_profile and !defined('IS_PROFILE_PAGE')) {
 			define('IS_PROFILE_PAGE', true);
 		}
-	
-		$enabled_pages = $controller->request()->post('social_enabled_pages');
-		if (!is_array($enabled_pages)) {
-			$enabled_pages = array();
+
+		$enabled_child_accounts = $controller->request()->post('social_enabled_child_accounts');
+		if (!is_array($enabled_child_accounts)) {
+			$enabled_child_accounts = array();
 		}
 		$service = $controller->social()->service('facebook');
 		if ($service !== false) {
-			$fb_accounts = $service->accounts();
-			foreach ($fb_accounts as $account) {
-				// reset pages for account
-				$fb_accounts[$account->id()]->pages(array(), $is_profile);
-				if (count($enabled_pages) && isset($enabled_pages[$account->id()])) {
-					// fetch available pages for account
-					$pages = $service->get_pages($account, $is_profile);
-					foreach ($enabled_pages[$account->id()] as $enabled_page_id) {
-						if (isset($pages[$enabled_page_id])) {
-							$fb_accounts[$account->id()]->page($pages[$enabled_page_id], $is_profile);
-						}
-					}
+			foreach ($service->accounts() as $account) {
+				$updated_accounts = array();
+				foreach ($service->accounts() as $account) {
+					//default service to empty array in case it is not set
+					$enabled_child_accounts[$service->key()] = isset($enabled_child_accounts[$service->key()]) ? $enabled_child_accounts[$service->key()] : array();
+
+					$account->update_enabled_child_accounts($enabled_child_accounts[$service->key()]);
+					$updated_accounts[$account->id()] = $account->as_object();
 				}
-				
+				$service->accounts($updated_accounts)->save($is_profile);
 			}
-			foreach ($fb_accounts as $account_id => $account) {
-				$fb_accounts[$account_id] = $account->as_object();
-			}
-			$service->accounts($fb_accounts)->save($is_profile);
 		}
 	}
-	
+
 	public static function social_settings_default_accounts($accounts, $controller) {
 		if (is_array($controller->request()->post('social_default_pages'))) {
 			if (!isset($accounts['facebook'])) {

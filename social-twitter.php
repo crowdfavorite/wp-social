@@ -216,18 +216,6 @@ final class Social_Twitter {
 		return $comments;
 	}
 
-	/**
-	 * Enqueues the @Anywhere script.
-	 *
-	 * @static
-	 * @return void
-	 */
-	public static function enqueue_assets() {
-		$api_key = Social::option('twitter_anywhere_api_key');
-		if (!empty($api_key)) {
-			wp_enqueue_script('twitter_anywhere', 'http://platform.twitter.com/anywhere.js?id='.$api_key, array('social_js'), Social::$version, true);
-		}
-	}
 
 	/**
 	 * Sets the raw data for the broadcasted post.
@@ -276,7 +264,7 @@ final class Social_Twitter {
 
 		return md5(trim($content));
 	}
-	
+
 	/**
 	 * Checks for a retweet via twitter API data and user perception.
 	 *
@@ -360,7 +348,7 @@ final class Social_Twitter {
 
 		return $title;
 	}
-	
+
 	/**
 	 * Add a "reply to" field to broadcast form.
 	 *
@@ -394,7 +382,6 @@ add_filter('get_avatar_comment_types', array('Social_Twitter', 'get_avatar_comme
 add_filter('social_comments_array', array('Social_Twitter', 'comments_array'), 10, 2);
 add_filter('social_save_broadcasted_ids_data', array('Social_Twitter', 'social_save_broadcasted_ids_data'), 10, 5);
 add_filter('social_item_output_title', array('Social_Twitter', 'social_item_output_title'), 10, 2);
-add_action('wp_enqueue_scripts', array('Social_Twitter', 'enqueue_assets'));
 add_action('social_broadcast_form_item_edit', array('Social_Twitter', 'social_broadcast_form_item_edit'), 10, 3);
 
 }
