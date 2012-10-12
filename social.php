@@ -25,7 +25,7 @@ final class Social {
 	/**
 	 * @var  string  version number
 	 */
-	public static $version = '2.5';
+	public static $version = '2.6rc2';
 
 	/**
 	 * @var  string  CRON lock directory.
