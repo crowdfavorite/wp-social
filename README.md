@@ -36,7 +36,6 @@ When publishing to Facebook and Twitter, the discussion is likely to continue th
 Many individuals use Facebook or Twitter as their primary identity(ies) on the web. Allow your commenters to log in and leave a comment as that identity. Furthermore, they can publish their response directly to their Twitter or Facebook account.
 
 - Allow users to leave comments as Facebook or Twitter identity
-- Twitter hovercard support (with @anywhere API key)
 - Links point back to users' Facebook or Twitter profiles
 - Indicators let you and visitors know people are who they say they are
 
@@ -51,7 +50,6 @@ Please [fork, contribute and file technical bugs on GitHub](https://github.com/c
 3. Visit the settings page under `Settings > Social` to add Twitter and Facebook accounts for all authors on your site
 4. Visit your profile page under `Users > Profile` to add Twitter and Facebook accounts that only you can broadcast to
 5. Make sure your plugin or uploads directory writable to allow the cron jobs to fetch new comments from Twitter and Facebook
-6. (Optional) Register for and add your [Twitter @anywhere API key](http://dev.twitter.com/anywhere) to the settings page to enable Twitter hovercards
 
 ## Frequently Asked Questions
 
@@ -147,14 +145,6 @@ If you want to hook into a CRON for extra functionality for a service, all you h
 
     <?php add_action('social_cron_15', array('Your_Class', 'your_method')); ?>
 
-**How can I turn on and off Twitter's @Anywhere functionality?**
-
-To utilize Twitter's @Anywhere functionality (hovercards appearing on linked @usernames) you will need to have an @Anywhere application set up. If you don't have an application already created,
-visit http://dev.twitter.com/anywhere.
-
-Once you have an Consumer API key, login to your WordPress installation and navigate to Settings -> Social -> Twitter @Anywhere Settings. Enter your `Consumer key` in the input box and click on "Save Settings".
-
-If you want to disable the @Anywhere functionality, simply remove the API key from the Social settings page and click "Save Settings".
 
 **Does the proxy application have access to my passwords now?**
 
@@ -266,8 +256,6 @@ Social supports the [Lazy Load plugin](http://wordpress.org/extend/plugins/lazy-
 3. Post edit screen settings: broadcast the post, manually import comments, view a log of imported items
 
 4. Send customized broadcasts to each social account 
-
-5. View of replies imported from Twitter as comments, @anywhere support 
 
 ## Upgrade Notice
 
