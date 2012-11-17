@@ -22,7 +22,7 @@ final class Social_Controller_Auth extends Social_Controller {
 	 * @return void
 	 */
 	public function action_authorize() {
-		$proxy = urldecode($this->request->query('target'));
+		$proxy = apply_filters('social_authorize_url', Social::$api_url.$this->request->query('key').'/authorize/', $this->request->query('key'));
 		if (strpos($proxy, Social::$api_url) !== false) {
 			$salt = $this->auth_nonce_salt();
 			$id = wp_create_nonce($this->auth_nonce_key($salt));
