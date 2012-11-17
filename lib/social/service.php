@@ -409,7 +409,8 @@ abstract class Social_Service {
 					$content = htmlspecialchars_decode($post->post_title);
 					break;
 				case '{content}':
-					$content = htmlspecialchars_decode(strip_tags($post->post_content));
+					$content = do_shortcode($post->post_content);
+					$content = htmlspecialchars_decode(strip_tags($content));
  					$content = str_replace(array("\n", "\r", PHP_EOL, '&nbsp;'), ' ', $content);
 					$content = preg_replace('/\s+/', ' ', $content);
 					break;
