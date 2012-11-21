@@ -179,7 +179,7 @@ class Social_Date {
 			}
 
 			if (!empty($hours) and !empty($minutes)) {
-				$output = $hours.' '.$minutes;
+				$output = $hours.' and '.$minutes;
 			}
 			else if (!empty($hours)) {
 				$output = $hours;
