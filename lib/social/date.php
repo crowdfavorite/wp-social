@@ -126,7 +126,7 @@ class Social_Date {
 		}
 
 		// Months
-		if (!empty($span['months'])) {
+		elseif (!empty($span['months'])) {
 			if ($span['months'] == '1') {
 				$output = __('1 month', 'social');
 			}
@@ -136,17 +136,17 @@ class Social_Date {
 		}
 
 		// Weeks
-		if (!empty($span['weeks'])) {
+		elseif (!empty($span['weeks'])) {
 			if ($span['weeks'] == '1') {
 				$output = __('1 week', 'social');
 			}
 			else {
-				$output = sprintf(__('%s weeks', $span['weeks']), $span['weeks']);
+				$output = sprintf(__('%s weeks', 'social'), $span['weeks']);
 			}
 		}
 
 		// Days
-		if (!empty($span['days'])) {
+		elseif (!empty($span['days'])) {
 			if ($span['days'] == '1') {
 				$output = __('1 day', 'social');
 			}
@@ -155,49 +155,51 @@ class Social_Date {
 			}
 		}
 
-		// Hours
-		$hours = '';
-		if (!empty($span['hours'])) {
-			if ($span['hours'] == '1') {
-				$hours = __('1 hour', 'social');
-			}
-			else {
-				$hours = sprintf(__('%s hours', 'social'), $span['hours']);
-			}
-		}
+		// Hours and Minutes
+		elseif (!empty($span['hours']) || !empty($span['minutes'])) {
+			$hours = '';
+			$minutes = '';
 
-		// Minutes
-		$minutes = '';
-		if (!empty($span['minutes'])) {
-			if ($span['minutes'] == '1') {
-				$minutes = __('1 minute', 'social');
+			if (!empty($span['hours'])) {
+				if ($span['hours'] == '1') {
+					$hours = __('1 hour', 'social');
+				}
+				else {
+					$hours = sprintf(__('%s hours', 'social'), $span['hours']);
+				}
+			}
+
+			if (!empty($span['minutes'])) {
+				if ($span['minutes'] == '1') {
+					$minutes = __('1 minute', 'social');
+				}
+				else {
+					$minutes = sprintf(__('%s minutes', 'social'), $span['minutes']);
+				}
+			}
+
+			if (!empty($hours) and !empty($minutes)) {
+				$output = $hours.' and '.$minutes;
+			}
+			else if (!empty($hours)) {
+				$output = $hours;
 			}
 			else {
-				$minutes = sprintf(__('%s minutes', 'social'), $span['minutes']);
+				$output = $minutes;
 			}
+
 		}
 
 		// Seconds
-		if (empty($hours) and empty($minutes)) {
-			if (!empty($span['seconds'])) {
-				if ($span['seconds'] == '1') {
-					$output = __('1 second', 'social');
-				}
-				else {
-					$output = sprintf(__('%s seconds', 'social'), $span['seconds']);
-				}
+		elseif (!empty($span['seconds'])) {
+			if ($span['seconds'] == '1') {
+				$output = __('1 second', 'social');
+			}
+			else {
+				$output = sprintf(__('%s seconds', 'social'), $span['seconds']);
 			}
 		}
 
-		if (!empty($hours) and !empty($minutes)) {
-			$output = $hours.' '.$minutes;
-		}
-		else if (!empty($hours)) {
-			$output = $hours;
-		}
-		else {
-			$output = $minutes;
-		}
 
 		return apply_filters('social_formatted_date', $output, $remote, $local);
 	}
@@ -225,7 +227,7 @@ class Social_Date {
 		}
 
 		// Months
-		if (!empty($span['months'])) {
+		elseif (!empty($span['months'])) {
 			if ($span['months'] == '1') {
 				$output = __('1 month ago', 'social');
 			}
@@ -235,19 +237,19 @@ class Social_Date {
 		}
 
 		// Weeks
-		if (!empty($span['weeks'])) {
+		elseif (!empty($span['weeks'])) {
 			if ($span['weeks'] == '1') {
 				$output = __('1 week ago', 'social');
 			}
 			else {
-				$output = sprintf(__('%s weeks ago', $span['weeks']), $span['weeks']);
+				$output = sprintf(__('%s weeks ago', 'social'), $span['weeks']);
 			}
 		}
 
 		// Days
-		if (!empty($span['days'])) {
+		elseif (!empty($span['days'])) {
 			if ($span['days'] == '1') {
-				$output = __('1 day', 'social');
+				$output = __('1 day ago', 'social');
 			}
 			else {
 				$output = sprintf(__('%s days ago', 'social'), $span['days']);
@@ -255,42 +257,28 @@ class Social_Date {
 		}
 
 		// Hours
-		$hours = '';
-		if (!empty($span['hours'])) {
+		elseif (!empty($span['hours'])) {
 			if ($span['hours'] == '1') {
-				$hours = __('1 hour', 'social');
+				$output = __('1 hour ago', 'social');
 			}
 			else {
-				$hours = sprintf(__('%s hours', 'social'), $span['hours']);
+				$output = sprintf(__('%s hours', 'social'), $span['hours']);
 			}
 		}
 
 		// Minutes
-		$minutes = '';
-		if (!empty($span['minutes'])) {
+		elseif (!empty($span['minutes'])) {
 			if ($span['minutes'] == '1') {
-				$minutes = __('1 minute', 'social');
+				$output = __('1 minute ago', 'social');
 			}
 			else {
-				$minutes = sprintf(__('%s minutes', 'social'), $span['minutes']);
+				$output = sprintf(__('%s minutes ago', 'social'), $span['minutes']);
 			}
 		}
 
 		// Seconds
-		if (empty($hours) and empty($minutes)) {
-			$output =  __('just now', 'social');
-		}
-
-		if (!empty($hours)) {
-			if ($span['hours'] > 1) {
-				$output = sprintf(__('%s ago', 'social'), $hours);
-			}
-			else {
-				$output = sprintf(__('%s ago', 'social'), $hours.' '.$minutes);
-			}
-		}
 		else {
-			$output = sprintf(__('%s ago', 'social'), $minutes);
+			$output =  __('just now', 'social');
 		}
 
 		return apply_filters('social_comment_date', $output, $remote, $local);
