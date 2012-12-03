@@ -1,4 +1,4 @@
-<form id="setup" method="post" action="<?php echo esc_url(admin_url('index.php?social_controller=settings&social_action=index')); ?>">
+<form id="setup" method="post" action="<?php echo esc_url(admin_url('options-general.php?social_controller=settings&social_action=index')); ?>">
 <?php wp_nonce_field(); ?>
 <input type="hidden" name="social_action" value="settings" />
 <?php if (isset($_GET['saved'])): ?>
@@ -90,9 +90,8 @@ foreach (Social::comment_broadcast_tokens() as $token => $description) {
 			<tr>
 				<th><?php _e('Twitter @anywhere', 'social'); ?></th>
 				<td>
-					<label for="social_twitter_anywhere_api_key"><?php _e('Consumer API Key', 'social'); ?></label><br />
-					<input type="text" class="regular-text" name="social_twitter_anywhere_api_key" id="social_twitter_anywhere_api_key" value="<?php echo esc_attr(Social::option('twitter_anywhere_api_key')); ?>" />
-					<p class="description"><?php printf(__('To enable Twitter\'s @anywhere hovercards for Twitter usernames, enter your application\'s Consumer API key here. (<a href="%1$s" target="_blank">Click here to get an API key</a>)', 'social'), 'https://dev.twitter.com/docs/anywhere'); ?></p>
+					<p>Social Version 2.6 has removed @anywhere support to comply with <a href="https://dev.twitter.com/blog/sunsetting-anywhere">Twitter's decision to sunset the service</a>.</p>
+					<p>If you would like to continue to use @anywhere, <a href="https://www.google.com/search?q=WordPress+@anywhere+plugin" target="_blank">there are many plugins available to accomodate</a>.</p>
 				</td>
 			</tr>
 		</table>
@@ -126,6 +125,24 @@ $toggle = (
 										<input type="checkbox" name="social_disable_broadcasting" id="social_disable_broadcasting" value="1" <?php checked(Social::option('disable_broadcasting'), '1'); ?> />
 										<?php _e("Disable Social's broadcasting feature.", 'social'); ?>
 									</label>
+								</li>
+								<li>&nbsp;</li>
+								<li>
+									<?php
+										$twitter_accounts = Social::instance()->service('twitter')->accounts();
+										$social_api_accounts = Social::option('social_api_accounts');
+										$selected_id = $social_api_accounts['twitter'];
+									?>
+									<div class="twitter-api-account">
+										<label>Twitter Default API Account</label>
+										<select id="social_api_accounts-twitter" name="social_api_accounts[twitter]">
+											<?php foreach ($twitter_accounts as $account): $acct_id = $account->id() ?>
+												<?php if ($account->personal()) { continue; } ?>
+												<option value="<?php echo $acct_id ?>" <?php selected($acct_id, $selected_id) ?>><?php echo esc_html($account->name()) ?></option>
+											<?php endforeach; ?>
+										</select>
+									</div>
+									<p class="description" style="max-width: 450px;"><?php _e('Account for general (non account specific) Twitter API interaction.', 'social'); ?></p>
 								</li>
 							</ul>
 						</td>

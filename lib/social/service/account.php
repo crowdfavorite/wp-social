@@ -188,4 +188,11 @@ abstract class Social_Service_Account {
 		return $this->_avatar();
 	}
 
+	/**
+	 * Update child accounts of a service account
+	 * @abstract
+	 * @param array $enabled_child_ids - array of enabled child account ids
+	 */
+	abstract public function update_enabled_child_accounts($enabled_child_ids);
+
 } // End Social_Service_Account

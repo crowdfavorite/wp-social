@@ -37,7 +37,7 @@ final class Social_Controller_Settings extends Social_Controller {
 					$accounts[$account[0]][] = $account[1];
 				}
 			}
-			
+
 			$accounts = apply_filters('social_settings_default_accounts', $accounts, $this);
 
 			if (count($accounts)) {
@@ -47,9 +47,9 @@ final class Social_Controller_Settings extends Social_Controller {
 				delete_option('social_default_accounts');
 			}
 
-			// Anywhere key
-			if ($this->request->post('social_twitter_anywhere_api_key') !== null) {
-				Social::option('twitter_anywhere_api_key', $this->request->post('social_twitter_anywhere_api_key'));
+			// API accounts
+			if ($this->request->post('social_api_accounts')) {
+				Social::option('social_api_accounts', $this->request->post('social_api_accounts'));
 			}
 
 			// System CRON
@@ -61,7 +61,7 @@ final class Social_Controller_Settings extends Social_Controller {
 					wp_unschedule_event($timestamp, 'social_cron_15_init');
 				}
 			}
-			
+
 			// Disable Social's comment display feature
 			if (isset($_POST['social_use_standard_comments'])) {
 				Social::option('use_standard_comments', '1');
@@ -83,7 +83,7 @@ final class Social_Controller_Settings extends Social_Controller {
 			wp_redirect(Social::settings_url(array('saved' => 'true')));
 			exit;
 		}
-		
+
 		$accounts = array();
 		foreach ($this->social->services() as $key => $service) {
 			if (!isset($accounts[$key])) {
