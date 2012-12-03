@@ -61,7 +61,11 @@ final class Social_Controller_Auth extends Social_Controller {
 		}
 
 		Social::log('Authorizing with URL: '.$proxy);
-		wp_redirect($proxy);
+		if (strpos($proxy, Social::$api_url) !== false) {
+			wp_redirect($proxy);
+		} else {
+			wp_redirect(home_url());
+		}
 		exit;
 	}
 
