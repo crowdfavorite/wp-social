@@ -20,7 +20,7 @@ final class Social {
 	/**
 	 * @var  string  URL of the API
 	 */
-	public static $api_url = 'https://sopresto.mailchimp.com/';
+	public static $api_url = 'https://sopresto.socialize-this.com/';
 
 	/**
 	 * @var  string  version number
