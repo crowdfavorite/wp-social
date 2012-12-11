@@ -4,7 +4,7 @@ Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter, social, broadcast, import, integrate, integration
 Requires at least: 3.3
 Tested up to: 3.4.2
-Stable tag: 2.6
+Stable tag: 2.6.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -262,11 +262,16 @@ Social supports the [Lazy Load plugin](http://wordpress.org/extend/plugins/lazy-
 
 ## Upgrade Notice
 
-**2.6**
-
-This version fixes numerous bugs, provides compatibility with the newest Twitter API, and provides a few new filters to customize the date output.  See the Changelog for details
+**2.6.1**
+This version fixes several bugs and may help with HostGator's weird server settings.  See the Changelog for details.
 
 ## Changelog
+
+**2.6.1**
+
+* More consistent comment date output
+* Try to work around draconian HostGator faux-security rules
+* Strip shortcodes from content before creating default broadcast
 
 **2.6**
 
