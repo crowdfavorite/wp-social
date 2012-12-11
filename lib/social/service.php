@@ -59,10 +59,7 @@ abstract class Social_Service {
 	public function authorize_url() {
 		global $post;
 
-		$proxy = Social::$api_url.$this->_key.'/authorize';
-		$url = apply_filters('social_authorize_url', $proxy, $this->_key);
-
-		$params = '?social_controller=auth&social_action=authorize&target='.urlencode($url);
+		$params = '?social_controller=auth&social_action=authorize&key='.$this->_key;
 		if (is_admin()) {
 			$url = (defined('IS_PROFILE_PAGE') ? 'profile.php' : 'options-general.php');
 			$url = admin_url($url.$params);
@@ -409,7 +406,8 @@ abstract class Social_Service {
 					$content = htmlspecialchars_decode($post->post_title);
 					break;
 				case '{content}':
-					$content = htmlspecialchars_decode(strip_tags($post->post_content));
+					$content = do_shortcode($post->post_content);
+					$content = htmlspecialchars_decode(strip_tags($content));
  					$content = str_replace(array("\n", "\r", PHP_EOL, '&nbsp;'), ' ', $content);
 					$content = preg_replace('/\s+/', ' ', $content);
 					break;
