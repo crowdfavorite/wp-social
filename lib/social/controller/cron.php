@@ -17,7 +17,7 @@ final class Social_Controller_CRON extends Social_Controller {
 
 		if ($this->request->action() != 'check_crons') {
 			// Social system cron?
-			if (Social::option('fetch_comments') == '2' or $this->request->query('api_key') !== null) {
+			if ($this->request->query('api_key') !== null) {
 				$api_key = $this->request->query('api_key');
 				if ($api_key != Social::option('system_cron_api_key')) {
 					Social::log('Api key failed');
