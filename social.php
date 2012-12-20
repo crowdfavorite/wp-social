@@ -789,15 +789,13 @@ final class Social {
 					$this,
 					'add_meta_box_broadcast'
 				), $post_type, 'side', 'high');
-	
+
 				$fetch = Social::option('fetch_comments');
-				if ($this->_enabled and !empty($fetch)) {
-					if ($post->post_status == 'publish') {
-						add_meta_box('social_meta_aggregation_log', __('Social Comments', 'social'), array(
-							$this,
-							'add_meta_box_log'
-						), $post_type, 'normal', 'core');
-					}
+				if ($this->_enabled and !empty($fetch) and $post->post_status == 'publish' and post_type_supports($post->post_type, 'comments')) {
+					add_meta_box('social_meta_aggregation_log', __('Social Comments', 'social'), array(
+						$this,
+						'add_meta_box_log'
+					), $post_type, 'normal', 'core');
 				}
 			}
 		}
@@ -1678,7 +1676,7 @@ final class Social {
 	 * @return array
 	 */
 	public function post_row_actions(array $actions, $post) {
-		if ($post->post_status == 'publish' && in_array(Social::option('fetch_comments'), array('1', '2'))) {
+		if (post_type_supports( get_current_screen()->post_type, 'comments' ) && $post->post_status == 'publish' && in_array(Social::option('fetch_comments'), array('1', '2'))) {
 			$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', 'social'), esc_url(wp_nonce_url(admin_url('options-general.php?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID).
 				'<img src="'.esc_url(admin_url('images/wpspin_light.gif')).'" class="social_run_aggregation_loader" />';
 		}
@@ -1704,6 +1702,7 @@ final class Social {
 				and current_user_can($post_type_object->cap->edit_post, $current_object->ID)
 					and ($post_type_object->show_ui or 'attachment' == $current_object->post_type)
 						and (in_array(Social::option('fetch_comments'), array('1', '2')))
+							and (post_type_supports($current_object->post_type, 'comments'))
 		) {
 			$wp_admin_bar->add_menu(array(
 				'parent' => 'comments',
