@@ -12,7 +12,9 @@
 	</p>
 </div><!-- .social-meta-box-block -->
 
-<?php if (Social::option('aggregate_comments')) { ?>
+<?php
+if (Social::option('aggregate_comments')) {
+?>
 <div class="social-meta-box-block cf-clearfix">
 	<h4>
 		<?php _e('Manual Refresh', 'social'); ?>
@@ -24,7 +26,9 @@
 		<img src="<?php echo esc_url(admin_url('images/wpspin_light.gif')); ?>" style="float:left;position:relative;top:4px;left:5px;display:none;" id="run_aggregation_loader" />
 	</p>
 </div><!-- .social-meta-box-block -->
-<?php } ?>
+<?php
+}
+?>
 
 <div class="social-meta-box-block">
 	<h4><?php _e('Log', 'social'); ?></h4>

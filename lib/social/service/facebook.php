@@ -57,8 +57,6 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 			}
 			wp_reset_postdata();
 			$args = $args + $link_args;
-
-			error_log(print_r($args, true));
 		}
 		return parent::get_broadcast_extras($account_id, $post, $args);
 	}

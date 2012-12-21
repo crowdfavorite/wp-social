@@ -38,7 +38,7 @@ echo Social_View::factory(
 				</td>
 			</tr>
 			<tr>
-				<th><?php _e('Aggregate social comments', 'social'); ?></th>
+				<th><?php _e('Pull in social comments from Facebook and Twitter', 'social'); ?></th>
 				<td>
 					<input type="radio" name="social_aggregate_comments" id="social-aggregate-comments-yes" value="1"<?php checked('1', Social::option('aggregate_comments'), true); ?>
 					<label for="social-aggregate-comments-yes"><?php _e('Yes', 'social'); ?></label>
@@ -174,7 +174,9 @@ $toggle = (
 										<?php _e('Manual <span class="description">(advanced)</span>', 'social'); ?>
 									</label>
 									<p class="description"><?php _e('If you select this option, new tweets and Facebook posts will not be fetched unless you set up a system CRON job or fetch new items manually from the post edit screen. More help is also available in&nbsp;<code>README.txt</code>.', 'social'); ?></p>
-									<?php if (Social::option('cron') === '0'): ?>
+<?php
+if (Social::option('cron') === '0') {
+?>
 									<div class="social-callout">
 										<h3 class="social-title"><?php _e('CRON Setup', 'social'); ?></h3>
 										<dl class="social-kv">
@@ -185,7 +187,9 @@ $toggle = (
 										</dl>
 										<p><?php _e('For your system CRON to run correctly, make sure it is pointing towards a URL that looks something like the following:', 'social'); ?></p>
 										<code><?php echo esc_url(home_url('index.php?social_controller=cron&social_action=cron_15&api_key='.Social::option('system_cron_api_key'))); ?></code>
-										<?php endif; ?>
+<?php
+}
+?>
 									</div>
 								</li>
 							</ul>
