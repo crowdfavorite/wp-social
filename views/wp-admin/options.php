@@ -38,6 +38,16 @@ echo Social_View::factory(
 				</td>
 			</tr>
 			<tr>
+				<th><?php _e('Aggregate social comments', 'social'); ?></th>
+				<td>
+					<input type="radio" name="social_aggregate_comments" id="social-aggregate-comments-yes" value="1"<?php checked('1', Social::option('aggregate_comments'), true); ?>
+					<label for="social-aggregate-comments-yes"><?php _e('Yes', 'social'); ?></label>
+
+					<input type="radio" name="social_aggregate_comments" id="social-aggregate-comments-no" value="0"<?php checked('0', Social::option('aggregate_comments'), true); ?>
+					<label for="social-aggregate-comments-no"><?php _e('No', 'social'); ?></label>
+				</td>
+			</tr>
+			<tr>
 				<th>
 					<label for="social_broadcast_format"><?php _e('Post broadcast format', 'social'); ?></label>
 				</th>
@@ -96,9 +106,9 @@ foreach (Social::comment_broadcast_tokens() as $token => $description) {
 			</tr>
 		</table>
 <?php
-$fetch = Social::option('fetch_comments');
+$cron = Social::option('cron');
 $toggle = (
-	(!empty($fetch) and $fetch != '1') or
+	(empty($cron)) or
 	Social::option('debug') == '1' or
 	Social::option('use_standard_comments') == 1 or
 	Social::option('disable_broadcasting') == 1
@@ -148,30 +158,23 @@ $toggle = (
 						</td>
 					</tr>
 					<tr>
-						<th><?php _e('Fetch new comments', 'social'); ?></th>
+						<th><?php _e('Cron settings', 'social'); ?></th>
 						<td>
 							<ul>
 								<li>
-									<label for="fetch_comments_auto">
-										<input type="radio" name="social_fetch_comments" value="1" id="fetch_comments_auto" style="position:relative;top:-1px"<?php echo Social::option('fetch_comments') == '1' ? ' checked="checked"' : ''; ?> />
-										<?php _e('Automatically', 'social'); ?>
+									<label for="cron_auto">
+										<input type="radio" name="social_cron" value="1" id="cron_auto" style="position:relative;top:-1px"<?php echo Social::option('cron') == '1' ? ' checked="checked"' : ''; ?> />
+										<?php _e('Automatic (WP Cron)', 'social'); ?>
 										<span class="description"><?php _e('(easiest)', 'social'); ?></span>
 									</label>
 								</li>
 								<li>
-									<label for="fetch_comments_never">
-										<input type="radio" name="social_fetch_comments" value="0" id="fetch_comments_never" style="position:relative;top:-1px"<?php echo !in_array(Social::option('fetch_comments'), array('1', '2')) ? ' checked="checked"' : ''; ?> />
-										<?php _e('Never', 'social'); ?>
-										<span class="description"><?php _e('(disables fetching of comments)', 'social'); ?></span>
-									</label>
-								</li>
-								<li>
-									<label for="fetch_comments_cron">
-										<input type="radio" name="social_fetch_comments" value="2" id="fetch_comments_cron" style="position:relative;top:-1px"<?php echo Social::option('fetch_comments') == '2' ? ' checked="checked"' : ''; ?> />
-										<?php _e('Using a custom CRON job <span class="description">(advanced)</span>', 'social'); ?>
+									<label for="cron_manual">
+										<input type="radio" name="social_cron" value="0" id="cron_manual" style="position:relative;top:-1px"<?php echo Social::option('cron') == '0' ? ' checked="checked"' : ''; ?> />
+										<?php _e('Manual <span class="description">(advanced)</span>', 'social'); ?>
 									</label>
 									<p class="description"><?php _e('If you select this option, new tweets and Facebook posts will not be fetched unless you set up a system CRON job or fetch new items manually from the post edit screen. More help is also available in&nbsp;<code>README.txt</code>.', 'social'); ?></p>
-									<?php if (Social::option('fetch_comments') == '2'): ?>
+									<?php if (Social::option('cron') === '0'): ?>
 									<div class="social-callout">
 										<h3 class="social-title"><?php _e('CRON Setup', 'social'); ?></h3>
 										<dl class="social-kv">

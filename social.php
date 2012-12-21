@@ -67,7 +67,8 @@ final class Social {
 		'broadcast_format' => '{title}: {content} {url}',
 		'comment_broadcast_format' => '{content} {url}',
 		'system_cron_api_key' => null,
-		'fetch_comments' => '1',
+		'cron' => '1',
+		'aggregate_comments' => '1',
 		'broadcast_by_default' => '0',
 		'use_standard_comments' => '0',
 	);
@@ -487,7 +488,7 @@ final class Social {
 	public function check_system_cron() {
 		Social::log('Checking system CRON');
 		// Schedule CRONs
-		if (Social::option('fetch_comments') == '1') {
+		if (Social::option('cron') == '1') {
 			if (wp_next_scheduled('social_cron_15_init') === false) {
 				Social::log('Adding Social 15 CRON schedule');
 				wp_schedule_event(time() + 900, 'every15min', 'social_cron_15_init');
@@ -790,8 +791,13 @@ final class Social {
 					'add_meta_box_broadcast'
 				), $post_type, 'side', 'high');
 
-				$fetch = Social::option('fetch_comments');
-				if ($this->_enabled and !empty($fetch) and $post->post_status == 'publish' and post_type_supports($post->post_type, 'comments')) {
+				$fetch = Social::option('aggregate_comments');
+				if ($this->_enabled
+					&& !empty($fetch)
+					&& $post->post_status == 'publish'
+					&& post_type_supports($post->post_type, 'comments')
+					&& Social::option('aggregate_comments'))
+				{
 					add_meta_box('social_meta_aggregation_log', __('Social Comments', 'social'), array(
 						$this,
 						'add_meta_box_log'
@@ -1676,7 +1682,10 @@ final class Social {
 	 * @return array
 	 */
 	public function post_row_actions(array $actions, $post) {
-		if (post_type_supports( get_current_screen()->post_type, 'comments' ) && $post->post_status == 'publish' && in_array(Social::option('fetch_comments'), array('1', '2'))) {
+		if (post_type_supports( get_current_screen()->post_type, 'comments' )
+			&& $post->post_status == 'publish'
+			&& Social::option('aggregate_comments'))
+		{
 			$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', 'social'), esc_url(wp_nonce_url(admin_url('options-general.php?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID).
 				'<img src="'.esc_url(admin_url('images/wpspin_light.gif')).'" class="social_run_aggregation_loader" />';
 		}
@@ -1698,12 +1707,12 @@ final class Social {
 		}
 
 		if (!empty($current_object->post_type)
-			and ($post_type_object = get_post_type_object($current_object->post_type))
-				and current_user_can($post_type_object->cap->edit_post, $current_object->ID)
-					and ($post_type_object->show_ui or 'attachment' == $current_object->post_type)
-						and (in_array(Social::option('fetch_comments'), array('1', '2')))
-							and (post_type_supports($current_object->post_type, 'comments'))
-		) {
+			&& ($post_type_object = get_post_type_object($current_object->post_type))
+			&& current_user_can($post_type_object->cap->edit_post, $current_object->ID)
+			&& ($post_type_object->show_ui || 'attachment' == $current_object->post_type)
+			&& Social::option('aggregate_comments')
+			&& post_type_supports($current_object->post_type, 'comments'))
+		{
 			$wp_admin_bar->add_menu(array(
 				'parent' => 'comments',
 				'id' => 'social-find-comments',
@@ -1925,6 +1934,7 @@ var socialAdminBarMsgs = {
 		if ($nonce_key !== null) {
 			$url = str_replace('&amp;', '&', wp_nonce_url($url, $nonce_key));
 		}
+
 
 		$data = array(
 			'timeout' => 0.01,
@@ -2224,7 +2234,9 @@ add_action('social_settings_save', array('Social_Service_Facebook', 'social_sett
 
 // CRON Actions
 add_action('social_cron_15_init', array($social, 'cron_15_init'));
-add_action('social_cron_15', array($social, 'run_aggregation'));
+if (Social::option('aggregate_comments')) {
+	add_action('social_cron_15', array($social, 'run_aggregation'));
+}
 
 // Admin Actions
 add_action('admin_menu', array($social, 'admin_menu'));
