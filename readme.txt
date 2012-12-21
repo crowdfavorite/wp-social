@@ -237,6 +237,10 @@ The following code should add "meta" comments such as Likes as Retweets to your 
 	}
 	add_action('init', 'social_enable_meta_comments_in_feed');
 
+= Why is facebook not getting the correct image for my broadcasts? =
+
+Facebook prefers to use Open Graph tags (http://ogp.me/) to pull in meta data about posted content.  Featured Images will be send with broadcasts, but if no featured image is present, facebook will calculate a best guess based on a few factors.  To control what images and metadata facebook uses to describe your post, use Open Graph tags in your theme.
+
 = Does Social output Facebook Open Graph tags for my site? =
 
 No it does not. If you would like to have these tags on your site, please install one of the many available plugins that add this feature.
