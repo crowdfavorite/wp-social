@@ -16,7 +16,7 @@ final class Social_Controller_Aggregation extends Social_Controller {
 
 		$this->verify_nonce();
 
-		$fetch = Social::option('fetch_comments');
+		$fetch = Social::option('aggregate_comments');
 		if (empty($fetch)) {
 			Social::log('Aggregation has been disabled, exiting.');
 			return;
