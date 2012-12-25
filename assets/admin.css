@@ -126,11 +126,14 @@
 }
 
 #social-broadcast-by-default-yes,
-#social-broadcast-by-default-no {
+#social-broadcast-by-default-no,
+#social-aggregate-comments-yes,
+#social-aggregate-comments-no {
 	margin: 0 5px;
 }
 
-#social-broadcast-by-default-no {
+#social-broadcast-by-default-no,
+#social-aggregate-comments-no {
 	margin-left: 15px;
 }
 

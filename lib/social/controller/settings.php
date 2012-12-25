@@ -29,6 +29,13 @@ final class Social_Controller_Settings extends Social_Controller {
 				delete_option('social_broadcast_by_default');
 			}
 
+			if (isset($_POST['social_aggregate_comments'])) {
+				Social::option('aggregate_comments', $_POST['social_aggregate_comments']);
+			}
+			else {
+				delete_option('social_aggregate_comments');
+			}
+
 			// Store the default accounts
 			$accounts = array();
 			if (is_array($this->request->post('social_default_accounts'))) {
@@ -53,11 +60,11 @@ final class Social_Controller_Settings extends Social_Controller {
 			}
 
 			// System CRON
-			if ($this->request->post('social_fetch_comments') !== null) {
-				Social::option('fetch_comments', $this->request->post('social_fetch_comments'));
+			if ($this->request->post('social_cron') !== null) {
+				Social::option('cron', $this->request->post('social_cron'));
 
 				// Unschedule the CRONs
-				if ($this->request->post('social_fetch_comments') != '1' and ($timestamp = wp_next_scheduled('social_cron_15_init')) !== false) {
+				if ($this->request->post('social_cron') != '1' and ($timestamp = wp_next_scheduled('social_cron_15_init')) !== false) {
 					wp_unschedule_event($timestamp, 'social_cron_15_init');
 				}
 			}

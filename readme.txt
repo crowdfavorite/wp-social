@@ -2,8 +2,8 @@
 Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter, social, broadcast, import, integrate, integration
 Requires at least: 3.3
-Tested up to: 3.4.2
-Stable tag: 2.6.1
+Tested up to: 3.5
+Stable tag: 2.7
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -237,6 +237,10 @@ The following code should add "meta" comments such as Likes as Retweets to your 
 	}
 	add_action('init', 'social_enable_meta_comments_in_feed');
 
+= Why is facebook not getting the correct image for my broadcasts? =
+
+Facebook prefers to use Open Graph tags (http://ogp.me/) to pull in meta data about posted content.  Featured Images will be send with broadcasts, but if no featured image is present, facebook will calculate a best guess based on a few factors.  To control what images and metadata facebook uses to describe your post, use Open Graph tags in your theme.
+
 = Does Social output Facebook Open Graph tags for my site? =
 
 No it does not. If you would like to have these tags on your site, please install one of the many available plugins that add this feature.
@@ -260,10 +264,20 @@ Social supports the [Lazy Load plugin](http://wordpress.org/extend/plugins/lazy-
 
 == Upgrade Notice ==
 
+= 2.7 =
+Make sure to upgrade ASAP. This release includes a pointer to the new Social proxy URL (the old URL will stop working on Jan 15th). 
+
 = 2.6.1 =
-This version fixes several bugs and may help with HostGator's weird server settings.  See the Changelog for details.
+This version fixes several bugs and may help with HostGator's weird server "security" settings.  See the Changelog for details.
+
 
 == Changelog ==
+
+= 2.7 =
+* New Social proxy endpoint (the old one will go away on Jan 15th)
+* Separate setting for fetching social comments and WP Cron integration (used in Twitter Tools)
+* Change Facebook endpoint for posting links (should accept passed images again)
+
 
 = 2.6.1 =
 * More consistent comment date output

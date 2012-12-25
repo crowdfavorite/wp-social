@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Social 2.5\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/social\n"
-"POT-Creation-Date: 2012-12-13 15:42+0900\n"
-"PO-Revision-Date: 2012-12-14 00:42+0900\n"
+"POT-Creation-Date: 2012-12-25 15:02+0900\n"
+"PO-Revision-Date: 2012-12-25 15:04+0900\n"
 "Last-Translator: Toshi Oshio <oshio@officeto.net>\n"
 "Language-Team: OfficeTO Inc. <oshio@officeto.net>\n"
 "Language: Japanese\n"
@@ -40,24 +40,24 @@ msgstr "返信として送信"
 msgid "URL of Tweet (to reply to)"
 msgstr "返信先のツイートのURL"
 
-#: ../social.php:117
+#: ../social.php:118
 #, php-format
 msgid "Failed to auto load class %s."
 msgstr "%sクラスの自動読み込みに失敗しました。"
 
-#: ../social.php:148 ../social.php:151
+#: ../social.php:149 ../social.php:152
 #, php-format
 msgid "Example: %s"
 msgstr "例： %s"
 
-#: ../social.php:254
+#: ../social.php:255
 msgid ""
 "Duplicate comment detected; it looks as though you&#8217;ve already said "
 "that!"
 msgstr ""
 "同一のコメントを検知しました。どうやらすでに同じ投稿をされているようです。"
 
-#: ../social.php:339
+#: ../social.php:340
 msgid ""
 "Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP "
 "5 as the default on your servers."
@@ -66,31 +66,31 @@ msgstr ""
 "うにすればお使いの環境でPHP 5がデフォルトで使えるかをサーバ管理者にお尋ねくだ"
 "さい。"
 
-#: ../social.php:393
+#: ../social.php:394
 msgid "Post a Reply"
 msgstr "返信を投稿"
 
-#: ../social.php:430 ../social.php:1784
+#: ../social.php:431 ../social.php:1792
 msgid "Protected Tweet"
 msgstr "鍵付きツイート"
 
-#: ../social.php:431 ../social.php:1785
+#: ../social.php:432 ../social.php:1793
 msgid "Invalid URL"
 msgstr "無効なURL"
 
-#: ../social.php:530
+#: ../social.php:531
 msgid "Social Options"
 msgstr "Socialオプション"
 
-#: ../social.php:531 ../views/wp-admin/options.php:11
+#: ../social.php:532 ../views/wp-admin/options.php:11
 msgid "Social"
 msgstr "Social"
 
-#: ../social.php:556
+#: ../social.php:557
 msgid "Settings"
 msgstr "設定"
 
-#: ../social.php:572
+#: ../social.php:573
 #, php-format
 msgid ""
 "Social is shiny and new! Please <a href=\"%s\">verify and save your "
@@ -99,31 +99,31 @@ msgstr ""
 "Socialプラグインは新しくなりました！ぜひ<a href=\"%s\">認証のうえ設定を保存し"
 "</a>アップグレードを完了させてください。"
 
-#: ../social.php:578 ../social.php:606
+#: ../social.php:579 ../social.php:607
 #, php-format
 msgid "<a href=\"%s\" class=\"social_dismiss\">[Dismiss]</a>"
 msgstr "<a href=\"%s\" class=\"social_dismiss\">[非表示にする]</a>"
 
-#: ../social.php:579
+#: ../social.php:580
 #, php-format
 msgid "To start using Social, please <a href=\"%s\">add an account</a>."
 msgstr ""
 "Socialプラグインを使うには、<a href=\"%s\">アカウントを追加</a>してください。"
 
-#: ../social.php:592
+#: ../social.php:593
 #, php-format
 msgid "Social requires that either %s or %s be writable for CRON jobs."
 msgstr ""
 "Socialプラグインは %s または %s がCRONジョブ用に書き込み可になっている必要が"
 "あります。"
 
-#: ../social.php:595
+#: ../social.php:596
 #, php-format
 msgid "Social requires that %s is writable for CRON jobs."
 msgstr ""
 "Socialプラグインは%sがCRONジョブ用に書き込み可になっている必要があります。"
 
-#: ../social.php:605
+#: ../social.php:606
 msgid ""
 "When you enable Social, users will be created when they log in with Facebook "
 "or Twitter to comment. These users are created without a role and will be "
@@ -135,7 +135,7 @@ msgstr ""
 "限グループにも属せず、管理者がそのユーザに権限を付与しない限りWordPressの管理"
 "画面にはアクセスできないようになっています。"
 
-#: ../social.php:615
+#: ../social.php:616
 msgid ""
 "%s needs to be writable for Social's logging. <a href=\"%\" class="
 "\"social_dismiss\">[Dismiss]</a>"
@@ -143,13 +143,13 @@ msgstr ""
 "Socialプラグインがログを取得できるようにするには、%sが書き込み可になっている"
 "必要があります。<a href=\"%\" class=\"social_dismiss\">[非表示]</a>"
 
-#: ../social.php:625 ../social.php:659
+#: ../social.php:626 ../social.php:660
 #, php-format
 msgid "<a href=\"%s\" class=\"%s\">[Dismiss]</a>"
 msgstr "<a href=\"%s\" class=\"%s\">[非表示]</a>"
 
 # Not sure about Global and Personal accounts.
-#: ../social.php:651
+#: ../social.php:652
 #, php-format
 msgid ""
 "Social needs to re-authorize your Facebook account(s). Please re-connect "
@@ -159,7 +159,7 @@ msgstr ""
 "\">グローバルアカウント</a> と <a href=\"%s\">個人アカウント</a>を再接続して"
 "ください。"
 
-#: ../social.php:655
+#: ../social.php:656
 #, php-format
 msgid ""
 "Social needs to re-authorize your Facebook account(s).. Please re-connect "
@@ -168,28 +168,28 @@ msgstr ""
 "Socialプラグインは、あなたのFacebookアカウントを再認証する必要があります。 あ"
 "なたの<a href=\"%s\">個人アカウント</a>を再接続してください。"
 
-#: ../social.php:788
+#: ../social.php:789
 msgid "Social Broadcasting"
 msgstr "Socialブロードキャスティング"
 
-#: ../social.php:796
+#: ../social.php:801
 msgid "Social Comments"
 msgstr "Socialコメント"
 
-#: ../social.php:909
+#: ../social.php:913
 msgid "Not Scheduled"
 msgstr "予約設定なし"
 
-#: ../social.php:1275 ../social.php:1276
+#: ../social.php:1279 ../social.php:1280
 msgid "Log in"
 msgstr "ログイン"
 
-#: ../social.php:1414 ../social.php:1493
+#: ../social.php:1418 ../social.php:1497
 #, php-format
 msgid "Broadcasting comment #%s to %s using account #%s."
 msgstr "コメント#%sを%sに向けに#%sアカウントでブロードキャスト。"
 
-#: ../social.php:1418 ../social.php:1507
+#: ../social.php:1422 ../social.php:1511
 #, php-format
 msgid ""
 "Error: Broadcast comment #%s to %s using account #%s, please go back and try "
@@ -198,7 +198,7 @@ msgstr ""
 "エラー：コメント#%sを%s向けに#%sアカウントでブロードキャスト。戻って再度お試"
 "しください。"
 
-#: ../social.php:1419
+#: ../social.php:1423
 #, php-format
 msgid ""
 "Error: Your comment could not be sent to %s, please go back and try again."
@@ -206,32 +206,32 @@ msgstr ""
 "エラー：あなたのコメントは%sに送信できませんでした。戻って再度お試しくださ"
 "い。"
 
-#: ../social.php:1431 ../social.php:1519
+#: ../social.php:1435 ../social.php:1523
 #, php-format
 msgid "Broadcasting comment #%s to %s using account #%s COMPLETE."
 msgstr "コメント#%sが%s向けに#%sアカウントで送信完了しました。"
 
-#: ../social.php:1444
+#: ../social.php:1448
 #, php-format
 msgid "Comment #%s saved."
 msgstr "コメント#%sは保存されました。"
 
-#: ../social.php:1682
+#: ../social.php:1689
 #, php-format
 msgid "<a href=\"%s\" rel=\"%s\">Social Comments</a>"
 msgstr "<a href=\"%s\" rel=\"%s\">Socialコメント</a>"
 
-#: ../social.php:1711 ../views/wp-admin/post/meta/log/shell.php:23
+#: ../social.php:1719 ../views/wp-admin/post/meta/log/shell.php:25
 msgid "Find Social Comments"
 msgstr "Socialコメントを見つける"
 
 # Couldn't figure out this menu in Admin page, so not sure what this really means.
-#: ../social.php:1722 ../social.php:1725
+#: ../social.php:1730 ../social.php:1733
 #: ../views/wp-admin/post/meta/log/shell.php:2
 msgid "Add Tweet by URL"
 msgstr "URL指定でツイートを追加する"
 
-#: ../social.php:1786
+#: ../social.php:1794
 msgid "Tweet Imported!"
 msgstr "ツイートをインポートしました。"
 
@@ -571,7 +571,7 @@ msgstr "%s：Socialプラグインでのブロードキャストに失敗しま�
 msgid "Removed Account"
 msgstr "削除済みアカウント"
 
-#: ../lib/social/service/facebook.php:433
+#: ../lib/social/service/facebook.php:432
 #, php-format
 msgid "Found %s additional likes."
 msgstr "%s件の追加の「いいね！」が見つかりました。"
@@ -705,21 +705,25 @@ msgstr ""
 msgid "Broadcasting is on by default"
 msgstr "ブロードキャスト機能をデフォルトでONにする"
 
-#: ../views/wp-admin/options.php:34
+#: ../views/wp-admin/options.php:34 ../views/wp-admin/options.php:44
 #: ../views/wp-admin/post/meta/broadcast/default.php:5
 msgid "Yes"
 msgstr "はい"
 
-#: ../views/wp-admin/options.php:37
+#: ../views/wp-admin/options.php:37 ../views/wp-admin/options.php:47
 #: ../views/wp-admin/post/meta/broadcast/default.php:8
 msgid "No"
 msgstr "いいえ"
 
-#: ../views/wp-admin/options.php:42
+#: ../views/wp-admin/options.php:41
+msgid "Pull in social comments from Facebook and Twitter"
+msgstr "FacebookとTwitterからソーシャルコメントを取り出す"
+
+#: ../views/wp-admin/options.php:52
 msgid "Post broadcast format"
 msgstr "投稿のブロードキャスト用フォーマット"
 
-#: ../views/wp-admin/options.php:46
+#: ../views/wp-admin/options.php:56
 msgid ""
 "How you would like posts to be formatted when broadcasting to Twitter or "
 "Facebook?"
@@ -727,15 +731,15 @@ msgstr ""
 "TwitterやFacebookにブロードキャストするとき、投稿をどのようなフォーマットにし"
 "たいですか？"
 
-#: ../views/wp-admin/options.php:49 ../views/wp-admin/options.php:74
+#: ../views/wp-admin/options.php:59 ../views/wp-admin/options.php:84
 msgid "Tokens:"
 msgstr "トークン："
 
-#: ../views/wp-admin/options.php:67
+#: ../views/wp-admin/options.php:77
 msgid "Comment broadcast format"
 msgstr "コメントのブロードキャスト用フォーマット"
 
-#: ../views/wp-admin/options.php:71
+#: ../views/wp-admin/options.php:81
 msgid ""
 "How you would like comments to be formatted when broadcasting to Twitter or "
 "Facebook."
@@ -744,58 +748,49 @@ msgstr ""
 "にしたいですか？"
 
 # as it is because of the service name
-#: ../views/wp-admin/options.php:91
+#: ../views/wp-admin/options.php:101
 msgid "Twitter @anywhere"
 msgstr "Twitter @anywhere"
 
-#: ../views/wp-admin/options.php:108
+#: ../views/wp-admin/options.php:118
 msgid "Advanced Options"
 msgstr "アドバンス設定"
 
-#: ../views/wp-admin/options.php:113
+#: ../views/wp-admin/options.php:123
 msgid "Misc."
 msgstr "その他"
 
-#: ../views/wp-admin/options.php:120
+#: ../views/wp-admin/options.php:130
 msgid "Disable Social's comment display (use standard theme output instead)."
 msgstr ""
 "Socialプラグインのコメント表示をオフにする（通常のテーマのコメント機能を使"
 "う）。"
 
-#: ../views/wp-admin/options.php:126
+#: ../views/wp-admin/options.php:136
 msgid "Disable Social's broadcasting feature."
 msgstr "Socialプラグインのブロードキャスト機能をオフにする。"
 
-#: ../views/wp-admin/options.php:145
+#: ../views/wp-admin/options.php:155
 msgid "Account for general (non account specific) Twitter API interaction."
 msgstr "（特定ツイート用ではなく）全体のTwitter API 通信に使うアカウント"
 
-#: ../views/wp-admin/options.php:151
-msgid "Fetch new comments"
-msgstr "新しいコメントを取得"
+#: ../views/wp-admin/options.php:161
+msgid "Cron settings"
+msgstr "Cron設定"
 
-#: ../views/wp-admin/options.php:157
-msgid "Automatically"
-msgstr "自動"
+#: ../views/wp-admin/options.php:167
+msgid "Automatic (WP Cron)"
+msgstr "自動データ取得（WP Cron）"
 
-#: ../views/wp-admin/options.php:158
+#: ../views/wp-admin/options.php:168
 msgid "(easiest)"
 msgstr "（最も簡単）"
 
-#: ../views/wp-admin/options.php:164
-msgid "Never"
-msgstr "取得しない"
+#: ../views/wp-admin/options.php:174
+msgid "Manual <span class=\"description\">(advanced)</span>"
+msgstr "手動 <span class=\"description\">（上級者向け）</span>"
 
-#: ../views/wp-admin/options.php:165
-msgid "(disables fetching of comments)"
-msgstr "（コメントの取得機能をオフにする）"
-
-#: ../views/wp-admin/options.php:171
-msgid "Using a custom CRON job <span class=\"description\">(advanced)</span>"
-msgstr ""
-"独自のCRONジョブを使う<span class=\"description\">（上級者向け）</span>"
-
-#: ../views/wp-admin/options.php:173
+#: ../views/wp-admin/options.php:176
 msgid ""
 "If you select this option, new tweets and Facebook posts will not be fetched "
 "unless you set up a system CRON job or fetch new items manually from the "
@@ -806,19 +801,19 @@ msgstr ""
 "取得を行なわない限り、新しいツイートやFacebook投稿は取得されません。より詳し"
 "い説明は <code>README.txt</code>をご覧ください。"
 
-#: ../views/wp-admin/options.php:176
+#: ../views/wp-admin/options.php:181
 msgid "CRON Setup"
 msgstr "CRON設定"
 
-#: ../views/wp-admin/options.php:178
+#: ../views/wp-admin/options.php:183
 msgid "CRON API Key"
 msgstr "CRON APIキー"
 
-#: ../views/wp-admin/options.php:178
+#: ../views/wp-admin/options.php:183
 msgid "regenerate"
 msgstr "再生成"
 
-#: ../views/wp-admin/options.php:183
+#: ../views/wp-admin/options.php:188
 msgid ""
 "For your system CRON to run correctly, make sure it is pointing towards a "
 "URL that looks something like the following:"
@@ -826,15 +821,15 @@ msgstr ""
 "あなたの環境でCRONを正しく動作させるために、設定したURLが次のようになっている"
 "かをご確認ください："
 
-#: ../views/wp-admin/options.php:193
+#: ../views/wp-admin/options.php:200
 msgid "Debug Mode"
 msgstr "デバッグモード"
 
-#: ../views/wp-admin/options.php:194
+#: ../views/wp-admin/options.php:201
 msgid "(nerds only)"
 msgstr "（WordPressオタクのみ）"
 
-#: ../views/wp-admin/options.php:197
+#: ../views/wp-admin/options.php:204
 msgid ""
 "If you turn debug on, Social will save additional information in "
 "<code>debug_log.txt</code> file. Not recommended for production environments."
@@ -842,15 +837,15 @@ msgstr ""
 "デバッグモードがオンのときは、Socialプラグインは追加情報を<code>debug_log."
 "txt</code> ファイルに保存します。本番環境での使用はおすすめいたしません。"
 
-#: ../views/wp-admin/options.php:202
+#: ../views/wp-admin/options.php:209
 msgid "Off <span class=\"description\">(recommended)</span>"
 msgstr "オフ<span class=\"description\">（推奨）</span>"
 
-#: ../views/wp-admin/options.php:208
+#: ../views/wp-admin/options.php:215
 msgid "On <span class=\"description\">(for troubleshooting)</span>"
 msgstr "オン<span class=\"description\">（トラブルシューティング用）</span>"
 
-#: ../views/wp-admin/options.php:213
+#: ../views/wp-admin/options.php:220
 msgid "Debug log location:"
 msgstr "デバッグログの保存場所："
 
@@ -1099,15 +1094,27 @@ msgstr "コメントとして追加したいツイートのURLを入力してく
 msgid "Import Tweet"
 msgstr "ツイートのインポート"
 
-#: ../views/wp-admin/post/meta/log/shell.php:18
+#: ../views/wp-admin/post/meta/log/shell.php:20
 msgid "Manual Refresh"
 msgstr "手動でリフレッシュ"
 
-#: ../views/wp-admin/post/meta/log/shell.php:19
+#: ../views/wp-admin/post/meta/log/shell.php:21
 #, php-format
 msgid "Next automatic run <span>%s</span>"
 msgstr "次回の自動取得 <span>%s</span>"
 
-#: ../views/wp-admin/post/meta/log/shell.php:30
+#: ../views/wp-admin/post/meta/log/shell.php:34
 msgid "Log"
 msgstr "ログ"
+
+#~ msgid "Fetch new comments"
+#~ msgstr "新しいコメントを取得"
+
+#~ msgid "Automatically"
+#~ msgstr "自動"
+
+#~ msgid "Never"
+#~ msgstr "取得しない"
+
+#~ msgid "(disables fetching of comments)"
+#~ msgstr "（コメントの取得機能をオフにする）"
