@@ -986,6 +986,16 @@ final class Social {
 			}
 		}
 	}
+	
+	/**
+	 * Provides a filter for additional overrides to determine if a post should be broadcast on XML RPC requests.
+	 *
+	 * @param  object  $post
+	 * @return string
+	 */
+	public static function xmlrpc_broadcast_for_post($post = null) {
+		return apply_filters('social_xmlrpc_broadcast_for_post', Social::option('broadcast_by_default'), $post);
+	}
 
 	/**
 	 * Broadcasts the post on XML RPC requests.
@@ -994,7 +1004,7 @@ final class Social {
 	 * @return void
 	 */
 	public function xmlrpc_publish_post($post) {
-		if ($post and Social::option('broadcast_by_default') == '1') {
+		if ($post and Social::xmlrpc_broadcast_for_post($post) == '1') {
 			Social::log('Broadcasting triggered by XML-RPC.');
 
 			$broadcast_accounts = array();
