@@ -249,6 +249,10 @@ No it does not. If you would like to have these tags on your site, please instal
 
 Social supports the [Lazy Load plugin](http://wordpress.org/extend/plugins/lazy-load/). Install this plugin and Social's avatars will hang out on the couch eating potato chips and watching TV until they are needed.
 
+= Can I use Social and Disqus at the same time? =
+
+Both Social and Disqus try to replace the default WordPress comment experience by default. If you want to use Social's broadcasting features but prefer to use Disqus for your comments, you probably want to check the "Disable Social's comment display (use standard theme output instead)." box under Advanced Options. This will allow Disqus to take over comment display without any interference from Social.
+
 == Screenshots ==
 
 1. Allow your visitors to leave a comment as their Facebook or Twitter identities
