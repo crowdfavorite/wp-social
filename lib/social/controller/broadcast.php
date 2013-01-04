@@ -75,7 +75,7 @@ final class Social_Controller_Broadcast extends Social_Controller {
 							}
 							else {
 								$account_content[$key][$account_id[0]] = $account_content[$key][$account_id[0]];
-								if (strlen($account_content[$key][$account_id[0]]) > $service->max_broadcast_length()) {
+								if (mb_strlen($account_content[$key][$account_id[0]]) > $service->max_broadcast_length()) {
 									$errors[$key][$account_id[0]] = sprintf(__('Content must not be longer than %s characters.', 'social'), $service->max_broadcast_length());
 								}
 								else {
