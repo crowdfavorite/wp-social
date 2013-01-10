@@ -75,16 +75,31 @@ final class Social_Controller_Broadcast extends Social_Controller {
 							}
 							else {
 								$account_content[$key][$account_id[0]] = $account_content[$key][$account_id[0]];
-								if (mb_strlen($account_content[$key][$account_id[0]]) > $service->max_broadcast_length()) {
-									$errors[$key][$account_id[0]] = sprintf(__('Content must not be longer than %s characters.', 'social'), $service->max_broadcast_length());
+								if ( function_exists('mb_strlen') ) {
+									if (mb_strlen($account_content[$key][$account_id[0]]) > $service->max_broadcast_length()) {
+										$errors[$key][$account_id[0]] = sprintf(__('Content must not be longer than %s characters.', 'social'), $service->max_broadcast_length());
+									}
+									else {
+										if (!isset($account_content_meta[$key])) {
+											$account_content_meta[$key] = $account_service_meta[$key] = array();
+										}
+
+										$account_content_meta[$key][$account_id[0]] = $account_content[$key][$account_id[0]];
+										$account_service_meta[$key][$account_id[0]] = $service->get_broadcast_extras($account_id[0], $post);
+									}
 								}
 								else {
-									if (!isset($account_content_meta[$key])) {
-										$account_content_meta[$key] = $account_service_meta[$key] = array();
+									if (strlen($account_content[$key][$account_id[0]]) > $service->max_broadcast_length()) {
+										$errors[$key][$account_id[0]] = sprintf(__('Content must not be longer than %s characters.', 'social'), $service->max_broadcast_length());
 									}
+									else {
+										if (!isset($account_content_meta[$key])) {
+											$account_content_meta[$key] = $account_service_meta[$key] = array();
+										}
 
-									$account_content_meta[$key][$account_id[0]] = $account_content[$key][$account_id[0]];
-									$account_service_meta[$key][$account_id[0]] = $service->get_broadcast_extras($account_id[0], $post);
+										$account_content_meta[$key][$account_id[0]] = $account_content[$key][$account_id[0]];
+										$account_service_meta[$key][$account_id[0]] = $service->get_broadcast_extras($account_id[0], $post);
+									}
 								}
 							}
 						}
@@ -106,17 +121,33 @@ final class Social_Controller_Broadcast extends Social_Controller {
 											$errors[$key][$page_id] = __('Please enter content to be broadcasted.', 'social');
 										}
 										else {
-											$account_content[$key][$page_id] = $account_content[$key][$page_id];
-											if (strlen($account_content[$key][$page_id]) > $service->max_broadcast_length()) {
-												$errors[$key][$page_id] = sprintf(__('Content must not be longer than %s characters.', 'social'), $service->max_broadcast_length());
+											if ( function_exists('mb_strlen') ) {
+												$account_content[$key][$page_id] = $account_content[$key][$page_id];
+												if (mb_strlen($account_content[$key][$page_id]) > $service->max_broadcast_length()) {
+													$errors[$key][$page_id] = sprintf(__('Content must not be longer than %s characters.', 'social'), $service->max_broadcast_length());
+												}
+												else {
+													if (!isset($account_content_meta[$key])) {
+														$account_content_meta[$key] = array();
+													}
+
+													$account_content_meta[$key][$page_id] = $account_content[$key][$page_id];
+													$account_service_meta[$key][$page_id] = $service->get_broadcast_extras($page_id, $post);
+												}
 											}
 											else {
-												if (!isset($account_content_meta[$key])) {
-													$account_content_meta[$key] = array();
+												$account_content[$key][$page_id] = $account_content[$key][$page_id];
+												if (strlen($account_content[$key][$page_id]) > $service->max_broadcast_length()) {
+													$errors[$key][$page_id] = sprintf(__('Content must not be longer than %s characters.', 'social'), $service->max_broadcast_length());
 												}
+												else {
+													if (!isset($account_content_meta[$key])) {
+														$account_content_meta[$key] = array();
+													}
 
-												$account_content_meta[$key][$page_id] = $account_content[$key][$page_id];
-												$account_service_meta[$key][$page_id] = $service->get_broadcast_extras($page_id, $post);
+													$account_content_meta[$key][$page_id] = $account_content[$key][$page_id];
+													$account_service_meta[$key][$page_id] = $service->get_broadcast_extras($page_id, $post);
+												}
 											}
 										}
 									}
