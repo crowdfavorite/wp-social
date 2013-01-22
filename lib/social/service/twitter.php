@@ -77,7 +77,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 
 		Social::log('Searching by URL(s) for post #:post_id. urls -> :urls', array(
 			'post_id' => $post->ID,
-			'urls' => print_r($url, true),
+			'urls' => print_r($urls, true),
 			'rpp' => 100
 		));
 
