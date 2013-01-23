@@ -85,10 +85,10 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 			'q' => implode('+OR+', $urls)
 		));
 
-		if (isset($social_response->body()->response) and is_array($social_response->body()->response) and count($social_response->body()->response)) {
-			foreach ($social_response->body()->response as $result) {
+		if (isset($social_response->body()->response->statuses) and is_array($social_response->body()->response->statuses) and count($social_response->body()->response->statuses)) {
+			foreach ($social_response->body()->response->statuses as $result) {
 				$data = array(
-					'username' => $result->from_user,
+					'username' => $result->user->screen_name,
 				);
 
 				if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
