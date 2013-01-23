@@ -82,7 +82,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		));
 
 		$social_response = $this->request($account, 'search/tweets', array(
-			'q' => urlencode(implode(' OR ', $urls))
+			'q' => implode(' OR ', $urls)
 		));
 
 		if (isset($social_response->body()->response->statuses) and is_array($social_response->body()->response->statuses)) {
