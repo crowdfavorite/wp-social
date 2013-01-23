@@ -85,9 +85,7 @@ final class Social_Controller_Aggregation extends Social_Controller {
 			$urls = array_unique($urls);
 			if (count($urls)) {
 				foreach ($urls as $key => $url) {
-					if ($url) {
-						$urls[$key] = $url;
-					}
+					$urls[$key] = $url;
 				}
 				$service->aggregate_by_url($post, $urls);
 			}
