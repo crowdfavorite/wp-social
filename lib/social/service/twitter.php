@@ -108,7 +108,17 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 
 					Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url', false, $data);
 					$post->aggregated_ids[$this->_key][] = $result->id;
-					$post->results[$this->_key][$result->id] = $result;
+					$post->results[$this->_key][$result->id] = (object) array(
+						'id' => $result->id,
+						'from_user_id' => $result->user->id,
+						'from_user' => $result->user->screen_name,
+						'text' => $result->text,
+						'created_at' => $result->created_at,
+						'profile_image_url' => $result->user->profile_image_url,
+						'in_reply_to_status_id' => $result->in_reply_to_status_id,
+						'raw' => $result,
+						'comment_type' => 'social-twitter-rt',
+					);
 				}
 			}
 			else {
