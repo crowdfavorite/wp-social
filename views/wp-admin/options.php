@@ -100,8 +100,8 @@ foreach (Social::comment_broadcast_tokens() as $token => $description) {
 			<tr>
 				<th><?php _e('Twitter @anywhere', 'social'); ?></th>
 				<td>
-					<p>Social Version 2.6 has removed @anywhere support to comply with <a href="https://dev.twitter.com/blog/sunsetting-anywhere">Twitter's decision to sunset the service</a>.</p>
-					<p>If you would like to continue to use @anywhere, <a href="https://www.google.com/search?q=WordPress+@anywhere+plugin" target="_blank">there are many plugins available to accomodate</a>.</p>
+					<p><?php printf(__('Social Version 2.6 has removed @anywhere support to comply with <a href="%s">Twitter\'s decision to sunset the service</a>.', 'social'), esc_url('https://dev.twitter.com/blog/sunsetting-anywhere')); ?></p>
+					<p><?php printf(__('If you would like to continue to use @anywhere, <a href="%s" target="_blank">there are many plugins available to accomodate</a>.', 'social'), esc_url('https://www.google.com/search?q=WordPress+@anywhere+plugin')); ?></p>
 				</td>
 			</tr>
 		</table>
