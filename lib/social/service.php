@@ -388,7 +388,12 @@ abstract class Social_Service {
 		foreach (Social::broadcast_tokens() as $token => $description) {
 			$_format = str_replace($token, '', $_format);
 		}
-		$available = $available - strlen($_format);
+		if ( function_exists('mb_strlen') ) {
+			$available = $available - mb_strlen($_format);
+		}
+		else{
+			$available = $available - strlen($_format);
+		}
 
 		$_format = explode(' ', $format);
 		foreach (Social::broadcast_tokens() as $token => $description) {
@@ -420,13 +425,26 @@ abstract class Social_Service {
 					break;
 			}
 
-			if (strlen($content) > $available) {
-				if (in_array($token, array('{date}', '{author}'))
-				) {
-					$content = '';
+			if ( function_exists('mb_strlen') && function_exists('mb_substr') ) {
+				if (mb_strlen($content) > $available) {
+					if (in_array($token, array('{date}', '{author}'))
+					) {
+						$content = '';
+					}
+					else {
+						$content = mb_substr($content, 0, ($available - 3)).'...';
+					}
 				}
-				else {
-					$content = substr($content, 0, ($available - 3)).'...';
+			}
+			else {
+				if (strlen($content) > $available) {
+					if (in_array($token, array('{date}', '{author}'))
+					) {
+						$content = '';
+					}
+					else {
+						$content = substr($content, 0, ($available - 3)).'...';
+					}
 				}
 			}
 
@@ -436,7 +454,12 @@ abstract class Social_Service {
 			foreach ($_format as $haystack) {
 				if (strpos($haystack, $token) !== false and $available > 0) {
 					$haystack = str_replace($token, $content, $haystack);
-					$available = $available - strlen($haystack);
+					if ( function_exists('mb_strlen') ) {
+						$available = $available - mb_strlen($haystack);
+					}
+					else {
+						$available = $available - strlen($haystack);
+					}
 					$format = str_replace($token, $content, $format);
 					break;
 				}
@@ -472,8 +495,13 @@ abstract class Social_Service {
 				$used_tokens[$token] = '';
 			}
 		}
-		$available = $available - strlen($_format);
 
+		if ( function_exists('mb_strlen') ) {
+			$available = $available - mb_strlen($_format);
+		}
+		else {
+			$available = $available - strlen($_format);
+		}
 		// Prep token replacement content
 		foreach ($used_tokens as $token => $content) {
 			switch ($token) {
@@ -496,14 +524,28 @@ abstract class Social_Service {
 
 		// if {url} is used, pre-allocate its length
 		if (isset($used_tokens['{url}'])) {
-			$available = $available - strlen($used_tokens['{url}']);
+			if ( function_exists('mb_strlen') ) {
+				$available = $available - mb_strlen($used_tokens['{url}']);
+			}
+			else {
+				$available = $available - strlen($used_tokens['{url}']);
+			}
 		}
 
 		$used_tokens['{content}'] = apply_filters('social_format_comment_content', $used_tokens['{content}'], $comment, $format, $this);
 
 		// Truncate content to size limit
-		if (strlen($used_tokens['{content}']) > $available) {
-			$used_tokens['{content}'] = substr($used_tokens['{content}'], 0, ($available - 3)).'...';
+
+		if ( function_exists('mb_strlen') && function_exists('mb_substr') ) {
+
+			if (mb_strlen($used_tokens['{content}']) > $available) {
+				$used_tokens['{content}'] = mb_substr($used_tokens['{content}'], 0, ($available - 3)).'...';
+			}
+		}
+		else {
+			if (strlen($used_tokens['{content}']) > $available) {
+				$used_tokens['{content}'] = substr($used_tokens['{content}'], 0, ($available - 3)).'...';
+			}
 		}
 
 		foreach ($used_tokens as $token => $replacement) {
