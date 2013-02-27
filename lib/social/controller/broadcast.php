@@ -462,6 +462,10 @@ final class Social_Controller_Broadcast extends Social_Controller {
 		$personal_accounts = null;
 		$errored_accounts = false;
 		$broadcast_accounts = get_post_meta($post->ID, '_social_broadcast_accounts', true);
+		if (empty($broadcast_accounts)) {
+			$broadcast_accounts = array();
+		}
+
 		$broadcasted_ids = get_post_meta($post->ID, '_social_broadcasted_ids', true);
 		if (empty($broadcasted_ids)) {
 			$broadcasted_ids = array();

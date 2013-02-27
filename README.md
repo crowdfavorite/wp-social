@@ -276,6 +276,10 @@ This version fixes several bugs and may help with HostGator's weird server "secu
 
 ## Changelog
 
+**develop**
+
+* Remove warnings related to broadcasting to no accounts
+
 **2.7**
 
 * New Social proxy endpoint (the old one will go away on Jan 15th)
