@@ -266,6 +266,10 @@ Social supports the [Lazy Load plugin](http://wordpress.org/extend/plugins/lazy-
 
 ## Upgrade Notice
 
+**2.8**
+
+This version will fix issues related to aggregating tweets with search.
+
 **2.7**
 
 Make sure to upgrade ASAP. This release includes a pointer to the new Social proxy URL (the old URL will stop working on Jan 15th). 
@@ -276,8 +280,9 @@ This version fixes several bugs and may help with HostGator's weird server "secu
 
 ## Changelog
 
-**develop**
+**2.8**
 
+* Change Twitter search endpoint to use v1.1
 * Remove warnings related to broadcasting to no accounts
 
 **2.7**
