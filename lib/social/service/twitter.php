@@ -81,31 +81,50 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 			'rpp' => 100
 		));
 
-		$social_response = $this->request($account, 'search', array(
-			'q' => implode('+OR+', $urls)
+		$social_response = $this->request($account, 'search/tweets', array(
+			'q' => implode(' OR ', $urls)
 		));
 
-		if (isset($social_response->body()->response) and is_array($social_response->body()->response) and count($social_response->body()->response)) {
-			foreach ($social_response->body()->response as $result) {
-				$data = array(
-					'username' => $result->from_user,
-				);
+		if (isset($social_response->body()->response->statuses)
+				&& isset($social_response->body()->response->statuses)
+				&& is_array($social_response->body()->response->statuses)) {
+			if (count($social_response->body()->response->statuses)) {
+				foreach ($social_response->body()->response->statuses as $result) {
+					$data = array(
+						'username' => $result->user->screen_name,
+					);
 
-				if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
-					Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url', true, $data);
-					continue;
-				}
-				else {
-					if ($this->is_original_broadcast($post, $result->id)) {
+					if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
+						Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url', true, $data);
 						continue;
 					}
+					else {
+						if ($this->is_original_broadcast($post, $result->id)) {
+							continue;
+						}
+					}
+
+					$result->comment_type = (Social_Twitter::is_retweet(null, $result) ? 'social-twitter-rt' : 'social-twitter');
+
+					Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url', false, $data);
+					$post->aggregated_ids[$this->_key][] = $result->id;
+					$post->results[$this->_key][$result->id] = (object) array(
+						'id' => $result->id,
+						'from_user_id' => $result->user->id,
+						'from_user' => $result->user->screen_name,
+						'text' => $result->text,
+						'created_at' => $result->created_at,
+						'profile_image_url' => $result->user->profile_image_url,
+						'in_reply_to_status_id' => $result->in_reply_to_status_id,
+						'raw' => $result,
+						'comment_type' => 'social-twitter-rt',
+					);
 				}
-
-				$result->comment_type = (Social_Twitter::is_retweet(null, $result) ? 'social-twitter-rt' : 'social-twitter');
-
-				Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url', false, $data);
-				$post->aggregated_ids[$this->_key][] = $result->id;
-				$post->results[$this->_key][$result->id] = $result;
+			}
+			else {
+				Social::log('URL search returned no statuses for post #:post_id.', array(
+					'post_id' => $post->ID,
+				));
 			}
 		}
 		else {
