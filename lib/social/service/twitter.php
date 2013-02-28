@@ -60,7 +60,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		);
 
 		$args = apply_filters($this->key().'_broadcast_args', $args, $post_id);
-		return $this->request($account, 'statuses/update', $args, 'POST');
+		return $this->request($account, '1.1/statuses/update', $args, 'POST');
 	}
 
 	/**
@@ -81,7 +81,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 			'rpp' => 100
 		));
 
-		$social_response = $this->request($account, 'search/tweets', array(
+		$social_response = $this->request($account, '1.1/search/tweets', array(
 			'q' => implode(' OR ', $urls)
 		));
 
@@ -148,7 +148,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 					// Retweets
 					foreach ($broadcasted_ids as $broadcasted_id => $data) {
 						Social::log('Aggregating Twitter via statuses/retweets');
-						$response = $this->request($account, 'statuses/retweets/'.$broadcasted_id, array(
+						$response = $this->request($account, '1.1/statuses/retweets/'.$broadcasted_id, array(
 							'count' => 200,
 						));
 						if ($response !== false and is_array($response->body()->response) and count($response->body()->response)) {
@@ -185,7 +185,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 
 					// Mentions
 					Social::log('Aggregating Twitter via statuses/mentions');
-					$response = $this->request($account, 'statuses/mentions_timeline', array(
+					$response = $this->request($account, '1.1/statuses/mentions_timeline', array(
 						'count' => 200,
 					));
 					if ($response !== false and is_array($response->body()->response) and count($response->body()->response)) {
@@ -301,7 +301,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						if (!isset($result->in_reply_to_status_id)) {
 							// This "should" only happen on tweets found on the URL search
 							foreach ($this->accounts() as $account) {
-								$response = $this->request($account, 'statuses/show/'.$result->id)->body();
+								$response = $this->request($account, '1.1/statuses/show/'.$result->id)->body();
 
 								if (isset($response->in_reply_to_status_id)) {
 									if (!empty($response->in_reply_to_status_id)) {
@@ -407,7 +407,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 		$id = $this->tweet_url_to_id($url);
 		if (!empty($id) and !$this->is_original_broadcast($post, $id)) {
 			Social::log('Importing tweet. -- ID: :id -- URL: :url', array("id" => $id, "url" => $url));
-			$social_response = $this->request($account, 'statuses/show/'.$id, array(
+			$social_response = $this->request($account, '1.1/statuses/show/'.$id, array(
 				'include_entities' => 'true',
 			));
 			error_log(print_r($social_response, true));
@@ -609,7 +609,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 			return;
 		}
 
-		$social_response = $this->request($account, '/statuses/show/'.$broadcasted_id, array(
+		$social_response = $this->request($account, '1.1/statuses/show/'.$broadcasted_id, array(
 			'include_entities' => true,
 		));
 
