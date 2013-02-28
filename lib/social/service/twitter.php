@@ -104,8 +104,6 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						}
 					}
 
-					$result->comment_type = (Social_Twitter::is_retweet(null, $result) ? 'social-twitter-rt' : 'social-twitter');
-
 					Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url', false, $data);
 					$post->aggregated_ids[$this->_key][] = $result->id;
 					$post->results[$this->_key][$result->id] = (object) array(
@@ -117,7 +115,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						'profile_image_url' => $result->user->profile_image_url,
 						'in_reply_to_status_id' => $result->in_reply_to_status_id,
 						'raw' => $result,
-						'comment_type' => 'social-twitter-rt',
+						'comment_type' => (Social_Twitter::is_retweet(null, $result) ? 'social-twitter-rt' : 'social-twitter'),
 					);
 				}
 			}
@@ -179,7 +177,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 									'profile_image_url' => $result->user->profile_image_url,
 									'in_reply_to_status_id' => $result->in_reply_to_status_id,
 									'raw' => $result,
-									'comment_type' => 'social-twitter-rt',
+									'comment_type' => (Social_Twitter::is_retweet(null, $result) ? 'social-twitter-rt' : 'social-twitter'),
 								);
 							}
 						}
@@ -187,7 +185,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 
 					// Mentions
 					Social::log('Aggregating Twitter via statuses/mentions');
-					$response = $this->request($account, 'statuses/mentions', array(
+					$response = $this->request($account, 'statuses/mentions_timeline', array(
 						'count' => 200,
 					));
 					if ($response !== false and is_array($response->body()->response) and count($response->body()->response)) {
