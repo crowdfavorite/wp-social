@@ -278,7 +278,7 @@ final class Social_Twitter {
 			if (isset($comment->social_raw_data) and !empty($comment->social_raw_data->retweeted_status)) {
 				$is_retweet = true;
 			}
-			if (substr($comment->comment_content, 0, 4) == 'RT @') {
+			if (social_substr($comment->comment_content, 0, 4) == 'RT @') {
 				$is_retweet = true;
 			}
 		}
@@ -286,7 +286,7 @@ final class Social_Twitter {
 			if (!empty($tweet->retweeted_status)) {
 				$is_retweet = true;
 			}
-			if (substr($tweet->text, 0, 4) == 'RT @') {
+			if (social_substr($tweet->text, 0, 4) == 'RT @') {
 				$is_retweet = true;
 			}
 		}
