@@ -2178,6 +2178,44 @@ function addslashes_deep($value) {
 }
 }
 
+function social_strlen($str) {
+	if (function_exists('mb_strlen')) {
+		return mb_strlen($str);
+	}
+	else {
+		return strlen($str);
+	}
+}
+
+function social_substr($str, $start = null, $end = null) {
+	if (function_exists('mb_substr')) {
+		switch (func_num_args()) {
+			case 1:
+				return mb_substr($str);
+			break;
+			case 2:
+				return mb_substr($str, $start);
+			break;
+			case 3:
+				return mb_substr($str, $start, $end);
+			break;
+		}
+	}
+	else {
+		switch (func_num_args()) {
+			case 1:
+				return substr($str);
+			break;
+			case 2:
+				return substr($str, $start);
+			break;
+			case 3:
+				return substr($str, $start, $end);
+			break;
+		}
+	}
+}
+
 function social_wpdb_escape($str) {
 	global $wpdb;
 	return $wpdb->escape($str);
