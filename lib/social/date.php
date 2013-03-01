@@ -395,7 +395,7 @@ class Social_Date {
 			$output = sprintf(__('in %s', 'social'), $span);
 		}
 
-		return apply_filters('social_fuzzy_date', $output, $remote, $local);
+		return apply_filters('social_fuzzy_date', $output, $timestamp, $local_timestamp);
 	}
 
 } // End Social_Date

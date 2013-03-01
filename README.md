@@ -259,22 +259,32 @@ Social supports the [Lazy Load plugin](http://wordpress.org/extend/plugins/lazy-
 
 3. Post edit screen settings: broadcast the post, manually import comments, view a log of imported items
 
-4. Send customized broadcasts to each social account 
+4. Send customized broadcasts to each social account
 
 5. View of replies imported from Twitter as comments
 
 
 ## Upgrade Notice
 
+**2.8**
+
+This version will fix issues related to aggregating tweets with search.
+
 **2.7**
 
-Make sure to upgrade ASAP. This release includes a pointer to the new Social proxy URL (the old URL will stop working on Jan 15th). 
+Make sure to upgrade ASAP. This release includes a pointer to the new Social proxy URL (the old URL will stop working on Jan 15th).
 
 **2.6.1**
 
 This version fixes several bugs and may help with HostGator's weird server "security" settings.  See the Changelog for details.
 
 ## Changelog
+
+**2.8**
+
+* Change Twitter search endpoint to use v1.1
+* Remove warnings related to broadcasting to no accounts
+* Update to WordPress 3.5 button styles
 
 **2.7**
 

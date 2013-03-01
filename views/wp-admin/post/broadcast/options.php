@@ -5,6 +5,7 @@
 	<title><?php _e('Social Broadcasts', 'social'); ?></title>
 <?php
 wp_admin_css('install', true);
+wp_admin_css('buttons', true);
 $social = Social::instance();
 $social->admin_enqueue_assets();
 ?>
@@ -87,9 +88,9 @@ foreach ($_services as $key => $accounts) {
 }
 ?>
 </div>
-<p class="step">
+<p class="step wp-core-ui">
 	<input type="hidden" name="social_action" value="<?php echo esc_attr($step); ?>" />
-	<input type="submit" name="social_submit" value="<?php echo $step_text; // already localized in controller ?>" class="button" />
+	<input type="submit" name="social_submit" value="<?php echo $step_text; // already localized in controller ?>" class="button button-primary button-large" />
 	<a href="<?php echo esc_url(get_edit_post_link($post->ID, 'url')); ?>"><?php _e('Cancel', 'social'); ?></a>
 </p>
 </form>

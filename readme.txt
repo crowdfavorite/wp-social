@@ -2,8 +2,8 @@
 Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter, social, broadcast, import, integrate, integration
 Requires at least: 3.3
-Tested up to: 3.5
-Stable tag: 2.7
+Tested up to: 3.5.1
+Stable tag: 2.8
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -249,6 +249,10 @@ No it does not. If you would like to have these tags on your site, please instal
 
 Social supports the [Lazy Load plugin](http://wordpress.org/extend/plugins/lazy-load/). Install this plugin and Social's avatars will hang out on the couch eating potato chips and watching TV until they are needed.
 
+= Can I use Social and Disqus at the same time? =
+
+Both Social and Disqus try to replace the default WordPress comment experience by default. If you want to use Social's broadcasting features but prefer to use Disqus for your comments, you probably want to check the "Disable Social's comment display (use standard theme output instead)." box under Advanced Options. This will allow Disqus to take over comment display without any interference from Social.
+
 == Screenshots ==
 
 1. Allow your visitors to leave a comment as their Facebook or Twitter identities
@@ -257,21 +261,29 @@ Social supports the [Lazy Load plugin](http://wordpress.org/extend/plugins/lazy-
 
 3. Post edit screen settings: broadcast the post, manually import comments, view a log of imported items
 
-4. Send customized broadcasts to each social account 
+4. Send customized broadcasts to each social account
 
 5. View of replies imported from Twitter as comments
 
 
 == Upgrade Notice ==
 
+= 2.8 =
+This version will fix issues related to aggregating tweets with search.
+
 = 2.7 =
-Make sure to upgrade ASAP. This release includes a pointer to the new Social proxy URL (the old URL will stop working on Jan 15th). 
+Make sure to upgrade ASAP. This release includes a pointer to the new Social proxy URL (the old URL will stop working on Jan 15th).
 
 = 2.6.1 =
 This version fixes several bugs and may help with HostGator's weird server "security" settings.  See the Changelog for details.
 
 
 == Changelog ==
+
+= 2.8 =
+* Change Twitter search endpoint to use v1.1
+* Remove warnings related to broadcasting to no accounts
+* Update to WordPress 3.5 button styles
 
 = 2.7 =
 * New Social proxy endpoint (the old one will go away on Jan 15th)
