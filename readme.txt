@@ -261,7 +261,7 @@ Both Social and Disqus try to replace the default WordPress comment experience b
 
 3. Post edit screen settings: broadcast the post, manually import comments, view a log of imported items
 
-4. Send customized broadcasts to each social account 
+4. Send customized broadcasts to each social account
 
 5. View of replies imported from Twitter as comments
 
@@ -272,7 +272,7 @@ Both Social and Disqus try to replace the default WordPress comment experience b
 This version will fix issues related to aggregating tweets with search.
 
 = 2.7 =
-Make sure to upgrade ASAP. This release includes a pointer to the new Social proxy URL (the old URL will stop working on Jan 15th). 
+Make sure to upgrade ASAP. This release includes a pointer to the new Social proxy URL (the old URL will stop working on Jan 15th).
 
 = 2.6.1 =
 This version fixes several bugs and may help with HostGator's weird server "security" settings.  See the Changelog for details.
@@ -282,6 +282,7 @@ This version fixes several bugs and may help with HostGator's weird server "secu
 = 2.8 =
 * Change Twitter search endpoint to use v1.1
 * Remove warnings related to broadcasting to no accounts
+* Update to WordPress 3.5 button styles
 
 = 2.7 =
 * New Social proxy endpoint (the old one will go away on Jan 15th)
