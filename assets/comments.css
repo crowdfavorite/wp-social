@@ -512,12 +512,6 @@ override submit styles in TwentyEleven theme */
 	font-size: 14px;
 	line-height: 18px;
 	overflow: hidden;
-	/**
-	 * @workaround Prevent ugly overflow issues in IE6
-	 * @valid yes
-	 * @affected IE6
-	 */
-	width: 100%;
 }
 
 #social .social-comment-body p {
