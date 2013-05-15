@@ -316,7 +316,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					'comment_agent' => 'Social Aggregator'
 				);
 				if (!isset($result->like)) {
-					$url = 'http://graph.facebook.com/'.$result->from->id;
+					$url = 'https://graph.facebook.com/'.$result->from->id;
 					$request = wp_remote_get($url);
 					if (!is_wp_error($request)) {
 						$response = json_decode($request['body']);
@@ -339,7 +339,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					}
 				}
 				else {
-					$url = 'http://facebook.com/profile.php?id='.$result->id;
+					$url = 'https://facebook.com/profile.php?id='.$result->id;
 					$commentdata = array_merge($commentdata, array(
 						'comment_type' => 'social-facebook-like',
 						'comment_author' => $wpdb->escape($result->name),
@@ -385,7 +385,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					$comment_id = wp_insert_comment($commentdata);
 
 					update_comment_meta($comment_id, 'social_account_id', addslashes_deep($user_id));
-					update_comment_meta($comment_id, 'social_profile_image_url', addslashes_deep('http://graph.facebook.com/'.$user_id.'/picture'));
+					update_comment_meta($comment_id, 'social_profile_image_url', addslashes_deep('https://graph.facebook.com/'.$user_id.'/picture'));
 					update_comment_meta($comment_id, 'social_status_id', addslashes_deep((isset($result->status_id) ? $result->status_id : $result->id)));
 
 					if (!isset($result->raw)) {
@@ -506,7 +506,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		}
 
 		$ids = explode('_', $id);
-		return 'http://facebook.com/permalink.php?story_fbid='.$ids[1].'&id='.$ids[0];
+		return 'https://facebook.com/permalink.php?story_fbid='.$ids[1].'&id='.$ids[0];
 	}
 
 	/**
@@ -559,7 +559,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * @return string
 	 */
 	public function page_image_url($account) {
-		return apply_filters('social_facebook_page_image_url', 'http://graph.facebook.com/'.$account->id.'/picture', $account);
+		return apply_filters('social_facebook_page_image_url', 'https://graph.facebook.com/'.$account->id.'/picture', $account);
 	}
 
 	/**
