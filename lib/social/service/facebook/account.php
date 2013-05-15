@@ -122,7 +122,7 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 * @return string
 	 */
 	public function url() {
-		$url = 'http://facebook.com/';
+		$url = 'https://facebook.com/';
 		if ($this->has_user()) {
 			$url .= 'profile.php?id='.$this->_user->id;
 		}
@@ -137,7 +137,7 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 */
 	public function avatar() {
 		if ($this->has_user()) {
-			return 'http://graph.facebook.com/'.$this->_user->id.'/picture';
+			return 'https://graph.facebook.com/'.$this->_user->id.'/picture';
 		}
 
 		return parent::_avatar();
