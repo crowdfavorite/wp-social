@@ -114,6 +114,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						'text' => $result->text,
 						'created_at' => $result->created_at,
 						'profile_image_url' => $result->user->profile_image_url,
+						'profile_image_url_https' => $result->user->profile_image_url_https,
 						'in_reply_to_status_id' => $result->in_reply_to_status_id,
 						'raw' => $result,
 						'comment_type' => (Social_Twitter::is_retweet(null, $result) ? 'social-twitter-rt' : 'social-twitter'),
@@ -176,6 +177,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 									'text' => $result->text,
 									'created_at' => $result->created_at,
 									'profile_image_url' => $result->user->profile_image_url,
+									'profile_image_url_https' => $result->user->profile_image_url_https,
 									'in_reply_to_status_id' => $result->in_reply_to_status_id,
 									'raw' => $result,
 									'comment_type' => (Social_Twitter::is_retweet(null, $result) ? 'social-twitter-rt' : 'social-twitter'),
@@ -220,6 +222,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 								'text' => $result->text,
 								'created_at' => $result->created_at,
 								'profile_image_url' => $result->user->profile_image_url,
+								'profile_image_url_https' => $result->user->profile_image_url_https,
 								'in_reply_to_status_id' => $result->in_reply_to_status_id,
 								'raw' => $result,
 								'comment_type' => (Social_Twitter::is_retweet(null, $result) ? 'social-twitter-rt' : 'social-twitter'),
@@ -295,7 +298,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						$comment_id = wp_insert_comment($commentdata);
 
 						update_comment_meta($comment_id, 'social_account_id', addslashes_deep($result->from_user_id));
-						update_comment_meta($comment_id, 'social_profile_image_url', addslashes_deep($result->profile_image_url));
+						update_comment_meta($comment_id, 'social_profile_image_url', addslashes_deep($result->profile_image_url_https));
 						update_comment_meta($comment_id, 'social_status_id', addslashes_deep($result->id));
 
 						// Attempt to see if the comment is in response to an existing Tweet.
@@ -446,6 +449,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 									'text' => $response->text,
 									'created_at' => $response->created_at,
 									'profile_image_url' => $response->user->profile_image_url,
+									'profile_image_url_https' => $response->user->profile_image_url_https,
 									'in_reply_to_status_id' => $response->in_reply_to_status_id,
 									'raw' => $response,
 									'comment_type' => 'social-twitter',
@@ -563,7 +567,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 * @return string
 	 */
 	public function status_url($username, $id) {
-		return 'http://twitter.com/'.$username.'/status/'.$id;
+		return 'https://twitter.com/'.$username.'/status/'.$id;
 	}
 
 	/**

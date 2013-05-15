@@ -35,7 +35,7 @@ final class Social_Service_Twitter_Account extends Social_Service_Account implem
 	 * @return string
 	 */
 	public function url() {
-		$url = 'http://twitter.com/';
+		$url = 'https://twitter.com/';
 		if ($this->has_user()) {
 			$url .= $this->_user->screen_name;
 		}
@@ -50,7 +50,7 @@ final class Social_Service_Twitter_Account extends Social_Service_Account implem
 	 */
 	public function avatar() {
 		if ($this->has_user()) {
-			return $this->_user->profile_image_url;
+			return $this->_user->profile_image_url_https;
 		}
 
 		return parent::_avatar();
