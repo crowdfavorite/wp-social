@@ -144,7 +144,7 @@ $toggle = (
 										$selected_id = $social_api_accounts['twitter'];
 									?>
 									<div class="twitter-api-account">
-										<label>Twitter Default API Account</label>
+										<label><?php _e('Twitter Default API Account', 'social'); ?></label>
 										<select id="social_api_accounts-twitter" name="social_api_accounts[twitter]">
 											<?php foreach ($twitter_accounts as $account): $acct_id = $account->id() ?>
 												<?php if ($account->personal()) { continue; } ?>
