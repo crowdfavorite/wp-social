@@ -292,6 +292,7 @@ This version fixes several bugs and may help with HostGator's weird server "secu
 * Added German and Norwegian Bokmål language support
 * Now using HTTPS for Facebook and Twitter links and avatars
 * Fix Conflict with add-local-avatar plugin
+* Default 'social_approve_likes_and_retweets' to false (previously true)
 
 = 2.8 =
 * Change Twitter search endpoint to use v1.1
