@@ -1,0 +1,1416 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Social 2.9\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/social\n"
+"POT-Creation-Date: 2013-04-03 08:52+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Frederik Niedernolte <f.niedernolte@gmail.com>\n"
+"Language-Team: Frederik Niedernolte <f.niedernolte@gmail.com>\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
+"X-Textdomain-Support: yes\n"
+"X-Generator: Poedit 1.5.5\n"
+"X-Poedit-Basepath: D:\\Peleke\\Eigene Dokumente\\GitHub\\wp-social\n"
+"X-Poedit-SearchPath-0: D:\\Peleke\\Eigene Dokumente\\GitHub\\wp-social\n"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social-facebook.php:209
+msgid "Connect with Pages support"
+msgstr "Mit Seiten-Support verbunden"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social-facebook.php:434
+#, php-format
+msgid "%s liked this"
+msgstr "%s findet das gut"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social-twitter.php:346
+msgid " retweeted this"
+msgstr "retweeted das"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social-twitter.php:367
+msgid "Send as a reply"
+msgstr "Als Antwort senden"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social-twitter.php:369
+msgid "URL of Tweet (to reply to)"
+msgstr "URL des Tweets (auf den geantwortet werden soll)"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:118
+#, php-format
+msgid "Failed to auto load class %s."
+msgstr "Automatisches Laden der Klasse %s fehlgeschlagen."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:149
+#: Dokumente\GitHub\wp-social/social.php:152
+#, php-format
+msgid "Example: %s"
+msgstr "Beispiel: %s"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:255
+msgid ""
+"Duplicate comment detected; it looks as though you&#8217;ve already said "
+"that!"
+msgstr ""
+"Doppelter Kommentar entdeckt; es sieht aus, als ob Du das schon geschrieben "
+"hast!"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:340
+msgid ""
+"Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP "
+"5 as the default on your servers."
+msgstr ""
+"Entschuldigung, Social benötigt PHP 5.2.4 oder höher. Fragen Sie ihren "
+"Hoster, ob es möglich ist PHP 5 standardmäßig auf ihrem Server einzuschalten."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:394
+msgid "Post a Reply"
+msgstr "Schreibe eine Antwort"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:431
+#: Dokumente\GitHub\wp-social/social.php:1792
+msgid "Protected Tweet"
+msgstr "Geschützter Tweet"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:432
+#: Dokumente\GitHub\wp-social/social.php:1793
+msgid "Invalid URL"
+msgstr "Ungültige URL"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:531
+msgid "Social Options"
+msgstr "Social Optionen"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:532
+#: Dokumente\GitHub\wp-social/views/wp-admin/options.php:11
+msgid "Social"
+msgstr "Social"
+
+# @ photosmash-galleries
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:557
+msgid "Settings"
+msgstr "Einstellungen"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:573
+#, php-format
+msgid ""
+"Social is shiny and new! Please <a href=\"%s\">verify and save your "
+"settings</a> to complete the upgrade."
+msgstr ""
+"Social gibt es in einer neuen Version. Zur Aktualisierung bitte <a href=\"%s"
+"\">hier klicken</a>."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:579
+#: Dokumente\GitHub\wp-social/social.php:607
+#, php-format
+msgid "<a href=\"%s\" class=\"social_dismiss\">[Dismiss]</a>"
+msgstr "<a href=\"%s\" class=\"social_dismiss\">[Dismiss]</a>"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:580
+#, php-format
+msgid "To start using Social, please <a href=\"%s\">add an account</a>."
+msgstr ""
+"Um Social benutzen zu können, bitte <a href=\"%s\">einen Account hinzufügen</"
+"a>."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:593
+#, php-format
+msgid "Social requires that either %s or %s be writable for CRON jobs."
+msgstr ""
+"Social verlangt, dass entweder %s oder %s für CRON-Jobs beschreibbar sind."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:596
+#, php-format
+msgid "Social requires that %s is writable for CRON jobs."
+msgstr "Social verlangt, dass %s für CRON-Jobs beschreibbar ist."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:606
+msgid ""
+"When you enable Social, users will be created when they log in with Facebook "
+"or Twitter to comment. These users are created without a role and will be "
+"prevented from accessing the admin side of WordPress until an administrator "
+"edits the user to give them a role."
+msgstr ""
+"Wenn Sie es Social erlauben, werden Benutzer erstellt, wenn sie sich über "
+"Facebook oder Twitter einloggen, um zu kommentieren. Diese Benutzer werden "
+"ohne eine Rolle erstellt und haben solange keine Berechtigung auf das "
+"Backend von Wordpress zuzugreifen, bis ein Verwalter den Benutzer editiert, "
+"um ihm eine Rolle zu geben."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:616
+msgid ""
+"%s needs to be writable for Social's logging. <a href=\"%\" class="
+"\"social_dismiss\">[Dismiss]</a>"
+msgstr ""
+"%s muss beschreibbar sein, für das Logging von Social. <a href=\"%\" class="
+"\"social_dismiss\">[Ausblenden]</a>"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:626
+#: Dokumente\GitHub\wp-social/social.php:660
+#, php-format
+msgid "<a href=\"%s\" class=\"%s\">[Dismiss]</a>"
+msgstr "<a href=\"%s\" class=\"%s\">[Ausblenden]</a>"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:652
+#, php-format
+msgid ""
+"Social needs to re-authorize your Facebook account(s). Please re-connect "
+"your <a href=\"%s\">global</a> and <a href=\"%s\">personal</a> accounts."
+msgstr ""
+"social benötigt einen authorisierten Facebook-Account. Bitte verbinden sie "
+"es mit ihrem <a href=\"%s\">globalen</a> und <a href=\"%s\">persönlichen</a> "
+"Account."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:656
+#, php-format
+msgid ""
+"Social needs to re-authorize your Facebook account(s).. Please re-connect "
+"your <a href=\"%s\">personal</a> accounts."
+msgstr ""
+"social benötigt einen authorisierten Facebook Account. Bitte verbinden Sie "
+"es mit ihrem <a href=\"%s\">persönlichen </a> Account."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:789
+msgid "Social Broadcasting"
+msgstr "Social Übertragung"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:801
+msgid "Social Comments"
+msgstr "Social Kommentare"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:913
+msgid "Not Scheduled"
+msgstr "Nicht vorgesehen"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:1279
+#: Dokumente\GitHub\wp-social/social.php:1280
+msgid "Log in"
+msgstr "Einloggen"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:1418
+#: Dokumente\GitHub\wp-social/social.php:1497
+#, php-format
+msgid "Broadcasting comment #%s to %s using account #%s."
+msgstr "Übertrage Kommentar #%s zu %s über den Account #%s."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:1422
+#: Dokumente\GitHub\wp-social/social.php:1511
+#, php-format
+msgid ""
+"Error: Broadcast comment #%s to %s using account #%s, please go back and try "
+"again."
+msgstr ""
+"Fehler beim Übertragen des Kommentars #%s zu %s über den Account #%s. Bitte "
+"noch einmal versuchen."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:1423
+#, php-format
+msgid ""
+"Error: Your comment could not be sent to %s, please go back and try again."
+msgstr ""
+"Fehler: Dein Kommentars konnte nicht zu %s gesendet werden. Bitte versuch es "
+"noch einmal."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:1435
+#: Dokumente\GitHub\wp-social/social.php:1523
+#, php-format
+msgid "Broadcasting comment #%s to %s using account #%s COMPLETE."
+msgstr "Übertragung des Kommentar #%s zu %s über den Account #%s vollständig."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:1448
+#, php-format
+msgid "Comment #%s saved."
+msgstr "Kommentar #%s gespeichert."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:1689
+#, php-format
+msgid "<a href=\"%s\" rel=\"%s\">Social Comments</a>"
+msgstr "<a href=\"%s\" rel=\"%s\">Social Kommentare</a"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:1719
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/log/shell.php:25
+msgid "Find Social Comments"
+msgstr "Finde Social Kommentare"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:1730
+#: Dokumente\GitHub\wp-social/social.php:1733
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/log/shell.php:2
+msgid "Add Tweet by URL"
+msgstr "Tweet durch URL hinzufügen"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/social.php:1794
+msgid "Tweet Imported!"
+msgstr "Tweet importiert!"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:121
+msgid "1 year"
+msgstr "Ein Jahr"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:124
+#, php-format
+msgid "%s years"
+msgstr "%s Jahre"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:131
+msgid "1 month"
+msgstr "Ein Monat"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:134
+#, php-format
+msgid "%s months"
+msgstr "%s Monate"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:141
+msgid "1 week"
+msgstr "Eine Woche"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:144
+#, php-format
+msgid "%s weeks"
+msgstr "%s Wochen"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:151
+msgid "1 day"
+msgstr "1 Tag"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:154
+#, php-format
+msgid "%s days"
+msgstr "%s Tagen"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:165
+msgid "1 hour"
+msgstr "1 Stunde"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:168
+#: Dokumente\GitHub\wp-social/lib/social/date.php:265
+#, php-format
+msgid "%s hours"
+msgstr "%s Stunden"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:174
+msgid "1 minute"
+msgstr "1 Minute"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:177
+#, php-format
+msgid "%s minutes"
+msgstr "%s Minuten"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:196
+msgid "1 second"
+msgstr "1 Sekunde"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:199
+#, php-format
+msgid "%s seconds"
+msgstr "%s Sekunden"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:232
+msgid "1 month ago"
+msgstr "Einen Monat her"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:235
+#, php-format
+msgid "%s months ago"
+msgstr "vor %s Monaten"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:242
+msgid "1 week ago"
+msgstr "Eine Woche her"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:245
+#, php-format
+msgid "%s weeks ago"
+msgstr "vor %s Wochen"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:252
+msgid "1 day ago"
+msgstr "Ein Tag her"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:255
+#, php-format
+msgid "%s days ago"
+msgstr "%s Tage her"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:262
+msgid "1 hour ago"
+msgstr "1 Stunde her"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:272
+msgid "1 minute ago"
+msgstr "1 Minute her"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:275
+#, php-format
+msgid "%s minutes ago"
+msgstr "%s Minuten her"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:281
+msgid "just now"
+msgstr "jetzt gerade"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:309
+msgid "a few moments"
+msgstr "einige Momente"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:313
+msgid "a few minutes"
+msgstr "einige Minuten"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:317
+msgid "less than an hour"
+msgstr "weniger als eine Stunde"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:321
+msgid "a couple of hours"
+msgstr "einige Stunden"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:325
+msgid "less than a day"
+msgstr "weniger als ein Tag"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:329
+msgid "about a day"
+msgstr "ungefähr ein Tag"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:333
+msgid "a couple of days"
+msgstr "Einige Tage"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:337
+msgid "less than a week"
+msgstr "Weniger als eine Woche"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:341
+msgid "about a week"
+msgstr "Ungefähr eine Woche"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:345
+msgid "less than a month"
+msgstr "Weniger als einen Monat"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:349
+msgid "about a month"
+msgstr "Ungefähr einen Monat"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:353
+msgid "a couple of months"
+msgstr "Einige Monate"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:357
+msgid "less than a year"
+msgstr "Weniger als ein Jahr"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:361
+msgid "about a year"
+msgstr "Ungefähr ein Jahr"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:365
+msgid "a couple of years"
+msgstr "Einige Jahre"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:369
+msgid "a few years"
+msgstr "Ein paar Jahre"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:373
+msgid "about a decade"
+msgstr "ungefähr ein Jahrzent"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:377
+msgid "a couple of decades"
+msgstr "Einige Jahrzente"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:381
+msgid "several decades"
+msgstr "Viele Jahrzente"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:385
+msgid "a long time"
+msgstr "eine lange Zeit"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:390
+#, php-format
+msgid "%s ago"
+msgstr "vor %s"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/date.php:395
+#, php-format
+msgid "in %s"
+msgstr "in %s"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/response.php:96
+msgid ""
+"Unable to publish to %s with account %s. Please <a href=\"%\">re-authorize</"
+"a> this account."
+msgstr ""
+"Veröffentlichung zu %s mit Account %s nicht möglich. Bitte den Account <a "
+"href=\"%\">erneut authorisieren</a>."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/service.php:123
+#: Dokumente\GitHub\wp-social/lib/social/service.php:126
+msgid "Disconnect"
+msgstr "getrennt"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/view.php:98
+msgid "You must set a file to be used before rendering."
+msgstr "Sie müssen eine Datei bestimmen, die vor der Übergabe verwendet wird."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/view.php:135
+#, php-format
+msgid "View %s does not exist."
+msgstr "Ansicht %s existiert nicht."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/lib/social/aggregation/log.php:60
+#, php-format
+msgid "Social failed to initialize the Aggregation_Log for post #%s."
+msgstr ""
+"Social konnte das Häufigkeits-Log für Artikel #%s nicht initialisieren."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/lib/social/aggregation/queue.php:250
+#, php-format
+msgid "approximately %s"
+msgstr "ungefähr %s"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/comment/form.php:261
+msgid "Name"
+msgstr "Name"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/comment/form.php:262
+msgid "Email"
+msgstr "E-Mail"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/comment/form.php:262
+msgid "Not published"
+msgstr "Nicht veröffentlicht"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/comment/form.php:263
+msgid "Website"
+msgstr "Webseite"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/comment/form.php:267
+msgid "Post It"
+msgstr "Senden"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/comment/form.php:268
+msgid "Profile"
+msgstr "Profil"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/comment/form.php:269
+#, php-format
+msgid "Post a Reply to %s"
+msgstr "Schreibe eine Antwort zu %s"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/comment/form.php:270
+msgid "cancel"
+msgstr "abbrechen"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/comment/form.php:274
+msgid "Comment"
+msgstr "Kommentar"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/comment/form.php:279
+msgid "Post a Comment"
+msgstr "Schreibe einen Kommentar"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/lib/social/comment/form.php:309
+#: Dokumente\GitHub\wp-social/lib/social/comment/form.php:319
+#, php-format
+msgid "Also post to %s"
+msgstr "Auch schreiben zu %s"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/lib/social/controller/aggregation.php:144
+#, php-format
+msgid "(%s New)"
+msgstr "(%s Neu)"
+
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/lib/social/controller/broadcast.php:33
+#, php-format
+msgid "View on %s"
+msgstr "Anschauen auf %s"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/lib/social/controller/broadcast.php:74
+#: Dokumente\GitHub\wp-social/lib/social/controller/broadcast.php:106
+msgid "Please enter content to be broadcasted."
+msgstr "Bitte gebe einen Text zum Verbreiten ein."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/lib/social/controller/broadcast.php:79
+#: Dokumente\GitHub\wp-social/lib/social/controller/broadcast.php:111
+#, php-format
+msgid "Content must not be longer than %s characters."
+msgstr "Text darf nicht länger sein als %s Zeichen."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/lib/social/controller/broadcast.php:131
+msgid "Please select at least one account to broadcast to."
+msgstr "Bitte einen Account wählen für die Veröffentlichung."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/lib/social/controller/broadcast.php:212
+msgid "Publish"
+msgstr "Veröffentlichen"
+
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/lib/social/controller/broadcast.php:218
+msgid "Update"
+msgstr "Aktualisieren"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/lib/social/controller/broadcast.php:222
+msgid "Broadcast"
+msgstr "Verbreiten"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/lib/social/controller/broadcast.php:227
+msgid "Schedule"
+msgstr "Vorbereiten"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/lib/social/controller/broadcast.php:536
+msgid "Rate limit reached"
+msgstr "Begrenzung erreicht"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/lib/social/controller/broadcast.php:553
+msgid "Duplicate status"
+msgstr "Doppelter Status"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/lib/social/controller/broadcast.php:570
+msgid "Account deauthorized"
+msgstr "Account nicht authorisiert"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/lib/social/controller/broadcast.php:697
+#, php-format
+msgid "%s: Failed to broadcast post with Social."
+msgstr "%s: Veröffentlichung mit Social fehlgeschlagen."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/lib/social/service/account.php:141
+#: Dokumente\GitHub\wp-social/lib/social/service/account.php:150
+msgid "Removed Account"
+msgstr "Account entfernt"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/lib/social/service/facebook.php:432
+#, php-format
+msgid "Found %s additional likes."
+msgstr "%s zusätliche Likes gefunden."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/lib/social/service/twitter.php:362
+msgid "Retweet Search"
+msgstr "Retweet-Suche"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/lib/social/service/twitter.php:365
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/log/output.php:70
+msgid "Existing Comment"
+msgstr "Vorhandener Kommentar"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comments.php:6
+msgid ""
+"This post is password protected. Enter the password to view any comments."
+msgstr ""
+"Dieser Artikel ist passwortgeschützt. Bitte das Passwort eingeben um alle "
+"Kommentare zu sehen."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comments.php:11
+msgid "Logging In..."
+msgstr "Eingeloggt in...."
+
+# @ default
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comments.php:17
+#, php-format
+msgid "You must be <a href=\"%s\">logged in</a> to post a comment."
+msgstr ""
+"Du musst <a href=\"%s\">eingeloggt sein</a> um einen Kommentar zu "
+"hinterlassen."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comments.php:27
+msgid "Comments are closed."
+msgstr "Kommentarfunktion geschlossen"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comments.php:90
+msgid "0 Replies"
+msgstr "0 Antworten"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comments.php:90
+msgid "1 Reply"
+msgstr "1 Antwort"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comments.php:90
+msgid "% Replies"
+msgstr "% Antworten"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comments.php:91
+#, php-format
+msgid "1 Comment"
+msgid_plural "%1$s Comments"
+msgstr[0] "1 Kommentar"
+msgstr[1] "%1$s Kommentare"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comments.php:92
+#, php-format
+msgid "1 Tweet"
+msgid_plural "%1$s Tweets"
+msgstr[0] "1 Tweet"
+msgstr[1] "%1$s Tweets"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comments.php:93
+#, php-format
+msgid "1 Facebook"
+msgid_plural "%1$s Facebook"
+msgstr[0] "1 Facebook"
+msgstr[1] "%1$s Facebook"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comments.php:94
+#, php-format
+msgid "1 Pingback"
+msgid_plural "%1$s Pingbacks"
+msgstr[0] "1 Pingback"
+msgstr[1] "%1$s Pingbacks"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comments.php:102
+#, php-format
+msgid "Last reply was %s"
+msgstr "Letzter Kommentar war vor %s"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comments.php:137
+msgid "Comment navigation"
+msgstr "Kommentarnavigation"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comments.php:138
+msgid "&larr; Older Comments"
+msgstr "&larr; Ältere Kommentare"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comments.php:139
+msgid "Newer Comments &rarr;"
+msgstr "Neuere Kommentare &rarr;"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comment/comment.php:28
+msgid "Pingback"
+msgstr "Pingback"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comment/comment.php:40
+msgid "replied:"
+msgstr "geantwortet:"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comment/comment.php:50
+msgid "View"
+msgstr "Ansehen"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comment/comment.php:60
+msgid "Your comment is awaiting moderation."
+msgstr "Dein Kommentar wartet auf Freischaltung."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comment/comment.php:73
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/options.php:72
+msgid "Edit"
+msgstr "Bearbeiten"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/comment/logged_in_as.php:9
+msgid "WordPress Account"
+msgstr "WordPress-Account"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/comment/logged_in_as.php:27
+#, php-format
+msgid "Logged in as <a href=\"%1$s\">%2$s</a>."
+msgstr "Eingeloggt als <a href=\"%1$s\">%2$s</a>."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/comment/social_item.php:12
+#, php-format
+msgid "<a href=\"%s\" class=\"social-items-and-more\">... and %s more</a>"
+msgstr "<a href=\"%s\" class=\"social-items-and-more\">... und %s mehr</a>"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comment/top.php:3
+#, php-format
+msgid "Sign in with %s"
+msgstr "Unterschrieben mit %s"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/comment/top.php:7
+msgid "or"
+msgstr "oder"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:6
+msgid "Social settings have been updated."
+msgstr "Social-Einstellungen wurden aktualisiert"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:12
+#, php-format
+msgid ""
+"Compliments of <a class=\"social-mailchimp-link\" href=\"%s\">MailChimp</a>"
+msgstr ""
+"Komplimente von <a class=\"social-mailchimp-link\" href=\"%s\">MailChimp</a>"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:18
+#: Dokumente\GitHub\wp-social/views/wp-admin/profile.php:5
+msgid "Accounts"
+msgstr "Accounts"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:19
+#, php-format
+msgid ""
+"Available to all blog authors. Add accounts that only you can use in <a href="
+"\"%s\">your profile</a>."
+msgstr ""
+"Verfügbar für alle Blog-Autoren. Füge Accounts hinzu, die nur Du in <a href="
+"\"%s\">Deinem Profil</a> nutzen kannst."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:31
+msgid "Broadcasting is on by default"
+msgstr "Verbreiten ist standardmäßig eingeschaltet"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:34
+#: Dokumente\GitHub\wp-social/views/wp-admin/options.php:44
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/broadcast/default.php:5
+msgid "Yes"
+msgstr "Ja"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:37
+#: Dokumente\GitHub\wp-social/views/wp-admin/options.php:47
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/broadcast/default.php:8
+msgid "No"
+msgstr "Nein"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:41
+msgid "Pull in social comments from Facebook and Twitter"
+msgstr "Beziehe Kommentare von Facebook und Twitter"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:52
+msgid "Post broadcast format"
+msgstr "Sendeformat"
+
+# @ default
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:56
+msgid ""
+"How you would like posts to be formatted when broadcasting to Twitter or "
+"Facebook?"
+msgstr ""
+"Wie sollen Beiträge formatiert sein beim Verbreiten auf Twitter oder "
+"Facebook?"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:59
+#: Dokumente\GitHub\wp-social/views/wp-admin/options.php:84
+msgid "Tokens:"
+msgstr "Tokens:"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:77
+msgid "Comment broadcast format"
+msgstr "Kommentar-Übertragungsformat"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:81
+msgid ""
+"How you would like comments to be formatted when broadcasting to Twitter or "
+"Facebook."
+msgstr ""
+"Wie sollen Kommentare formatiert sein beim Verbreiten auf Twitter oder "
+"Facebook?"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:101
+msgid "Twitter @anywhere"
+msgstr "Twitter @überall"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:118
+msgid "Advanced Options"
+msgstr "Erweiterte Optionen"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:123
+msgid "Misc."
+msgstr "Verschiedenes."
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:130
+msgid "Disable Social's comment display (use standard theme output instead)."
+msgstr ""
+"Deaktiviere Socials Kommentaranzeige (benutze stattdessen Standardanzeige "
+"vom Theme)."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:136
+msgid "Disable Social's broadcasting feature."
+msgstr "Deaktiviere Socials Verbreitungsmöglichkeit"
+
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:155
+msgid "Account for general (non account specific) Twitter API interaction."
+msgstr ""
+"Account für generelle (nicht Account-spezifische) Twitter API Interaktion."
+
+# @ photosmash-galleries
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:161
+msgid "Cron settings"
+msgstr "Cron-Einstellungen"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:167
+msgid "Automatic (WP Cron)"
+msgstr "Automatische (WP Cron)"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:168
+msgid "(easiest)"
+msgstr "(einfachste)"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:174
+msgid "Manual <span class=\"description\">(advanced)</span>"
+msgstr ""
+"Benutzerspezifischen Cronjob verwenden <span class=\"description\">"
+"(erweitert)</span>"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:176
+msgid ""
+"If you select this option, new tweets and Facebook posts will not be fetched "
+"unless you set up a system CRON job or fetch new items manually from the "
+"post edit screen. More help is also available in&nbsp;<code>README.txt</"
+"code>."
+msgstr ""
+"Wenn Sie diese Option wählen, werden Tweets und Facebook-Posts solange nicht "
+"abgeholt, bis Sie einen System-Cronjob einsetzen, oder manuell im Artikel-"
+"Bearbeiten-Bildschirm abholen. Weitere Hilfe ist in der &nbsp;<code>readme."
+"txt</code> vorhanden."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:181
+msgid "CRON Setup"
+msgstr "CRON-Setup"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:183
+msgid "CRON API Key"
+msgstr "CRON API Key"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:183
+msgid "regenerate"
+msgstr "Erneut generieren"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:188
+msgid ""
+"For your system CRON to run correctly, make sure it is pointing towards a "
+"URL that looks something like the following:"
+msgstr ""
+"Damit ihr System-Cron korrekt läuft stellen Sie sicher, dass er auf eine URL-"
+"Adresse hinweist, die etwa wie folgt aussieht:"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:200
+msgid "Debug Mode"
+msgstr "Debug-Modus"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:201
+msgid "(nerds only)"
+msgstr "(Nur Experten)"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:204
+msgid ""
+"If you turn debug on, Social will save additional information in "
+"<code>debug_log.txt</code> file. Not recommended for production environments."
+msgstr ""
+"Wenn Sie den Debug-Modus einschalten, wird Social weitere Informationen in "
+"der <code>debug_log.txt</code>-Datei speichern. Nicht empfohlen für "
+"Produktivumgebungen."
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:209
+msgid "Off <span class=\"description\">(recommended)</span>"
+msgstr "Aus <span class=\"description\">(empfohlen)</span>"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:215
+msgid "On <span class=\"description\">(for troubleshooting)</span>"
+msgstr "An <span class=\"description\">(für Fehlerbeseitigung)</span>"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/options.php:220
+msgid "Debug log location:"
+msgstr "Debug-Log-Speicherort:"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/profile.php:1
+msgid "Social Accounts"
+msgstr "Soziale Accounts"
+
+# @ social
+#: D:\Peleke\Eigene Dokumente\GitHub\wp-social/views/wp-admin/profile.php:6
+msgid "Only I can broadcast to these accounts."
+msgstr "Nur ich kann an diese Accounts senden."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/parts/accounts.php:12
+#, php-format
+msgid "Sign in with %s."
+msgstr "Eingeloggt mit %s."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/parts/accounts.php:30
+#: Dokumente\GitHub\wp-social/views/wp-admin/parts/accounts.php:64
+msgid "Default"
+msgstr "Standard"
+
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/parts/accounts.php:68
+msgid "Enabled"
+msgstr "Aktiviert"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/parts/accounts.php:87
+msgid "No Accounts"
+msgstr "Keine Accounts"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/parts/accounts.php:97
+msgid ""
+"Default accounts will auto-broadcast when you publish via XML-RPC or email."
+msgstr ""
+"Accounts, die standardmäßig ausgewählt werden wenn Sie über XML-RPC oder E-"
+"Mail veröffentlichen."
+
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/facebook-link-preview.php:14
+msgid "Thumbnail image"
+msgstr "Thumbnail Bild"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/options.php:5
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/options.php:15
+msgid "Social Broadcasts"
+msgstr "Social Verbreitungen"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/options.php:51
+msgid "Previous Broadcasts"
+msgstr "Vorherige Verbreitungen"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/options.php:94
+msgid "Cancel"
+msgstr "Abbrechen"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/email.php:4
+msgid "Hello"
+msgstr "Hallo"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/email.php:5
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/notice.php:4
+#, php-format
+msgid ""
+"Social failed to broadcast the blog post \"%s\" to one or more of your "
+"Social accounts."
+msgstr ""
+"Social konnte den Blog-Artikel \"%s\" nicht an einen oder mehrere ihrer "
+"Sozialen Accounts senden"
+
+# @ default
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/email.php:24
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/notice.php:25
+msgid "Possible fixes:"
+msgstr "Mögliche Fehlerbehebungen:"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/email.php:33
+#, php-format
+msgid ""
+"To reauthorize the deauthorized %s account above, please login and edit your "
+"accounts."
+msgstr ""
+"Der obige Account %s ist nicht authorisiert. Um ihn wieder zu authorisieren, "
+"loggen Sie sich bitte ein und bearbeiten ihren Account."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/email.php:36
+msgid ""
+"To reauthorize the deauthorized accounts above, please login and edit your "
+"accounts."
+msgstr ""
+"Um den obigen, nicht authorisierten Account wieder zu authorisieren, loggen "
+"Sie sich bitte ein und bearbeiten ihren Account."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/email.php:39
+msgid "Personal accounts:"
+msgstr "Persönliche Accounts:"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/email.php:41
+msgid "Global accounts:"
+msgstr "Globale Accounts:"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/email.php:51
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/notice.php:57
+msgid ""
+"It is possible you have reached your broadcast limit, please try to "
+"broadcast again in an hour."
+msgstr ""
+"Es ist möglich, dass Sie Ihre Sendungsgrenze erreicht haben, versuchen Sie "
+"bitte, in einer Stunde wieder zu senden."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/email.php:54
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/notice.php:60
+msgid ""
+"It is possible you have broadcasted a duplicate message, please tweak your "
+"content a little and try again."
+msgstr ""
+"Es ist möglich, dass Sie eine Duplikatnachricht übertragen haben. Optimieren "
+"Sie bitte Ihren Inhalt ein wenig und versuchen Sie es noch einmal."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/email.php:57
+msgid ""
+"Social was not successful in broadcasting this post (perhaps the service is "
+"down?), please try broadcasting again. If you receive this message "
+"repeatedly, you can try the support forums."
+msgstr ""
+"Social war bei der Übertragung dieses Artikels nicht erfolgreich (vielleicht "
+"ist der Dienst nicht erreichbar?). Versuchen Sie bitte, erneut zu senden. "
+"Wenn Sie diese Nachricht wiederholt erhalten, können Sie die Support-Foren "
+"nutzen."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/email.php:58
+msgid "Support forums:"
+msgstr "Support-Foren:"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/notice.php:36
+#, php-format
+msgid ""
+"To reauthorize the deauthorized %s account above, please edit your <a href="
+"\"%s\">global accounts</a> or your <a href=\"%s\">personal accounts</a>."
+msgstr ""
+"Um den nicht authorisierten %s-Account wieder zu authorisieren, bearbeiten "
+"Sie bitte ihren <a href=\"%s\">globalen Account</a> oder ihren <a href=\"%s"
+"\">persönlichen Account</a>."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/notice.php:39
+#, php-format
+msgid ""
+"To reauthorize the deauthorized %s account above, please edit your <a href="
+"\"%s\">personal accounts</a>."
+msgstr ""
+"Um den nicht mehr authorisierten obigen %s-Account zu authorisieren, "
+"bearbeiten Sie bitte ihren <a href=\"%s\">persönlichen Account</a>."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/notice.php:44
+#, php-format
+msgid ""
+"To reauthorize the deauthorized accounts above, please edit your <a href=\"%s"
+"\">global accounts</a> or your <a href=\"%s\">personal accounts</a>."
+msgstr ""
+"Um den nicht mehr authorisierten obigen Account zu authorisieren, bearbeiten "
+"Sie bitte ihren <a href=\"%s\">globalen Account</a> oder Ihre <a href=\"%s"
+"\">persönlichen Accounts</a>."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/notice.php:47
+#, php-format
+msgid ""
+"To reauthorize the deauthorized account above, please edit your <a href=\"%s"
+"\">personal accounts</a>."
+msgstr ""
+"Um den nicht mehr authorisierten obigen Account zu authorisieren, bearbeiten "
+"Sie bitte ihre <a href=\"%s\">persönlichen Accounts</a>."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/broadcast/error/notice.php:63
+#, php-format
+msgid ""
+"Social was not successful in broadcasting this post (perhaps the service is "
+"down?), please try broadcasting again. If you receive this message "
+"repeatedly, you can try the <a href=\"%s\">support forums</a>."
+msgstr ""
+"Social war beim Senden dieses Artikels nicht erfolgreich - vielleicht ist "
+"der Service nicht erreichbar?. Bitte versuchen Sie das Senden noch einmal. "
+"Wenn Sie diese Meldung wiederholt erhalten, können Sie die <a href=\"%s"
+"\">Support-Foren</a> nutzen."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/broadcast/default.php:2
+msgid "Broadcast Post"
+msgstr "Sende Artikel"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/broadcast/pending.php:4
+msgid "This post will not be broadcasted to any of your social accounts."
+msgstr "Dieser Artikel wird an keinen ihrer Socialen Accounts übertragen."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/broadcast/pending.php:8
+msgid "This post will be broadcasted to the following accounts."
+msgstr "Dieser Artikel wird an folgende Accounts übertragen."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/broadcast/private.php:2
+msgid "Broadcasting is disabled for private posts."
+msgstr "Übertragung ist für private Artikel deaktiviert"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/broadcast/scheduled.php:5
+msgid ""
+"This post is scheduled to be published at a later date. However, it is not "
+"scheduled to be broadcasted to any of your social accounts."
+msgstr ""
+"Dieser Artikel ist für einen späteren Zeitpunkt zur Veröffentlichung "
+"vorgesehen. Jedoch ist es nicht vorgesehen, ihn an ihre Sozialen Accounts zu "
+"übertragen."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/broadcast/scheduled.php:9
+msgid "Scheduled for:"
+msgstr "Geplant für:"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/broadcast/parts/broadcasted.php:10
+msgid "Sent to:"
+msgstr "Senden an:"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/broadcast/parts/button.php:5
+msgid "My Accounts"
+msgstr "Meine Accounts"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/log/output.php:3
+msgid "Aggregation has not been run for this post yet."
+msgstr "Aggregation ist für diesen Artikel bislang nicht vorgesehen."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/log/output.php:14
+msgid "Manual Aggregation"
+msgstr "Manuelles Aggregieren"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/log/output.php:17
+msgid "Automatic Aggregation"
+msgstr "Automatisches Aggregieren"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/log/output.php:59
+msgid "Reply Search"
+msgstr "Antwort-Suche"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/log/output.php:62
+msgid "URL Search"
+msgstr "URL-Suche"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/log/output.php:87
+msgid "No results found."
+msgstr "Keine Ergebnisse gefunden."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/log/shell.php:3
+msgid "Enter the URL of the tweet to add it as a comment."
+msgstr "Gib die URL des Tweets ein, um sie wie einen Kommentar hinzuzufügen."
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/log/shell.php:8
+msgid "Import Tweet"
+msgstr "Tweet importieren"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/log/shell.php:20
+msgid "Manual Refresh"
+msgstr "manuell aktualisieren"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/log/shell.php:21
+#, php-format
+msgid "Next automatic run <span>%s</span>"
+msgstr "Nächster automatischer Durchlauf in <span>%s</span>"
+
+# @ social
+#: D:\Peleke\Eigene
+#: Dokumente\GitHub\wp-social/views/wp-admin/post/meta/log/shell.php:34
+msgid "Log"
+msgstr "Log"
+
+# @ social
+#, fuzzy
+#~ msgid "moments"
+#~ msgstr "Kommentar"
+
+# @ social
+#, fuzzy
+#~ msgid "% ago"
+#~ msgstr "vor %s"

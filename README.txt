@@ -277,6 +277,7 @@ Make sure to upgrade ASAP. This release includes a pointer to the new Social pro
 = 2.6.1 =
 This version fixes several bugs and may help with HostGator's weird server "security" settings.  See the Changelog for details.
 
+
 == Changelog ==
 
 = 2.8 =
