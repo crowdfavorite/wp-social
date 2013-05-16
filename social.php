@@ -1979,7 +1979,7 @@ var socialAdminBarMsgs = {
 					if (!isset($services[$service])) {
 						$service_accounts = array();
 
-						if (isset($accounts[$service]) && is_array($accounts[$service]) && count($accounts[$service])) {
+						if (isset($accounts[$service]) && is_array($accounts[$service]) && !empty($accounts[$service])) {
 							// Flag social as enabled, we have at least one account.
 							if ($this->_enabled === null) {
 								$this->_enabled = true;
