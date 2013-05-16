@@ -1352,7 +1352,7 @@ final class Social {
 	 * @param  string  $alt
 	 * @return string
 	 */
-	public function get_avatar($avatar, $comment, $size, $default, $alt) {
+	public function get_avatar($avatar, $comment, $size, $default, $alt = '') {
 		$image = null;
 		if (is_object($comment)) {
 			$image = get_comment_meta($comment->comment_ID, 'social_profile_image_url', true);
