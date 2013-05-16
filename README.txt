@@ -213,6 +213,14 @@ Download: http://wordpress.org/extend/plugins/subscribe-to-comments-reloaded/
 
 This is actually a bug in the WordPress core. This will be fixed in WordPress 3.3 according to this ticket http://core.trac.wordpress.org/ticket/18157.
 
+= I occasionally receive a PHP Warning of "Missing argument 5 for Social::get_avatar()", what does this mean? =
+
+You are likely using the add-local-avatars plugin here : http://wordpress.org/extend/plugins/add-local-avatar/
+
+This plugin incorrectly calls the `get_avatar` filter.
+
+http://wordpress.org/support/topic/get_avatar-filter-hook-missing-5th-argument
+
 = Where can I update my default social broadcast accounts? =
 
 Connect your social account and after that you can add/remove your default broadcast accounts under the Social Settings Page and from your user profile page (Users/Your Profile).
