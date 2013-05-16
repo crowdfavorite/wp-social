@@ -365,15 +365,15 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				}
 
 				// sanity check to make sure this comment is not a duplicate
-				if ($this->is_duplicate_comment($post, $result->id)) {
+				if ($this->is_duplicate_comment($post, $result_id)) {
 					Social::log('Result #:result_id already exists, skipping.', array(
-						'result_id' => $result->id
+						'result_id' => $result_id
 					), 'duplicate-comment');
 					continue;
 				}
 
 				Social::log('Saving #:result_id.', array(
-					'result_id' => (isset($result->status_id) ? $result->status_id : $result->id)
+					'result_id' => $result_id
 				));
 
 				$comment_id = 0;
@@ -386,7 +386,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 
 					update_comment_meta($comment_id, 'social_account_id', addslashes_deep($user_id));
 					update_comment_meta($comment_id, 'social_profile_image_url', addslashes_deep('https://graph.facebook.com/'.$user_id.'/picture'));
-					update_comment_meta($comment_id, 'social_status_id', addslashes_deep((isset($result->status_id) ? $result->status_id : $result->id)));
+					update_comment_meta($comment_id, 'social_status_id', addslashes_deep($result_id));
 
 					if (!isset($result->raw)) {
 						$result = (object) array_merge((array) $result, array('raw' => $result));

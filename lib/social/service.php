@@ -688,9 +688,10 @@ abstract class Social_Service {
 
 		$results = $wpdb->get_results($wpdb->prepare("
 			SELECT meta_value
-			  FROM $wpdb->commentmeta
-			 WHERE comment_id = %s
-			   AND meta_key = 'social_status_id'
+			  FROM $wpdb->commentmeta AS cm, $wpdb->comments AS c
+			 WHERE cm.comment_id = c.comment_ID
+			   AND c.comment_post_id = %s
+			   AND cm.meta_key = 'social_status_id'
 		", $post->ID));
 
 		foreach ($results as $result) {
