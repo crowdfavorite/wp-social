@@ -1,966 +1,970 @@
-# Copyright (C) 2012 Social
-# This file is distributed under the same license as the Social package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Social 2.5\n"
+"Project-Id-Version: Social\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/social\n"
 "POT-Creation-Date: 2012-05-22 18:40:54+00:00\n"
+"PO-Revision-Date: 2012-08-26 19:21+0100\n"
+"Last-Translator: Kristian Kalvå <kkalvaa@gmail.com>\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2012-08-26 19:22+0100\n"
-"Last-Translator: Kristian Kalvå <kkalvaa@gmail.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: Norwegian Bokmal\n"
+"X-Poedit-Country: NORWAY\n"
+"X-Poedit-SourceCharset: utf-8\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-SearchPath-0: ..\n"
 
 #: lib/social/aggregation/log.php:60
 msgid "Social failed to initialize the Aggregation_Log for post #%s."
-msgstr ""
+msgstr "Social fikk ikke til å starte Aggregation_Log-en for inlegg #%s."
 
 #: lib/social/aggregation/queue.php:247
 msgid "approximately %s"
-msgstr ""
+msgstr "omtrent %s"
 
 #: lib/social/comment/form.php:261
 msgid "Name"
-msgstr ""
+msgstr "Navn"
 
 #: lib/social/comment/form.php:262
 msgid "Email"
-msgstr ""
+msgstr "E-post"
 
 #: lib/social/comment/form.php:262
 msgid "Not published"
-msgstr ""
+msgstr "Blir ikke publisert"
 
 #: lib/social/comment/form.php:263
 msgid "Website"
-msgstr ""
+msgstr "Nettside"
 
 #: lib/social/comment/form.php:267
 msgid "Post It"
-msgstr ""
+msgstr "Legg til"
 
 #: lib/social/comment/form.php:268
 msgid "Profile"
-msgstr ""
+msgstr "Profil"
 
 #: lib/social/comment/form.php:269
 msgid "Post a Reply to %s"
-msgstr ""
+msgstr "Legg igjen et svar til %s"
 
 #: lib/social/comment/form.php:270
 msgid "cancel"
-msgstr ""
+msgstr "avbryt"
 
 #: lib/social/comment/form.php:274
 msgid "Comment"
-msgstr ""
+msgstr "Kommentar"
 
 #: lib/social/comment/form.php:279
 msgid "Post a Comment"
-msgstr ""
+msgstr "Legg igjen en kommentar"
 
 #: lib/social/comment/form.php:309
 #: lib/social/comment/form.php:319
 msgid "Also post to %s"
-msgstr ""
+msgstr "Legg også til %s"
 
 #: lib/social/controller/aggregation.php:144
 msgid "(%s New)"
-msgstr ""
+msgstr "(%s nye)"
 
 #: lib/social/controller/broadcast.php:33
 msgid "View on %s"
-msgstr ""
+msgstr "Vis på %s"
 
 #: lib/social/controller/broadcast.php:74
 #: lib/social/controller/broadcast.php:106
 msgid "Please enter content to be broadcasted."
-msgstr ""
+msgstr "Vennligst fyll inn innhold for kringkasting."
 
 #: lib/social/controller/broadcast.php:79
 #: lib/social/controller/broadcast.php:111
 msgid "Content must not be longer than %s characters."
-msgstr ""
+msgstr "Innholdet må ikke være lengre enn %s tegn."
 
 #: lib/social/controller/broadcast.php:131
 msgid "Please select at least one account to broadcast to."
-msgstr ""
+msgstr "Vennligst velg minst en konto å kringkaste til."
 
 #: lib/social/controller/broadcast.php:212
 msgid "Publish"
-msgstr ""
+msgstr "Publiser"
 
 #: lib/social/controller/broadcast.php:218
 msgid "Update"
-msgstr ""
+msgstr "Oppdater"
 
 #: lib/social/controller/broadcast.php:222
 msgid "Broadcast"
-msgstr ""
+msgstr "Kringkast"
 
 #: lib/social/controller/broadcast.php:227
 msgid "Schedule"
-msgstr ""
+msgstr "Planlegg"
 
 #: lib/social/controller/broadcast.php:532
 msgid "Rate limit reached"
-msgstr ""
+msgstr "Vurderingsgrense nådd"
 
 #: lib/social/controller/broadcast.php:549
 msgid "Duplicate status"
-msgstr ""
+msgstr "Duplisert status"
 
 #: lib/social/controller/broadcast.php:566
 msgid "Account deauthorized"
-msgstr ""
+msgstr "Konto opphevet"
 
 #: lib/social/controller/broadcast.php:693
 msgid "%s: Failed to broadcast post with Social."
-msgstr ""
+msgstr "%s: Det gikk ikke å kringkaste innlegg med Social."
 
 #: lib/social/date.php:120
 msgid "1 year"
-msgstr ""
+msgstr "1 år"
 
 #: lib/social/date.php:123
 msgid "%s years"
-msgstr ""
+msgstr "% år"
 
 #: lib/social/date.php:130
 msgid "1 month"
-msgstr ""
+msgstr "1 måned"
 
 #: lib/social/date.php:133
 msgid "%s months"
-msgstr ""
+msgstr "%s måneder"
 
 #: lib/social/date.php:140
 msgid "1 week"
-msgstr ""
+msgstr "1 uke"
 
 #: lib/social/date.php:143
 msgid "%s weeks"
-msgstr ""
+msgstr "%s uker"
 
 #: lib/social/date.php:150
 #: lib/social/date.php:246
 msgid "1 day"
-msgstr ""
+msgstr "1 dag"
 
 #: lib/social/date.php:153
 msgid "%s days"
-msgstr ""
+msgstr "%s dager"
 
 #: lib/social/date.php:161
 #: lib/social/date.php:257
 msgid "1 hour"
-msgstr ""
+msgstr "1 time"
 
 #: lib/social/date.php:164
 #: lib/social/date.php:260
 msgid "%s hours"
-msgstr ""
+msgstr "%s timer"
 
 #: lib/social/date.php:172
 #: lib/social/date.php:268
 msgid "1 minute"
-msgstr ""
+msgstr "1 minutt"
 
 #: lib/social/date.php:175
 #: lib/social/date.php:271
 msgid "%s minutes"
-msgstr ""
+msgstr "%s minutter"
 
 #: lib/social/date.php:183
 msgid "1 second"
-msgstr ""
+msgstr "1 sekund"
 
 #: lib/social/date.php:186
 msgid "%s seconds"
-msgstr ""
+msgstr "%s sekunder"
 
 #: lib/social/date.php:226
 msgid "1 month ago"
-msgstr ""
+msgstr "1 måned siden"
 
 #: lib/social/date.php:229
 msgid "%s months ago"
-msgstr ""
+msgstr "%s måneder siden"
 
 #: lib/social/date.php:236
 msgid "1 week ago"
-msgstr ""
+msgstr "1 uke siden"
 
 #: lib/social/date.php:239
 msgid "%s weeks ago"
-msgstr ""
+msgstr "%s uker siden"
 
 #: lib/social/date.php:249
 msgid "%s days ago"
-msgstr ""
+msgstr "%s dager siden"
 
 #: lib/social/date.php:277
 msgid "just now"
-msgstr ""
+msgstr "nettopp"
 
 #: lib/social/date.php:282
 #: lib/social/date.php:285
 #: lib/social/date.php:289
 msgid "%s ago"
-msgstr ""
+msgstr "%s siden"
 
 #: lib/social/date.php:315
 msgid "moments"
-msgstr ""
+msgstr "øyeblikk"
 
 #: lib/social/date.php:319
 msgid "a few minutes"
-msgstr ""
+msgstr "noen minutter"
 
 #: lib/social/date.php:323
 msgid "less than an hour"
-msgstr ""
+msgstr "mindre enn en time"
 
 #: lib/social/date.php:327
 msgid "a couple of hours"
-msgstr ""
+msgstr "et par timer"
 
 #: lib/social/date.php:331
 msgid "less than a day"
-msgstr ""
+msgstr "mindre enn en dag"
 
 #: lib/social/date.php:335
 msgid "about a day"
-msgstr ""
+msgstr "omtrent en dag"
 
 #: lib/social/date.php:339
 msgid "a couple of days"
-msgstr ""
+msgstr "et par dager"
 
 #: lib/social/date.php:343
 msgid "less than a week"
-msgstr ""
+msgstr "mindre enn en uke"
 
 #: lib/social/date.php:347
 msgid "about a week"
-msgstr ""
+msgstr "omtrent en uke"
 
 #: lib/social/date.php:351
 msgid "less than a month"
-msgstr ""
+msgstr "mindre enn en måned"
 
 #: lib/social/date.php:355
 msgid "about a month"
-msgstr ""
+msgstr "omtrent en måned"
 
 #: lib/social/date.php:359
 msgid "a couple of months"
-msgstr ""
+msgstr "et par måneder"
 
 #: lib/social/date.php:363
 msgid "less than a year"
-msgstr ""
+msgstr "mindre enn et år"
 
 #: lib/social/date.php:367
 msgid "about a year"
-msgstr ""
+msgstr "omtrent et år"
 
 #: lib/social/date.php:371
 msgid "a couple of years"
-msgstr ""
+msgstr "et par år"
 
 #: lib/social/date.php:375
 msgid "a few years"
-msgstr ""
+msgstr "noen år"
 
 #: lib/social/date.php:379
 msgid "about a decade"
-msgstr ""
+msgstr "omtrent et tiår"
 
 #: lib/social/date.php:383
 msgid "a couple of decades"
-msgstr ""
+msgstr "et par tiår"
 
 #: lib/social/date.php:387
 msgid "several decades"
-msgstr ""
+msgstr "flere tiår"
 
 #: lib/social/date.php:391
 msgid "a long time"
-msgstr ""
+msgstr "lenge"
 
 #: lib/social/date.php:396
 msgid "% ago"
-msgstr ""
+msgstr "%s siden"
 
 #: lib/social/date.php:401
 msgid "in %s"
-msgstr ""
+msgstr "om %s"
 
 #: lib/social/response.php:96
 msgid "Unable to publish to %s with account %s. Please <a href=\"%\">re-authorize</a> this account."
-msgstr ""
+msgstr "Det går ikke å publisere til %s med %s-kontoen. Vennligst <a href=\"%\">godkjenn denne kontoen på ny</a>."
 
 #: lib/social/service/account.php:141
 #: lib/social/service/account.php:150
 msgid "Removed Account"
-msgstr ""
+msgstr "Fjernet konto"
 
 #: lib/social/service/facebook.php:425
 msgid "Found %s additional likes."
-msgstr ""
+msgstr "Fant %s ekstra Liker."
 
 #: lib/social/service/twitter.php:338
 msgid "Retweet Search"
-msgstr ""
+msgstr "Retweet søk"
 
 #: lib/social/service/twitter.php:341
 #: views/wp-admin/post/meta/log/output.php:70
 msgid "Existing Comment"
-msgstr ""
+msgstr "Eksisterende kommentar"
 
 #: lib/social/service.php:126
 #: lib/social/service.php:129
 msgid "Disconnect"
-msgstr ""
+msgstr "Koble fra"
 
 #: lib/social/view.php:98
 msgid "You must set a file to be used before rendering."
-msgstr ""
+msgstr "Du må velge en fil før visningen."
 
 #: lib/social/view.php:135
 msgid "View %s does not exist."
-msgstr ""
+msgstr "Visning %s finnes ikke."
 
 #: social-facebook.php:209
 msgid "Connect with Pages support"
-msgstr ""
+msgstr "Koble til med støtte for Sider"
 
 #: social-facebook.php:434
 msgid "%s liked this"
-msgstr ""
+msgstr "%s likte dette"
 
 #: social-twitter.php:358
 msgid " retweeted this"
-msgstr ""
+msgstr " retweetet dette"
 
 #: social-twitter.php:379
 msgid "Send as a reply"
-msgstr ""
+msgstr "Send som svar"
 
 #: social-twitter.php:381
 msgid "URL of Tweet (to reply to)"
-msgstr ""
+msgstr "Tweet-URL (for å svare på)"
 
 #: social.php:118
 msgid "Failed to auto load class %s."
-msgstr ""
+msgstr "Automatisk lasting av %s-klasse feilet."
 
 #: social.php:149
 #: social.php:152
 msgid "Example: %s"
-msgstr ""
+msgstr "Eksempel: %s"
 
 #: social.php:255
 msgid "Duplicate comment detected; it looks as though you&#8217;ve already said that!"
-msgstr ""
+msgstr "Oppdaget duplisert kommentar. Det ser ut som om du allerede har sagt det."
 
 #: social.php:340
 msgid "Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers."
-msgstr ""
+msgstr "Vi beklager, men Social krever PHP 5.2.4 eller høyere. Vennligst be webhotelleverandøren om å få aktivert PHP 5 som standarden på dine tjenere."
 
 #: social.php:394
 msgid "Post a Reply"
-msgstr ""
+msgstr "Svar på innlegget"
 
 #: social.php:431
 #: social.php:1763
 msgid "Protected Tweet"
-msgstr ""
+msgstr "Beskyttet tweet"
 
 #: social.php:432
 #: social.php:1764
 msgid "Invalid URL"
-msgstr ""
+msgstr "Ugyldig URL"
 
 #: social.php:531
 msgid "Social Options"
-msgstr ""
+msgstr "Social valg"
 
 #. #-#-#-#-#  plugin.pot (Social 2.5)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: social.php:532
 #: views/wp-admin/options.php:11
 msgid "Social"
-msgstr ""
+msgstr "Social"
 
 #: social.php:557
 msgid "Settings"
-msgstr ""
+msgstr "Innstillinger"
 
 #: social.php:573
 msgid "Social is shiny and new! Please <a href=\"%s\">verify and save your settings</a> to complete the upgrade."
-msgstr ""
+msgstr "Social er fin og ny! Vennligst <a href=\"%s\">sjekk og lagre innstillingene dine</a> for å fullføre oppgraderingen."
 
 #: social.php:579
 #: social.php:607
 msgid "<a href=\"%s\" class=\"social_dismiss\">[Dismiss]</a>"
-msgstr ""
+msgstr "<a href=\"%s\" class=\"social_dismiss\">[Fjern]</a>"
 
 #: social.php:580
 msgid "To start using Social, please <a href=\"%s\">add an account</a>."
-msgstr ""
+msgstr "For å begynne å bruke Social, vennligst <a href=\"%s\">Legg til en konto</a>."
 
 #: social.php:593
 msgid "Social requires that either %s or %s be writable for CRON jobs."
-msgstr ""
+msgstr "Social trenger å skrive til enten %s eller %s for CRON-jobber."
 
 #: social.php:596
 msgid "Social requires that %s is writable for CRON jobs."
-msgstr ""
+msgstr "Social trenger å skrive til %s for CRON-jobber."
 
 #: social.php:606
 msgid "When you enable Social, users will be created when they log in with Facebook or Twitter to comment. These users are created without a role and will be prevented from accessing the admin side of WordPress until an administrator edits the user to give them a role."
-msgstr ""
+msgstr "Når du aktiverer Social vil brukere bli opprettet når de logger inn med Facebook eller Twitter for å kommentere. Disse brukerne opprettes uten en rolle og vil ikke kunne få tilgang til adminstratorsiden av WordPress før en administrator redigerer dem for å gi dem en rolle."
 
 #: social.php:616
 msgid "%s needs to be writable for Social's logging. <a href=\"%\" class=\"social_dismiss\">[Dismiss]</a>"
-msgstr ""
+msgstr "%s må være skrivbar for Socials logging. <a href=\"%\" class=\"social_dismiss\">[Fjern]</a>"
 
 #: social.php:626
 #: social.php:660
 msgid "<a href=\"%s\" class=\"%s\">[Dismiss]</a>"
-msgstr ""
+msgstr "<a href=\"%s\" class=\"%s\">[Fjern]</a>"
 
 #: social.php:652
 msgid "Social needs to re-authorize your Facebook account(s). Please re-connect your <a href=\"%s\">global</a> and <a href=\"%s\">personal</a> accounts."
-msgstr ""
+msgstr "Social må autentisere Facebook-kontoen(e) din(e) på nytt. Vennligst koble til dine <a href=\"%s\">globale</a> og <a href=\"%s\">personlige</a> kontoer."
 
 #: social.php:656
 msgid "Social needs to re-authorize your Facebook account(s).. Please re-connect your <a href=\"%s\">personal</a> accounts."
-msgstr ""
+msgstr "Social må autentisere Facebook-kontoen(e) din(e) på nytt. Vennligst koble til dine <a href=\"%s\">personlige</a> kontoer."
 
 #: social.php:774
 msgid "Social Broadcasting"
-msgstr ""
+msgstr "Sosial kringkasting"
 
 #: social.php:782
 msgid "Social Comments"
-msgstr ""
+msgstr "Sosiale kommentarer"
 
 #: social.php:895
 msgid "Not Scheduled"
-msgstr ""
+msgstr "Ikke planlagt"
 
 #: social.php:1254
 #: social.php:1255
 msgid "Log in"
-msgstr ""
+msgstr "Logg inn"
 
 #: social.php:1393
 #: social.php:1472
 msgid "Broadcasting comment #%s to %s using account #%s."
-msgstr ""
+msgstr "Kringkaster kommentar #%s til %s med brukerkonto #%s."
 
 #: social.php:1397
 #: social.php:1486
 msgid "Error: Broadcast comment #%s to %s using account #%s, please go back and try again."
-msgstr ""
+msgstr "Feilmelding: Kringkaster kommentar #%s to %s med brukerkonto #%s, vennligst gå tilbake og prøv igjen."
 
 #: social.php:1398
 msgid "Error: Your comment could not be sent to %s, please go back and try again."
-msgstr ""
+msgstr "Feilmelding: Kommentaren din kunne ikke bli sendt til %s, vennligst gå tilbake og prøv igjen."
 
 #: social.php:1410
 #: social.php:1498
 msgid "Broadcasting comment #%s to %s using account #%s COMPLETE."
-msgstr ""
+msgstr "Kringkasting av kommentar #%s til %s med brukerkonto #%s KOMPLETT."
 
 #: social.php:1423
 msgid "Comment #%s saved."
-msgstr ""
+msgstr "Kommentar #%s lagret."
 
 #: social.php:1661
 msgid "<a href=\"%s\" rel=\"%s\">Social Comments</a>"
-msgstr ""
+msgstr "<a href=\"%s\" rel=\"%s\">Sosiale kommentarer</a>"
 
 #: social.php:1690
 #: views/wp-admin/post/meta/log/shell.php:23
 msgid "Find Social Comments"
-msgstr ""
+msgstr "Finn sosiale kommentarer"
 
 #: social.php:1701
 #: social.php:1704
 #: views/wp-admin/post/meta/log/shell.php:2
 msgid "Add Tweet by URL"
-msgstr ""
+msgstr "Legg til tweet fra URL"
 
 #: social.php:1765
 msgid "Tweet Imported!"
-msgstr ""
+msgstr "Tweet importert!"
 
 #: views/comment/comment.php:28
 msgid "Pingback"
-msgstr ""
+msgstr "Pingback"
 
 #: views/comment/comment.php:40
 msgid "replied:"
-msgstr ""
+msgstr "svarte:"
 
 #: views/comment/comment.php:50
 msgid "View"
-msgstr ""
+msgstr "Vis"
 
 #: views/comment/comment.php:60
 msgid "Your comment is awaiting moderation."
-msgstr ""
+msgstr "Kommentaren din venter på moderering."
 
 #: views/comment/comment.php:73
 #: views/wp-admin/post/broadcast/options.php:71
 msgid "Edit"
-msgstr ""
+msgstr "Rediger"
 
 #: views/comment/logged_in_as.php:9
 msgid "WordPress Account"
-msgstr ""
+msgstr "WordPress-konto"
 
 #: views/comment/logged_in_as.php:27
 msgid "Logged in as <a href=\"%1$s\">%2$s</a>."
-msgstr ""
+msgstr "Innlogget som <a href=\"%1$s\">%2$s</a>."
 
 #: views/comment/social_item.php:12
 msgid "<a href=\"%s\" class=\"social-items-and-more\">... and %s more</a>"
-msgstr ""
+msgstr "<a href=\"%s\" class=\"social-items-and-more\">... og %s flere</a>"
 
 #: views/comment/top.php:3
 msgid "Sign in with %s"
-msgstr ""
+msgstr "Logg inn med %s"
 
 #: views/comment/top.php:7
 msgid "or"
-msgstr ""
+msgstr "eller"
 
 #: views/comments.php:6
 msgid "This post is password protected. Enter the password to view any comments."
-msgstr ""
+msgstr "Dette innlegget er passordbeskyttet. Vennligst skriv inn passordet for å se kommentarer."
 
 #: views/comments.php:11
 msgid "Logging In..."
-msgstr ""
+msgstr "Logger inn …"
 
 #: views/comments.php:17
 msgid "You must be <a href=\"%s\">logged in</a> to post a comment."
-msgstr ""
+msgstr "Du må være <a href=\"\"%s\">innlogget</a> for å kommentere."
 
 #: views/comments.php:27
 msgid "Comments are closed."
-msgstr ""
+msgstr "Stengt for kommentarer."
 
 #: views/comments.php:90
 msgid "0 Replies"
-msgstr ""
+msgstr "0 svar"
 
 #: views/comments.php:90
 msgid "1 Reply"
-msgstr ""
+msgstr "1 svar"
 
 #: views/comments.php:90
 msgid "% Replies"
-msgstr ""
+msgstr "% svar"
 
 #: views/comments.php:91
 msgid "1 Comment"
 msgid_plural "%1$s Comments"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 kommentar"
+msgstr[1] "%1$s kommentarer"
 
 #: views/comments.php:92
 msgid "1 Tweet"
 msgid_plural "%1$s Tweets"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 tweet"
+msgstr[1] "%1$s tweets"
 
 #: views/comments.php:93
 msgid "1 Facebook"
 msgid_plural "%1$s Facebook"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 facebook"
+msgstr[1] "%1$s facebooks"
 
 #: views/comments.php:94
 msgid "1 Pingback"
 msgid_plural "%1$s Pingbacks"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 pingback"
+msgstr[1] "%1$s pingbacks"
 
 #: views/comments.php:102
 msgid "Last reply was %s"
-msgstr ""
+msgstr "Forrige svar var %s"
 
 #: views/comments.php:137
 msgid "Comment navigation"
-msgstr ""
+msgstr "Kommentarnavigasjon"
 
 #: views/comments.php:138
 msgid "&larr; Older Comments"
-msgstr ""
+msgstr "&larr; Eldre kommentarer"
 
 #: views/comments.php:139
 msgid "Newer Comments &rarr;"
-msgstr ""
+msgstr "Nyere kommentarer &rarr;"
 
 #: views/wp-admin/options.php:6
 msgid "Social settings have been updated."
-msgstr ""
+msgstr "Sosiale innstillinger har blitt oppdatert."
 
 #: views/wp-admin/options.php:12
 msgid "Compliments of <a class=\"social-mailchimp-link\" href=\"%s\">MailChimp</a>"
-msgstr ""
+msgstr "Sponset av <a class=\"social-mailchimp-link\" href=\"%s\">MailChimp</a>"
 
 #: views/wp-admin/options.php:18
 #: views/wp-admin/profile.php:5
 msgid "Accounts"
-msgstr ""
+msgstr "Kontoer"
 
 #: views/wp-admin/options.php:19
 msgid "Available to all blog authors. Add accounts that only you can use in <a href=\"%s\">your profile</a>."
-msgstr ""
+msgstr "Tilgjengelig for alle bidragsytere. Legg til en konto bare du kan bruke på <a href=\"%s\">profilsiden din</a>."
 
 #: views/wp-admin/options.php:31
 msgid "Broadcasting is on by default"
-msgstr ""
+msgstr "Kringkasting er på som standard"
 
 #: views/wp-admin/options.php:34
 #: views/wp-admin/post/meta/broadcast/default.php:5
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 #: views/wp-admin/options.php:37
 #: views/wp-admin/post/meta/broadcast/default.php:8
 msgid "No"
-msgstr ""
+msgstr "Nei"
 
 #: views/wp-admin/options.php:42
 msgid "Post broadcast format"
-msgstr ""
+msgstr "Innleggskringkastingsformat"
 
 #: views/wp-admin/options.php:46
 msgid "How you would like posts to be formatted when broadcasting to Twitter or Facebook?"
-msgstr ""
+msgstr "Hvordan ønsker du at innlegg skal formateres ved kringkasting til Twitter eller Facebook?"
 
 #: views/wp-admin/options.php:49
 #: views/wp-admin/options.php:74
 msgid "Tokens:"
-msgstr ""
+msgstr "Tokens:"
 
 #: views/wp-admin/options.php:67
 msgid "Comment broadcast format"
-msgstr ""
+msgstr "Kommentarkringkastingsformat"
 
 #: views/wp-admin/options.php:71
 msgid "How you would like comments to be formatted when broadcasting to Twitter or Facebook."
-msgstr ""
+msgstr "Hvordan ønsker du at kommentarer skal formateres ved kringkasting til Twitter eller Facebook?"
 
 #: views/wp-admin/options.php:91
 msgid "Twitter @anywhere"
-msgstr ""
+msgstr "Twitter @anywhere"
 
 #: views/wp-admin/options.php:93
 msgid "Consumer API Key"
-msgstr ""
+msgstr "Consumer API-nøkkel"
 
 #: views/wp-admin/options.php:95
 msgid "To enable Twitter's @anywhere hovercards for Twitter usernames, enter your application's Consumer API key here. (<a href=\"%1$s\" target=\"_blank\">Click here to get an API key</a>)"
-msgstr ""
+msgstr "For å aktivere Twitters @anywhere visningskort for Twitter-brukernavn må du skrive inn API-nøkkelen din her. (<a href=\"%1$s\" target=\"_blank\">Klikk for å få en API-nøkkel</a>)"
 
 #: views/wp-admin/options.php:109
 msgid "Advanced Options"
-msgstr ""
+msgstr "Avanserte valg"
 
 #: views/wp-admin/options.php:114
 msgid "Misc."
-msgstr ""
+msgstr "Forskj."
 
 #: views/wp-admin/options.php:121
 msgid "Disable Social's comment display (use standard theme output instead)."
-msgstr ""
+msgstr "Deaktiver Socials kommentarvisning (bruk standard temavisning i stedet)."
 
 #: views/wp-admin/options.php:127
 msgid "Disable Social's broadcasting feature."
-msgstr ""
+msgstr "Deaktiver Socials kringkastingsfunksjon."
 
 #: views/wp-admin/options.php:134
 msgid "Fetch new comments"
-msgstr ""
+msgstr "Hent nye kommentarer"
 
 #: views/wp-admin/options.php:140
 msgid "Automatically"
-msgstr ""
+msgstr "Automatisk"
 
 #: views/wp-admin/options.php:141
 msgid "(easiest)"
-msgstr ""
+msgstr "(lettest)"
 
 #: views/wp-admin/options.php:147
 msgid "Never"
-msgstr ""
+msgstr "Aldri"
 
 #: views/wp-admin/options.php:148
 msgid "(disables fetching of comments)"
-msgstr ""
+msgstr "(deaktiverer henting av kommentarer)"
 
 #: views/wp-admin/options.php:154
 msgid "Using a custom CRON job <span class=\"description\">(advanced)</span>"
-msgstr ""
+msgstr "Bruk av egen CRON-jobb <span class=\"description\">(avansert)</span>"
 
 #: views/wp-admin/options.php:156
 msgid "If you select this option, new tweets and Facebook posts will not be fetched unless you set up a system CRON job or fetch new items manually from the post edit screen. More help is also available in&nbsp;<code>README.txt</code>."
-msgstr ""
+msgstr "Hvis du velger denne vil ikke nye tweets eller Facebook innlegg bli hentet med mindre du setter opp en system-CRON-jobb eller henter nye elementer manuelt på Rediger innlegg skjermvisningen. Det finnes også mer hjelp i&nbsp;<code>README.txt</code>."
 
 #: views/wp-admin/options.php:159
 msgid "CRON Setup"
-msgstr ""
+msgstr "CRON setup"
 
 #: views/wp-admin/options.php:161
 msgid "CRON API Key"
-msgstr ""
+msgstr "CRON API-nøkkel"
 
 #: views/wp-admin/options.php:161
 msgid "regenerate"
-msgstr ""
+msgstr "regenerer"
 
 #: views/wp-admin/options.php:166
 msgid "For your system CRON to run correctly, make sure it is pointing towards a URL that looks something like the following:"
-msgstr ""
+msgstr "For at ditt system-CRON skal kjøre korrekt, se til at det peker mot en URL som ser noenlunde ut som:"
 
 #: views/wp-admin/options.php:176
 msgid "Debug Mode"
-msgstr ""
+msgstr "Feilsøkingsmodus"
 
 #: views/wp-admin/options.php:177
 msgid "(nerds only)"
-msgstr ""
+msgstr "(bare nerder)"
 
 #: views/wp-admin/options.php:180
 msgid "If you turn debug on, Social will save additional information in <code>debug_log.txt</code> file. Not recommended for production environments."
-msgstr ""
+msgstr "Hvis du skrur på feilsøking vil Social lagre ekstra informasjon i <code>debug_log.txt</code>-filen. Anbefales ikke i produksjonsmiljø."
 
 #: views/wp-admin/options.php:185
 msgid "Off <span class=\"description\">(recommended)</span>"
-msgstr ""
+msgstr "Av <span class=\"description\">(anbefalt)</span>"
 
 #: views/wp-admin/options.php:191
 msgid "On <span class=\"description\">(for troubleshooting)</span>"
-msgstr ""
+msgstr "På <span class=\"description\">(for feilsøking)</span>"
 
 #: views/wp-admin/options.php:196
 msgid "Debug log location:"
-msgstr ""
+msgstr "Debug-logg plassering:"
 
 #: views/wp-admin/parts/accounts.php:12
 msgid "Sign in with %s."
-msgstr ""
+msgstr "Logg inn med %s."
 
 #: views/wp-admin/parts/accounts.php:30
 #: views/wp-admin/parts/accounts.php:64
 msgid "Default"
-msgstr ""
+msgstr "Standard"
 
 #: views/wp-admin/parts/accounts.php:68
 msgid "Enabled"
-msgstr ""
+msgstr "Aktivert"
 
 #: views/wp-admin/parts/accounts.php:87
 msgid "No Accounts"
-msgstr ""
+msgstr "Ingen kontoer"
 
 #: views/wp-admin/parts/accounts.php:97
 msgid "Default accounts will auto-broadcast when you publish via XML-RPC or email."
-msgstr ""
+msgstr "Standardkontoer kommer til å autokringkaste når du publiserer via XML-RPC eller e-post."
 
 #: views/wp-admin/post/broadcast/error/email.php:4
 msgid "Hello"
-msgstr ""
+msgstr "Hallo"
 
 #: views/wp-admin/post/broadcast/error/email.php:5
 #: views/wp-admin/post/broadcast/error/notice.php:4
 msgid "Social failed to broadcast the blog post \"%s\" to one or more of your Social accounts."
-msgstr ""
+msgstr "Social kunne ikke kringkaste innlegget \"%s\" til en eller flere av dine sosiale kontoer."
 
 #: views/wp-admin/post/broadcast/error/email.php:24
 #: views/wp-admin/post/broadcast/error/notice.php:25
 msgid "Possible fixes:"
-msgstr ""
+msgstr "Mulige løsninger:"
 
 #: views/wp-admin/post/broadcast/error/email.php:33
 msgid "To reauthorize the deauthorized %s account above, please login and edit your accounts."
-msgstr ""
+msgstr "For å reautorisere den avautoriserte %s-kontoen over, vennligst logg inn og rediger kontene dine."
 
 #: views/wp-admin/post/broadcast/error/email.php:36
 msgid "To reauthorize the deauthorized accounts above, please login and edit your accounts."
-msgstr ""
+msgstr "For å reautorisere den avautoriserte %s-kontoene over, vennligst logg inn og rediger kontene dine."
 
 #: views/wp-admin/post/broadcast/error/email.php:39
 msgid "Personal accounts:"
-msgstr ""
+msgstr "Personlige kontoer:"
 
 #: views/wp-admin/post/broadcast/error/email.php:41
 msgid "Global accounts:"
-msgstr ""
+msgstr "Globale kontoer:"
 
 #: views/wp-admin/post/broadcast/error/email.php:51
 #: views/wp-admin/post/broadcast/error/notice.php:57
 msgid "It is possible you have reached your broadcast limit, please try to broadcast again in an hour."
-msgstr ""
+msgstr "Det er mulig at du har nådd kringkastingsgrensen din, vennligst prøv igjen om en time."
 
 #: views/wp-admin/post/broadcast/error/email.php:54
 #: views/wp-admin/post/broadcast/error/notice.php:60
 msgid "It is possible you have broadcasted a duplicate message, please tweak your content a little and try again."
-msgstr ""
+msgstr "Det er mulig at du har kringkastet en duplisert melding, vennligst juster innholdet litt og prøv på nytt."
 
 #: views/wp-admin/post/broadcast/error/email.php:57
 msgid "Social was not successful in broadcasting this post (perhaps the service is down?), please try broadcasting again. If you receive this message repeatedly, you can try the support forums."
-msgstr ""
+msgstr "Social fikk ikke til å kringkaste dette innlegget (kanskje tjenesten er nede?), vennligst prøv å kringkaste igjen. Hvis denne feilmeldingen dukker opp flere ganger kan du prøve supportforumet."
 
 #: views/wp-admin/post/broadcast/error/email.php:58
 msgid "Support forums:"
-msgstr ""
+msgstr "Supportforum."
 
 #: views/wp-admin/post/broadcast/error/notice.php:36
 msgid "To reauthorize the deauthorized %s account above, please edit your <a href=\"%s\">global accounts</a> or your <a href=\"%s\">personal accounts</a>."
-msgstr ""
+msgstr "Vennligst rediger <a href=\"%s\">dine globale kontoer</a> eller <a href=\"%s\">dine personlige kontoer</a> for å reautorisere %s-kontoen over."
 
 #: views/wp-admin/post/broadcast/error/notice.php:39
 msgid "To reauthorize the deauthorized %s account above, please edit your <a href=\"%s\">personal accounts</a>."
-msgstr ""
+msgstr "Vennligst rediger <a href=\"%s\">dine personlige kontoer</a> for å reautorisere %s-kontoen over."
 
 #: views/wp-admin/post/broadcast/error/notice.php:44
 msgid "To reauthorize the deauthorized accounts above, please edit your <a href=\"%s\">global accounts</a> or your <a href=\"%s\">personal accounts</a>."
-msgstr ""
+msgstr "Vennligst rediger <a href=\"%s\">dine globale kontoer</a> eller <a href=\"%s\">dine personlige kontoer</a> for å reautorisere kontoen over."
 
 #: views/wp-admin/post/broadcast/error/notice.php:47
 msgid "To reauthorize the deauthorized account above, please edit your <a href=\"%s\">personal accounts</a>."
-msgstr ""
+msgstr "Vennligst rediger <a href=\"%s\">dine personlige kontoer</a> for å reautorisere kontoen over."
 
 #: views/wp-admin/post/broadcast/error/notice.php:63
 msgid "Social was not successful in broadcasting this post (perhaps the service is down?), please try broadcasting again. If you receive this message repeatedly, you can try the <a href=\"%s\">support forums</a>."
-msgstr ""
+msgstr "Social kunne ikke kringkaste dette innlegget (kanskje tjenesten er nede?), vennligst prøv å kringkaste på ny. Hvis du får denne meldingen flere ganger kan du prøve <a href=\"%s\">supportforumet</a>."
 
 #: views/wp-admin/post/broadcast/facebook-link-preview.php:14
 msgid "Thumbnail image"
-msgstr ""
+msgstr "Miniatyrbilde"
 
 #: views/wp-admin/post/broadcast/options.php:5
 #: views/wp-admin/post/broadcast/options.php:14
 msgid "Social Broadcasts"
-msgstr ""
+msgstr "Sosiale kringkastinger"
 
 #: views/wp-admin/post/broadcast/options.php:50
 msgid "Previous Broadcasts"
-msgstr ""
+msgstr "Tidligere kringkastinger"
 
 #: views/wp-admin/post/broadcast/options.php:93
 msgid "Cancel"
-msgstr ""
+msgstr "Avbryt"
 
 #: views/wp-admin/post/meta/broadcast/default.php:2
 msgid "Broadcast Post"
-msgstr ""
+msgstr "Kringkast innlegg"
 
 #: views/wp-admin/post/meta/broadcast/parts/broadcasted.php:10
 msgid "Sent to:"
-msgstr ""
+msgstr "Send til:"
 
 #: views/wp-admin/post/meta/broadcast/parts/button.php:5
 msgid "My Accounts"
-msgstr ""
+msgstr "Mine kontoer"
 
 #: views/wp-admin/post/meta/broadcast/pending.php:4
 msgid "This post will not be broadcasted to any of your social accounts."
-msgstr ""
+msgstr "Dette innlegget vil ikke bli kringkastet til noen av dine sosiale kontoer."
 
 #: views/wp-admin/post/meta/broadcast/pending.php:8
 msgid "This post will be broadcasted to the following accounts."
-msgstr ""
+msgstr "Dette innlegget kommer til å bli kringkastet til følgende kontoer:"
 
 #: views/wp-admin/post/meta/broadcast/private.php:2
 msgid "Broadcasting is disabled for private posts."
-msgstr ""
+msgstr "Kringkasting er slått av for private innlegg."
 
 #: views/wp-admin/post/meta/broadcast/scheduled.php:5
 msgid "This post is scheduled to be published at a later date. However, it is not scheduled to be broadcasted to any of your social accounts."
-msgstr ""
+msgstr "Dette innlegget vil bli publisert senere, men det finnes ingen planlagte kringkastinger til noen av dine sosiale kontoer."
 
 #: views/wp-admin/post/meta/broadcast/scheduled.php:9
 msgid "Scheduled for:"
-msgstr ""
+msgstr "Planlagt for:"
 
 #: views/wp-admin/post/meta/log/output.php:3
 msgid "Aggregation has not been run for this post yet."
-msgstr ""
+msgstr "Aggrering har ikke kjørt for denne kontoen enda."
 
 #: views/wp-admin/post/meta/log/output.php:14
 msgid "Manual Aggregation"
-msgstr ""
+msgstr "Manuell aggregering"
 
 #: views/wp-admin/post/meta/log/output.php:17
 msgid "Automatic Aggregation"
-msgstr ""
+msgstr "Automatisk aggregering"
 
 #: views/wp-admin/post/meta/log/output.php:59
 msgid "Reply Search"
-msgstr ""
+msgstr "Svar søk"
 
 #: views/wp-admin/post/meta/log/output.php:62
 msgid "URL Search"
-msgstr ""
+msgstr "URL søk"
 
 #: views/wp-admin/post/meta/log/output.php:87
 msgid "No results found."
-msgstr ""
+msgstr "Fant ingen resultater."
 
 #: views/wp-admin/post/meta/log/shell.php:3
 msgid "Enter the URL of the tweet to add it as a comment."
-msgstr ""
+msgstr "Skriv inn URLen til tweeten for å legge til som en kommentar."
 
 #: views/wp-admin/post/meta/log/shell.php:8
 msgid "Import Tweet"
-msgstr ""
+msgstr "Importer tweet"
 
 #: views/wp-admin/post/meta/log/shell.php:18
 msgid "Manual Refresh"
-msgstr ""
+msgstr "Manuell oppfriskning"
 
 #: views/wp-admin/post/meta/log/shell.php:19
 msgid "Next automatic run <span>%s</span>"
-msgstr ""
+msgstr "Neste automatiske <span>%s</span>"
 
 #: views/wp-admin/post/meta/log/shell.php:30
 msgid "Log"
-msgstr ""
+msgstr "Logg"
 
 #: views/wp-admin/profile.php:1
 msgid "Social Accounts"
-msgstr ""
+msgstr "Sosiale kontoer"
 
 #: views/wp-admin/profile.php:6
 msgid "Only I can broadcast to these accounts."
-msgstr ""
+msgstr "Bare jeg kan kringkaste til disse kontoene."
 
 #. Plugin URI of the plugin/theme
 msgid "http://mailchimp.com/social-plugin-for-wordpress/"
-msgstr ""
+msgstr "http://mailchimp.com/social-plugin-for-wordpress/"
 
 #. Description of the plugin/theme
 msgid "Broadcast newly published posts and pull in discussions using integrations with Twitter and Facebook. Brought to you by <a href=\"http://mailchimp.com\">MailChimp</a>."
-msgstr ""
+msgstr "Kringkast nylig publiserte innlegg og hent diskusjoner med Twitter og Facebook. Vennlig hilsen <a href=\"http://mailchimp.com\">MailChimp</a>."
 
 #. Author of the plugin/theme
 msgid "Crowd Favorite"
-msgstr ""
+msgstr "Crowd Favorite"
 
 #. Author URI of the plugin/theme
 msgid "http://crowdfavorite.com/"
-msgstr ""
+msgstr "http://crowdfavorite.com/"
 
