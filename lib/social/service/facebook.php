@@ -357,7 +357,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				));
 
 				$result_id = (isset($result->status_id) ? $result->status_id : $result->id);
-				if (apply_filters('social_approve_likes_and_retweets', true) && isset($result->like)) {
+				if (apply_filters('social_approve_likes_and_retweets', false) && isset($result->like)) {
 					$commentdata['comment_approved'] = 1;
 				}
 				else if (($commentdata = $this->allow_comment($commentdata, $result_id, $post)) === false) {
