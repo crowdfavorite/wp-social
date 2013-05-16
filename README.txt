@@ -280,6 +280,10 @@ This version fixes several bugs and may help with HostGator's weird server "secu
 
 == Changelog ==
 
+= 2.9 =
+* Added German and Norwegian Bokmål language support
+* Now using HTTPS for Facebook and Twitter links and avatars
+
 = 2.8 =
 * Change Twitter search endpoint to use v1.1
 * Remove warnings related to broadcasting to no accounts
