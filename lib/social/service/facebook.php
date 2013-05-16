@@ -229,7 +229,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 									}
 
 									Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
-									$result->status_id = $broadcasted_id;
+									$post->aggregated_ids[$this->_key][] = $result->id;
 									$post->results[$this->_key][$result->id] = $result;
 								}
 							}
@@ -356,24 +356,23 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					'comment_author_email' => $this->_key.'.'.$user_id.'@example.com',
 				));
 
-				$result_id = (isset($result->status_id) ? $result->status_id : $result->id);
 				if (apply_filters('social_approve_likes_and_retweets', false) && isset($result->like)) {
 					$commentdata['comment_approved'] = 1;
 				}
-				else if (($commentdata = $this->allow_comment($commentdata, $result_id, $post)) === false) {
+				else if (($commentdata = $this->allow_comment($commentdata, $result->id, $post)) === false) {
 					continue;
 				}
 
 				// sanity check to make sure this comment is not a duplicate
-				if ($this->is_duplicate_comment($post, $result_id)) {
+				if ($this->is_duplicate_comment($post, $result->id)) {
 					Social::log('Result #:result_id already exists, skipping.', array(
-						'result_id' => $result_id
+						'result_id' => $result->id
 					), 'duplicate-comment');
 					continue;
 				}
 
 				Social::log('Saving #:result_id.', array(
-					'result_id' => $result_id
+					'result_id' => $result->id
 				));
 
 				$comment_id = 0;
@@ -386,7 +385,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 
 					update_comment_meta($comment_id, 'social_account_id', addslashes_deep($user_id));
 					update_comment_meta($comment_id, 'social_profile_image_url', addslashes_deep('https://graph.facebook.com/'.$user_id.'/picture'));
-					update_comment_meta($comment_id, 'social_status_id', addslashes_deep($result_id));
+					update_comment_meta($comment_id, 'social_status_id', addslashes_deep($result->id));
 
 					if (!isset($result->raw)) {
 						$result = (object) array_merge((array) $result, array('raw' => $result));
@@ -405,7 +404,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				}
 				catch (Exception $e) {
 					// Something went wrong, remove the aggregated ID.
-					if (($key = array_search((isset($result->status_id) ? $result->status_id : $result->id), $post->aggregated_ids['facebook'])) !== false) {
+					if (($key = array_search($result->id, $post->aggregated_ids['facebook'])) !== false) {
 						unset($post->aggregated_ids['facebook'][$key]);
 					}
 
