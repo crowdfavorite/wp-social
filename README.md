@@ -296,6 +296,7 @@ This version fixes several bugs and may help with HostGator's weird server "secu
 * Default 'social_approve_likes_and_retweets' to false (previously true)
 * Added Option to enable/disable social broadcasting for specific post types
 * Fix Issue with high byte charaters causing duplication of aggregated comments
+* No longer strip newlines from broadcasted content
 
 
 **2.8**
