@@ -764,7 +764,7 @@ final class Social {
 			unset($types[$type]);
 		}
 
-		return apply_filters('social_broadcasting_available_post_types', $types);
+		return apply_filters('social_broadcasting_available_post_types', array_keys($types));
 	}
 
 	/**
