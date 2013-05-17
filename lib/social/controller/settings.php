@@ -69,6 +69,10 @@ final class Social_Controller_Settings extends Social_Controller {
 				}
 			}
 
+			if (isset($_POST['social_enabled_post_types'])) {
+				Social::option('enabled_post_types', array_keys($_POST['social_enabled_post_types'], 1));
+			}
+
 			// Disable Social's comment display feature
 			if (isset($_POST['social_use_standard_comments'])) {
 				Social::option('use_standard_comments', '1');

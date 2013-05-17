@@ -28,6 +28,20 @@ echo Social_View::factory(
 				</td>
 			</tr>
 			<tr>
+				<th><?php _e('Broadcasting enabled for', 'social'); ?></th>
+<?php
+$available_post_types = Social::broadcasting_available_post_types();
+$enabled_post_types = Social::broadcasting_enabled_post_types();
+?>
+				<td>
+<?php foreach ($available_post_types as $type) { ?>
+					<div>
+						<input type="checkbox" name="social_enabled_post_types[<?php echo $type ?>]" value="1" <?php echo checked(in_array($type, $enabled_post_types)) ?>/> <label for="social_enabled_post_types[<?php echo $type ?>]"><?php echo ucwords(str_replace('_', ' ', $type)) ?></label>
+					</div>
+<?php } ?>
+				</td>
+			</tr>
+			<tr>
 				<th><?php _e('Broadcasting is on by default', 'social'); ?></th>
 				<td>
 					<input type="radio" name="social_broadcast_by_default" id="social-broadcast-by-default-yes" value="1"<?php checked('1', Social::option('broadcast_by_default'), true); ?>
@@ -58,7 +72,7 @@ echo Social_View::factory(
 					<div class="description">
 						<?php _e('Tokens:', 'social'); ?>
 						<ul>
-<?php 
+<?php
 foreach (Social::broadcast_tokens() as $token => $description) {
 	if (!empty($description)) {
 		$description = ' - '.$description;
@@ -83,7 +97,7 @@ foreach (Social::broadcast_tokens() as $token => $description) {
 					<div class="description">
 						<?php _e('Tokens:', 'social'); ?>
 						<ul>
-<?php 
+<?php
 foreach (Social::comment_broadcast_tokens() as $token => $description) {
 	if (!empty($description)) {
 		$description = ' - '.$description;

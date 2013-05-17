@@ -752,16 +752,38 @@ final class Social {
 	}
 
 	/**
+	 * Return array of  social broadcasting post types
+	 *
+	 * @static
+	 * @return array
+	 */
+	public static function broadcasting_available_post_types() {
+		$types = get_post_types(array('public' => true));
+		$blacklisted_types = apply_filters('social_broadcasting_blacklisted_post_types', array('attachment'));
+		foreach($blacklisted_types as $type) {
+			unset($types[$type]);
+		}
+
+		return apply_filters('social_broadcasting_available_post_types', $types);
+	}
+
+	/**
 	 * Return array of enabled social broadcasting post types
 	 *
 	 * @static
 	 * @return array
 	 */
 	public static function broadcasting_enabled_post_types() {
-		return apply_filters('social_broadcasting_enabled_post_types', get_post_types(array(
-			'public' => true,
-			'hierarchical' => false
-		)));
+		$available = Social::broadcasting_available_post_types();
+		$enabled = Social::option('enabled_post_types');
+		if (!$enabled) {
+			$default = get_post_types(array(
+				'hierarchical' => false,
+			));
+			$enabled = array_keys($default);
+		}
+
+		return apply_filters('social_broadcasting_enabled_post_types', array_intersect($available, $enabled));
 	}
 	
 	/**
