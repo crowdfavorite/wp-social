@@ -760,7 +760,7 @@ final class Social {
 	public static function broadcasting_available_post_types() {
 		$types = get_post_types(array('public' => true));
 		$blacklisted_types = apply_filters('social_broadcasting_blacklisted_post_types', array('attachment'));
-		foreach($blacklisted_types as $type) {
+		foreach ($blacklisted_types as $type) {
 			unset($types[$type]);
 		}
 
