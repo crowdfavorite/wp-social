@@ -3,8 +3,8 @@
 Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter, social, broadcast, import, integrate, integration
 Requires at least: 3.3
-Tested up to: 3.5
-Stable tag: 2.7
+Tested up to: 3.6
+Stable tag: 2.9
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
