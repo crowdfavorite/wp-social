@@ -408,7 +408,6 @@ abstract class Social_Service {
 				case '{content}':
 					$content = do_shortcode($post->post_content);
 					$content = htmlspecialchars_decode(strip_tags($content));
- 					$content = str_replace(array("\n", "\r", PHP_EOL, '&nbsp;'), ' ', $content);
 					$content = preg_replace('/\s+/', ' ', $content);
 					break;
 				case '{author}':
@@ -488,7 +487,6 @@ abstract class Social_Service {
 					break;
 				case '{content}':
 					$used_tokens[$token] = strip_tags($comment->comment_content);
-					$used_tokens[$token] = str_replace(array("\n", "\r", PHP_EOL), '', $used_tokens[$token]);
 					$used_tokens[$token] = str_replace('&nbsp;', '', $used_tokens[$token]);
 					break;
 			}
