@@ -215,6 +215,14 @@ Download: http://wordpress.org/extend/plugins/subscribe-to-comments-reloaded/
 
 This is actually a bug in the WordPress core. This will be fixed in WordPress 3.3 according to this ticket http://core.trac.wordpress.org/ticket/18157.
 
+**I occasionally receive a PHP Warning of "Missing argument 5 for Social::get_avatar()", what does this mean?**
+
+You are likely using the add-local-avatars plugin here : http://wordpress.org/extend/plugins/add-local-avatar/
+
+This plugin incorrectly calls the `get_avatar` filter.
+
+http://wordpress.org/support/topic/get_avatar-filter-hook-missing-5th-argument
+
 **Where can I update my default social broadcast accounts?**
 
 Connect your social account and after that you can add/remove your default broadcast accounts under the Social Settings Page and from your user profile page (Users/Your Profile).
@@ -279,6 +287,16 @@ Make sure to upgrade ASAP. This release includes a pointer to the new Social pro
 This version fixes several bugs and may help with HostGator's weird server "security" settings.  See the Changelog for details.
 
 ## Changelog
+
+**2.9**
+
+* Added German and Norwegian Bokmål language support
+* Now using HTTPS for Facebook and Twitter links and avatars
+* Fix Conflict with add-local-avatar plugin
+* Default 'social_approve_likes_and_retweets' to false (previously true)
+* Added Option to enable/disable social broadcasting for specific post types
+* Fix Issue with high byte charaters causing duplication of aggregated comments
+
 
 **2.8**
 
