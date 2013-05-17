@@ -36,7 +36,7 @@ $enabled_post_types = Social::broadcasting_enabled_post_types();
 				<td>
 <?php foreach ($available_post_types as $type) { ?>
 					<div>
-						<input type="checkbox" name="social_enabled_post_types[<?php echo $type ?>]" value="1" <?php echo checked(in_array($type, $enabled_post_types)) ?>/> <label for="social_enabled_post_types[<?php echo $type ?>]"><?php echo ucwords(str_replace('_', ' ', $type)) ?></label>
+						<input type="checkbox" id="social_enabled_post_types[<?php echo esc_attr($type) ?>]" name="social_enabled_post_types[<?php echo esc_attr($type) ?>]" value="1" <?php echo checked(in_array($type, $enabled_post_types)) ?>/> <label for="social_enabled_post_types[<?php echo $type ?>]"><?php echo esc_html(ucwords(str_replace('_', ' ', $type))) ?></label>
 					</div>
 <?php } ?>
 				</td>
