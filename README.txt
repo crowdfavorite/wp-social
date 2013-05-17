@@ -294,6 +294,7 @@ This version fixes several bugs and may help with HostGator's weird server "secu
 * Fix Conflict with add-local-avatar plugin
 * Default 'social_approve_likes_and_retweets' to false (previously true)
 * Added Option to enable/disable social broadcasting for specific post types
+* Fix Issue with high byte charaters causing duplication of aggregated comments
 
 = 2.8 =
 * Change Twitter search endpoint to use v1.1
