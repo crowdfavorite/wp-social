@@ -94,10 +94,14 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				if (!is_null($parent_comment) && in_array($parent_comment->comment_type, self::comment_types())) {
 					$status_id = get_comment_meta($parent_comment->comment_ID, 'social_status_id', true);
 					if (!empty($status_id)) {
-						// we have a Facebook post to reply to
+						// we have a Facebook post (or comment) to reply to
 						$parts = explode('_', $status_id);
-						if (count($parts) == 3) {
-							$status_id = $parts[0].'_'.$parts[1];
+						if (count($parts) == 3) { // Reply to a FB Comment
+							$raw = json_decode(base64_decode(get_comment_meta($parent_comment->comment_ID, 'social_raw_data', true)));
+							$can_comment = isset($raw->can_comment) ? $raw->can_comment : false;
+							if (!$can_comment) { // if the original comment doesn't support "replies"
+								$status_id = $parts[0].'_'.$parts[1];  // Strip down to original post id
+							}
 						}
 						$args = apply_filters($this->key().'_broadcast_args', $args, $post_id, $comment_id);
 						$response = $this->request($account, $status_id.'/comments', $args, 'POST');
@@ -298,6 +302,24 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		}
 	}
 
+
+	/**
+	 * Retrieves the WordPress ID of a comment based on the Facebook ID
+	 *
+	 * @param  string  Facebook Id
+	 * @return string|false
+	 */
+	private function get_comment_from_fb_id($fb_parent_id) {
+		global $wpdb;
+
+		return $wpdb->get_row($wpdb->prepare("
+			SELECT comment_id
+			  FROM $wpdb->commentmeta AS cm
+			 WHERE cm.meta_key = 'social_status_id'
+			   AND cm.meta_value = %s
+		", $fb_parent_id));
+	}
+
 	/**
 	 * Saves the aggregated comments.
 	 *
@@ -315,6 +337,13 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					'comment_author_IP' => $_SERVER['SERVER_ADDR'],
 					'comment_agent' => 'Social Aggregator'
 				);
+
+				if (isset($result->parent)) {
+					if ($wp_parent = $this->get_comment_from_fb_id($result->parent)) {
+						$commentdata['comment_parent'] = $wp_parent->comment_id;
+					}
+				}
+
 				if (!isset($result->like)) {
 					$url = 'https://graph.facebook.com/'.$result->from->id;
 					$request = wp_remote_get($url);
