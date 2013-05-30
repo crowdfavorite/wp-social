@@ -86,33 +86,34 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 			'message' => $message,
 		);
 
-		// first try to send comment to an existing Fb post
-		if (!is_null($comment_id)) {
-			$comment = get_comment($comment_id);
-			if (!empty($comment->comment_parent)) {
-				$parent_comment = get_comment($comment->comment_parent);
-				if (!is_null($parent_comment) && in_array($parent_comment->comment_type, self::comment_types())) {
-					$status_id = get_comment_meta($parent_comment->comment_ID, 'social_status_id', true);
-					if (!empty($status_id)) {
-						// we have a Facebook post (or comment) to reply to
-						$parts = explode('_', $status_id);
-						if (count($parts) == 3) { // Reply to a FB Comment
-							$raw = json_decode(base64_decode(get_comment_meta($parent_comment->comment_ID, 'social_raw_data', true)));
-							$can_comment = isset($raw->can_comment) ? $raw->can_comment : false;
-							if (!$can_comment) { // if the original comment doesn't support "replies"
-								$status_id = $parts[0].'_'.$parts[1];  // Strip down to original post id
-							}
-						}
+		if ($comment_id && ($comment = get_comment($comment_id))) {
+
+			// Check for facebook comment reply
+			if ($comment->comment_parent
+				&& ($parent_comment = get_comment($comment->comment_parent))
+				&& in_array($parent_comment->comment_type, self::comment_types())) {
+
+				if ($status_id = get_comment_meta($parent_comment->comment_ID, 'social_status_id', true)) {
+					$raw = json_decode(base64_decode(get_comment_meta($parent_comment->comment_ID, 'social_raw_data', true)));
+					$can_comment = isset($raw->can_comment) ? $raw->can_comment : false;
+					if (!$can_comment) { // if the parent comment does not support "replies"
+						// Try to grab original parent's broadcast id
+						$status_id = get_comment_meta($parent_comment->comment_ID, 'social_original_parent_broadcast_id', true);
+					}
+				
+					// Make sure we still have a status id to broadcast to
+					if ($status_id) {
 						$args = apply_filters($this->key().'_broadcast_args', $args, $post_id, $comment_id);
 						$response = $this->request($account, $status_id.'/comments', $args, 'POST');
-						if ($response !== false && $response->id() !== '0') {
+						if ($response !== false && $response->body()->result == 'success') {
 							// post succeeded, return response
 							return $response;
 						}
-						// ...broadcast failed, continue and send as post to feed
 					}
 				}
 			}
+
+			// Continuing on to simply post on user's wall
 
 			// posting with a link, do not include URL in comment.
 			$format = trim(str_replace('{url}', '', Social::option('comment_broadcast_format')));
@@ -169,7 +170,6 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				$response = wp_remote_get($url);
 				if (!is_wp_error($response)) {
 					$response = json_decode($response['body']);
-
 					if (isset($response->data) and is_array($response->data) and count($response->data)) {
 						foreach ($response->data as $result) {
 							if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
@@ -183,6 +183,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 							}
 
 							Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url');
+							$result->original_parent_broadcast_id = false;
 							$post->aggregated_ids[$this->_key][] = $result->id;
 							$post->results[$this->_key][$result->id] = $result;
 						}
@@ -214,7 +215,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				if (isset($post->broadcasted_ids[$this->_key][$account->id()])) {
 					foreach ($post->broadcasted_ids[$this->_key][$account->id()] as $broadcasted_id => $data) {
 						$id = explode('_', $broadcasted_id);
-						$request = $this->request($account, $broadcasted_id.'/comments');
+						$request = $this->request($account, $broadcasted_id.'/comments', array('filter' => 'stream', 'fields' => 'parent,message,from,created_time,can_comment'));
 						if ($request !== false && isset($request->body()->response)) {
 							$response = $request->body()->response;
 							if (isset($response->data) and is_array($response->data) and count($response->data)) {
@@ -233,6 +234,8 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 									}
 
 									Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
+
+									$result->original_parent_broadcast_id = $broadcasted_id;
 									$post->aggregated_ids[$this->_key][] = $result->id;
 									$post->results[$this->_key][$result->id] = $result;
 								}
@@ -339,7 +342,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				);
 
 				if (isset($result->parent)) {
-					if ($wp_parent = $this->get_comment_from_fb_id($result->parent)) {
+					if ($wp_parent = $this->get_comment_from_fb_id($result->parent->id)) {
 						$commentdata['comment_parent'] = $wp_parent->comment_id;
 					}
 				}
@@ -415,6 +418,10 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					update_comment_meta($comment_id, 'social_account_id', addslashes_deep($user_id));
 					update_comment_meta($comment_id, 'social_profile_image_url', addslashes_deep('https://graph.facebook.com/'.$user_id.'/picture'));
 					update_comment_meta($comment_id, 'social_status_id', addslashes_deep($result->id));
+
+					if ($result->original_parent_broadcast_id) {
+						update_comment_meta($comment_id, 'social_original_parent_broadcast_id', addslashes_deep($result->original_parent_broadcast_id));
+					}
 
 					if (!isset($result->raw)) {
 						$result = (object) array_merge((array) $result, array('raw' => $result));
