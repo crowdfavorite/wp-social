@@ -20,7 +20,7 @@ final class Social {
 	/**
 	 * @var  string  URL of the API
 	 */
-	public static $api_url = 'http://soprestodev.socialize-this.com/';
+	public static $api_url = 'https://sopresto.socialize-this.com/';
 
 	/**
 	 * @var  string  version number
@@ -297,7 +297,7 @@ final class Social {
 		}
 		return $services[$key];
 	}
-	
+
 	/**
 	 * Returns a service by comment type.
 	 *
@@ -785,7 +785,7 @@ final class Social {
 
 		return apply_filters('social_broadcasting_enabled_post_types', array_intersect($available, $enabled));
 	}
-	
+
 	/**
 	 * Check if a post type has broadcasting enabled
 	 *
@@ -1337,8 +1337,8 @@ final class Social {
 		global $post;
 
 		if (!(
-			is_singular() and 
-			(have_comments() or $post->comment_status == 'open') and 
+			is_singular() and
+			(have_comments() or $post->comment_status == 'open') and
 			Social::option('use_standard_comments') != '1'
 		)) {
 			return $path;
@@ -1452,7 +1452,7 @@ final class Social {
 								", 'social-'.$service->key(), $comment_ID));
 
 								$this->set_comment_aggregated_id($comment_ID, $service->key(), $response->body()->response);
-								
+
 								// Feed posts return id with property, comment posts return raw id
 								if (isset($response->body()->response->id)) {
 									update_comment_meta($comment_ID, 'social_status_id', addslashes_deep($response->body()->response->id));
@@ -1772,7 +1772,7 @@ final class Social {
 			));
 		}
 	}
-	
+
 	function admin_bar_footer_css() {
 ?>
 <style class="text/css">
@@ -2131,7 +2131,7 @@ var socialAdminBarMsgs = {
 
 		return $url;
 	}
-	
+
 	/**
 	 * Filter the where clause for pulling comments for feeds (to exclude meta comments).
 	 *
@@ -2153,7 +2153,7 @@ var socialAdminBarMsgs = {
 		}
 		return $where;
 	}
-	
+
 	/**
 	 * Filter the image tag to implement lazy loading support for meta comments.
 	 *

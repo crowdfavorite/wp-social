@@ -100,7 +100,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 						// Try to grab original parent's broadcast id
 						$status_id = get_comment_meta($parent_comment->comment_ID, 'social_original_parent_broadcast_id', true);
 					}
-				
+
 					// Make sure we still have a status id to broadcast to
 					if ($status_id) {
 						$args = apply_filters($this->key().'_broadcast_args', $args, $post_id, $comment_id);
@@ -113,7 +113,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					}
 				}
 			}
-			
+
 			$broadcasted_ids = get_post_meta($comment->comment_post_ID, '_social_broadcasted_ids', true);
 
 			// If only 1 account has been posted to

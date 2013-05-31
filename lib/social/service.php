@@ -360,7 +360,7 @@ abstract class Social_Service {
 
 		return $this;
 	}
-	
+
 	/**
 	 * Removes all accounts from the service.
 	 *
