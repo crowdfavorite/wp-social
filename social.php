@@ -137,7 +137,7 @@ final class Social {
 			'posts_per_page' => 1
 		));
 		if (count($query->posts) and $post = $query->posts[0]) {
-			$url = wp_get_shortlink($post->ID);
+			$url = social_get_shortlink($post->ID);
 			$date = get_date_from_gmt($post->post_date_gmt);
 		}
 		else {
@@ -297,7 +297,7 @@ final class Social {
 		}
 		return $services[$key];
 	}
-	
+
 	/**
 	 * Returns a service by comment type.
 	 *
@@ -785,7 +785,7 @@ final class Social {
 
 		return apply_filters('social_broadcasting_enabled_post_types', array_intersect($available, $enabled));
 	}
-	
+
 	/**
 	 * Check if a post type has broadcasting enabled
 	 *
@@ -1165,7 +1165,7 @@ final class Social {
 				get_permalink($post_id)
 			);
 
-			$shortlink = wp_get_shortlink($post_id);
+			$shortlink = social_get_shortlink($post_id);
 			if (!in_array($shortlink, $urls)) {
 				$urls[] = $shortlink;
 			}
@@ -1337,8 +1337,8 @@ final class Social {
 		global $post;
 
 		if (!(
-			is_singular() and 
-			(have_comments() or $post->comment_status == 'open') and 
+			is_singular() and
+			(have_comments() or $post->comment_status == 'open') and
 			Social::option('use_standard_comments') != '1'
 		)) {
 			return $path;
@@ -1439,7 +1439,7 @@ final class Social {
 								}
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s.', 'social'), $comment_ID, $service->title(), $account->id()));
 								$response = $service->broadcast($account, $output, $args, null, $comment_ID);
-								if ($response === false or $response->id() === '0') {
+								if ($response === false || $response->body()->result !== 'success') {
 									wp_delete_comment($comment_ID);
 									Social::log(sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_ID, esc_html($service->title()), esc_html($account->id())));
 									wp_die(sprintf(__('Error: Your comment could not be sent to %s, please go back and try again.', 'social'), esc_html($service->title())));
@@ -1451,8 +1451,15 @@ final class Social {
 									 WHERE comment_ID = %s
 								", 'social-'.$service->key(), $comment_ID));
 
-								$this->set_comment_aggregated_id($comment_ID, $service->key(), $response->id());
-								update_comment_meta($comment_ID, 'social_status_id', addslashes_deep($response->id()));
+								$this->set_comment_aggregated_id($comment_ID, $service->key(), $response->body()->response);
+
+								// Feed posts return id with property, comment posts return raw id
+								if (isset($response->body()->response->id)) {
+									update_comment_meta($comment_ID, 'social_status_id', addslashes_deep($response->body()->response->id));
+								}
+								else {
+									update_comment_meta($comment_ID, 'social_status_id', addslashes_deep($response->body()->response));
+								}
 								update_comment_meta($comment_ID, 'social_raw_data', addslashes_deep(base64_encode(json_encode($response->body()->response))));
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', 'social'), $comment_ID, $service->title(), $account->id()));
 							}
@@ -1528,7 +1535,7 @@ final class Social {
 
 								$output = $service->format_comment_content($comment, Social::option('comment_broadcast_format'));
 								$response = $service->broadcast($account, $output, $args, null, $comment_id);
-								if ($response === false or $response->id() === false) {
+								if ($response === false || $response->body()->result !== 'success') {
 									wp_delete_comment($comment_id);
 									Social::log(sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_id, $service->title(), $account->id()));
 								}
@@ -1539,8 +1546,15 @@ final class Social {
 									 WHERE comment_ID = %s
 								", 'social-'.$service->key(), $comment_id));
 
-								$this->set_comment_aggregated_id($comment_id, $service->key(), $response->id());
-								update_comment_meta($comment_id, 'social_status_id', addslashes_deep($response->id()));
+								$this->set_comment_aggregated_id($comment_id, $service->key(), $response->body()->response);
+
+								// Feed posts return id with property, comment posts return raw id
+								if (isset($response->body()->response->id)) {
+									update_comment_meta($comment_id, 'social_status_id', addslashes_deep($response->body()->response->id));
+								}
+								else {
+									update_comment_meta($comment_id, 'social_status_id', addslashes_deep($response->body()->response));
+								}
 								update_comment_meta($comment_id, 'social_raw_data', addslashes_deep(base64_encode(json_encode($response->body()->response))));
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', 'social'), $comment_id, $service->title(), $account->id()));
 							}
@@ -1758,7 +1772,7 @@ final class Social {
 			));
 		}
 	}
-	
+
 	function admin_bar_footer_css() {
 ?>
 <style class="text/css">
@@ -2117,7 +2131,7 @@ var socialAdminBarMsgs = {
 
 		return $url;
 	}
-	
+
 	/**
 	 * Filter the where clause for pulling comments for feeds (to exclude meta comments).
 	 *
@@ -2139,7 +2153,7 @@ var socialAdminBarMsgs = {
 		}
 		return $where;
 	}
-	
+
 	/**
 	 * Filter the image tag to implement lazy loading support for meta comments.
 	 *
@@ -2245,6 +2259,18 @@ function social_wpdb_escape($str) {
 
 function social_wp_mail_indicator() {
 	define('SOCIAL_MAIL_PUBLISH', true);
+}
+
+/**
+ * Social Get Shortlink
+ *
+ * This is required because wp_get_shortlink sometimes returns nothing.  If no shortlink is available we want to default to the permalink.
+ *
+ * @param  int Post ID
+ * @return string
+ */
+function social_get_shortlink($post_id) {
+        return (wp_get_shortlink($post_id)) ? wp_get_shortlink($post_id) : get_permalink($post_id);
 }
 
 $social_file = __FILE__;

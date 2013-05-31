@@ -97,7 +97,7 @@ final class Social_Response {
 			update_option('social_deauthorized', $deauthorized);
 
 			Social::log('Removing deauthorized account: :account', array(
-				'account' => print_r($this->_account)
+				'account' => print_r($this->_account, true)
 			));
 			$this->_service->remove_account($this->_account)->save();
 

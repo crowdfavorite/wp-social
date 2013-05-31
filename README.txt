@@ -289,6 +289,7 @@ This version fixes several bugs and may help with HostGator's weird server "secu
 == Changelog ==
 
 = 2.9 =
+* Support for threaded comment replies
 * Added German and Norwegian Bokmål language support
 * Now using HTTPS for Facebook and Twitter links and avatars
 * Fix Conflict with add-local-avatar plugin

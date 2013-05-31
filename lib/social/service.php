@@ -360,7 +360,7 @@ abstract class Social_Service {
 
 		return $this;
 	}
-	
+
 	/**
 	 * Removes all accounts from the service.
 	 *
@@ -395,7 +395,7 @@ abstract class Social_Service {
 			$content = '';
 			switch ($token) {
 				case '{url}':
-					$url = wp_get_shortlink($post->ID);
+					$url = social_get_shortlink($post->ID);
 					if (empty($url)) {
 						$url = home_url('?p='.$post->ID);
 					}
@@ -477,7 +477,7 @@ abstract class Social_Service {
 		foreach ($used_tokens as $token => $content) {
 			switch ($token) {
 				case '{url}':
-					$url = wp_get_shortlink($comment->comment_post_ID);
+					$url = social_get_shortlink($comment->comment_post_ID);
 					if (empty($url)) {
 						$url = home_url('?p='.$comment->comment_post_ID);
 					}
