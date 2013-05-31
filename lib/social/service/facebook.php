@@ -93,23 +93,13 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				&& ($parent_comment = get_comment($comment->comment_parent))
 				&& in_array($parent_comment->comment_type, self::comment_types())) {
 
-				if ($status_id = get_comment_meta($parent_comment->comment_ID, 'social_status_id', true)) {
-					$raw = json_decode(base64_decode(get_comment_meta($parent_comment->comment_ID, 'social_raw_data', true)));
-					$can_comment = isset($raw->can_comment) ? $raw->can_comment : false;
-					if (!$can_comment) { // if the parent comment does not support "replies"
-						// Try to grab parent's reply_to_id id
-						$status_id = get_comment_meta($parent_comment->comment_ID, 'social_reply_to_id', true);
-					}
-
-					// Make sure we still have a status id to broadcast to
-					if ($status_id) {
-						$args = apply_filters($this->key().'_broadcast_args', $args, $post_id, $comment_id);
-						$response = $this->request($account, $status_id.'/comments', $args, 'POST');
-						if ($response !== false && $response->body()->result == 'success') {
-							// post succeeded, return response
-							update_comment_meta($comment->comment_ID, 'social_reply_to_id', addslashes_deep($status_id));
-							return $response;
-						}
+				if ($status_id = get_comment_meta($parent_comment->comment_ID, 'social_reply_to_id', true)) {
+					$args = apply_filters($this->key().'_broadcast_args', $args, $post_id, $comment_id);
+					$response = $this->request($account, $status_id.'/comments', $args, 'POST');
+					if ($response !== false && $response->body()->result == 'success') {
+						// post succeeded, return response
+						update_comment_meta($comment->comment_ID, 'social_reply_to_id', addslashes_deep($status_id));
+						return $response;
 					}
 				}
 			}
@@ -127,7 +117,13 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					$response = $this->request($account, $status_id.'/comments', $args, 'POST');
 					if ($response !== false && $response->body()->result == 'success') {
 						// post succeeded, return response
-						update_comment_meta($comment->comment_ID, 'social_reply_to_id', addslashes_deep($status_id));
+						$response = $this->request($account, $response->body()->response->id, array('fields' => 'can_comment'));
+						if ($response !== false && $response->body()->result == 'success' && $response->body()->response->can_comment) {
+							update_comment_meta($comment->comment_ID, 'social_reply_to_id', addslashes_deep($response->body()->response->id));
+						}
+						else {
+							update_comment_meta($comment->comment_ID, 'social_reply_to_id', addslashes_deep($status_id));
+						}
 						return $response;
 					}
 				}
@@ -268,7 +264,12 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 
 									Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'reply', false, $data);
 
-									$result->reply_to_id = $broadcasted_id;
+									if ($result->can_comment) {
+										$result->reply_to_id = $result->id;
+									}
+									else {
+										$result->reply_to_id = $broadcasted_id;
+									}
 									$post->aggregated_ids[$this->_key][] = $result->id;
 									$post->results[$this->_key][$result->id] = $result;
 								}
