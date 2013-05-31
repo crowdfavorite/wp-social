@@ -107,8 +107,28 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 						$response = $this->request($account, $status_id.'/comments', $args, 'POST');
 						if ($response !== false && $response->body()->result == 'success') {
 							// post succeeded, return response
+							update_comment_meta($comment->comment_ID, 'social_original_parent_broadcast_id', addslashes_deep($status_id));
 							return $response;
 						}
+					}
+				}
+			}
+			
+			$broadcasted_ids = get_post_meta($comment->comment_post_ID, '_social_broadcasted_ids', true);
+
+			// If only 1 account has been posted to
+			if (count($broadcasted_ids[$this->key()]) === 1)  {
+				$broadcast_account = array_shift($broadcasted_ids[$this->key()]);
+				// And only one broadcast has been made from that account
+				if (count($broadcast_account) === 1) {
+					reset($broadcast_account);
+					$status_id = key($broadcast_account);
+					$args = apply_filters($this->key().'_broadcast_args', $args, $post_id, $comment_id);
+					$response = $this->request($account, $status_id.'/comments', $args, 'POST');
+					if ($response !== false && $response->body()->result == 'success') {
+						// post succeeded, return response
+						update_comment_meta($comment->comment_ID, 'social_original_parent_broadcast_id', addslashes_deep($status_id));
+						return $response;
 					}
 				}
 			}
@@ -148,7 +168,12 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		}
 
 		$args = apply_filters($this->key().'_broadcast_args', $args, $post_id, $comment_id);
-		return $this->request($account, 'me/feed', $args, 'POST');
+		$response = $this->request($account, 'me/feed', $args, 'POST');
+		if ($response !== false && $response->body()->result == 'success') {
+			// post succeeded, return response
+			update_comment_meta($comment->comment_ID, 'social_original_parent_broadcast_id', addslashes_deep($response->body()->response->id));
+		}
+		return $response;
 	}
 
 	/**
@@ -178,6 +203,10 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 							}
 							else {
 								if ($this->is_original_broadcast($post, $result->id)) {
+									continue;
+								}
+								else if ($this->is_duplicate_comment($post, $result->id)) {
+									$post->aggregated_ids[$this->_key][] = $result->id;
 									continue;
 								}
 							}
@@ -229,6 +258,10 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 									}
 									else {
 										if ($this->is_original_broadcast($post, $result->id)) {
+											continue;
+										}
+										else if ($this->is_duplicate_comment($post, $result->id)) {
+											$post->aggregated_ids[$this->_key][] = $result->id;
 											continue;
 										}
 									}
@@ -392,14 +425,6 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					$commentdata['comment_approved'] = 1;
 				}
 				else if (($commentdata = $this->allow_comment($commentdata, $result->id, $post)) === false) {
-					continue;
-				}
-
-				// sanity check to make sure this comment is not a duplicate
-				if ($this->is_duplicate_comment($post, $result->id)) {
-					Social::log('Result #:result_id already exists, skipping.', array(
-						'result_id' => $result->id
-					), 'duplicate-comment');
 					continue;
 				}
 
