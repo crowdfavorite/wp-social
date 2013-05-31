@@ -137,7 +137,7 @@ final class Social {
 			'posts_per_page' => 1
 		));
 		if (count($query->posts) and $post = $query->posts[0]) {
-			$url = wp_get_shortlink($post->ID);
+			$url = social_get_shortlink($post->ID);
 			$date = get_date_from_gmt($post->post_date_gmt);
 		}
 		else {
@@ -1165,7 +1165,7 @@ final class Social {
 				get_permalink($post_id)
 			);
 
-			$shortlink = wp_get_shortlink($post_id);
+			$shortlink = social_get_shortlink($post_id);
 			if (!in_array($shortlink, $urls)) {
 				$urls[] = $shortlink;
 			}
@@ -2259,6 +2259,18 @@ function social_wpdb_escape($str) {
 
 function social_wp_mail_indicator() {
 	define('SOCIAL_MAIL_PUBLISH', true);
+}
+
+/**
+ * Social Get Shortlink
+ *
+ * This is required because wp_get_shortlink sometimes returns nothing.  If no shortlink is available we want to default to the permalink.
+ *
+ * @param  int Post ID
+ * @return string
+ */
+function social_get_shortlink($post_id) {
+        return (wp_get_shortlink($post_id)) ? wp_get_shortlink($post_id) : get_permalink($post_id);
 }
 
 $social_file = __FILE__;

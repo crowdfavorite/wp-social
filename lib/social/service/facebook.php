@@ -45,7 +45,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		if (get_post_format($post->ID) !== 'status') {
 			setup_postdata($post);
 			$link_args = array(
-				'link' => wp_get_shortlink($post->ID),
+				'link' => social_get_shortlink($post->ID),
 				'title' => get_the_title($post->ID),
 				'description' => get_the_excerpt(),
 			);
@@ -144,7 +144,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 			$post = get_post($comment->comment_post_ID);
 			setup_postdata($post);
 			$link_args = array(
-				'link' => wp_get_shortlink($post->ID),
+				'link' => social_get_shortlink($post->ID),
 				'title' => get_the_title($post->ID),
 				'description' => get_the_excerpt(),
 			);
