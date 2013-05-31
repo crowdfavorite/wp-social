@@ -318,11 +318,13 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 						continue;
 					}
 					$post->aggregated_ids[$this->_key][] = $result->id;
-					$post->results[$this->_key][$result->id] = (object) array_merge(array(
+					$result = (object) array_merge(array(
 						'like' => true,
-						'status_id' => $id,
+						'from_id' => $result->id,
 						'raw' => $result,
 					), (array) $result);
+					$result->id = $id;
+					$post->results[$this->_key][$result->id] = $result;
 					++$like_count;
 				}
 			}
@@ -416,7 +418,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					));
 				}
 
-				$user_id = (isset($result->like) ? $result->id : $result->from->id);
+				$user_id = (isset($result->like) ? $result->from_id : $result->from->id);
 				$commentdata = array_merge($commentdata, array(
 					'comment_post_ID' => $post->ID,
 					'comment_author_email' => $this->_key.'.'.$user_id.'@example.com',
