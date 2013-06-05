@@ -532,8 +532,6 @@ abstract class Social_Service {
 			$api = apply_filters('social_api_endpoint', $api, $this->_key);
 			$method = apply_filters('social_api_endpoint_method', $method, $this->_key);
 			$args = apply_filters('social_api_endpoint_args', $args, $this->_key);
-			Social::Log("$this->_key - Using Public Key => " . $account->public_key());
-			Social::Log("$this->_key - Using Hash => " . sha1($account->public_key() . $account->private_key()));
 			$request = wp_remote_post($proxy, array(
 				'timeout' => 60, // default of 5 seconds if not set here
 				'sslverify' => false,

@@ -95,7 +95,6 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 
 				if ($status_id = get_comment_meta($parent_comment->comment_ID, 'social_reply_to_id', true)) {
 					$parent_status_id = get_comment_meta($comment->comment_parent, 'social_status_id', true);
-					Social::Log("parent ($comment->comment_parent) status id $parent_status_id");
 					$args = apply_filters($this->key().'_broadcast_args', $args, $post_id, $comment_id);
 					$response = $this->request($account, $status_id.'/comments', $args, 'POST');
 					if ($response !== false && $response->body()->result == 'success') {
@@ -103,12 +102,11 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 						update_comment_meta($comment->comment_ID, 'social_reply_to_id', addslashes_deep($status_id));
 						update_comment_meta($comment->comment_ID, 'social_status_id', addslashes_deep($parent_status_id));
 						update_comment_meta($comment->comment_ID, 'social_broadcast_id', addslashes_deep($response->body()->response->id));
-						Social::Log("Saving Reply");
 						return $response;
 					}
 				}
 			}
-			
+
 			$broadcasted_ids = get_post_meta($comment->comment_post_ID, '_social_broadcasted_ids', true);
 
 			// If only 1 account has been posted to
