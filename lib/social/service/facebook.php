@@ -94,16 +94,21 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				&& in_array($parent_comment->comment_type, self::comment_types())) {
 
 				if ($status_id = get_comment_meta($parent_comment->comment_ID, 'social_reply_to_id', true)) {
+					$parent_status_id = get_comment_meta($comment->comment_parent, 'social_status_id', true);
+					Social::Log("parent ($comment->comment_parent) status id $parent_status_id");
 					$args = apply_filters($this->key().'_broadcast_args', $args, $post_id, $comment_id);
 					$response = $this->request($account, $status_id.'/comments', $args, 'POST');
 					if ($response !== false && $response->body()->result == 'success') {
 						// post succeeded, return response
 						update_comment_meta($comment->comment_ID, 'social_reply_to_id', addslashes_deep($status_id));
+						update_comment_meta($comment->comment_ID, 'social_status_id', addslashes_deep($parent_status_id));
+						update_comment_meta($comment->comment_ID, 'social_broadcast_id', addslashes_deep($response->body()->response->id));
+						Social::Log("Saving Reply");
 						return $response;
 					}
 				}
 			}
-
+			
 			$broadcasted_ids = get_post_meta($comment->comment_post_ID, '_social_broadcasted_ids', true);
 
 			// If only 1 account has been posted to
@@ -117,13 +122,16 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 					$response = $this->request($account, $status_id.'/comments', $args, 'POST');
 					if ($response !== false && $response->body()->result == 'success') {
 						// post succeeded, return response
-						$response = $this->request($account, $response->body()->response->id, array('fields' => 'can_comment'));
+						$broadcasted_id = $response->body()->response->id;
+						$response = $this->request($account, $broadcasted_id, array('fields' => 'can_comment'));
 						if ($response !== false && $response->body()->result == 'success' && $response->body()->response->can_comment) {
 							update_comment_meta($comment->comment_ID, 'social_reply_to_id', addslashes_deep($response->body()->response->id));
 						}
 						else {
 							update_comment_meta($comment->comment_ID, 'social_reply_to_id', addslashes_deep($status_id));
 						}
+						update_comment_meta($comment->comment_ID, 'social_broadcast_id', addslashes_deep($broadcasted_id));
+						update_comment_meta($comment->comment_ID, 'social_status_id', addslashes_deep($status_id));
 						return $response;
 					}
 				}
@@ -168,6 +176,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		if ($response !== false && $response->body()->result == 'success') {
 			// post succeeded, return response
 			update_comment_meta($comment->comment_ID, 'social_reply_to_id', addslashes_deep($response->body()->response->id));
+			update_comment_meta($comment->comment_ID, 'social_broadcast_id', addslashes_deep($response->body()->response->id));
 		}
 		return $response;
 	}
@@ -208,7 +217,6 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 							}
 
 							Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url');
-							$result->reply_to_id = $result->id;
 							$post->aggregated_ids[$this->_key][] = $result->id;
 							$post->results[$this->_key][$result->id] = $result;
 						}
@@ -270,6 +278,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 									else {
 										$result->reply_to_id = $broadcasted_id;
 									}
+									$result->status_id = $broadcasted_id;
 									$post->aggregated_ids[$this->_key][] = $result->id;
 									$post->results[$this->_key][$result->id] = $result;
 								}
@@ -323,7 +332,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 						'from_id' => $result->id,
 						'raw' => $result,
 					), (array) $result);
-					$result->id = $id;
+					$result->status_id = $id;
 					$post->results[$this->_key][$result->id] = $result;
 					++$like_count;
 				}
@@ -354,7 +363,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		return $wpdb->get_row($wpdb->prepare("
 			SELECT comment_id
 			  FROM $wpdb->commentmeta AS cm
-			 WHERE cm.meta_key = 'social_status_id'
+			 WHERE cm.meta_key = 'social_broadcast_id'
 			   AND cm.meta_value = %s
 		", $fb_parent_id));
 	}
@@ -445,7 +454,8 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 
 					update_comment_meta($comment_id, 'social_account_id', addslashes_deep($user_id));
 					update_comment_meta($comment_id, 'social_profile_image_url', addslashes_deep('https://graph.facebook.com/'.$user_id.'/picture'));
-					update_comment_meta($comment_id, 'social_status_id', addslashes_deep($result->id));
+					update_comment_meta($comment_id, 'social_status_id', addslashes_deep($result->status_id));
+					update_comment_meta($comment_id, 'social_broadcast_id', addslashes_deep($result->id));
 
 					if ($result->reply_to_id) {
 						update_comment_meta($comment_id, 'social_reply_to_id', addslashes_deep($result->reply_to_id));
