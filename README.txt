@@ -263,7 +263,7 @@ Both Social and Disqus try to replace the default WordPress comment experience b
 
 = Why aren't my likes and retweets getting auto approved? =
 
-Since Social 2.9 we've made the decision to disable this by default.  We found a way this feature could be used to open a path for spam to bypass the normal approval process.  This is fairly easy to turn back on if you understand the risk.
+Since Social 2.9 we've made the decision to disable this by default. If the default "Comment author must have a previously approved comment" setting is enabled in WordPress then any approved Like or RT opens a path for comments by that same user to be automatically approved. This is fairly easy to turn back on if you understand the risk.
 
 	add_action('social_approve_likes_and_retweets', '__return_true');
 
