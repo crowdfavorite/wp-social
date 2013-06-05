@@ -3,7 +3,7 @@ Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter, social, broadcast, import, integrate, integration
 Requires at least: 3.3
 Tested up to: 3.5.1
-Stable tag: 2.8
+Stable tag: 2.9
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -213,6 +213,14 @@ Download: http://wordpress.org/extend/plugins/subscribe-to-comments-reloaded/
 
 This is actually a bug in the WordPress core. This will be fixed in WordPress 3.3 according to this ticket http://core.trac.wordpress.org/ticket/18157.
 
+= I occasionally receive a PHP Warning of "Missing argument 5 for Social::get_avatar()", what does this mean? =
+
+You are likely using the add-local-avatars plugin here : http://wordpress.org/extend/plugins/add-local-avatar/
+
+This plugin incorrectly calls the `get_avatar` filter.
+
+http://wordpress.org/support/topic/get_avatar-filter-hook-missing-5th-argument
+
 = Where can I update my default social broadcast accounts? =
 
 Connect your social account and after that you can add/remove your default broadcast accounts under the Social Settings Page and from your user profile page (Users/Your Profile).
@@ -253,6 +261,12 @@ Social supports the [Lazy Load plugin](http://wordpress.org/extend/plugins/lazy-
 
 Both Social and Disqus try to replace the default WordPress comment experience by default. If you want to use Social's broadcasting features but prefer to use Disqus for your comments, you probably want to check the "Disable Social's comment display (use standard theme output instead)." box under Advanced Options. This will allow Disqus to take over comment display without any interference from Social.
 
+= Why aren't my likes and retweets getting auto approved? =
+
+Since Social 2.9 we've made the decision to disable this by default.  We found a way this feature could be used to open a path for spam to bypass the normal approval process.  This is fairly easy to turn back on if you understand the risk.
+
+	add_action('social_approve_likes_and_retweets', '__return_true');
+
 == Screenshots ==
 
 1. Allow your visitors to leave a comment as their Facebook or Twitter identities
@@ -268,17 +282,23 @@ Both Social and Disqus try to replace the default WordPress comment experience b
 
 == Upgrade Notice ==
 
-= 2.8 =
-This version will fix issues related to aggregating tweets with search.
+= 2.9 =
 
-= 2.7 =
-Make sure to upgrade ASAP. This release includes a pointer to the new Social proxy URL (the old URL will stop working on Jan 15th).
+This release adds a GUI option to enable/disable post types for social broadcasting, adds support for the new Facebook Pages threaded comments.
 
-= 2.6.1 =
-This version fixes several bugs and may help with HostGator's weird server "security" settings.  See the Changelog for details.
-
+Also included are bugfixes, expanded language support, and other minor improvements.  See the changelog for more detail.
 
 == Changelog ==
+
+= 2.9 =
+* Support for threaded comment replies for Facebook pages
+* Added Option to enable/disable social broadcasting for specific post types
+* Added German and Norwegian Bokmål language support
+* Now using HTTPS for Facebook and Twitter links and avatars
+* Worked around bug in add-local-avatar plugin
+* Disable auto approval of likes and retweets (See FAQ)
+* Added Option to enable/disable social broadcasting for specific post types
+* Fix Issue with high byte charaters causing duplication of aggregated comments
 
 = 2.8 =
 * Change Twitter search endpoint to use v1.1

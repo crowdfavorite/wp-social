@@ -85,9 +85,10 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 			'q' => implode(' OR ', $urls)
 		));
 
-		if (isset($social_response->body()->response->statuses)
-				&& isset($social_response->body()->response->statuses)
-				&& is_array($social_response->body()->response->statuses)) {
+		if (method_exists($social_response, 'body') &&
+			isset($social_response->body()->response) &&
+			isset($social_response->body()->response->statuses) &&
+			is_array($social_response->body()->response->statuses)) {
 			if (count($social_response->body()->response->statuses)) {
 				foreach ($social_response->body()->response->statuses as $result) {
 					$data = array(
@@ -113,6 +114,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						'text' => $result->text,
 						'created_at' => $result->created_at,
 						'profile_image_url' => $result->user->profile_image_url,
+						'profile_image_url_https' => $result->user->profile_image_url_https,
 						'in_reply_to_status_id' => $result->in_reply_to_status_id,
 						'raw' => $result,
 						'comment_type' => (Social_Twitter::is_retweet(null, $result) ? 'social-twitter-rt' : 'social-twitter'),
@@ -175,6 +177,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 									'text' => $result->text,
 									'created_at' => $result->created_at,
 									'profile_image_url' => $result->user->profile_image_url,
+									'profile_image_url_https' => $result->user->profile_image_url_https,
 									'in_reply_to_status_id' => $result->in_reply_to_status_id,
 									'raw' => $result,
 									'comment_type' => (Social_Twitter::is_retweet(null, $result) ? 'social-twitter-rt' : 'social-twitter'),
@@ -219,6 +222,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 								'text' => $result->text,
 								'created_at' => $result->created_at,
 								'profile_image_url' => $result->user->profile_image_url,
+								'profile_image_url_https' => $result->user->profile_image_url_https,
 								'in_reply_to_status_id' => $result->in_reply_to_status_id,
 								'raw' => $result,
 								'comment_type' => (Social_Twitter::is_retweet(null, $result) ? 'social-twitter-rt' : 'social-twitter'),
@@ -265,7 +269,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						'comment_agent' => 'Social Aggregator',
 					);
 
-					if ($skip_approval || (apply_filters('social_approve_likes_and_retweets', true) && Social_Twitter::is_retweet(null, $result))) {
+					if ($skip_approval || (apply_filters('social_approve_likes_and_retweets', false) && Social_Twitter::is_retweet(null, $result))) {
 						$commentdata['comment_approved'] = 1;
 					}
 					else if (($commentdata = $this->allow_comment($commentdata, $result->id, $post)) === false) {
@@ -294,7 +298,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 						$comment_id = wp_insert_comment($commentdata);
 
 						update_comment_meta($comment_id, 'social_account_id', addslashes_deep($result->from_user_id));
-						update_comment_meta($comment_id, 'social_profile_image_url', addslashes_deep($result->profile_image_url));
+						update_comment_meta($comment_id, 'social_profile_image_url', addslashes_deep($result->profile_image_url_https));
 						update_comment_meta($comment_id, 'social_status_id', addslashes_deep($result->id));
 
 						// Attempt to see if the comment is in response to an existing Tweet.
@@ -445,6 +449,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 									'text' => $response->text,
 									'created_at' => $response->created_at,
 									'profile_image_url' => $response->user->profile_image_url,
+									'profile_image_url_https' => $response->user->profile_image_url_https,
 									'in_reply_to_status_id' => $response->in_reply_to_status_id,
 									'raw' => $response,
 									'comment_type' => 'social-twitter',
@@ -562,7 +567,7 @@ final class Social_Service_Twitter extends Social_Service implements Social_Inte
 	 * @return string
 	 */
 	public function status_url($username, $id) {
-		return 'http://twitter.com/'.$username.'/status/'.$id;
+		return 'https://twitter.com/'.$username.'/status/'.$id;
 	}
 
 	/**

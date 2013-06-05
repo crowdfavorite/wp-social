@@ -62,6 +62,13 @@ final class Social_Aggregation_Log {
 
 		// Load the current log for the post
 		$this->_log = get_post_meta($post_id, '_social_aggregation_log', true);
+
+		if (!isset($this->_log[$this->_timestamp])) {
+			$this->_log[$this->_timestamp] = (object) array(
+				'manual' => false,
+				'items' => array(),
+			);
+		}
 	}
 
 	/**
@@ -104,13 +111,6 @@ final class Social_Aggregation_Log {
 	 * @return Social_Aggregation_Log
 	 */
 	public function add($service, $id, $type, $ignored = false, array $data = null) {
-		if (!isset($this->_log[$this->_timestamp])) {
-			$this->_log[$this->_timestamp] = (object) array(
-				'manual' => false,
-				'items' => array(),
-			);
-		}
-		
 		if (!isset($this->_log[$this->_timestamp]->items[$service])) {
 			$this->_log[$this->_timestamp]->items[$service] = array();
 		}

@@ -69,7 +69,7 @@ final class Social_Facebook {
 	 * @param  string  $alt
 	 * @return string
 	 */
-	public static function get_avatar($avatar, $comment, $size, $default, $alt) {
+	public static function get_avatar($avatar, $comment, $size, $default, $alt = '') {
 		if (is_object($comment) and in_array($comment->comment_type, Social_Service_Facebook::comment_types())) {
 			$image = esc_url(get_comment_meta($comment->comment_ID, 'social_profile_image_url', true));
 			if ($image !== null) {

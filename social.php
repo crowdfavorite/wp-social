@@ -3,7 +3,7 @@
 Plugin Name: Social
 Plugin URI: http://mailchimp.com/social-plugin-for-wordpress/
 Description: Broadcast newly published posts and pull in discussions using integrations with Twitter and Facebook. Brought to you by <a href="http://mailchimp.com">MailChimp</a>.
-Version: 2.8
+Version: 2.9
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com/
 */
@@ -25,7 +25,7 @@ final class Social {
 	/**
 	 * @var  string  version number
 	 */
-	public static $version = '2.8';
+	public static $version = '2.9';
 
 	/**
 	 * @var  string  CRON lock directory.
@@ -137,7 +137,7 @@ final class Social {
 			'posts_per_page' => 1
 		));
 		if (count($query->posts) and $post = $query->posts[0]) {
-			$url = wp_get_shortlink($post->ID);
+			$url = social_get_shortlink($post->ID);
 			$date = get_date_from_gmt($post->post_date_gmt);
 		}
 		else {
@@ -297,7 +297,7 @@ final class Social {
 		}
 		return $services[$key];
 	}
-	
+
 	/**
 	 * Returns a service by comment type.
 	 *
@@ -752,18 +752,40 @@ final class Social {
 	}
 
 	/**
+	 * Return array of  social broadcasting post types
+	 *
+	 * @static
+	 * @return array
+	 */
+	public static function broadcasting_available_post_types() {
+		$types = get_post_types(array('public' => true));
+		$blacklisted_types = apply_filters('social_broadcasting_blacklisted_post_types', array('attachment'));
+		foreach ($blacklisted_types as $type) {
+			unset($types[$type]);
+		}
+
+		return apply_filters('social_broadcasting_available_post_types', array_keys($types));
+	}
+
+	/**
 	 * Return array of enabled social broadcasting post types
 	 *
 	 * @static
 	 * @return array
 	 */
 	public static function broadcasting_enabled_post_types() {
-		return apply_filters('social_broadcasting_enabled_post_types', get_post_types(array(
-			'public' => true,
-			'hierarchical' => false
-		)));
+		$available = Social::broadcasting_available_post_types();
+		$enabled = Social::option('enabled_post_types');
+		if (!$enabled) {
+			$default = get_post_types(array(
+				'hierarchical' => false,
+			));
+			$enabled = array_keys($default);
+		}
+
+		return apply_filters('social_broadcasting_enabled_post_types', array_intersect($available, $enabled));
 	}
-	
+
 	/**
 	 * Check if a post type has broadcasting enabled
 	 *
@@ -1143,7 +1165,7 @@ final class Social {
 				get_permalink($post_id)
 			);
 
-			$shortlink = wp_get_shortlink($post_id);
+			$shortlink = social_get_shortlink($post_id);
 			if (!in_array($shortlink, $urls)) {
 				$urls[] = $shortlink;
 			}
@@ -1315,8 +1337,8 @@ final class Social {
 		global $post;
 
 		if (!(
-			is_singular() and 
-			(have_comments() or $post->comment_status == 'open') and 
+			is_singular() and
+			(have_comments() or $post->comment_status == 'open') and
 			Social::option('use_standard_comments') != '1'
 		)) {
 			return $path;
@@ -1352,7 +1374,7 @@ final class Social {
 	 * @param  string  $alt
 	 * @return string
 	 */
-	public function get_avatar($avatar, $comment, $size, $default, $alt) {
+	public function get_avatar($avatar, $comment, $size, $default, $alt = '') {
 		$image = null;
 		if (is_object($comment)) {
 			$image = get_comment_meta($comment->comment_ID, 'social_profile_image_url', true);
@@ -1417,7 +1439,7 @@ final class Social {
 								}
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s.', 'social'), $comment_ID, $service->title(), $account->id()));
 								$response = $service->broadcast($account, $output, $args, null, $comment_ID);
-								if ($response === false or $response->id() === '0') {
+								if ($response === false || $response->body()->result !== 'success') {
 									wp_delete_comment($comment_ID);
 									Social::log(sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_ID, esc_html($service->title()), esc_html($account->id())));
 									wp_die(sprintf(__('Error: Your comment could not be sent to %s, please go back and try again.', 'social'), esc_html($service->title())));
@@ -1429,8 +1451,15 @@ final class Social {
 									 WHERE comment_ID = %s
 								", 'social-'.$service->key(), $comment_ID));
 
-								$this->set_comment_aggregated_id($comment_ID, $service->key(), $response->id());
-								update_comment_meta($comment_ID, 'social_status_id', addslashes_deep($response->id()));
+								$this->set_comment_aggregated_id($comment_ID, $service->key(), $response->body()->response);
+
+								// Feed posts return id with property, comment posts return raw id
+								if (isset($response->body()->response->id)) {
+									update_comment_meta($comment_ID, 'social_status_id', addslashes_deep($response->body()->response->id));
+								}
+								else {
+									update_comment_meta($comment_ID, 'social_status_id', addslashes_deep($response->body()->response));
+								}
 								update_comment_meta($comment_ID, 'social_raw_data', addslashes_deep(base64_encode(json_encode($response->body()->response))));
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', 'social'), $comment_ID, $service->title(), $account->id()));
 							}
@@ -1506,7 +1535,7 @@ final class Social {
 
 								$output = $service->format_comment_content($comment, Social::option('comment_broadcast_format'));
 								$response = $service->broadcast($account, $output, $args, null, $comment_id);
-								if ($response === false or $response->id() === false) {
+								if ($response === false || $response->body()->result !== 'success') {
 									wp_delete_comment($comment_id);
 									Social::log(sprintf(__('Error: Broadcast comment #%s to %s using account #%s, please go back and try again.', 'social'), $comment_id, $service->title(), $account->id()));
 								}
@@ -1517,8 +1546,15 @@ final class Social {
 									 WHERE comment_ID = %s
 								", 'social-'.$service->key(), $comment_id));
 
-								$this->set_comment_aggregated_id($comment_id, $service->key(), $response->id());
-								update_comment_meta($comment_id, 'social_status_id', addslashes_deep($response->id()));
+								$this->set_comment_aggregated_id($comment_id, $service->key(), $response->body()->response);
+
+								// Feed posts return id with property, comment posts return raw id
+								if (isset($response->body()->response->id)) {
+									update_comment_meta($comment_id, 'social_status_id', addslashes_deep($response->body()->response->id));
+								}
+								else {
+									update_comment_meta($comment_id, 'social_status_id', addslashes_deep($response->body()->response));
+								}
 								update_comment_meta($comment_id, 'social_raw_data', addslashes_deep(base64_encode(json_encode($response->body()->response))));
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', 'social'), $comment_id, $service->title(), $account->id()));
 							}
@@ -1736,7 +1772,7 @@ final class Social {
 			));
 		}
 	}
-	
+
 	function admin_bar_footer_css() {
 ?>
 <style class="text/css">
@@ -1979,7 +2015,7 @@ var socialAdminBarMsgs = {
 					if (!isset($services[$service])) {
 						$service_accounts = array();
 
-						if (isset($accounts[$service]) and count($accounts[$service])) {
+						if (isset($accounts[$service]) && is_array($accounts[$service]) && !empty($accounts[$service])) {
 							// Flag social as enabled, we have at least one account.
 							if ($this->_enabled === null) {
 								$this->_enabled = true;
@@ -2095,7 +2131,7 @@ var socialAdminBarMsgs = {
 
 		return $url;
 	}
-	
+
 	/**
 	 * Filter the where clause for pulling comments for feeds (to exclude meta comments).
 	 *
@@ -2117,7 +2153,7 @@ var socialAdminBarMsgs = {
 		}
 		return $where;
 	}
-	
+
 	/**
 	 * Filter the image tag to implement lazy loading support for meta comments.
 	 *
@@ -2178,6 +2214,44 @@ function addslashes_deep($value) {
 }
 }
 
+function social_strlen($str) {
+	if (function_exists('mb_strlen')) {
+		return mb_strlen($str);
+	}
+	else {
+		return strlen($str);
+	}
+}
+
+function social_substr($str, $start = null, $end = null) {
+	if (function_exists('mb_substr')) {
+		switch (func_num_args()) {
+			case 1:
+				return mb_substr($str);
+			break;
+			case 2:
+				return mb_substr($str, $start);
+			break;
+			case 3:
+				return mb_substr($str, $start, $end);
+			break;
+		}
+	}
+	else {
+		switch (func_num_args()) {
+			case 1:
+				return substr($str);
+			break;
+			case 2:
+				return substr($str, $start);
+			break;
+			case 3:
+				return substr($str, $start, $end);
+			break;
+		}
+	}
+}
+
 function social_wpdb_escape($str) {
 	global $wpdb;
 	return $wpdb->escape($str);
@@ -2185,6 +2259,18 @@ function social_wpdb_escape($str) {
 
 function social_wp_mail_indicator() {
 	define('SOCIAL_MAIL_PUBLISH', true);
+}
+
+/**
+ * Social Get Shortlink
+ *
+ * This is required because wp_get_shortlink sometimes returns nothing.  If no shortlink is available we want to default to the permalink.
+ *
+ * @param  int Post ID
+ * @return string
+ */
+function social_get_shortlink($post_id) {
+        return (wp_get_shortlink($post_id)) ? wp_get_shortlink($post_id) : get_permalink($post_id);
 }
 
 $social_file = __FILE__;

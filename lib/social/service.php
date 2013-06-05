@@ -360,7 +360,7 @@ abstract class Social_Service {
 
 		return $this;
 	}
-	
+
 	/**
 	 * Removes all accounts from the service.
 	 *
@@ -388,14 +388,14 @@ abstract class Social_Service {
 		foreach (Social::broadcast_tokens() as $token => $description) {
 			$_format = str_replace($token, '', $_format);
 		}
-		$available = $available - strlen($_format);
+		$available = $available - social_strlen($_format);
 
 		$_format = explode(' ', $format);
 		foreach (Social::broadcast_tokens() as $token => $description) {
 			$content = '';
 			switch ($token) {
 				case '{url}':
-					$url = wp_get_shortlink($post->ID);
+					$url = social_get_shortlink($post->ID);
 					if (empty($url)) {
 						$url = home_url('?p='.$post->ID);
 					}
@@ -408,7 +408,6 @@ abstract class Social_Service {
 				case '{content}':
 					$content = do_shortcode($post->post_content);
 					$content = htmlspecialchars_decode(strip_tags($content));
- 					$content = str_replace(array("\n", "\r", PHP_EOL, '&nbsp;'), ' ', $content);
 					$content = preg_replace('/\s+/', ' ', $content);
 					break;
 				case '{author}':
@@ -420,13 +419,13 @@ abstract class Social_Service {
 					break;
 			}
 
-			if (strlen($content) > $available) {
+			if (social_strlen($content) > $available) {
 				if (in_array($token, array('{date}', '{author}'))
 				) {
 					$content = '';
 				}
 				else {
-					$content = substr($content, 0, ($available - 3)).'...';
+					$content = social_substr($content, 0, ($available - 3)).'...';
 				}
 			}
 
@@ -436,7 +435,7 @@ abstract class Social_Service {
 			foreach ($_format as $haystack) {
 				if (strpos($haystack, $token) !== false and $available > 0) {
 					$haystack = str_replace($token, $content, $haystack);
-					$available = $available - strlen($haystack);
+					$available = $available - social_strlen($haystack);
 					$format = str_replace($token, $content, $format);
 					break;
 				}
@@ -472,13 +471,13 @@ abstract class Social_Service {
 				$used_tokens[$token] = '';
 			}
 		}
-		$available = $available - strlen($_format);
+		$available = $available - social_strlen($_format);
 
 		// Prep token replacement content
 		foreach ($used_tokens as $token => $content) {
 			switch ($token) {
 				case '{url}':
-					$url = wp_get_shortlink($comment->comment_post_ID);
+					$url = social_get_shortlink($comment->comment_post_ID);
 					if (empty($url)) {
 						$url = home_url('?p='.$comment->comment_post_ID);
 					}
@@ -488,7 +487,6 @@ abstract class Social_Service {
 					break;
 				case '{content}':
 					$used_tokens[$token] = strip_tags($comment->comment_content);
-					$used_tokens[$token] = str_replace(array("\n", "\r", PHP_EOL), '', $used_tokens[$token]);
 					$used_tokens[$token] = str_replace('&nbsp;', '', $used_tokens[$token]);
 					break;
 			}
@@ -496,14 +494,14 @@ abstract class Social_Service {
 
 		// if {url} is used, pre-allocate its length
 		if (isset($used_tokens['{url}'])) {
-			$available = $available - strlen($used_tokens['{url}']);
+			$available = $available - social_strlen($used_tokens['{url}']);
 		}
 
 		$used_tokens['{content}'] = apply_filters('social_format_comment_content', $used_tokens['{content}'], $comment, $format, $this);
 
 		// Truncate content to size limit
-		if (strlen($used_tokens['{content}']) > $available) {
-			$used_tokens['{content}'] = substr($used_tokens['{content}'], 0, ($available - 3)).'...';
+		if (social_strlen($used_tokens['{content}']) > $available) {
+			$used_tokens['{content}'] = social_substr($used_tokens['{content}'], 0, ($available - 3)).'...';
 		}
 
 		foreach ($used_tokens as $token => $replacement) {
@@ -688,9 +686,10 @@ abstract class Social_Service {
 
 		$results = $wpdb->get_results($wpdb->prepare("
 			SELECT meta_value
-			  FROM $wpdb->commentmeta
-			 WHERE comment_id = %s
-			   AND meta_key = 'social_status_id'
+			  FROM $wpdb->commentmeta AS cm, $wpdb->comments AS c
+			 WHERE cm.comment_id = c.comment_ID
+			   AND c.comment_post_id = %s
+			   AND cm.meta_key = 'social_status_id'
 		", $post->ID));
 
 		foreach ($results as $result) {

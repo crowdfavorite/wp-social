@@ -129,7 +129,7 @@ abstract class Social_Service_Account {
 	 * @return string
 	 */
 	public function _avatar() {
-		return 'http://www.gravatar.com/avatar/a06082e4f876182b547f635d945e744e?s=32&d=mm';
+		return 'https://www.gravatar.com/avatar/a06082e4f876182b547f635d945e744e?s=32&d=mm';
 	}
 
 	/**
