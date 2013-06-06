@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Social 2.5\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/social\n"
 "POT-Creation-Date: 2012-05-22 18:40:54+00:00\n"
-"PO-Revision-Date: 2013-06-06 01:35+0100\n"
+"PO-Revision-Date: 2013-06-06 16:21+0100\n"
 "Last-Translator: Juan Jose Pablos <juanjo@apertus.es>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -164,7 +164,7 @@ msgstr "1 hora"
 #: lib/social/date.php:164
 #: lib/social/date.php:260
 msgid "%s hours"
-msgstr "%s horas"
+msgstr "hace %s horas"
 
 #: lib/social/date.php:172
 #: lib/social/date.php:268
@@ -186,7 +186,7 @@ msgstr "%s segundos"
 
 #: lib/social/date.php:226
 msgid "1 month ago"
-msgstr "Hace 1 mes"
+msgstr "hace 1 mes"
 
 #: lib/social/date.php:229
 msgid "%s months ago"
@@ -347,7 +347,7 @@ msgstr "%s le gusta esto"
 
 #: social-twitter.php:358
 msgid " retweeted this"
-msgstr "ha retwitteado esto"
+msgstr " ha retwitteado esto"
 
 #: social-twitter.php:379
 msgid "Send as a reply"
@@ -405,7 +405,7 @@ msgstr "Ajustes"
 
 #: social.php:573
 msgid "Social is shiny and new! Please <a href=\"%s\">verify and save your settings</a> to complete the upgrade."
-msgstr ""
+msgstr "Social esta nuevo y reluciente! Por favor <a href=\"%s\">verifica y guarda tu configuración</a> para completar la actualización."
 
 #: social.php:579
 #: social.php:607
@@ -414,7 +414,7 @@ msgstr ""
 
 #: social.php:580
 msgid "To start using Social, please <a href=\"%s\">add an account</a>."
-msgstr ""
+msgstr "Para empezar a usar Social, por favor <a href=\"%s\">añade una cuenta</a>."
 
 #: social.php:593
 msgid "Social requires that either %s or %s be writable for CRON jobs."
@@ -447,7 +447,7 @@ msgstr ""
 
 #: social.php:774
 msgid "Social Broadcasting"
-msgstr ""
+msgstr "Emisión Social"
 
 #: social.php:782
 msgid "Social Comments"
@@ -465,7 +465,7 @@ msgstr "Acceder"
 #: social.php:1393
 #: social.php:1472
 msgid "Broadcasting comment #%s to %s using account #%s."
-msgstr ""
+msgstr "Emitiendo comentario  #%s a %s usando cuenta #%s."
 
 #: social.php:1397
 #: social.php:1486
@@ -498,7 +498,7 @@ msgstr "Buscar Comentarios Sociales"
 #: social.php:1704
 #: views/wp-admin/post/meta/log/shell.php:2
 msgid "Add Tweet by URL"
-msgstr ""
+msgstr "Añadir Tweet por URL"
 
 #: social.php:1765
 msgid "Tweet Imported!"
@@ -510,7 +510,7 @@ msgstr "Pingback"
 
 #: views/comment/comment.php:40
 msgid "replied:"
-msgstr ""
+msgstr "contesto:"
 
 #: views/comment/comment.php:50
 msgid "View"
@@ -535,7 +535,7 @@ msgstr "Identificado como <a href=\"%1$s\">%2$s</a>."
 
 #: views/comment/social_item.php:12
 msgid "<a href=\"%s\" class=\"social-items-and-more\">... and %s more</a>"
-msgstr ""
+msgstr "<a href=\"%s\" class=\"social-items-and-more\">... y %s mas</a>"
 
 #: views/comment/top.php:3
 msgid "Sign in with %s"
@@ -570,9 +570,8 @@ msgid "1 Reply"
 msgstr "1 Respuesta"
 
 #: views/comments.php:90
-#, fuzzy
 msgid "% Replies"
-msgstr "Respuestas"
+msgstr "% Respuestas"
 
 #: views/comments.php:91
 msgid "1 Comment"
@@ -600,7 +599,7 @@ msgstr[1] "%1$s Notificaciones"
 
 #: views/comments.php:102
 msgid "Last reply was %s"
-msgstr "La ultima respuesta fue %s"
+msgstr "La ultima respuesta fue  %s"
 
 #: views/comments.php:137
 msgid "Comment navigation"
@@ -615,9 +614,8 @@ msgid "Newer Comments &rarr;"
 msgstr "Últimos comentarios &raquo;"
 
 #: views/wp-admin/options.php:6
-#, fuzzy
 msgid "Social settings have been updated."
-msgstr "Las opciones del bloque han sido actualizadas."
+msgstr "La configuración de Social ha sido actualizada."
 
 #: views/wp-admin/options.php:12
 msgid "Compliments of <a class=\"social-mailchimp-link\" href=\"%s\">MailChimp</a>"
@@ -626,7 +624,7 @@ msgstr ""
 #: views/wp-admin/options.php:18
 #: views/wp-admin/profile.php:5
 msgid "Accounts"
-msgstr ""
+msgstr "Cuentas"
 
 #: views/wp-admin/options.php:19
 msgid "Available to all blog authors. Add accounts that only you can use in <a href=\"%s\">your profile</a>."
@@ -647,9 +645,8 @@ msgid "No"
 msgstr "No"
 
 #: views/wp-admin/options.php:42
-#, fuzzy
 msgid "Post broadcast format"
-msgstr "Formato de entrada no válido"
+msgstr "Formato de publicación emitida"
 
 #: views/wp-admin/options.php:46
 msgid "How you would like posts to be formatted when broadcasting to Twitter or Facebook?"
@@ -661,9 +658,8 @@ msgid "Tokens:"
 msgstr ""
 
 #: views/wp-admin/options.php:67
-#, fuzzy
 msgid "Comment broadcast format"
-msgstr "El {filter_formats}.format del cuerpo del comentario"
+msgstr "Formato de emisión de comentarios"
 
 #: views/wp-admin/options.php:71
 msgid "How you would like comments to be formatted when broadcasting to Twitter or Facebook."
@@ -674,9 +670,8 @@ msgid "Twitter @anywhere"
 msgstr ""
 
 #: views/wp-admin/options.php:93
-#, fuzzy
 msgid "Consumer API Key"
-msgstr "Clave de API de Akismet"
+msgstr "Clave  API Consumer"
 
 #: views/wp-admin/options.php:95
 msgid "To enable Twitter's @anywhere hovercards for Twitter usernames, enter your application's Consumer API key here. (<a href=\"%1$s\" target=\"_blank\">Click here to get an API key</a>)"
@@ -687,9 +682,8 @@ msgid "Advanced Options"
 msgstr "Opciones avanzadas"
 
 #: views/wp-admin/options.php:114
-#, fuzzy
 msgid "Misc."
-msgstr "GetID3/Información Miscalanea"
+msgstr "Misc."
 
 #: views/wp-admin/options.php:121
 msgid "Disable Social's comment display (use standard theme output instead)."
@@ -697,30 +691,27 @@ msgstr ""
 
 #: views/wp-admin/options.php:127
 msgid "Disable Social's broadcasting feature."
-msgstr ""
+msgstr "Deshabilita la característica de emisión  Social."
 
 #: views/wp-admin/options.php:134
-#, fuzzy
 msgid "Fetch new comments"
-msgstr "&laquo; Comentarios más viejos"
+msgstr "Descarga nuevos commentarios"
 
 #: views/wp-admin/options.php:140
-#, fuzzy
 msgid "Automatically"
-msgstr "Añadir párrafos automáticamente"
+msgstr "Automaticamente"
 
 #: views/wp-admin/options.php:141
 msgid "(easiest)"
-msgstr ""
+msgstr "(facilisimo)"
 
 #: views/wp-admin/options.php:147
 msgid "Never"
 msgstr "nunca"
 
 #: views/wp-admin/options.php:148
-#, fuzzy
 msgid "(disables fetching of comments)"
-msgstr "&laquo; Comentarios más viejos"
+msgstr "(deshabilita descarga de comentarios)"
 
 #: views/wp-admin/options.php:154
 msgid "Using a custom CRON job <span class=\"description\">(advanced)</span>"
@@ -728,57 +719,51 @@ msgstr ""
 
 #: views/wp-admin/options.php:156
 msgid "If you select this option, new tweets and Facebook posts will not be fetched unless you set up a system CRON job or fetch new items manually from the post edit screen. More help is also available in&nbsp;<code>README.txt</code>."
-msgstr ""
+msgstr "Si selecciones esta opción, nuevos tweets y publicaciones de Facebook no serán descargado a menos que configuras un trabajo CRON o descargue manualmente desde la pantalla de edición de la publicación. Hay mas ayuda disponible en &nbsp;<code>README.txt</code>."
 
 #: views/wp-admin/options.php:159
-#, fuzzy
 msgid "CRON Setup"
-msgstr "Configuración Embebida"
+msgstr "Configura CRON"
 
 #: views/wp-admin/options.php:161
-#, fuzzy
 msgid "CRON API Key"
-msgstr "Clave de API de Akismet"
+msgstr "Clave de API de CRON"
 
 #: views/wp-admin/options.php:161
 msgid "regenerate"
-msgstr ""
+msgstr "regenerar"
 
 #: views/wp-admin/options.php:166
 msgid "For your system CRON to run correctly, make sure it is pointing towards a URL that looks something like the following:"
 msgstr ""
 
 #: views/wp-admin/options.php:176
-#, fuzzy
 msgid "Debug Mode"
-msgstr "Modo quiosco"
+msgstr "Modo depuracion"
 
 #: views/wp-admin/options.php:177
-#, fuzzy
 msgid "(nerds only)"
-msgstr "Sólo el Usuario"
+msgstr "(solo raros)"
 
 #: views/wp-admin/options.php:180
 msgid "If you turn debug on, Social will save additional information in <code>debug_log.txt</code> file. Not recommended for production environments."
-msgstr ""
+msgstr "Si activas la depuración, Social grabara información adicional en el fichero <code>debug_log.txt</code>. No se recomienda para entornos de producción."
 
 #: views/wp-admin/options.php:185
 msgid "Off <span class=\"description\">(recommended)</span>"
-msgstr ""
+msgstr "Off <span class=\"description\">(recomendado)</span>"
 
 #: views/wp-admin/options.php:191
 msgid "On <span class=\"description\">(for troubleshooting)</span>"
-msgstr ""
+msgstr "On <span class=\"description\">(para resolución de problemas)</span>"
 
 #: views/wp-admin/options.php:196
-#, fuzzy
 msgid "Debug log location:"
-msgstr "IPTC: Sububicacion"
+msgstr "localización registro Depuración:"
 
 #: views/wp-admin/parts/accounts.php:12
-#, fuzzy
 msgid "Sign in with %s."
-msgstr "Montar con WebDAV"
+msgstr "Inicia sesión con %s."
 
 #: views/wp-admin/parts/accounts.php:30
 #: views/wp-admin/parts/accounts.php:64
@@ -790,18 +775,16 @@ msgid "Enabled"
 msgstr "Activado"
 
 #: views/wp-admin/parts/accounts.php:87
-#, fuzzy
 msgid "No Accounts"
-msgstr "(sin título)"
+msgstr "Sin cuentas"
 
 #: views/wp-admin/parts/accounts.php:97
 msgid "Default accounts will auto-broadcast when you publish via XML-RPC or email."
-msgstr ""
+msgstr "Default accounts will auto-broadcast when you publish via XML-RPC or email."
 
 #: views/wp-admin/post/broadcast/error/email.php:4
-#, fuzzy
 msgid "Hello"
-msgstr "Hola %s,"
+msgstr "Hola"
 
 #: views/wp-admin/post/broadcast/error/email.php:5
 #: views/wp-admin/post/broadcast/error/notice.php:4
@@ -810,9 +793,8 @@ msgstr ""
 
 #: views/wp-admin/post/broadcast/error/email.php:24
 #: views/wp-admin/post/broadcast/error/notice.php:25
-#, fuzzy
 msgid "Possible fixes:"
-msgstr "Lista de todos los valores posibles"
+msgstr "Soluciones posibles:"
 
 #: views/wp-admin/post/broadcast/error/email.php:33
 msgid "To reauthorize the deauthorized %s account above, please login and edit your accounts."
@@ -823,14 +805,12 @@ msgid "To reauthorize the deauthorized accounts above, please login and edit you
 msgstr ""
 
 #: views/wp-admin/post/broadcast/error/email.php:39
-#, fuzzy
 msgid "Personal accounts:"
-msgstr "Formulario de contacto personal"
+msgstr "Cuentas personales:"
 
 #: views/wp-admin/post/broadcast/error/email.php:41
-#, fuzzy
 msgid "Global accounts:"
-msgstr "Escritorio global: %s"
+msgstr "Cuentas Globales:"
 
 #: views/wp-admin/post/broadcast/error/email.php:51
 #: views/wp-admin/post/broadcast/error/notice.php:57
@@ -847,9 +827,8 @@ msgid "Social was not successful in broadcasting this post (perhaps the service 
 msgstr ""
 
 #: views/wp-admin/post/broadcast/error/email.php:58
-#, fuzzy
 msgid "Support forums:"
-msgstr "Foros de soporte"
+msgstr "Foros de soporte:"
 
 #: views/wp-admin/post/broadcast/error/notice.php:36
 msgid "To reauthorize the deauthorized %s account above, please edit your <a href=\"%s\">global accounts</a> or your <a href=\"%s\">personal accounts</a>."
@@ -872,9 +851,8 @@ msgid "Social was not successful in broadcasting this post (perhaps the service 
 msgstr ""
 
 #: views/wp-admin/post/broadcast/facebook-link-preview.php:14
-#, fuzzy
 msgid "Thumbnail image"
-msgstr "Añadir una imagen"
+msgstr "Imagen miniatura"
 
 #: views/wp-admin/post/broadcast/options.php:5
 #: views/wp-admin/post/broadcast/options.php:14
@@ -882,23 +860,20 @@ msgid "Social Broadcasts"
 msgstr ""
 
 #: views/wp-admin/post/broadcast/options.php:50
-#, fuzzy
 msgid "Previous Broadcasts"
-msgstr "&laquo; Anterior"
+msgstr "Emisiones anteriores"
 
 #: views/wp-admin/post/broadcast/options.php:93
 msgid "Cancel"
 msgstr "Cancelar"
 
 #: views/wp-admin/post/meta/broadcast/default.php:2
-#, fuzzy
 msgid "Broadcast Post"
-msgstr "Editar entrada"
+msgstr "Emision publicada"
 
 #: views/wp-admin/post/meta/broadcast/parts/broadcasted.php:10
-#, fuzzy
 msgid "Sent to:"
-msgstr "Enlazado a"
+msgstr "Enviado a:"
 
 #: views/wp-admin/post/meta/broadcast/parts/button.php:5
 msgid "My Accounts"
@@ -914,39 +889,35 @@ msgstr ""
 
 #: views/wp-admin/post/meta/broadcast/private.php:2
 msgid "Broadcasting is disabled for private posts."
-msgstr ""
+msgstr "Emision esta desabilitada por publicaciones privadas."
 
 #: views/wp-admin/post/meta/broadcast/scheduled.php:5
 msgid "This post is scheduled to be published at a later date. However, it is not scheduled to be broadcasted to any of your social accounts."
 msgstr ""
 
 #: views/wp-admin/post/meta/broadcast/scheduled.php:9
-#, fuzzy
 msgid "Scheduled for:"
-msgstr "Comentarios para %s"
+msgstr "Programado para:"
 
 #: views/wp-admin/post/meta/log/output.php:3
 msgid "Aggregation has not been run for this post yet."
 msgstr ""
 
 #: views/wp-admin/post/meta/log/output.php:14
-#, fuzzy
 msgid "Manual Aggregation"
-msgstr "Desplazamientos manuales"
+msgstr "Agregación manual"
 
 #: views/wp-admin/post/meta/log/output.php:17
 msgid "Automatic Aggregation"
 msgstr ""
 
 #: views/wp-admin/post/meta/log/output.php:59
-#, fuzzy
 msgid "Reply Search"
-msgstr "Buscar categorías"
+msgstr "Búsqueda de Respuestas"
 
 #: views/wp-admin/post/meta/log/output.php:62
-#, fuzzy
 msgid "URL Search"
-msgstr "Buscar categorías"
+msgstr "Búsqueda de URL "
 
 #: views/wp-admin/post/meta/log/output.php:87
 msgid "No results found."
@@ -954,21 +925,19 @@ msgstr "Sin resultados."
 
 #: views/wp-admin/post/meta/log/shell.php:3
 msgid "Enter the URL of the tweet to add it as a comment."
-msgstr ""
+msgstr "Introduce el URL del tweet a añadir como comentario."
 
 #: views/wp-admin/post/meta/log/shell.php:8
-#, fuzzy
 msgid "Import Tweet"
-msgstr "Confirmar Importación"
+msgstr "Importar Tweet"
 
 #: views/wp-admin/post/meta/log/shell.php:18
-#, fuzzy
 msgid "Manual Refresh"
-msgstr "Desplazamientos manuales"
+msgstr "Refresco Manual"
 
 #: views/wp-admin/post/meta/log/shell.php:19
 msgid "Next automatic run <span>%s</span>"
-msgstr ""
+msgstr "Siguiente ejecucion automatica <span>%s</span>"
 
 #: views/wp-admin/post/meta/log/shell.php:30
 msgid "Log"
@@ -976,11 +945,11 @@ msgstr "Registro"
 
 #: views/wp-admin/profile.php:1
 msgid "Social Accounts"
-msgstr ""
+msgstr "Cuentas Social "
 
 #: views/wp-admin/profile.php:6
 msgid "Only I can broadcast to these accounts."
-msgstr ""
+msgstr "Solo puedo emitir las estas cuentas."
 
 #. Plugin URI of the plugin/theme
 msgid "http://mailchimp.com/social-plugin-for-wordpress/"
