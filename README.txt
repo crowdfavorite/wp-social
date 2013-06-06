@@ -3,7 +3,7 @@ Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter, social, broadcast, import, integrate, integration
 Requires at least: 3.3
 Tested up to: 3.5.1
-Stable tag: 2.9
+Stable tag: 2.9.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -282,6 +282,10 @@ Since Social 2.9 we've made the decision to disable this by default. If the defa
 
 == Upgrade Notice ==
 
+= 2.9.1 =
+
+Fixes Facebook comment permalinks
+
 = 2.9 =
 
 This release adds a GUI option to enable/disable post types for social broadcasting, adds support for the new Facebook Pages threaded comments.
@@ -289,6 +293,9 @@ This release adds a GUI option to enable/disable post types for social broadcast
 Also included are bugfixes, expanded language support, and other minor improvements.  See the changelog for more detail.
 
 == Changelog ==
+
+= 2.9.1 =
+* Fixed bug in the way facebook comment permalinks were being generated
 
 = 2.9 =
 * Support for threaded comment replies for Facebook pages

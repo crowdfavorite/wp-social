@@ -3,7 +3,7 @@
 Plugin Name: Social
 Plugin URI: http://mailchimp.com/social-plugin-for-wordpress/
 Description: Broadcast newly published posts and pull in discussions using integrations with Twitter and Facebook. Brought to you by <a href="http://mailchimp.com">MailChimp</a>.
-Version: 2.9
+Version: 2.9.1
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com/
 */
@@ -25,7 +25,7 @@ final class Social {
 	/**
 	 * @var  string  version number
 	 */
-	public static $version = '2.9';
+	public static $version = '2.9.1';
 
 	/**
 	 * @var  string  CRON lock directory.
@@ -1455,10 +1455,10 @@ final class Social {
 
 								// Feed posts return id with property, comment posts return raw id
 								if (isset($response->body()->response->id)) {
-									update_comment_meta($comment_ID, 'social_status_id', addslashes_deep($response->body()->response->id));
+									add_comment_meta($comment_ID, 'social_status_id', addslashes_deep($response->body()->response->id), true);
 								}
 								else {
-									update_comment_meta($comment_ID, 'social_status_id', addslashes_deep($response->body()->response));
+									add_comment_meta($comment_ID, 'social_status_id', addslashes_deep($response->body()->response), true);
 								}
 								update_comment_meta($comment_ID, 'social_raw_data', addslashes_deep(base64_encode(json_encode($response->body()->response))));
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', 'social'), $comment_ID, $service->title(), $account->id()));
@@ -1550,10 +1550,10 @@ final class Social {
 
 								// Feed posts return id with property, comment posts return raw id
 								if (isset($response->body()->response->id)) {
-									update_comment_meta($comment_id, 'social_status_id', addslashes_deep($response->body()->response->id));
+									add_comment_meta($comment_ID, 'social_status_id', addslashes_deep($response->body()->response->id), true);
 								}
 								else {
-									update_comment_meta($comment_id, 'social_status_id', addslashes_deep($response->body()->response));
+									add_comment_meta($comment_ID, 'social_status_id', addslashes_deep($response->body()->response), true);
 								}
 								update_comment_meta($comment_id, 'social_raw_data', addslashes_deep(base64_encode(json_encode($response->body()->response))));
 								Social::log(sprintf(__('Broadcasting comment #%s to %s using account #%s COMPLETE.', 'social'), $comment_id, $service->title(), $account->id()));
