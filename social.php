@@ -1674,7 +1674,7 @@ final class Social {
 		// set Social Items for Social comments
 		if (!in_array($comment->comment_type, $ignored_types)) {
 			$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
-			if ($status_id && is_string($status_id)) {
+			if (is_string($status_id) && $status_id) {
 				$status_url = $service->status_url(get_comment_author(), $status_id);
 			}
 			// Social items?
