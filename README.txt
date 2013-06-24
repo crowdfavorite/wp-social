@@ -294,6 +294,9 @@ Also included are bugfixes, expanded language support, and other minor improveme
 
 == Changelog ==
 
+= develop =
+* More gracefully handle "bad data" returned from social proxy upon comment broadcast
+
 = 2.9.1 =
 * Fixed bug in the way facebook comment permalinks were being generated
 
