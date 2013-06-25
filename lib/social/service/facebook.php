@@ -45,7 +45,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		if (get_post_format($post->ID) !== 'status') {
 			setup_postdata($post);
 			$wp_url = social_get_shortlink($post->ID);
-			$url = apply_filters('social_facebook_broadcast_url', $wp_url, $post);
+			$url = apply_filters('social_facebook_broadcast_link', $wp_url, $post);
 			if ($wp_url !== $url) {
 				$link_args = array('link' => $url);
 			}
