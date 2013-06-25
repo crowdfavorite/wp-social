@@ -44,16 +44,23 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	public function get_broadcast_extras($account_id, $post, $args = array()) {
 		if (get_post_format($post->ID) !== 'status') {
 			setup_postdata($post);
-			$link_args = array(
-				'link' => social_get_shortlink($post->ID),
-				'title' => get_the_title($post->ID),
-				'description' => get_the_excerpt(),
-			);
-			if (function_exists('has_post_thumbnail') and has_post_thumbnail($post->ID)) {
-				$image = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID), 'single-post-thumbnail');
-				$link_args = $link_args + array(
-					'picture' => $image[0],
+			$wp_url = social_get_shortlink($post->ID);
+			$url = apply_filters('social_facebook_broadcast_link', $wp_url, $post);
+			if ($wp_url !== $url) {
+				$link_args = array('link' => $url);
+			}
+			else {
+				$link_args = array(
+					'link' => $wp_url,
+					'title' => get_the_title($post->ID),
+					'description' => get_the_excerpt(),
 				);
+				if (function_exists('has_post_thumbnail') and has_post_thumbnail($post->ID)) {
+					$image = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID), 'single-post-thumbnail');
+					$link_args = $link_args + array(
+						'picture' => $image[0],
+					);
+				}
 			}
 			wp_reset_postdata();
 			$args = $args + $link_args;

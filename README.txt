@@ -296,6 +296,7 @@ Also included are bugfixes, expanded language support, and other minor improveme
 
 = develop =
 * More gracefully handle "bad data" returned from social proxy upon comment broadcast
+* add filter to modify the broadcasted facebook link `social_facebook_broadcast_link`
 
 = 2.9.1 =
 * Fixed bug in the way facebook comment permalinks were being generated
