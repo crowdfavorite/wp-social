@@ -60,7 +60,7 @@ if (count($types)) {
 				echo '<li>'.__('It is possible you have broadcasted a duplicate message, please tweak your content a little and try again.', 'social').'</li>';
 			break;
 			default:
-				echo '<li>'.sprintf(__('Social was not successful in broadcasting this post (perhaps the service is down?), please try broadcasting again. If you receive this message repeatedly, you can try the <a href="%s">support forums</a>.', 'social'), 'http://wordpress.org/tags/social?forum_id=10').'</li>';
+				echo '<li>'.sprintf(__('Social was not successful in broadcasting this post (perhaps the service is down?), please try broadcasting again. If you receive this message repeatedly, you can try the <a href="%s">support forums</a>.', 'social'), 'http://wordpress.org/support/plugin/social').'</li>';
 			break;
 		}
 	}
