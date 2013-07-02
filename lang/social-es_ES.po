@@ -1,0 +1,970 @@
+# Copyright (C) 2012 Social
+# This file is distributed under the same license as the Social package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Social 2.5\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/social\n"
+"POT-Creation-Date: 2012-05-22 18:40:54+00:00\n"
+"PO-Revision-Date: 2013-06-06 16:21+0100\n"
+"Last-Translator: Juan Jose Pablos <juanjo@apertus.es>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Spanish\n"
+"X-Poedit-Country: SPAIN\n"
+"Plural-Forms: nplurals=2; plural=n !=1\n"
+
+#: lib/social/aggregation/log.php:60
+msgid "Social failed to initialize the Aggregation_Log for post #%s."
+msgstr ""
+
+#: lib/social/aggregation/queue.php:247
+msgid "approximately %s"
+msgstr "approximadamente %s"
+
+#: lib/social/comment/form.php:261
+msgid "Name"
+msgstr "Nombre"
+
+#: lib/social/comment/form.php:262
+msgid "Email"
+msgstr "Correo electrónico"
+
+#: lib/social/comment/form.php:262
+msgid "Not published"
+msgstr "No publicado"
+
+#: lib/social/comment/form.php:263
+msgid "Website"
+msgstr "Web"
+
+#: lib/social/comment/form.php:267
+msgid "Post It"
+msgstr "Publicalo"
+
+#: lib/social/comment/form.php:268
+msgid "Profile"
+msgstr "Perfil"
+
+#: lib/social/comment/form.php:269
+msgid "Post a Reply to %s"
+msgstr "Responder a %s"
+
+#: lib/social/comment/form.php:270
+msgid "cancel"
+msgstr "Cancelar"
+
+#: lib/social/comment/form.php:274
+msgid "Comment"
+msgstr "Comentario"
+
+#: lib/social/comment/form.php:279
+msgid "Post a Comment"
+msgstr "Publicar comentario"
+
+#: lib/social/comment/form.php:309
+#: lib/social/comment/form.php:319
+msgid "Also post to %s"
+msgstr "Tambien publicado a %s"
+
+#: lib/social/controller/aggregation.php:144
+msgid "(%s New)"
+msgstr "(%s Nuevo)"
+
+#: lib/social/controller/broadcast.php:33
+msgid "View on %s"
+msgstr "Ver en %s"
+
+#: lib/social/controller/broadcast.php:74
+#: lib/social/controller/broadcast.php:106
+msgid "Please enter content to be broadcasted."
+msgstr "Por favor introduca el contenido para ser emitido"
+
+#: lib/social/controller/broadcast.php:79
+#: lib/social/controller/broadcast.php:111
+msgid "Content must not be longer than %s characters."
+msgstr "El contenido debe ser mas de  %s caracteres."
+
+#: lib/social/controller/broadcast.php:131
+msgid "Please select at least one account to broadcast to."
+msgstr "Selecione al menos una cuenta con la que emitir."
+
+#: lib/social/controller/broadcast.php:212
+msgid "Publish"
+msgstr "Publicar"
+
+#: lib/social/controller/broadcast.php:218
+msgid "Update"
+msgstr "Actualizar"
+
+#: lib/social/controller/broadcast.php:222
+msgid "Broadcast"
+msgstr "Emision"
+
+#: lib/social/controller/broadcast.php:227
+msgid "Schedule"
+msgstr "Programar"
+
+#: lib/social/controller/broadcast.php:532
+msgid "Rate limit reached"
+msgstr "Límite excedido"
+
+#: lib/social/controller/broadcast.php:549
+msgid "Duplicate status"
+msgstr "Estado duplicado"
+
+#: lib/social/controller/broadcast.php:566
+msgid "Account deauthorized"
+msgstr "Cuenta desautorizada"
+
+#: lib/social/controller/broadcast.php:693
+msgid "%s: Failed to broadcast post with Social."
+msgstr "%s: Fallo de emitir la publicacion con Social."
+
+#: lib/social/date.php:120
+msgid "1 year"
+msgstr "1 año"
+
+#: lib/social/date.php:123
+msgid "%s years"
+msgstr "%s años"
+
+#: lib/social/date.php:130
+msgid "1 month"
+msgstr "1 mes"
+
+#: lib/social/date.php:133
+msgid "%s months"
+msgstr "%s meses"
+
+#: lib/social/date.php:140
+msgid "1 week"
+msgstr "1 semana"
+
+#: lib/social/date.php:143
+msgid "%s weeks"
+msgstr "%s semanas"
+
+#: lib/social/date.php:150
+#: lib/social/date.php:246
+msgid "1 day"
+msgstr "1 día"
+
+#: lib/social/date.php:153
+msgid "%s days"
+msgstr "%s dias"
+
+#: lib/social/date.php:161
+#: lib/social/date.php:257
+msgid "1 hour"
+msgstr "1 hora"
+
+#: lib/social/date.php:164
+#: lib/social/date.php:260
+msgid "%s hours"
+msgstr "hace %s horas"
+
+#: lib/social/date.php:172
+#: lib/social/date.php:268
+msgid "1 minute"
+msgstr "1 minuto"
+
+#: lib/social/date.php:175
+#: lib/social/date.php:271
+msgid "%s minutes"
+msgstr "%s minutos"
+
+#: lib/social/date.php:183
+msgid "1 second"
+msgstr "1 segundo"
+
+#: lib/social/date.php:186
+msgid "%s seconds"
+msgstr "%s segundos"
+
+#: lib/social/date.php:226
+msgid "1 month ago"
+msgstr "hace 1 mes"
+
+#: lib/social/date.php:229
+msgid "%s months ago"
+msgstr "hace %s meses"
+
+#: lib/social/date.php:236
+msgid "1 week ago"
+msgstr "hace 1 semana"
+
+#: lib/social/date.php:239
+msgid "%s weeks ago"
+msgstr "hace %s semanas"
+
+#: lib/social/date.php:249
+msgid "%s days ago"
+msgstr "hace %s dias"
+
+#: lib/social/date.php:277
+msgid "just now"
+msgstr "ahora mismo"
+
+#: lib/social/date.php:282
+#: lib/social/date.php:285
+#: lib/social/date.php:289
+msgid "%s ago"
+msgstr "hace %s"
+
+#: lib/social/date.php:315
+msgid "moments"
+msgstr "momentos"
+
+#: lib/social/date.php:319
+msgid "a few minutes"
+msgstr "hace unos minutos"
+
+#: lib/social/date.php:323
+msgid "less than an hour"
+msgstr "lmenos de una hora"
+
+#: lib/social/date.php:327
+msgid "a couple of hours"
+msgstr "un par de horas"
+
+#: lib/social/date.php:331
+msgid "less than a day"
+msgstr "menos de un dia"
+
+#: lib/social/date.php:335
+msgid "about a day"
+msgstr "como un dia"
+
+#: lib/social/date.php:339
+msgid "a couple of days"
+msgstr "un par de dias"
+
+#: lib/social/date.php:343
+msgid "less than a week"
+msgstr "menos de una semana"
+
+#: lib/social/date.php:347
+msgid "about a week"
+msgstr "como una semana"
+
+#: lib/social/date.php:351
+msgid "less than a month"
+msgstr "menos de un mes"
+
+#: lib/social/date.php:355
+msgid "about a month"
+msgstr "como un mes"
+
+#: lib/social/date.php:359
+msgid "a couple of months"
+msgstr "un par de meses"
+
+#: lib/social/date.php:363
+msgid "less than a year"
+msgstr "menos de un año"
+
+#: lib/social/date.php:367
+msgid "about a year"
+msgstr "como un año"
+
+#: lib/social/date.php:371
+msgid "a couple of years"
+msgstr "un par de años"
+
+#: lib/social/date.php:375
+msgid "a few years"
+msgstr "unos cuantos años"
+
+#: lib/social/date.php:379
+msgid "about a decade"
+msgstr "como una decada"
+
+#: lib/social/date.php:383
+msgid "a couple of decades"
+msgstr "un par de decadas"
+
+#: lib/social/date.php:387
+msgid "several decades"
+msgstr "varias decadas"
+
+#: lib/social/date.php:391
+msgid "a long time"
+msgstr "hace mucho tiempo"
+
+#: lib/social/date.php:396
+msgid "% ago"
+msgstr "hace %s"
+
+#: lib/social/date.php:401
+msgid "in %s"
+msgstr "en %s"
+
+#: lib/social/response.php:96
+msgid "Unable to publish to %s with account %s. Please <a href=\"%\">re-authorize</a> this account."
+msgstr "No se posible publicar %s con la cuenta %s. Por favor <a href=\"%\">re-authorize</a> esta cuenta."
+
+#: lib/social/service/account.php:141
+#: lib/social/service/account.php:150
+msgid "Removed Account"
+msgstr "Cuenta borrada"
+
+#: lib/social/service/facebook.php:425
+msgid "Found %s additional likes."
+msgstr "Encontrados %s \"Me gusta\" mas."
+
+#: lib/social/service/twitter.php:338
+msgid "Retweet Search"
+msgstr "Busqueda Retweet"
+
+#: lib/social/service/twitter.php:341
+#: views/wp-admin/post/meta/log/output.php:70
+msgid "Existing Comment"
+msgstr "Commentarios existentes"
+
+#: lib/social/service.php:126
+#: lib/social/service.php:129
+msgid "Disconnect"
+msgstr "Desconectar"
+
+#: lib/social/view.php:98
+msgid "You must set a file to be used before rendering."
+msgstr ""
+
+#: lib/social/view.php:135
+msgid "View %s does not exist."
+msgstr "Vista %s no existe."
+
+#: social-facebook.php:209
+msgid "Connect with Pages support"
+msgstr "Conectar con soporte de paginas"
+
+#: social-facebook.php:434
+msgid "%s liked this"
+msgstr "%s le gusta esto"
+
+#: social-twitter.php:358
+msgid " retweeted this"
+msgstr " ha retwitteado esto"
+
+#: social-twitter.php:379
+msgid "Send as a reply"
+msgstr "Enviar como respuesta"
+
+#: social-twitter.php:381
+msgid "URL of Tweet (to reply to)"
+msgstr "URL del Tweet (para contestar)"
+
+#: social.php:118
+msgid "Failed to auto load class %s."
+msgstr ""
+
+#: social.php:149
+#: social.php:152
+msgid "Example: %s"
+msgstr "Ejemplo: %s"
+
+#: social.php:255
+msgid "Duplicate comment detected; it looks as though you&#8217;ve already said that!"
+msgstr "Comentario duplicado: ¡parece que ya has dicho eso!"
+
+#: social.php:340
+msgid "Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers."
+msgstr ""
+
+#: social.php:394
+msgid "Post a Reply"
+msgstr "Publica una respuesta"
+
+#: social.php:431
+#: social.php:1763
+msgid "Protected Tweet"
+msgstr "Tweet protegido"
+
+#: social.php:432
+#: social.php:1764
+msgid "Invalid URL"
+msgstr "URL no valido"
+
+#: social.php:531
+msgid "Social Options"
+msgstr "Optiones Social"
+
+#. #-#-#-#-#  plugin.pot (Social 2.5)  #-#-#-#-#
+#. Plugin Name of the plugin/theme
+#: social.php:532
+#: views/wp-admin/options.php:11
+msgid "Social"
+msgstr "Social"
+
+#: social.php:557
+msgid "Settings"
+msgstr "Ajustes"
+
+#: social.php:573
+msgid "Social is shiny and new! Please <a href=\"%s\">verify and save your settings</a> to complete the upgrade."
+msgstr "Social esta nuevo y reluciente! Por favor <a href=\"%s\">verifica y guarda tu configuración</a> para completar la actualización."
+
+#: social.php:579
+#: social.php:607
+msgid "<a href=\"%s\" class=\"social_dismiss\">[Dismiss]</a>"
+msgstr ""
+
+#: social.php:580
+msgid "To start using Social, please <a href=\"%s\">add an account</a>."
+msgstr "Para empezar a usar Social, por favor <a href=\"%s\">añade una cuenta</a>."
+
+#: social.php:593
+msgid "Social requires that either %s or %s be writable for CRON jobs."
+msgstr ""
+
+#: social.php:596
+msgid "Social requires that %s is writable for CRON jobs."
+msgstr ""
+
+#: social.php:606
+msgid "When you enable Social, users will be created when they log in with Facebook or Twitter to comment. These users are created without a role and will be prevented from accessing the admin side of WordPress until an administrator edits the user to give them a role."
+msgstr ""
+
+#: social.php:616
+msgid "%s needs to be writable for Social's logging. <a href=\"%\" class=\"social_dismiss\">[Dismiss]</a>"
+msgstr ""
+
+#: social.php:626
+#: social.php:660
+msgid "<a href=\"%s\" class=\"%s\">[Dismiss]</a>"
+msgstr "<a href=\"%s\" class=\"%s\">[Marcharse]</a>"
+
+#: social.php:652
+msgid "Social needs to re-authorize your Facebook account(s). Please re-connect your <a href=\"%s\">global</a> and <a href=\"%s\">personal</a> accounts."
+msgstr ""
+
+#: social.php:656
+msgid "Social needs to re-authorize your Facebook account(s).. Please re-connect your <a href=\"%s\">personal</a> accounts."
+msgstr ""
+
+#: social.php:774
+msgid "Social Broadcasting"
+msgstr "Emisión Social"
+
+#: social.php:782
+msgid "Social Comments"
+msgstr "Comentarios Sociales"
+
+#: social.php:895
+msgid "Not Scheduled"
+msgstr "No programado"
+
+#: social.php:1254
+#: social.php:1255
+msgid "Log in"
+msgstr "Acceder"
+
+#: social.php:1393
+#: social.php:1472
+msgid "Broadcasting comment #%s to %s using account #%s."
+msgstr "Emitiendo comentario  #%s a %s usando cuenta #%s."
+
+#: social.php:1397
+#: social.php:1486
+msgid "Error: Broadcast comment #%s to %s using account #%s, please go back and try again."
+msgstr ""
+
+#: social.php:1398
+msgid "Error: Your comment could not be sent to %s, please go back and try again."
+msgstr ""
+
+#: social.php:1410
+#: social.php:1498
+msgid "Broadcasting comment #%s to %s using account #%s COMPLETE."
+msgstr ""
+
+#: social.php:1423
+msgid "Comment #%s saved."
+msgstr "Comentario #%s guardado."
+
+#: social.php:1661
+msgid "<a href=\"%s\" rel=\"%s\">Social Comments</a>"
+msgstr "<a href=\"%s\" rel=\"%s\">Comentarios Sociales</a>"
+
+#: social.php:1690
+#: views/wp-admin/post/meta/log/shell.php:23
+msgid "Find Social Comments"
+msgstr "Buscar Comentarios Sociales"
+
+#: social.php:1701
+#: social.php:1704
+#: views/wp-admin/post/meta/log/shell.php:2
+msgid "Add Tweet by URL"
+msgstr "Añadir Tweet por URL"
+
+#: social.php:1765
+msgid "Tweet Imported!"
+msgstr "Tweet importado!"
+
+#: views/comment/comment.php:28
+msgid "Pingback"
+msgstr "Pingback"
+
+#: views/comment/comment.php:40
+msgid "replied:"
+msgstr "contesto:"
+
+#: views/comment/comment.php:50
+msgid "View"
+msgstr "Ver"
+
+#: views/comment/comment.php:60
+msgid "Your comment is awaiting moderation."
+msgstr "Tu comentario está pendiente de moderación"
+
+#: views/comment/comment.php:73
+#: views/wp-admin/post/broadcast/options.php:71
+msgid "Edit"
+msgstr "Editar"
+
+#: views/comment/logged_in_as.php:9
+msgid "WordPress Account"
+msgstr "Mi cuenta"
+
+#: views/comment/logged_in_as.php:27
+msgid "Logged in as <a href=\"%1$s\">%2$s</a>."
+msgstr "Identificado como <a href=\"%1$s\">%2$s</a>."
+
+#: views/comment/social_item.php:12
+msgid "<a href=\"%s\" class=\"social-items-and-more\">... and %s more</a>"
+msgstr "<a href=\"%s\" class=\"social-items-and-more\">... y %s mas</a>"
+
+#: views/comment/top.php:3
+msgid "Sign in with %s"
+msgstr "Registrarse con %s"
+
+#: views/comment/top.php:7
+msgid "or"
+msgstr " o "
+
+#: views/comments.php:6
+msgid "This post is password protected. Enter the password to view any comments."
+msgstr "Esta entrada está protegida. Para ver los comentarios escribe la contraseña."
+
+#: views/comments.php:11
+msgid "Logging In..."
+msgstr "Accediendo..."
+
+#: views/comments.php:17
+msgid "You must be <a href=\"%s\">logged in</a> to post a comment."
+msgstr "Disculpa, debes <a href=\"%s\">iniciar sesión</a> para escribir un comentario."
+
+#: views/comments.php:27
+msgid "Comments are closed."
+msgstr "Los comentarios están cerrados."
+
+#: views/comments.php:90
+msgid "0 Replies"
+msgstr "0 Respuestas"
+
+#: views/comments.php:90
+msgid "1 Reply"
+msgstr "1 Respuesta"
+
+#: views/comments.php:90
+msgid "% Replies"
+msgstr "% Respuestas"
+
+#: views/comments.php:91
+msgid "1 Comment"
+msgid_plural "%1$s Comments"
+msgstr[0] "1 Comentario"
+msgstr[1] "%1$s Comentarios"
+
+#: views/comments.php:92
+msgid "1 Tweet"
+msgid_plural "%1$s Tweets"
+msgstr[0] "1 Tweet"
+msgstr[1] "%1$s Tweets"
+
+#: views/comments.php:93
+msgid "1 Facebook"
+msgid_plural "%1$s Facebook"
+msgstr[0] "1 Facebook"
+msgstr[1] "%1$s Facebook"
+
+#: views/comments.php:94
+msgid "1 Pingback"
+msgid_plural "%1$s Pingbacks"
+msgstr[0] "1 Notificacion"
+msgstr[1] "%1$s Notificaciones"
+
+#: views/comments.php:102
+msgid "Last reply was %s"
+msgstr "La ultima respuesta fue  %s"
+
+#: views/comments.php:137
+msgid "Comment navigation"
+msgstr "Navegación de comentarios"
+
+#: views/comments.php:138
+msgid "&larr; Older Comments"
+msgstr "&larr; Comentarios antiguos"
+
+#: views/comments.php:139
+msgid "Newer Comments &rarr;"
+msgstr "Últimos comentarios &raquo;"
+
+#: views/wp-admin/options.php:6
+msgid "Social settings have been updated."
+msgstr "La configuración de Social ha sido actualizada."
+
+#: views/wp-admin/options.php:12
+msgid "Compliments of <a class=\"social-mailchimp-link\" href=\"%s\">MailChimp</a>"
+msgstr ""
+
+#: views/wp-admin/options.php:18
+#: views/wp-admin/profile.php:5
+msgid "Accounts"
+msgstr "Cuentas"
+
+#: views/wp-admin/options.php:19
+msgid "Available to all blog authors. Add accounts that only you can use in <a href=\"%s\">your profile</a>."
+msgstr ""
+
+#: views/wp-admin/options.php:31
+msgid "Broadcasting is on by default"
+msgstr ""
+
+#: views/wp-admin/options.php:34
+#: views/wp-admin/post/meta/broadcast/default.php:5
+msgid "Yes"
+msgstr "Sí"
+
+#: views/wp-admin/options.php:37
+#: views/wp-admin/post/meta/broadcast/default.php:8
+msgid "No"
+msgstr "No"
+
+#: views/wp-admin/options.php:42
+msgid "Post broadcast format"
+msgstr "Formato de publicación emitida"
+
+#: views/wp-admin/options.php:46
+msgid "How you would like posts to be formatted when broadcasting to Twitter or Facebook?"
+msgstr ""
+
+#: views/wp-admin/options.php:49
+#: views/wp-admin/options.php:74
+msgid "Tokens:"
+msgstr ""
+
+#: views/wp-admin/options.php:67
+msgid "Comment broadcast format"
+msgstr "Formato de emisión de comentarios"
+
+#: views/wp-admin/options.php:71
+msgid "How you would like comments to be formatted when broadcasting to Twitter or Facebook."
+msgstr ""
+
+#: views/wp-admin/options.php:91
+msgid "Twitter @anywhere"
+msgstr ""
+
+#: views/wp-admin/options.php:93
+msgid "Consumer API Key"
+msgstr "Clave  API Consumer"
+
+#: views/wp-admin/options.php:95
+msgid "To enable Twitter's @anywhere hovercards for Twitter usernames, enter your application's Consumer API key here. (<a href=\"%1$s\" target=\"_blank\">Click here to get an API key</a>)"
+msgstr ""
+
+#: views/wp-admin/options.php:109
+msgid "Advanced Options"
+msgstr "Opciones avanzadas"
+
+#: views/wp-admin/options.php:114
+msgid "Misc."
+msgstr "Misc."
+
+#: views/wp-admin/options.php:121
+msgid "Disable Social's comment display (use standard theme output instead)."
+msgstr ""
+
+#: views/wp-admin/options.php:127
+msgid "Disable Social's broadcasting feature."
+msgstr "Deshabilita la característica de emisión  Social."
+
+#: views/wp-admin/options.php:134
+msgid "Fetch new comments"
+msgstr "Descarga nuevos commentarios"
+
+#: views/wp-admin/options.php:140
+msgid "Automatically"
+msgstr "Automaticamente"
+
+#: views/wp-admin/options.php:141
+msgid "(easiest)"
+msgstr "(facilisimo)"
+
+#: views/wp-admin/options.php:147
+msgid "Never"
+msgstr "nunca"
+
+#: views/wp-admin/options.php:148
+msgid "(disables fetching of comments)"
+msgstr "(deshabilita descarga de comentarios)"
+
+#: views/wp-admin/options.php:154
+msgid "Using a custom CRON job <span class=\"description\">(advanced)</span>"
+msgstr ""
+
+#: views/wp-admin/options.php:156
+msgid "If you select this option, new tweets and Facebook posts will not be fetched unless you set up a system CRON job or fetch new items manually from the post edit screen. More help is also available in&nbsp;<code>README.txt</code>."
+msgstr "Si selecciones esta opción, nuevos tweets y publicaciones de Facebook no serán descargado a menos que configuras un trabajo CRON o descargue manualmente desde la pantalla de edición de la publicación. Hay mas ayuda disponible en &nbsp;<code>README.txt</code>."
+
+#: views/wp-admin/options.php:159
+msgid "CRON Setup"
+msgstr "Configura CRON"
+
+#: views/wp-admin/options.php:161
+msgid "CRON API Key"
+msgstr "Clave de API de CRON"
+
+#: views/wp-admin/options.php:161
+msgid "regenerate"
+msgstr "regenerar"
+
+#: views/wp-admin/options.php:166
+msgid "For your system CRON to run correctly, make sure it is pointing towards a URL that looks something like the following:"
+msgstr ""
+
+#: views/wp-admin/options.php:176
+msgid "Debug Mode"
+msgstr "Modo depuracion"
+
+#: views/wp-admin/options.php:177
+msgid "(nerds only)"
+msgstr "(solo raros)"
+
+#: views/wp-admin/options.php:180
+msgid "If you turn debug on, Social will save additional information in <code>debug_log.txt</code> file. Not recommended for production environments."
+msgstr "Si activas la depuración, Social grabara información adicional en el fichero <code>debug_log.txt</code>. No se recomienda para entornos de producción."
+
+#: views/wp-admin/options.php:185
+msgid "Off <span class=\"description\">(recommended)</span>"
+msgstr "Off <span class=\"description\">(recomendado)</span>"
+
+#: views/wp-admin/options.php:191
+msgid "On <span class=\"description\">(for troubleshooting)</span>"
+msgstr "On <span class=\"description\">(para resolución de problemas)</span>"
+
+#: views/wp-admin/options.php:196
+msgid "Debug log location:"
+msgstr "localización registro Depuración:"
+
+#: views/wp-admin/parts/accounts.php:12
+msgid "Sign in with %s."
+msgstr "Inicia sesión con %s."
+
+#: views/wp-admin/parts/accounts.php:30
+#: views/wp-admin/parts/accounts.php:64
+msgid "Default"
+msgstr "Predeterminado"
+
+#: views/wp-admin/parts/accounts.php:68
+msgid "Enabled"
+msgstr "Activado"
+
+#: views/wp-admin/parts/accounts.php:87
+msgid "No Accounts"
+msgstr "Sin cuentas"
+
+#: views/wp-admin/parts/accounts.php:97
+msgid "Default accounts will auto-broadcast when you publish via XML-RPC or email."
+msgstr "Default accounts will auto-broadcast when you publish via XML-RPC or email."
+
+#: views/wp-admin/post/broadcast/error/email.php:4
+msgid "Hello"
+msgstr "Hola"
+
+#: views/wp-admin/post/broadcast/error/email.php:5
+#: views/wp-admin/post/broadcast/error/notice.php:4
+msgid "Social failed to broadcast the blog post \"%s\" to one or more of your Social accounts."
+msgstr ""
+
+#: views/wp-admin/post/broadcast/error/email.php:24
+#: views/wp-admin/post/broadcast/error/notice.php:25
+msgid "Possible fixes:"
+msgstr "Soluciones posibles:"
+
+#: views/wp-admin/post/broadcast/error/email.php:33
+msgid "To reauthorize the deauthorized %s account above, please login and edit your accounts."
+msgstr ""
+
+#: views/wp-admin/post/broadcast/error/email.php:36
+msgid "To reauthorize the deauthorized accounts above, please login and edit your accounts."
+msgstr ""
+
+#: views/wp-admin/post/broadcast/error/email.php:39
+msgid "Personal accounts:"
+msgstr "Cuentas personales:"
+
+#: views/wp-admin/post/broadcast/error/email.php:41
+msgid "Global accounts:"
+msgstr "Cuentas Globales:"
+
+#: views/wp-admin/post/broadcast/error/email.php:51
+#: views/wp-admin/post/broadcast/error/notice.php:57
+msgid "It is possible you have reached your broadcast limit, please try to broadcast again in an hour."
+msgstr ""
+
+#: views/wp-admin/post/broadcast/error/email.php:54
+#: views/wp-admin/post/broadcast/error/notice.php:60
+msgid "It is possible you have broadcasted a duplicate message, please tweak your content a little and try again."
+msgstr ""
+
+#: views/wp-admin/post/broadcast/error/email.php:57
+msgid "Social was not successful in broadcasting this post (perhaps the service is down?), please try broadcasting again. If you receive this message repeatedly, you can try the support forums."
+msgstr ""
+
+#: views/wp-admin/post/broadcast/error/email.php:58
+msgid "Support forums:"
+msgstr "Foros de soporte:"
+
+#: views/wp-admin/post/broadcast/error/notice.php:36
+msgid "To reauthorize the deauthorized %s account above, please edit your <a href=\"%s\">global accounts</a> or your <a href=\"%s\">personal accounts</a>."
+msgstr ""
+
+#: views/wp-admin/post/broadcast/error/notice.php:39
+msgid "To reauthorize the deauthorized %s account above, please edit your <a href=\"%s\">personal accounts</a>."
+msgstr ""
+
+#: views/wp-admin/post/broadcast/error/notice.php:44
+msgid "To reauthorize the deauthorized accounts above, please edit your <a href=\"%s\">global accounts</a> or your <a href=\"%s\">personal accounts</a>."
+msgstr ""
+
+#: views/wp-admin/post/broadcast/error/notice.php:47
+msgid "To reauthorize the deauthorized account above, please edit your <a href=\"%s\">personal accounts</a>."
+msgstr ""
+
+#: views/wp-admin/post/broadcast/error/notice.php:63
+msgid "Social was not successful in broadcasting this post (perhaps the service is down?), please try broadcasting again. If you receive this message repeatedly, you can try the <a href=\"%s\">support forums</a>."
+msgstr ""
+
+#: views/wp-admin/post/broadcast/facebook-link-preview.php:14
+msgid "Thumbnail image"
+msgstr "Imagen miniatura"
+
+#: views/wp-admin/post/broadcast/options.php:5
+#: views/wp-admin/post/broadcast/options.php:14
+msgid "Social Broadcasts"
+msgstr ""
+
+#: views/wp-admin/post/broadcast/options.php:50
+msgid "Previous Broadcasts"
+msgstr "Emisiones anteriores"
+
+#: views/wp-admin/post/broadcast/options.php:93
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: views/wp-admin/post/meta/broadcast/default.php:2
+msgid "Broadcast Post"
+msgstr "Emision publicada"
+
+#: views/wp-admin/post/meta/broadcast/parts/broadcasted.php:10
+msgid "Sent to:"
+msgstr "Enviado a:"
+
+#: views/wp-admin/post/meta/broadcast/parts/button.php:5
+msgid "My Accounts"
+msgstr "Mis cuentas"
+
+#: views/wp-admin/post/meta/broadcast/pending.php:4
+msgid "This post will not be broadcasted to any of your social accounts."
+msgstr ""
+
+#: views/wp-admin/post/meta/broadcast/pending.php:8
+msgid "This post will be broadcasted to the following accounts."
+msgstr ""
+
+#: views/wp-admin/post/meta/broadcast/private.php:2
+msgid "Broadcasting is disabled for private posts."
+msgstr "Emision esta desabilitada por publicaciones privadas."
+
+#: views/wp-admin/post/meta/broadcast/scheduled.php:5
+msgid "This post is scheduled to be published at a later date. However, it is not scheduled to be broadcasted to any of your social accounts."
+msgstr ""
+
+#: views/wp-admin/post/meta/broadcast/scheduled.php:9
+msgid "Scheduled for:"
+msgstr "Programado para:"
+
+#: views/wp-admin/post/meta/log/output.php:3
+msgid "Aggregation has not been run for this post yet."
+msgstr ""
+
+#: views/wp-admin/post/meta/log/output.php:14
+msgid "Manual Aggregation"
+msgstr "Agregación manual"
+
+#: views/wp-admin/post/meta/log/output.php:17
+msgid "Automatic Aggregation"
+msgstr ""
+
+#: views/wp-admin/post/meta/log/output.php:59
+msgid "Reply Search"
+msgstr "Búsqueda de Respuestas"
+
+#: views/wp-admin/post/meta/log/output.php:62
+msgid "URL Search"
+msgstr "Búsqueda de URL "
+
+#: views/wp-admin/post/meta/log/output.php:87
+msgid "No results found."
+msgstr "Sin resultados."
+
+#: views/wp-admin/post/meta/log/shell.php:3
+msgid "Enter the URL of the tweet to add it as a comment."
+msgstr "Introduce el URL del tweet a añadir como comentario."
+
+#: views/wp-admin/post/meta/log/shell.php:8
+msgid "Import Tweet"
+msgstr "Importar Tweet"
+
+#: views/wp-admin/post/meta/log/shell.php:18
+msgid "Manual Refresh"
+msgstr "Refresco Manual"
+
+#: views/wp-admin/post/meta/log/shell.php:19
+msgid "Next automatic run <span>%s</span>"
+msgstr "Siguiente ejecucion automatica <span>%s</span>"
+
+#: views/wp-admin/post/meta/log/shell.php:30
+msgid "Log"
+msgstr "Registro"
+
+#: views/wp-admin/profile.php:1
+msgid "Social Accounts"
+msgstr "Cuentas Social "
+
+#: views/wp-admin/profile.php:6
+msgid "Only I can broadcast to these accounts."
+msgstr "Solo puedo emitir las estas cuentas."
+
+#. Plugin URI of the plugin/theme
+msgid "http://mailchimp.com/social-plugin-for-wordpress/"
+msgstr "http://mailchimp.com/social-plugin-for-wordpress/"
+
+#. Description of the plugin/theme
+msgid "Broadcast newly published posts and pull in discussions using integrations with Twitter and Facebook. Brought to you by <a href=\"http://mailchimp.com\">MailChimp</a>."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Crowd Favorite"
+msgstr ""
+
+#. Author URI of the plugin/theme
+#, fuzzy
+msgid "http://crowdfavorite.com/"
+msgstr "http://es.wordpress.org/"
+
