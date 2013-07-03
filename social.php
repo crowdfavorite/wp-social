@@ -3,7 +3,7 @@
 Plugin Name: Social
 Plugin URI: http://mailchimp.com/social-plugin-for-wordpress/
 Description: Broadcast newly published posts and pull in discussions using integrations with Twitter and Facebook. Brought to you by <a href="http://mailchimp.com">MailChimp</a>.
-Version: 2.9.1
+Version: 2.9.2
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com/
 */
@@ -25,7 +25,7 @@ final class Social {
 	/**
 	 * @var  string  version number
 	 */
-	public static $version = '2.9.1';
+	public static $version = '2.9.2';
 
 	/**
 	 * @var  string  CRON lock directory.
@@ -1674,11 +1674,11 @@ final class Social {
 		// set Social Items for Social comments
 		if (!in_array($comment->comment_type, $ignored_types)) {
 			$status_id = get_comment_meta($comment->comment_ID, 'social_status_id', true);
-			if (!empty($status_id)) {
+			if (is_string($status_id) && $status_id) {
 				$status_url = $service->status_url(get_comment_author(), $status_id);
 			}
 			// Social items?
-			if (!empty($comment->social_items)) {
+			if (!empty($comment->social_items) && isset($status_url)) {
 				if (is_object($service) && method_exists($service, 'key')) {
 					$avatar_size = apply_filters('social_items_comment_avatar_size', array(
 						'width' => 18,
