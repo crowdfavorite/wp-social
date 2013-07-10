@@ -2319,7 +2319,7 @@ add_action('wp-mail.php', 'social_wp_mail_indicator');
 add_action('social_settings_save', array('Social_Service_Facebook', 'social_settings_save'));
 
 // CRON Actions
-add_action('socialcron15_init', array($social, 'cron_15_init'));
+add_action('socialcron15init', array($social, 'cron_15_init'));
 if (Social::option('aggregate_comments')) {
 	add_action('socialcron15', array($social, 'run_aggregation'));
 }
