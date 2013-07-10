@@ -110,10 +110,10 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 			$broadcasted_ids = get_post_meta($comment->comment_post_ID, '_social_broadcasted_ids', true);
 
 			// If only 1 account has been posted to
-			if (count($broadcasted_ids[$this->key()]) === 1)  {
+			if (is_array($broadcasted_ids[$this->key()]) && count($broadcasted_ids[$this->key()]) === 1)  {
 				$broadcast_account = array_shift($broadcasted_ids[$this->key()]);
 				// And only one broadcast has been made from that account
-				if (count($broadcast_account) === 1) {
+				if (is_array($broadcast_account) && count($broadcast_account) === 1) {
 					reset($broadcast_account);
 					$status_id = key($broadcast_account);
 					$args = apply_filters($this->key().'_broadcast_args', $args, $post_id, $comment_id);
