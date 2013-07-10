@@ -489,9 +489,9 @@ final class Social {
 		Social::log('Checking system CRON');
 		// Schedule CRONs
 		if (Social::option('cron') == '1') {
-			if (wp_next_scheduled('social_cron_15_init') === false) {
+			if (wp_next_scheduled('socialcron15init') === false) {
 				Social::log('Adding Social 15 CRON schedule');
-				wp_schedule_event(time() + 900, 'every15min', 'social_cron_15_init');
+				wp_schedule_event(time() + 900, 'every15min', 'socialcron15init');
 			}
 			wp_remote_get(
 				admin_url('options_general.php?'.http_build_query(array(
@@ -1203,7 +1203,7 @@ final class Social {
 	/**
 	 * Sends a request to initialize CRON 15.
 	 *
-	 * @wp-action  social_cron_15_init
+	 * @wp-action  socialcron15init
 	 * @return void
 	 */
 	public function cron_15_init() {
@@ -1214,7 +1214,7 @@ final class Social {
 	/**
 	 * Runs the aggregation loop.
 	 *
-	 * @wp-action  social_cron_15
+	 * @wp-action  socialcron15
 	 * @return void
 	 */
 	public function run_aggregation() {
@@ -2319,9 +2319,9 @@ add_action('wp-mail.php', 'social_wp_mail_indicator');
 add_action('social_settings_save', array('Social_Service_Facebook', 'social_settings_save'));
 
 // CRON Actions
-add_action('social_cron_15_init', array($social, 'cron_15_init'));
+add_action('socialcron15init', array($social, 'cron_15_init'));
 if (Social::option('aggregate_comments')) {
-	add_action('social_cron_15', array($social, 'run_aggregation'));
+	add_action('socialcron15', array($social, 'run_aggregation'));
 }
 
 // Admin Actions
