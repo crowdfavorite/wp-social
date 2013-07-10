@@ -41,7 +41,7 @@ final class Social_Controller_CRON extends Social_Controller {
 		Social::log('Attempting semaphore lock');
 		if ($semaphore->lock()) {
 			Social::log('Running social_cron_15_action.');
-			do_action('social_cron_15');
+			do_action('socialcron15');
 			$semaphore->unlock();
 		}
 	}
@@ -57,7 +57,7 @@ final class Social_Controller_CRON extends Social_Controller {
 			Social::log('API key failed');
 			wp_die('Oops, invalid API key.');
 		}
-		
+
 		$crons = _get_cron_array();
 		$social_crons = array(
 			'15' => false,
