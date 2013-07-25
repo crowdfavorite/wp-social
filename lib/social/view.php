@@ -143,6 +143,10 @@ final class Social_View {
 	 * @return string
 	 */
 	private function path($file) {
+		// Prefer to get the view from the theme if available
+		if (is_file(get_stylesheet_directory() . '/' . $file . '.php')) {
+			return get_stylesheet_directory() . '/' . $file . '.php';
+		}
 		return Social::$plugins_path.'views/'.$file.'.php';
 	}
 
