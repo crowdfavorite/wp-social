@@ -408,11 +408,11 @@ abstract class Social_Service {
 				case '{content}':
 					$content = do_shortcode($post->post_content);
 					$content = htmlspecialchars_decode(strip_tags($content));
+					$content = trim(preg_replace('(\t+)', ' ', $content));
 					break;
 				case '{author}':
 					$user = get_userdata($post->post_author);
 					$content = htmlspecialchars_decode($user->display_name);
-					$content = trim(preg_replace('(\t+)', ' ', $content));
 					break;
 				case '{date}':
 					$content = get_date_from_gmt($post->post_date_gmt);
