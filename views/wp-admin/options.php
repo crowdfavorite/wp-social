@@ -67,7 +67,7 @@ $enabled_post_types = Social::broadcasting_enabled_post_types();
 				</th>
 				<td>
 					<input type="text" class="regular-text" name="social_broadcast_format" id="social_broadcast_format" value="<?php echo esc_attr(Social::option('broadcast_format')); ?>" />
-					<p class="description"><?php _e('How you would like posts to be formatted when broadcasting to Twitter or Facebook?', 'social'); ?></p>
+					<p class="description social-description"><?php _e('How you would like posts to be formatted when broadcasting to Twitter or Facebook?', 'social'); ?></p>
 
 					<div class="description">
 						<?php _e('Tokens:', 'social'); ?>
@@ -92,7 +92,7 @@ foreach (Social::broadcast_tokens() as $token => $description) {
 				</th>
 				<td>
 					<input type="text" class="regular-text" name="social_comment_broadcast_format" id="social_comment_broadcast_format" value="<?php echo esc_attr(Social::option('comment_broadcast_format')); ?>" />
-					<p class="description"><?php _e('How you would like comments to be formatted when broadcasting to Twitter or Facebook.', 'social'); ?></p>
+					<p class="description social-description"><?php _e('How you would like comments to be formatted when broadcasting to Twitter or Facebook.', 'social'); ?></p>
 
 					<div class="description">
 						<?php _e('Tokens:', 'social'); ?>
@@ -109,13 +109,6 @@ foreach (Social::comment_broadcast_tokens() as $token => $description) {
 ?>
 						</ul>
 					</div>
-				</td>
-			</tr>
-			<tr>
-				<th><?php _e('Twitter @anywhere', 'social'); ?></th>
-				<td>
-					<p><?php printf(__('Social Version 2.6 has removed @anywhere support to comply with <a href="%s">Twitter\'s decision to sunset the service</a>.', 'social'), esc_url('https://dev.twitter.com/blog/sunsetting-anywhere')); ?></p>
-					<p><?php printf(__('If you would like to continue to use @anywhere, <a href="%s" target="_blank">there are many plugins available to accomodate</a>.', 'social'), esc_url('https://www.google.com/search?q=WordPress+@anywhere+plugin')); ?></p>
 				</td>
 			</tr>
 		</table>
@@ -166,7 +159,7 @@ $toggle = (
 											<?php endforeach; ?>
 										</select>
 									</div>
-									<p class="description" style="max-width: 450px;"><?php _e('Account for general (non account specific) Twitter API interaction.', 'social'); ?></p>
+									<p class="description social-description" style="max-width: 450px;"><?php _e('Account for general (non account specific) Twitter API interaction.', 'social'); ?></p>
 								</li>
 							</ul>
 						</td>
@@ -179,7 +172,7 @@ $toggle = (
 									<label for="cron_auto">
 										<input type="radio" name="social_cron" value="1" id="cron_auto" style="position:relative;top:-1px"<?php echo Social::option('cron') == '1' ? ' checked="checked"' : ''; ?> />
 										<?php _e('Automatic (WP Cron)', 'social'); ?>
-										<span class="description"><?php _e('(easiest)', 'social'); ?></span>
+										<span class="description social-description"><?php _e('(easiest)', 'social'); ?></span>
 									</label>
 								</li>
 								<li>
@@ -187,7 +180,7 @@ $toggle = (
 										<input type="radio" name="social_cron" value="0" id="cron_manual" style="position:relative;top:-1px"<?php echo Social::option('cron') == '0' ? ' checked="checked"' : ''; ?> />
 										<?php _e('Manual <span class="description">(advanced)</span>', 'social'); ?>
 									</label>
-									<p class="description"><?php _e('If you select this option, new tweets and Facebook posts will not be fetched unless you set up a system CRON job or fetch new items manually from the post edit screen. More help is also available in&nbsp;<code>README.txt</code>.', 'social'); ?></p>
+									<p class="description social-description"><?php _e('If you select this option, new tweets and Facebook posts will not be fetched unless you set up a system CRON job or fetch new items manually from the post edit screen. More help is also available in&nbsp;<code>README.txt</code>.', 'social'); ?></p>
 <?php
 if (Social::option('cron') === '0') {
 ?>

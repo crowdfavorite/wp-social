@@ -94,4 +94,4 @@ foreach ($services as $key => $service) {
 <?php
 }
 ?>
-<p class="description" style="max-width: 450px;"><?php _e('Default accounts will auto-broadcast when you publish via XML-RPC or email.', 'social'); ?></p>
+<p class="description social-description" style="max-width: 450px;"><?php _e('Default accounts will auto-broadcast when you publish via XML-RPC or email.', 'social'); ?></p>
