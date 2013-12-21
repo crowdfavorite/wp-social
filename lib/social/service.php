@@ -400,7 +400,7 @@ abstract class Social_Service {
 						$url = home_url('?p='.$post->ID);
 					}
 					$url = apply_filters('social_broadcast_permalink', $url, $post, $this);
-					$content = esc_url($url);
+					$content = esc_url_raw($url);
 					break;
 				case '{title}':
 					$content = htmlspecialchars_decode($post->post_title);
