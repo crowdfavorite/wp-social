@@ -22,11 +22,11 @@ final class Social_Walker_Comment extends Walker_Comment {
 			case 'div':
 			break;
 			case 'ol':
-				echo "<ol class='social-children'>\n";
+				$output .= "<ol class='social-children'>\n";
 			break;
 			default:
 			case 'ul':
-				echo "<ul class='social-children'>\n";
+				$output .= "<ul class='social-children'>\n";
 			break;
 		}
 	}
@@ -46,11 +46,11 @@ final class Social_Walker_Comment extends Walker_Comment {
 			case 'div':
 			break;
 			case 'ol':
-				echo "</ol>\n";
+				$output .= "</ol>\n";
 			break;
 			default:
 			case 'ul':
-				echo "</ul>\n";
+				$output .= "</ul>\n";
 			break;
 		}
 
