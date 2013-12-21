@@ -3,7 +3,7 @@ Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter, social, broadcast, import, integrate, integration
 Requires at least: 3.8
 Tested up to: 3.8
-Stable tag: 2.9.3
+Stable tag: 2.10
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -282,7 +282,7 @@ Since Social 2.9 we've made the decision to disable this by default. If the defa
 
 == Upgrade Notice ==
 
-= 2.9.3 =
+= 2.10 =
 * (new) Now requires WordPress 3.8 (due to threaded comments walker change in WP core)
 * (new) WP 3.8 admin refresh compatibility
 * (new) Japanese translation (thanks ToshiOshio)
@@ -294,7 +294,7 @@ Since Social 2.9 we've made the decision to disable this by default. If the defa
 
 == Changelog ==
 
-= 2.9.3 =
+= 2.10 =
 * (new) Now requires WordPress 3.8 (due to threaded comments walker change in WP core)
 * (new) WP 3.8 admin refresh compatibility
 * (new) Japanese translation (thanks ToshiOshio)
