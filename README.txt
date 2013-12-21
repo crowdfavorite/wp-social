@@ -3,7 +3,7 @@ Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter, social, broadcast, import, integrate, integration
 Requires at least: 3.3
 Tested up to: 3.5.2
-Stable tag: 2.9.2
+Stable tag: 2.9.3
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -282,17 +282,13 @@ Since Social 2.9 we've made the decision to disable this by default. If the defa
 
 == Upgrade Notice ==
 
-= 2.9.1 =
-
-Fixes Facebook comment permalinks
-
-= 2.9 =
-
-This release adds a GUI option to enable/disable post types for social broadcasting, adds support for the new Facebook Pages threaded comments.
-
-Also included are bugfixes, expanded language support, and other minor improvements.  See the changelog for more detail.
+= 2.9.3 =
+* (fix) Work around changes in the Walker class in WP 3.8 so that nested comments appear as expected
 
 == Changelog ==
+
+= 2.9.3 =
+* (fix) Work around changes in the Walker class in WP 3.8 so that nested comments appear as expected
 
 = 2.9.2 =
 * More gracefully handle "bad data" returned from social proxy upon comment broadcast
