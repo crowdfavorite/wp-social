@@ -3,7 +3,7 @@
 Plugin Name: Social
 Plugin URI: http://mailchimp.com/social-plugin-for-wordpress/
 Description: Broadcast newly published posts and pull in discussions using integrations with Twitter and Facebook. Brought to you by <a href="http://mailchimp.com">MailChimp</a>.
-Version: 2.9.3
+Version: 2.10
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com/
 */
@@ -25,7 +25,7 @@ final class Social {
 	/**
 	 * @var  string  version number
 	 */
-	public static $version = '2.9.3';
+	public static $version = '2.10';
 
 	/**
 	 * @var  string  CRON lock directory.
