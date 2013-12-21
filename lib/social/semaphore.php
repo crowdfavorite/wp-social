@@ -162,12 +162,13 @@ final class Social_Semaphore {
 		}
 
 		$current_time = current_time('mysql', 1);
+		$unlock_time = gmdate('Y-m-d H:i:s', time() - 30 * 60);
 		$affected = $wpdb->query($wpdb->prepare("
 			UPDATE $wpdb->options
 			   SET option_value = %s
 			 WHERE option_name = 'social_last_lock_time'
-			   AND option_value <= DATE_SUB(%s, INTERVAL 30 MINUTE)
-		", $current_time, $current_time));
+			   AND option_value <= %s
+		", $current_time, $unlock_time));
 
 		if ($affected == '1') {
 			Social::log('Semaphore was stuck, set lock time to '.$current_time);
