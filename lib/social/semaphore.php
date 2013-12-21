@@ -162,7 +162,7 @@ final class Social_Semaphore {
 		}
 
 		$current_time = current_time('mysql', 1);
-		$unlock_time = gmdate('Y-m-d H:i:s', time()-30*60);
+		$unlock_time = gmdate('Y-m-d H:i:s', time() - 30 * 60);
 		$affected = $wpdb->query($wpdb->prepare("
 			UPDATE $wpdb->options
 			   SET option_value = %s
