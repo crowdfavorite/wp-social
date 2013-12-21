@@ -1,0 +1,1145 @@
+# Copyright (C) 2012 Social
+# This file is distributed under the same license as the Social package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Social 2.9.2\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/social\n"
+"POT-Creation-Date: 2013-10-29 10:51+0900\n"
+"PO-Revision-Date: 2013-10-29 11:31+0900\n"
+"Last-Translator: Toshi Oshio <oshio@officeto.net>\n"
+"Language-Team: Toshi Oshio <toshifme[at]gmail.com>\n"
+"Language: Japanese\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.7\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../social-facebook.php:209
+msgid "Connect with Pages support"
+msgstr "Facebookページサポート付きで接続"
+
+#: ../social-facebook.php:434
+#, php-format
+msgid "%s liked this"
+msgstr "%s人がいいねと言っています"
+
+#: ../social-twitter.php:346
+msgid " retweeted this"
+msgstr "これをリツイートする"
+
+#: ../social-twitter.php:367
+msgid "Send as a reply"
+msgstr "返信として送信"
+
+#: ../social-twitter.php:369
+msgid "URL of Tweet (to reply to)"
+msgstr "返信先のツイートのURL"
+
+#: ../social.php:118
+#, php-format
+msgid "Failed to auto load class %s."
+msgstr "%sクラスの自動読み込みに失敗しました。"
+
+#: ../social.php:149 ../social.php:152
+#, php-format
+msgid "Example: %s"
+msgstr "例： %s"
+
+#: ../social.php:255
+msgid ""
+"Duplicate comment detected; it looks as though you&#8217;ve already said "
+"that!"
+msgstr ""
+"同一のコメントを検知しました。どうやらすでに同じ投稿をされているようです。"
+
+#: ../social.php:340
+msgid ""
+"Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP "
+"5 as the default on your servers."
+msgstr ""
+"申し訳ありません。Socialプラグインのご利用にはPHP 5.3.4以上が必要です。どのよ"
+"うにすればお使いの環境でPHP 5がデフォルトで使えるかをサーバ管理者にお尋ねくだ"
+"さい。"
+
+#: ../social.php:394
+msgid "Post a Reply"
+msgstr "返信を投稿"
+
+#: ../social.php:431 ../social.php:1828
+msgid "Protected Tweet"
+msgstr "鍵付きツイート"
+
+#: ../social.php:432 ../social.php:1829
+msgid "Invalid URL"
+msgstr "無効なURL"
+
+#: ../social.php:531
+msgid "Social Options"
+msgstr "Socialオプション"
+
+#: ../social.php:532 ../views/wp-admin/options.php:11
+msgid "Social"
+msgstr "Social"
+
+#: ../social.php:557
+msgid "Settings"
+msgstr "設定"
+
+#: ../social.php:573
+#, php-format
+msgid ""
+"Social is shiny and new! Please <a href=\"%s\">verify and save your "
+"settings</a> to complete the upgrade."
+msgstr ""
+"Socialプラグインは新しくなりました！ぜひ<a href=\"%s\">認証のうえ設定を保存し"
+"</a>アップグレードを完了させてください。"
+
+#: ../social.php:579 ../social.php:607
+#, php-format
+msgid "<a href=\"%s\" class=\"social_dismiss\">[Dismiss]</a>"
+msgstr "<a href=\"%s\" class=\"social_dismiss\">[非表示にする]</a>"
+
+#: ../social.php:580
+#, php-format
+msgid "To start using Social, please <a href=\"%s\">add an account</a>."
+msgstr ""
+"Socialプラグインを使うには、<a href=\"%s\">アカウントを追加</a>してください。"
+
+#: ../social.php:593
+#, php-format
+msgid "Social requires that either %s or %s be writable for CRON jobs."
+msgstr ""
+"Socialプラグインは %s または %s がCRONジョブ用に書き込み可になっている必要が"
+"あります。"
+
+#: ../social.php:596
+#, php-format
+msgid "Social requires that %s is writable for CRON jobs."
+msgstr ""
+"Socialプラグインは%sがCRONジョブ用に書き込み可になっている必要があります。"
+
+#: ../social.php:606
+msgid ""
+"When you enable Social, users will be created when they log in with Facebook "
+"or Twitter to comment. These users are created without a role and will be "
+"prevented from accessing the admin side of WordPress until an administrator "
+"edits the user to give them a role."
+msgstr ""
+"Socialプラグインを有効にすると、コメント投稿するのにFacebookやTwitterアカウン"
+"トでログインしたユーザーが作成されるようになります。これらのユーザーはどの権"
+"限グループにも属せず、管理者がそのユーザに権限を付与しない限りWordPressの管理"
+"画面にはアクセスできないようになっています。"
+
+#: ../social.php:616
+msgid ""
+"%s needs to be writable for Social's logging. <a href=\"%\" class="
+"\"social_dismiss\">[Dismiss]</a>"
+msgstr ""
+"Socialプラグインがログを取得できるようにするには、%sが書き込み可になっている"
+"必要があります。<a href=\"%\" class=\"social_dismiss\">[非表示]</a>"
+
+#: ../social.php:626 ../social.php:660
+#, php-format
+msgid "<a href=\"%s\" class=\"%s\">[Dismiss]</a>"
+msgstr "<a href=\"%s\" class=\"%s\">[非表示]</a>"
+
+#: ../social.php:652
+#, php-format
+msgid ""
+"Social needs to re-authorize your Facebook account(s). Please re-connect "
+"your <a href=\"%s\">global</a> and <a href=\"%s\">personal</a> accounts."
+msgstr ""
+"SocialプラグインはあなたのFacebookアカウントの再認証が必要です。<a href=\"%s"
+"\">グローバルアカウント</a> と <a href=\"%s\">個人アカウント</a>を再接続して"
+"ください。"
+
+#: ../social.php:656
+#, php-format
+msgid ""
+"Social needs to re-authorize your Facebook account(s).. Please re-connect "
+"your <a href=\"%s\">personal</a> accounts."
+msgstr ""
+"Socialプラグインは、あなたのFacebookアカウントを再認証する必要があります。 あ"
+"なたの<a href=\"%s\">個人アカウント</a>を再接続してください。"
+
+#: ../social.php:811
+msgid "Social Broadcasting"
+msgstr "Socialブロードキャスティング"
+
+#: ../social.php:823
+msgid "Social Comments"
+msgstr "Socialコメント"
+
+#: ../social.php:935
+msgid "Not Scheduled"
+msgstr "予約設定なし"
+
+#: ../social.php:1301 ../social.php:1302
+msgid "Log in"
+msgstr "ログイン"
+
+#: ../social.php:1440 ../social.php:1526
+#, php-format
+msgid "Broadcasting comment #%s to %s using account #%s."
+msgstr "コメント#%sを%sに向けに#%sアカウントでブロードキャスト。"
+
+#: ../social.php:1444 ../social.php:1540
+#, php-format
+msgid ""
+"Error: Broadcast comment #%s to %s using account #%s, please go back and try "
+"again."
+msgstr ""
+"エラー：コメント#%sを%s向けに#%sアカウントでブロードキャスト。戻って再度お試"
+"しください。"
+
+#: ../social.php:1445
+#, php-format
+msgid ""
+"Error: Your comment could not be sent to %s, please go back and try again."
+msgstr ""
+"エラー：あなたのコメントは%sに送信できませんでした。戻って再度お試しくださ"
+"い。"
+
+#: ../social.php:1464 ../social.php:1559
+#, php-format
+msgid "Broadcasting comment #%s to %s using account #%s COMPLETE."
+msgstr "コメント#%sが%s向けに#%sアカウントで送信完了しました。"
+
+#: ../social.php:1477
+#, php-format
+msgid "Comment #%s saved."
+msgstr "コメント#%sは保存されました。"
+
+#: ../social.php:1725
+#, php-format
+msgid "<a href=\"%s\" rel=\"%s\">Social Comments</a>"
+msgstr "<a href=\"%s\" rel=\"%s\">Socialコメント</a>"
+
+#: ../social.php:1755 ../views/wp-admin/post/meta/log/shell.php:25
+msgid "Find Social Comments"
+msgstr "Socialコメントを見つける"
+
+# Couldn't figure out this menu in Admin page, so not sure what this really means.
+#: ../social.php:1766 ../social.php:1769
+#: ../views/wp-admin/post/meta/log/shell.php:2
+msgid "Add Tweet by URL"
+msgstr "URL指定でツイートを追加する"
+
+#: ../social.php:1830
+msgid "Tweet Imported!"
+msgstr "ツイートをインポートしました。"
+
+#: ../lib/social/date.php:121
+msgid "1 year"
+msgstr "1年"
+
+#: ../lib/social/date.php:124
+#, php-format
+msgid "%s years"
+msgstr "%s年"
+
+#: ../lib/social/date.php:131
+msgid "1 month"
+msgstr "1ヶ月"
+
+#: ../lib/social/date.php:134
+#, php-format
+msgid "%s months"
+msgstr "%sヶ月"
+
+#: ../lib/social/date.php:141
+msgid "1 week"
+msgstr "1週"
+
+#: ../lib/social/date.php:144
+#, php-format
+msgid "%s weeks"
+msgstr "%s週"
+
+#: ../lib/social/date.php:151
+msgid "1 day"
+msgstr "1日"
+
+#: ../lib/social/date.php:154
+#, php-format
+msgid "%s days"
+msgstr "%s日"
+
+#: ../lib/social/date.php:165
+msgid "1 hour"
+msgstr "1時間"
+
+#: ../lib/social/date.php:168 ../lib/social/date.php:265
+#, php-format
+msgid "%s hours"
+msgstr "%s時間"
+
+#: ../lib/social/date.php:174
+msgid "1 minute"
+msgstr "1分"
+
+#: ../lib/social/date.php:177
+#, php-format
+msgid "%s minutes"
+msgstr "%s分"
+
+#: ../lib/social/date.php:196
+msgid "1 second"
+msgstr "1秒"
+
+#: ../lib/social/date.php:199
+#, php-format
+msgid "%s seconds"
+msgstr "%s秒"
+
+#: ../lib/social/date.php:232
+msgid "1 month ago"
+msgstr "1ヶ月前"
+
+#: ../lib/social/date.php:235
+#, php-format
+msgid "%s months ago"
+msgstr "%sヶ月前"
+
+#: ../lib/social/date.php:242
+msgid "1 week ago"
+msgstr "1週間前"
+
+#: ../lib/social/date.php:245
+#, php-format
+msgid "%s weeks ago"
+msgstr "%s週間前"
+
+#: ../lib/social/date.php:252
+msgid "1 day ago"
+msgstr "1日前"
+
+#: ../lib/social/date.php:255
+#, php-format
+msgid "%s days ago"
+msgstr "%s日前"
+
+#: ../lib/social/date.php:262
+msgid "1 hour ago"
+msgstr "1時間"
+
+#: ../lib/social/date.php:272
+msgid "1 minute ago"
+msgstr "1分前"
+
+#: ../lib/social/date.php:275
+#, php-format
+msgid "%s minutes ago"
+msgstr "%s分前"
+
+#: ../lib/social/date.php:281
+msgid "just now"
+msgstr "たった今"
+
+#: ../lib/social/date.php:309
+msgid "a few moments"
+msgstr "数分"
+
+#: ../lib/social/date.php:313
+msgid "a few minutes"
+msgstr "数分"
+
+#: ../lib/social/date.php:317
+msgid "less than an hour"
+msgstr "１時間以内"
+
+#: ../lib/social/date.php:321
+msgid "a couple of hours"
+msgstr "数時間"
+
+#: ../lib/social/date.php:325
+msgid "less than a day"
+msgstr "１日以内"
+
+#: ../lib/social/date.php:329
+msgid "about a day"
+msgstr "約１日"
+
+#: ../lib/social/date.php:333
+msgid "a couple of days"
+msgstr "数日"
+
+#: ../lib/social/date.php:337
+msgid "less than a week"
+msgstr "１週間以内"
+
+#: ../lib/social/date.php:341
+msgid "about a week"
+msgstr "約１週"
+
+#: ../lib/social/date.php:345
+msgid "less than a month"
+msgstr "１ヶ月以内"
+
+#: ../lib/social/date.php:349
+msgid "about a month"
+msgstr "約１ヶ月"
+
+#: ../lib/social/date.php:353
+msgid "a couple of months"
+msgstr "数ヶ月"
+
+#: ../lib/social/date.php:357
+msgid "less than a year"
+msgstr "１年以内"
+
+#: ../lib/social/date.php:361
+msgid "about a year"
+msgstr "約１年"
+
+#: ../lib/social/date.php:365
+msgid "a couple of years"
+msgstr "数年"
+
+#: ../lib/social/date.php:369
+msgid "a few years"
+msgstr "数年"
+
+#: ../lib/social/date.php:373
+msgid "about a decade"
+msgstr "約１０年"
+
+#: ../lib/social/date.php:377
+msgid "a couple of decades"
+msgstr "数十年"
+
+#: ../lib/social/date.php:381
+msgid "several decades"
+msgstr "数十年"
+
+#: ../lib/social/date.php:385
+msgid "a long time"
+msgstr "長期間"
+
+#: ../lib/social/date.php:390
+#, php-format
+msgid "%s ago"
+msgstr "%s前"
+
+#: ../lib/social/date.php:395
+#, php-format
+msgid "in %s"
+msgstr "%s以内"
+
+#: ../lib/social/response.php:96
+msgid ""
+"Unable to publish to %s with account %s. Please <a href=\"%\">re-authorize</"
+"a> this account."
+msgstr ""
+"%sへの公開がアカウント%sではできませんでした。恐れ入りますがこのアカウントの"
+"<a href=\"%\">再認証</a>をお願いいたします。"
+
+#: ../lib/social/service.php:123 ../lib/social/service.php:126
+msgid "Disconnect"
+msgstr "接続を解除"
+
+#: ../lib/social/view.php:98
+msgid "You must set a file to be used before rendering."
+msgstr "実行する前にファイルをセットする必要があります。"
+
+#: ../lib/social/view.php:135
+#, php-format
+msgid "View %s does not exist."
+msgstr "ビュー%sがありませんでした。"
+
+#: ../lib/social/aggregation/log.php:60
+#, php-format
+msgid "Social failed to initialize the Aggregation_Log for post #%s."
+msgstr "Socialプラグインが#%sの取得ログの初期化に失敗しました。"
+
+#: ../lib/social/aggregation/queue.php:250
+#, php-format
+msgid "approximately %s"
+msgstr "およそ %s"
+
+#: ../lib/social/comment/form.php:261
+msgid "Name"
+msgstr "お名前"
+
+#: ../lib/social/comment/form.php:262
+msgid "Email"
+msgstr "メールアドレス"
+
+#: ../lib/social/comment/form.php:262
+msgid "Not published"
+msgstr "非公開"
+
+#: ../lib/social/comment/form.php:263
+msgid "Website"
+msgstr "ウェブサイト"
+
+#: ../lib/social/comment/form.php:267
+msgid "Post It"
+msgstr "投稿する"
+
+#: ../lib/social/comment/form.php:268
+msgid "Profile"
+msgstr "プロフィール"
+
+#: ../lib/social/comment/form.php:269
+#, php-format
+msgid "Post a Reply to %s"
+msgstr "%sへの返信を投稿"
+
+#: ../lib/social/comment/form.php:270
+msgid "cancel"
+msgstr "キャンセル"
+
+#: ../lib/social/comment/form.php:274
+msgid "Comment"
+msgstr "コメント"
+
+#: ../lib/social/comment/form.php:279
+msgid "Post a Comment"
+msgstr "コメントを投稿"
+
+#: ../lib/social/comment/form.php:309 ../lib/social/comment/form.php:319
+#, php-format
+msgid "Also post to %s"
+msgstr "%sにも投稿する"
+
+#: ../lib/social/controller/aggregation.php:144
+#, php-format
+msgid "(%s New)"
+msgstr "(%s New)"
+
+#: ../lib/social/controller/broadcast.php:33
+#, php-format
+msgid "View on %s"
+msgstr "%s上の投稿を見る"
+
+#: ../lib/social/controller/broadcast.php:74
+#: ../lib/social/controller/broadcast.php:106
+msgid "Please enter content to be broadcasted."
+msgstr "ブロードキャストしたいコンテンツを入力してください。"
+
+#: ../lib/social/controller/broadcast.php:79
+#: ../lib/social/controller/broadcast.php:111
+#, php-format
+msgid "Content must not be longer than %s characters."
+msgstr "コンテンツは%s文字以上にはできません。"
+
+#: ../lib/social/controller/broadcast.php:131
+msgid "Please select at least one account to broadcast to."
+msgstr "ブロードキャストするのに少なくとも１つのアカウントを選択してください。"
+
+#: ../lib/social/controller/broadcast.php:212
+msgid "Publish"
+msgstr "公開する"
+
+#: ../lib/social/controller/broadcast.php:218
+msgid "Update"
+msgstr "更新"
+
+#: ../lib/social/controller/broadcast.php:222
+msgid "Broadcast"
+msgstr "ブロードキャスト"
+
+#: ../lib/social/controller/broadcast.php:227
+msgid "Schedule"
+msgstr "時間設定"
+
+#: ../lib/social/controller/broadcast.php:536
+msgid "Rate limit reached"
+msgstr "投稿制限の上限に達しました。"
+
+#: ../lib/social/controller/broadcast.php:553
+msgid "Duplicate status"
+msgstr "同じ投稿が既にあります。"
+
+#: ../lib/social/controller/broadcast.php:570
+msgid "Account deauthorized"
+msgstr "アカウントが認証されませんでした。"
+
+#: ../lib/social/controller/broadcast.php:697
+#, php-format
+msgid "%s: Failed to broadcast post with Social."
+msgstr "%s：Socialプラグインでのブロードキャストに失敗しました。"
+
+#: ../lib/social/service/account.php:141 ../lib/social/service/account.php:150
+msgid "Removed Account"
+msgstr "削除済みアカウント"
+
+#: ../lib/social/service/facebook.php:509
+#, php-format
+msgid "Found %s additional likes."
+msgstr "%s件の追加の「いいね！」が見つかりました。"
+
+#: ../lib/social/service/twitter.php:366
+msgid "Retweet Search"
+msgstr "リツイート検索"
+
+#: ../lib/social/service/twitter.php:369
+#: ../views/wp-admin/post/meta/log/output.php:70
+msgid "Existing Comment"
+msgstr "既存コメント"
+
+#: ../views/comments.php:6
+msgid ""
+"This post is password protected. Enter the password to view any comments."
+msgstr ""
+"この投稿はパスワードで保護されています。コメントを表示するにはパスワードを入"
+"力してください。"
+
+#: ../views/comments.php:11
+msgid "Logging In..."
+msgstr "ログイン中…"
+
+#: ../views/comments.php:17
+#, php-format
+msgid "You must be <a href=\"%s\">logged in</a> to post a comment."
+msgstr "コメント投稿には<a href=\"%s\">ログイン</a>が必要です。"
+
+#: ../views/comments.php:27
+msgid "Comments are closed."
+msgstr "コメントは受け付けていません。"
+
+#: ../views/comments.php:90
+msgid "0 Replies"
+msgstr "返信0件"
+
+#: ../views/comments.php:90
+msgid "1 Reply"
+msgstr "1件の返信"
+
+#: ../views/comments.php:90
+msgid "% Replies"
+msgstr "% 件の返信"
+
+#: ../views/comments.php:102
+#, php-format
+msgid "Last reply was %s"
+msgstr "最後の返信は%sでした。"
+
+#: ../views/comments.php:137
+msgid "Comment navigation"
+msgstr "コメントナビゲーション"
+
+#: ../views/comments.php:138
+msgid "&larr; Older Comments"
+msgstr "&larr; 古いコメント"
+
+#: ../views/comments.php:139
+msgid "Newer Comments &rarr;"
+msgstr "新しいコメント &rarr;"
+
+#: ../views/comment/comment.php:28
+msgid "Pingback"
+msgstr "ピンバック"
+
+#: ../views/comment/comment.php:40
+msgid "replied:"
+msgstr "返信："
+
+#: ../views/comment/comment.php:50
+msgid "View"
+msgstr "ビュー"
+
+#: ../views/comment/comment.php:60
+msgid "Your comment is awaiting moderation."
+msgstr "あなたのコメントは確認待ちです。"
+
+#: ../views/comment/comment.php:73
+#: ../views/wp-admin/post/broadcast/options.php:72
+msgid "Edit"
+msgstr "編集"
+
+#: ../views/comment/logged_in_as.php:9
+msgid "WordPress Account"
+msgstr "WordPressアカウント"
+
+#: ../views/comment/logged_in_as.php:27
+#, php-format
+msgid "Logged in as <a href=\"%1$s\">%2$s</a>."
+msgstr "<a href=\"%1$s\">%2$s</a>としてログイン済み。"
+
+#: ../views/comment/social_item.php:12
+#, php-format
+msgid "<a href=\"%s\" class=\"social-items-and-more\">... and %s more</a>"
+msgstr "<a href=\"%s\" class=\"social-items-and-more\">…そしてさらに %s件</a>"
+
+#: ../views/comment/top.php:3
+#, php-format
+msgid "Sign in with %s"
+msgstr "%sでサインイン"
+
+#: ../views/comment/top.php:7
+msgid "or"
+msgstr "または"
+
+#: ../views/wp-admin/options.php:6
+msgid "Social settings have been updated."
+msgstr "Socialプラグインの設定は更新されました。"
+
+#: ../views/wp-admin/options.php:12
+#, php-format
+msgid ""
+"Compliments of <a class=\"social-mailchimp-link\" href=\"%s\">MailChimp</a>"
+msgstr "謝辞：<a class=\"social-mailchimp-link\" href=\"%s\">MailChimp</a>"
+
+#: ../views/wp-admin/options.php:18 ../views/wp-admin/profile.php:5
+msgid "Accounts"
+msgstr "アカウント"
+
+#: ../views/wp-admin/options.php:19
+#, php-format
+msgid ""
+"Available to all blog authors. Add accounts that only you can use in <a href="
+"\"%s\">your profile</a>."
+msgstr ""
+"すべてのブログ投稿者に提供されます。<a href=\"%s\">あなたのユーザー設定</a>で"
+"利用できるようにしたいアカウントのみを追加してください。"
+
+#: ../views/wp-admin/options.php:31
+msgid "Broadcasting enabled for"
+msgstr "ブロードキャストの有効先"
+
+#: ../views/wp-admin/options.php:45
+msgid "Broadcasting is on by default"
+msgstr "ブロードキャスト機能をデフォルトでONにする"
+
+#: ../views/wp-admin/options.php:48 ../views/wp-admin/options.php:58
+#: ../views/wp-admin/post/meta/broadcast/default.php:5
+msgid "Yes"
+msgstr "はい"
+
+#: ../views/wp-admin/options.php:51 ../views/wp-admin/options.php:61
+#: ../views/wp-admin/post/meta/broadcast/default.php:8
+msgid "No"
+msgstr "いいえ"
+
+#: ../views/wp-admin/options.php:55
+msgid "Pull in social comments from Facebook and Twitter"
+msgstr "FacebookとTwitterからソーシャルコメントを取り出す"
+
+#: ../views/wp-admin/options.php:66
+msgid "Post broadcast format"
+msgstr "投稿のブロードキャスト用フォーマット"
+
+#: ../views/wp-admin/options.php:70
+msgid ""
+"How you would like posts to be formatted when broadcasting to Twitter or "
+"Facebook?"
+msgstr ""
+"TwitterやFacebookにブロードキャストするとき、投稿をどのようなフォーマットにし"
+"たいですか？"
+
+#: ../views/wp-admin/options.php:73 ../views/wp-admin/options.php:98
+msgid "Tokens:"
+msgstr "トークン："
+
+#: ../views/wp-admin/options.php:91
+msgid "Comment broadcast format"
+msgstr "コメントのブロードキャスト用フォーマット"
+
+#: ../views/wp-admin/options.php:95
+msgid ""
+"How you would like comments to be formatted when broadcasting to Twitter or "
+"Facebook."
+msgstr ""
+"TwitterやFacebookにブロードキャストするとき、コメントをどのようなフォーマット"
+"にしたいですか？"
+
+# as it is because of the service name
+#: ../views/wp-admin/options.php:115
+msgid "Twitter @anywhere"
+msgstr "Twitter @anywhere"
+
+#: ../views/wp-admin/options.php:117
+#, php-format
+msgid ""
+"Social Version 2.6 has removed @anywhere support to comply with <a href=\"%s"
+"\">Twitter's decision to sunset the service</a>."
+msgstr ""
+"Social バージョン2.6では<a href=\"%s\">Twitterによるサービス終了決定</a>をう"
+"けて@anywhereをサポートしなくなりました。"
+
+#: ../views/wp-admin/options.php:118
+#, php-format
+msgid ""
+"If you would like to continue to use @anywhere, <a href=\"%s\" target="
+"\"_blank\">there are many plugins available to accomodate</a>."
+msgstr ""
+"もし@anywhereを継続利用したい場合は <a href=\"%s\" target=\"_blank\">いろいろ"
+"なプラグインが対応しています</a>。"
+
+#: ../views/wp-admin/options.php:132
+msgid "Advanced Options"
+msgstr "アドバンス設定"
+
+#: ../views/wp-admin/options.php:137
+msgid "Misc."
+msgstr "その他"
+
+#: ../views/wp-admin/options.php:144
+msgid "Disable Social's comment display (use standard theme output instead)."
+msgstr ""
+"Socialプラグインのコメント表示をオフにする（通常のテーマのコメント機能を使"
+"う）。"
+
+#: ../views/wp-admin/options.php:150
+msgid "Disable Social's broadcasting feature."
+msgstr "Socialプラグインのブロードキャスト機能をオフにする。"
+
+#: ../views/wp-admin/options.php:161
+msgid "Twitter Default API Account"
+msgstr "TwitterデフォルトAPIアカウント"
+
+#: ../views/wp-admin/options.php:169
+msgid "Account for general (non account specific) Twitter API interaction."
+msgstr "（特定ツイート用ではなく）全体のTwitter API 通信に使うアカウント"
+
+#: ../views/wp-admin/options.php:175
+msgid "Cron settings"
+msgstr "Cron設定"
+
+#: ../views/wp-admin/options.php:181
+msgid "Automatic (WP Cron)"
+msgstr "自動データ取得（WP Cron）"
+
+#: ../views/wp-admin/options.php:182
+msgid "(easiest)"
+msgstr "（最も簡単）"
+
+#: ../views/wp-admin/options.php:188
+msgid "Manual <span class=\"description\">(advanced)</span>"
+msgstr "手動 <span class=\"description\">（上級者向け）</span>"
+
+#: ../views/wp-admin/options.php:190
+msgid ""
+"If you select this option, new tweets and Facebook posts will not be fetched "
+"unless you set up a system CRON job or fetch new items manually from the "
+"post edit screen. More help is also available in&nbsp;<code>README.txt</"
+"code>."
+msgstr ""
+"この設定を選んだ場合、あなたがCRONジョブを設定または投稿編集ページで手動での"
+"取得を行なわない限り、新しいツイートやFacebook投稿は取得されません。より詳し"
+"い説明は <code>README.txt</code>をご覧ください。"
+
+#: ../views/wp-admin/options.php:195
+msgid "CRON Setup"
+msgstr "CRON設定"
+
+#: ../views/wp-admin/options.php:197
+msgid "CRON API Key"
+msgstr "CRON APIキー"
+
+#: ../views/wp-admin/options.php:197
+msgid "regenerate"
+msgstr "再生成"
+
+#: ../views/wp-admin/options.php:202
+msgid ""
+"For your system CRON to run correctly, make sure it is pointing towards a "
+"URL that looks something like the following:"
+msgstr ""
+"あなたの環境でCRONを正しく動作させるために、設定したURLが次のようになっている"
+"かをご確認ください："
+
+#: ../views/wp-admin/options.php:214
+msgid "Debug Mode"
+msgstr "デバッグモード"
+
+#: ../views/wp-admin/options.php:215
+msgid "(nerds only)"
+msgstr "（WordPressオタクのみ）"
+
+#: ../views/wp-admin/options.php:218
+msgid ""
+"If you turn debug on, Social will save additional information in "
+"<code>debug_log.txt</code> file. Not recommended for production environments."
+msgstr ""
+"デバッグモードがオンのときは、Socialプラグインは追加情報を<code>debug_log."
+"txt</code> ファイルに保存します。本番環境での使用はおすすめいたしません。"
+
+#: ../views/wp-admin/options.php:223
+msgid "Off <span class=\"description\">(recommended)</span>"
+msgstr "オフ<span class=\"description\">（推奨）</span>"
+
+#: ../views/wp-admin/options.php:229
+msgid "On <span class=\"description\">(for troubleshooting)</span>"
+msgstr "オン<span class=\"description\">（トラブルシューティング用）</span>"
+
+#: ../views/wp-admin/options.php:234
+msgid "Debug log location:"
+msgstr "デバッグログの保存場所："
+
+#: ../views/wp-admin/profile.php:1
+msgid "Social Accounts"
+msgstr "ソーシャルアカウント"
+
+#: ../views/wp-admin/profile.php:6
+msgid "Only I can broadcast to these accounts."
+msgstr "これらのアカウントにのみブロードキャスト可能です。"
+
+#: ../views/wp-admin/parts/accounts.php:12
+#, php-format
+msgid "Sign in with %s."
+msgstr "%sでサインイン"
+
+#: ../views/wp-admin/parts/accounts.php:30
+#: ../views/wp-admin/parts/accounts.php:64
+msgid "Default"
+msgstr "デフォルト"
+
+#: ../views/wp-admin/parts/accounts.php:68
+msgid "Enabled"
+msgstr "有効化"
+
+#: ../views/wp-admin/parts/accounts.php:87
+msgid "No Accounts"
+msgstr "アカウントなし"
+
+#: ../views/wp-admin/parts/accounts.php:97
+msgid ""
+"Default accounts will auto-broadcast when you publish via XML-RPC or email."
+msgstr ""
+"デフォルトアカウントは、XML-RPCやメール経由での投稿時に自動的にブロードキャス"
+"トを行ないます。"
+
+#: ../views/wp-admin/post/broadcast/facebook-link-preview.php:14
+msgid "Thumbnail image"
+msgstr "サムネイル画像"
+
+#: ../views/wp-admin/post/broadcast/options.php:5
+#: ../views/wp-admin/post/broadcast/options.php:15
+msgid "Social Broadcasts"
+msgstr "ソーシャルブロードキャスト"
+
+#: ../views/wp-admin/post/broadcast/options.php:51
+msgid "Previous Broadcasts"
+msgstr "直前のブロードキャスト"
+
+#: ../views/wp-admin/post/broadcast/options.php:94
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: ../views/wp-admin/post/broadcast/error/email.php:4
+msgid "Hello"
+msgstr "こんにちは"
+
+#: ../views/wp-admin/post/broadcast/error/email.php:5
+#: ../views/wp-admin/post/broadcast/error/notice.php:4
+#, php-format
+msgid ""
+"Social failed to broadcast the blog post \"%s\" to one or more of your "
+"Social accounts."
+msgstr ""
+"Socialプラグインは１つまたはいくつかのソーシャルアカウントにてブログ投稿 \"%s"
+"\"のブロードキャストに失敗しました。"
+
+#: ../views/wp-admin/post/broadcast/error/email.php:24
+#: ../views/wp-admin/post/broadcast/error/notice.php:25
+msgid "Possible fixes:"
+msgstr "想定される修正："
+
+#: ../views/wp-admin/post/broadcast/error/email.php:33
+#, php-format
+msgid ""
+"To reauthorize the deauthorized %s account above, please login and edit your "
+"accounts."
+msgstr ""
+"上記の認証されなかった%sアカウントを再認証するには、ログイン後あなたのアカウ"
+"ントを編集してください。"
+
+#: ../views/wp-admin/post/broadcast/error/email.php:36
+msgid ""
+"To reauthorize the deauthorized accounts above, please login and edit your "
+"accounts."
+msgstr ""
+"上記の認証されなかったアカウントを再認証するには、ログイン後あなたのアカウン"
+"トを編集してください。"
+
+#: ../views/wp-admin/post/broadcast/error/email.php:39
+msgid "Personal accounts:"
+msgstr "個人アカウント："
+
+#: ../views/wp-admin/post/broadcast/error/email.php:41
+msgid "Global accounts:"
+msgstr "グローバルアカウント："
+
+#: ../views/wp-admin/post/broadcast/error/email.php:51
+#: ../views/wp-admin/post/broadcast/error/notice.php:57
+msgid ""
+"It is possible you have reached your broadcast limit, please try to "
+"broadcast again in an hour."
+msgstr ""
+"あなたのブロードキャスト上限に達したかもしれません。１時間以内に再度ブロード"
+"キャストをお試しください。"
+
+#: ../views/wp-admin/post/broadcast/error/email.php:54
+#: ../views/wp-admin/post/broadcast/error/notice.php:60
+msgid ""
+"It is possible you have broadcasted a duplicate message, please tweak your "
+"content a little and try again."
+msgstr ""
+"メッセージ文が重複しているかもしれません。コンテンツを少し編集して、再度お試"
+"しください。"
+
+#: ../views/wp-admin/post/broadcast/error/email.php:57
+msgid ""
+"Social was not successful in broadcasting this post (perhaps the service is "
+"down?), please try broadcasting again. If you receive this message "
+"repeatedly, you can try the support forums."
+msgstr ""
+"Socialプラグインはこの投稿のブロードキャストをうまく実行できませんでした。"
+"（サービスがダウンしているせいかもしれません。）もう一度ブロードキャストをお"
+"試しください。このメッセージが何度も表示されるようでしたら、サポートフォーラ"
+"ムをご利用いただくとよいかもしれません。"
+
+#: ../views/wp-admin/post/broadcast/error/email.php:58
+msgid "Support forums:"
+msgstr "サポートフォーラム："
+
+#: ../views/wp-admin/post/broadcast/error/notice.php:36
+#, php-format
+msgid ""
+"To reauthorize the deauthorized %s account above, please edit your <a href="
+"\"%s\">global accounts</a> or your <a href=\"%s\">personal accounts</a>."
+msgstr ""
+"上記の認証されなかった%sアカウントを再認証するには、あなたの<a href=\"%s\">グ"
+"ローバルアカウント</a>または<a href=\"%s\">個人アカウント</a>を編集してくださ"
+"い。"
+
+#: ../views/wp-admin/post/broadcast/error/notice.php:39
+#, php-format
+msgid ""
+"To reauthorize the deauthorized %s account above, please edit your <a href="
+"\"%s\">personal accounts</a>."
+msgstr ""
+"上記の認証されなかった%sアカウントを再認証するには、あなたの<a href=\"%s\">個"
+"人アカウント</a>を編集してください。"
+
+#: ../views/wp-admin/post/broadcast/error/notice.php:44
+#, php-format
+msgid ""
+"To reauthorize the deauthorized accounts above, please edit your <a href=\"%s"
+"\">global accounts</a> or your <a href=\"%s\">personal accounts</a>."
+msgstr ""
+"上記の認証されなかったアカウントを再認証するには、あなたの<a href=\"%s\">グ"
+"ローバルアカウント</a>または<a href=\"%s\">個人アカウント</a>を編集してくださ"
+"い。"
+
+#: ../views/wp-admin/post/broadcast/error/notice.php:47
+#, php-format
+msgid ""
+"To reauthorize the deauthorized account above, please edit your <a href=\"%s"
+"\">personal accounts</a>."
+msgstr ""
+"上記の認証されなかったアカウントを再認証するには、あなたの<a href=\"%s\">個人"
+"アカウント</a>を編集してください。"
+
+#: ../views/wp-admin/post/broadcast/error/notice.php:63
+#, php-format
+msgid ""
+"Social was not successful in broadcasting this post (perhaps the service is "
+"down?), please try broadcasting again. If you receive this message "
+"repeatedly, you can try the <a href=\"%s\">support forums</a>."
+msgstr ""
+"Socialプラグインはこの投稿のブロードキャストをうまく実行できませんでした。"
+"（サービスがダウンしているせいかもしれません。）もう一度ブロードキャストをお"
+"試しください。このメッセージが何度も表示されるようでしたら、<a href=\"%s\">サ"
+"ポートフォーラム</a>をご利用いただくとよいかもしれません。"
+
+#: ../views/wp-admin/post/meta/broadcast/default.php:2
+msgid "Broadcast Post"
+msgstr "投稿のブロードキャスト"
+
+#: ../views/wp-admin/post/meta/broadcast/pending.php:4
+msgid "This post will not be broadcasted to any of your social accounts."
+msgstr "この投稿はどのソーシャルアカウントからもブロードキャストされません。"
+
+#: ../views/wp-admin/post/meta/broadcast/pending.php:8
+msgid "This post will be broadcasted to the following accounts."
+msgstr "この投稿は次のアカウントにブロードキャストされます。"
+
+#: ../views/wp-admin/post/meta/broadcast/private.php:2
+msgid "Broadcasting is disabled for private posts."
+msgstr "非公開投稿ではブロードキャストは無効です。"
+
+#: ../views/wp-admin/post/meta/broadcast/scheduled.php:5
+msgid ""
+"This post is scheduled to be published at a later date. However, it is not "
+"scheduled to be broadcasted to any of your social accounts."
+msgstr ""
+"この投稿は将来の時間に公開されるように予約設定されていますが、あなたのソー"
+"シャルアカウントのいずれにもブロードキャストの予約設定はされていません。"
+
+#: ../views/wp-admin/post/meta/broadcast/scheduled.php:9
+msgid "Scheduled for:"
+msgstr "予約投稿："
+
+#: ../views/wp-admin/post/meta/broadcast/parts/broadcasted.php:10
+msgid "Sent to:"
+msgstr "送信先："
+
+#: ../views/wp-admin/post/meta/broadcast/parts/button.php:5
+msgid "My Accounts"
+msgstr "自分のアカウント"
+
+#: ../views/wp-admin/post/meta/log/output.php:3
+msgid "Aggregation has not been run for this post yet."
+msgstr "この投稿向けのデータ取得はまだ行なわれていません。"
+
+#: ../views/wp-admin/post/meta/log/output.php:14
+msgid "Manual Aggregation"
+msgstr "手動データ取得"
+
+#: ../views/wp-admin/post/meta/log/output.php:17
+msgid "Automatic Aggregation"
+msgstr "自動データ取得"
+
+#: ../views/wp-admin/post/meta/log/output.php:59
+msgid "Reply Search"
+msgstr "リプライ検索"
+
+#: ../views/wp-admin/post/meta/log/output.php:62
+msgid "URL Search"
+msgstr "URL検索"
+
+#: ../views/wp-admin/post/meta/log/output.php:87
+msgid "No results found."
+msgstr "見つかりませんでした。"
+
+#: ../views/wp-admin/post/meta/log/shell.php:3
+msgid "Enter the URL of the tweet to add it as a comment."
+msgstr "コメントとして追加したいツイートのURLを入力してください。"
+
+#: ../views/wp-admin/post/meta/log/shell.php:8
+msgid "Import Tweet"
+msgstr "ツイートのインポート"
+
+#: ../views/wp-admin/post/meta/log/shell.php:20
+msgid "Manual Refresh"
+msgstr "手動でリフレッシュ"
+
+#: ../views/wp-admin/post/meta/log/shell.php:21
+#, php-format
+msgid "Next automatic run <span>%s</span>"
+msgstr "次回の自動取得 <span>%s</span>"
+
+#: ../views/wp-admin/post/meta/log/shell.php:34
+msgid "Log"
+msgstr "ログ"
+
+#~ msgid "Fetch new comments"
+#~ msgstr "新しいコメントを取得"
+
+#~ msgid "Automatically"
+#~ msgstr "自動"
+
+#~ msgid "Never"
+#~ msgstr "取得しない"
+
+#~ msgid "(disables fetching of comments)"
+#~ msgstr "（コメントの取得機能をオフにする）"
