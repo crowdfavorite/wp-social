@@ -283,15 +283,22 @@ Since Social 2.9 we've made the decision to disable this by default. If the defa
 == Upgrade Notice ==
 
 = 2.9.3 =
+* (new) Japanese translation (thanks ToshiOshio)
 * (fix) Work around changes in the Walker class in WP 3.8 so that nested comments appear as expected
-* (fix) Remove underscores from CRON actions
-* (fix) compress images
+* (fix) Remove underscores from CRON actions (thanks nddery)
+* (fix) Work around MySQL bug #62077 (thanks DavidAnderson684)
+* (fix) Compress images (thanks pathawks)
+* (fix) use esc_url_raw() (thanks kanedo)
 
 == Changelog ==
 
 = 2.9.3 =
+* (new) Japanese translation (thanks ToshiOshio)
 * (fix) Work around changes in the Walker class in WP 3.8 so that nested comments appear as expected
-* (fix) Rename CRON actions to remove underscores, may help in some server configurations
+* (fix) Remove underscores from CRON actions (thanks nddery)
+* (fix) Work around MySQL bug #62077 (thanks DavidAnderson684)
+* (fix) Compress images (thanks pathawks)
+* (fix) use esc_url_raw() (thanks kanedo)
 
 = 2.9.2 =
 * More gracefully handle "bad data" returned from social proxy upon comment broadcast
