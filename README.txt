@@ -3,7 +3,7 @@ Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter, social, broadcast, import, integrate, integration
 Requires at least: 3.8
 Tested up to: 3.8
-Stable tag: 2.10
+Stable tag: 2.11
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -142,7 +142,7 @@ If you want to run system CRON jobs and disable Social's built in CRON jobs then
 
 If you want to hook into a CRON for extra functionality for a service, all you have to do is add an action:
 
-    <?php add_action('social_cron_15', array('Your_Class', 'your_method')); ?>
+    <?php add_action('socialcron15', array('Your_Class', 'your_method')); ?>
 
 = Does the proxy application have access to my passwords now? =
 
@@ -267,6 +267,10 @@ Since Social 2.9 we've made the decision to disable this by default. If the defa
 
 	add_action('social_approve_likes_and_retweets', '__return_true');
 
+= Why are there broken user images/avatars on comments imported from Twitter? =
+
+Much to the consternation of developers everywhere, Twitter provides direct CDN URLs for its user profile images. This means that when someone changes their Twitter avatar, the old image URL may go dark. There is no "permalink" for a Twitter user avatar, so the best we can do is go back and update old comments to use the user's new avatar. There is a <a href="https://github.com/alexkingorg/wp-social-twitter-avatar-update">plugin for this</a>.
+
 == Screenshots ==
 
 1. Allow your visitors to leave a comment as their Facebook or Twitter identities
@@ -282,6 +286,10 @@ Since Social 2.9 we've made the decision to disable this by default. If the defa
 
 == Upgrade Notice ==
 
+= 2.11 =
+* (new) FAQ with link to plugin to update Twitter avatars for comments
+* (fix) Update the information about Social's CRON actions
+
 = 2.10 =
 * (new) Now requires WordPress 3.8 (due to threaded comments walker change in WP core)
 * (new) WP 3.8 admin refresh compatibility
@@ -293,6 +301,10 @@ Since Social 2.9 we've made the decision to disable this by default. If the defa
 * (fix) use esc_url_raw() (thanks kanedo)
 
 == Changelog ==
+
+= 2.11 =
+* (new) FAQ with link to plugin to update Twitter avatars for comments
+* (fix) Update the information about Social's CRON actions
 
 = 2.10 =
 * (new) Now requires WordPress 3.8 (due to threaded comments walker change in WP core)
