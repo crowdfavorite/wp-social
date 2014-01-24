@@ -286,6 +286,9 @@ Much to the consternation of developers everywhere, Twitter provides direct CDN 
 
 == Upgrade Notice ==
 
+= Dev =
+* Sync up `child_account_avatar()` declarations
+
 = 2.11 =
 * (new) FAQ with link to plugin to update Twitter avatars for comments
 * (fix) Update the information about Social's CRON actions

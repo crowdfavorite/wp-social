@@ -78,7 +78,7 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 			if ($personal) {
 				return $this->_use_personal_pages;
 			}
-			
+
 			return $this->_use_universal_pages;
 		}
 
@@ -235,7 +235,7 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 				$this->_pages->universal = array();
 			}
 		}
-		
+
 		return $this;
 	}
 
@@ -292,7 +292,7 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 		}
 		return array_merge($this->_pages->personal, $this->_pages->universal);
 	}
-	
+
 	/**
 	 * Get pages list from Facebook.
 	 *
@@ -322,7 +322,7 @@ final class Social_Service_Facebook_Account extends Social_Service_Account imple
 	 *
 	 * @return string
 	 */
-	public function child_account_avatar($child_account) {
+	public function child_account_avatar($child_account = null) {
 		$service = new Social_Service_Facebook;
 		return $service->page_image_url($child_account);
 	}
