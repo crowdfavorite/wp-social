@@ -60,6 +60,7 @@ final class Social_Controller_Auth extends Social_Controller {
 			$proxy = apply_filters('social_proxy_url', $proxy);
 		}
 
+		nocache_headers();
 		Social::log('Authorizing with URL: '.$proxy);
 		wp_redirect($proxy);
 		exit;
