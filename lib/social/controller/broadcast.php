@@ -511,14 +511,15 @@ final class Social_Controller_Broadcast extends Social_Controller {
 					if ($account !== false) {
 						// Load the message
 						$message = '';
-						if (isset($account_content[$key][$_account->id])) {
+						//StephenMurphy issue #185(in theory. Unable to reproduce) and issue #190 (github)
+						if (isset($account_content[$key][$_account->id]) and $post->post_status === 'publish') {
 							$message = $account_content[$key][$_account->id];
 						}
 						$args = array();
 						if (isset($account_meta[$key][$_account->id])) {
 							$args = $account_meta[$key][$_account->id];
 						}
-
+						
 						if (!empty($message)) {
 							Social::log('Broadcasting to :username, account #:id. (:service)', array(
 								'id' => $account->id(),
@@ -613,6 +614,27 @@ final class Social_Controller_Broadcast extends Social_Controller {
 								}
 							}
 						}
+						//StephenMurphy issues #185(in theory. Unable to reproduce) and #190 (github)
+						else if (in_array($post->post_status, array('future','pending'))) {
+							Social::log('Found that post :post_id isn\'t published yet. Cancelling and pushing to queue.', array(
+								'post_id' => $post->ID,
+								));
+							// Since post and broadcast are built as expected, just push the post to queue instead of broadcast.
+							Social_Aggregation_Queue::factory()->add($post->ID);
+						}
+						else if ($post->post_status == 'trash') {
+							Social::log('Found that post :post_id was put in the trash. Cancelling broadcast and deleting post.', array(
+								'post_id'=>$post->ID,
+							));
+							/**
+							* Can leave the post intact without detriment if desired; will leave broadcast attached to post if the user
+							* restores the post. Will broadcast as normal if the post was scheduled for later and restored at or before 
+							* the time it was originally scheduled or get pushed onto the queue at a 15 minute interval and subsequently 
+							* get cleared without broadcasting if resotred after.
+							*/
+							Social::delete_post($post->ID);
+						}//StephenMurphy--end change
+
 					}
 				}
 			}
