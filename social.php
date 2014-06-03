@@ -980,7 +980,8 @@ final class Social {
 	 * @return void
 	 */
 	public function transition_post_status($new, $old, $post) {
-		if ($new == 'private') {
+		//StephenMurphy 190--resolved--add trash conditional here.
+		if ($new == 'private' or $new == 'trash') {
 			delete_post_meta($post->ID, '_social_notify');
 			delete_post_meta($post->ID, '_social_broadcast_accounts');
 
