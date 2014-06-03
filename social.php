@@ -1001,7 +1001,7 @@ if ( !class_exists( 'Social' ) ) { // try to avoid double-loading...
 		 * @return void
 		 */
 		public function transition_post_status( $new, $old, $post ) {
-			if ( $new == 'private' ) {
+			if ($new == 'private' or $new == 'trash') {
 				delete_post_meta( $post->ID, '_social_notify' );
 				delete_post_meta( $post->ID, '_social_broadcast_accounts' );
 
