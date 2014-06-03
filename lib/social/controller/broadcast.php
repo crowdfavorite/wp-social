@@ -511,8 +511,8 @@ final class Social_Controller_Broadcast extends Social_Controller {
 					if ($account !== false) {
 						// Load the message
 						$message = '';
-						//StephenMurphy issue #185(in theory. Unable to reproduce)
-						if (isset($account_content[$key][$_account->id]) and $post->post_status === 'publish') {
+						// Issue #185 -- performs final check to ensure post is published see line 617.
+						if (isset($account_content[$key][$_account->id]) && $post->post_status === 'publish') {
 							$message = $account_content[$key][$_account->id];
 						}
 						$args = array();
@@ -614,14 +614,13 @@ final class Social_Controller_Broadcast extends Social_Controller {
 								}
 							}
 						}
-						//StephenMurphy issues #185(in theory. Unable to reproduce) 
-						else if (in_array($post->post_status, array('future','pending'))) {
+						// Forces broadcast post into queue instead of sending to the selected services.
+						elseif (in_array($post->post_status, array('future','pending'))) {
 							Social::log('Found that post :post_id isn\'t published yet. Cancelling and pushing to queue.', array(
 								'post_id' => $post->ID,
 								));
-							// Since post and broadcast are built as expected, just push the post to queue instead of broadcast.
 							Social_Aggregation_Queue::factory()->add($post->ID);
-						}//no longer require the trash block. Properly handled in ~/plugins/social/social.php
+						}
 
 					}
 				}
