@@ -305,6 +305,10 @@ Much to the consternation of developers everywhere, Twitter provides direct CDN 
 
 == Changelog ==
 
+= Dev =
+
+* (fix) Pull up to 500 comments from Facebook (thanks Andrew Ferguson)
+
 = 2.11 =
 * (new) FAQ with link to plugin to update Twitter avatars for comments
 * (fix) Update the information about Social's CRON actions
