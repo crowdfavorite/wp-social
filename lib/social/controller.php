@@ -25,7 +25,7 @@ abstract class Social_Controller {
 		$this->request = $request;
 		$this->social = Social::instance();
 	}
-	
+
 	public function request() {
 		return $this->request;
 	}
@@ -33,10 +33,10 @@ abstract class Social_Controller {
 	public function social() {
 		return $this->social;
 	}
-	
+
 	protected function verify_nonce() {
 		$nonce = $this->request->query('_wpnonce');
-		if (!wp_verify_nonce($nonce, $this->request->action())) {
+		if (!Social::wp39_verify_nonce($nonce, $this->request->action())) {
 			Social::log('NONCE Failure', array(), null, true);
 			wp_die('Oops, please try again.');
 		}
