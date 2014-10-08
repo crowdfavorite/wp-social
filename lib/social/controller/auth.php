@@ -11,7 +11,7 @@ final class Social_Controller_Auth extends Social_Controller {
 		}
 		return md5('social_authentication'.AUTH_KEY.$salt);
 	}
-	
+
 	private function auth_nonce_salt() {
 		return md5(microtime().$_SERVER['SERVER_ADDR']);
 	}
@@ -25,7 +25,7 @@ final class Social_Controller_Auth extends Social_Controller {
 		$proxy = apply_filters('social_authorize_url', Social::$api_url.$this->request->query('key').'/authorize/', $this->request->query('key'));
 		if (strpos($proxy, Social::$api_url) !== false) {
 			$salt = $this->auth_nonce_salt();
-			$id = wp_create_nonce($this->auth_nonce_key($salt));
+			$id = Social::wp39_create_nonce($this->auth_nonce_key($salt));
 			$url = home_url('index.php');
 			$args = array(
 				'social_controller' => 'auth',
@@ -80,7 +80,7 @@ final class Social_Controller_Auth extends Social_Controller {
 
 		$nonce = stripslashes($this->request->post('id'));
 		$salt = stripslashes($this->request->query('salt'));
-		if (wp_verify_nonce($nonce, $this->auth_nonce_key($salt)) === false) {
+		if (Social::wp39_verify_nonce($nonce, $this->auth_nonce_key($salt)) === false) {
 			Social::log('Failed to verify authentication nonce.');
 			echo json_encode(array(
 				'result' => 'error',
