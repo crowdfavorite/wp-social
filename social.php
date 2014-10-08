@@ -2184,6 +2184,78 @@ var socialAdminBarMsgs = {
 		return $image_format;
 	}
 
+	/**
+	 * Verify a nonce created by self::wp39_create_nonce().
+	 *
+	 * This re-implements the functionality of wp_verify_nonce() circa WP3.9,
+	 * to verify nonces that are compatble with the Social authentication
+	 * workflow.
+	 *
+	 * @see https://github.com/WordPress/WordPress/blob/3.9-branch/wp-includes/pluggable.php
+	 *
+	 * @param string $nonce Nonce that was used in the form to verify
+	 * @param string|int $action Should give context to what is taking place and be the same when nonce was created.
+	 * @return bool Whether the nonce check passed or failed.
+	 */
+	public static function wp39_verify_nonce($nonce, $action = -1) {
+		$user = wp_get_current_user();
+		$uid = (int) $user->ID;
+		if (!$uid) {
+			/**
+			 * Filter whether the user who generated the nonce is logged out.
+			 *
+			 * @since 3.5.0
+			 *
+			 * @param int    $uid    ID of the nonce-owning user.
+			 * @param string $action The nonce action.
+			 */
+			$uid = apply_filters('nonce_user_logged_out', $uid, $action);
+		}
+
+		$i = wp_nonce_tick();
+
+		// Nonce generated 0-12 hours ago
+		$expected = substr(wp_hash( $i.'|'.$action.'|'.$uid, 'nonce'), -12, 10);
+		if (hash_equals($expected, $nonce)) {
+			return 1;
+		}
+
+		// Nonce generated 12-24 hours ago
+		$expected = substr(wp_hash(($i - 1).'|'.$action.'|'.$uid, 'nonce' ), -12, 10);
+		if (hash_equals($expected, $nonce)) {
+			return 2;
+		}
+
+		// Invalid nonce
+		return false;
+	}
+
+	/**
+	 * Create a nonce compatible with self::wp39_verify_nonce().
+	 *
+	 * This re-implements the functionality of wp_create_nonce() circa WP3.9,
+	 * to provide nonces that are compatble with the Social authentication
+	 * workflow.
+	 *
+	 * @see https://github.com/WordPress/WordPress/blob/3.9-branch/wp-includes/pluggable.php
+	 *
+	 * @param string|int $action Scalar value to add context to the nonce.
+	 * @return string The one use form token
+	 */
+	public static function wp39_create_nonce($action = -1) {
+		$user = wp_get_current_user();
+		$uid = (int) $user->ID;
+		if (!$uid) {
+			/** This filter is documented in wp-includes/pluggable.php */
+			$uid = apply_filters('nonce_user_logged_out', $uid, $action);
+		}
+
+		$i = wp_nonce_tick();
+
+		return substr(wp_hash($i.'|'.$action.'|'.$uid, 'nonce'), -12, 10);
+	}
+
+
 } // End Social
 
 if (!function_exists('addslashes_deep')) {
