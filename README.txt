@@ -289,6 +289,9 @@ Much to the consternation of developers everywhere, Twitter provides direct CDN 
 = Dev =
 * Sync up `child_account_avatar()` declarations
 
+= 2.12 =
+* (fix) Change specific nonces behavior for WordPress 4.0 compatibility.
+
 = 2.11 =
 * (new) FAQ with link to plugin to update Twitter avatars for comments
 * (fix) Update the information about Social's CRON actions
