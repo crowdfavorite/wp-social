@@ -184,6 +184,11 @@
 			if (diff < 10) {
 				diffClass = 'maxlength-remaining-short';
 			}
+
+			if (diff < 1) {
+				$(this).val($(this).val.substr(0, $(this).data('maxlength')));
+			}
+
 			$counter.removeClass('maxlength-remaining-short').addClass(diffClass).html(diff + ' / ' + $(this).val().length);
 		}).change();
 		
