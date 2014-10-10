@@ -18,7 +18,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * @return int
 	 */
 	public function max_broadcast_length() {
-		return 25000;
+		return 50000;
 	}
 
 	/**
