@@ -179,7 +179,7 @@
 
 		$('.broadcast-interstitial .broadcast-edit textarea').on('keyup change click focus', function() {
 			$counter = $(this).closest('.broadcast-edit').find('.counter');
-			$(this).val($(this).val().replace(/\n|\r/ig,' '));
+			$(this).val($(this).val().replace(/\n|\r/ig,"\n"));
 			var diff = parseInt($(this).attr('maxlength')) - parseInt($(this).val().replace(/\n|\r/ig,' ').length),
 				diffClass = '';
 			if (diff < 10) {
