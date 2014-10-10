@@ -185,7 +185,7 @@
 			if (diff < 10) {
 				diffClass = 'maxlength-remaining-short';
 			}
-			$counter.removeClass('maxlength-remaining-short').addClass(diffClass).html(diff);
+			$counter.removeClass('maxlength-remaining-short').addClass(diffClass).html(diff + ' / ' + $(this).val().length);
 		}).change();
 		
 		$('.broadcast-interstitial .broadcast-edit a.tweet-reply-link').click(function(e) {
