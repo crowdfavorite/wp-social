@@ -759,7 +759,7 @@ if ( !class_exists( 'Social' ) ) { // try to avoid double-loading...
 
 			// Save Enabled child accounts
 			$is_profile = true;
-			$enabled_child_accounts = is_array( $_POST['social_enabled_child_accounts'] ) ? $_POST['social_enabled_child_accounts'] : array();
+			$enabled_child_accounts = ( isset( $_POST['social_enabled_child_accounts'] ) && is_array( $_POST['social_enabled_child_accounts'] ) ) ? $_POST['social_enabled_child_accounts'] : array();
 			foreach ( $this->services() as $service_key => $service ) {
 				$updated_accounts = array();
 				foreach ( $service->accounts() as $account ) {
