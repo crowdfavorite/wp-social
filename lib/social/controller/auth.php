@@ -89,9 +89,13 @@ final class Social_Controller_Auth extends Social_Controller {
 			exit;
 		}
 
-Social::log('GET :get', array('get' => print_r($_GET, true)));
-Social::log('GET :post', array('post' => print_r($_POST, true)));
+Social::log('GET: :get', array(
+	'get' => print_r($_GET, true)
+));
 
+Social::log('POST: :post', array(
+	'post' => print_r($_POST, true)
+));
 
 		Social::log('Authorizing with nonce :nonce.', array('nonce' => $nonce));
 
