@@ -89,6 +89,10 @@ final class Social_Controller_Auth extends Social_Controller {
 			exit;
 		}
 
+Social::log('GET :get', array('get' => $_GET));
+Social::log('GET :post', array('get' => $_POST));
+
+
 		Social::log('Authorizing with nonce :nonce.', array('nonce' => $nonce));
 
 		$response = stripslashes_deep($this->request->post('response'));
