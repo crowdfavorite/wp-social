@@ -81,6 +81,14 @@ final class Social_Controller_Auth extends Social_Controller {
 			wp_set_current_user($user_id);
 		}
 
+Social::log('GET: :get', array(
+	'get' => print_r($_GET, true)
+));
+
+Social::log('POST: :post', array(
+	'post' => print_r($_POST, true)
+));
+
 		$nonce = stripslashes($this->request->post('id'));
 		$salt = stripslashes($this->request->query('salt'));
 		if (Social::wp39_verify_nonce($nonce, $this->auth_nonce_key($salt)) === false) {
@@ -91,14 +99,6 @@ final class Social_Controller_Auth extends Social_Controller {
 			));
 			exit;
 		}
-
-Social::log('GET: :get', array(
-	'get' => print_r($_GET, true)
-));
-
-Social::log('POST: :post', array(
-	'post' => print_r($_POST, true)
-));
 
 		Social::log('Authorizing with nonce :nonce.', array('nonce' => $nonce));
 
