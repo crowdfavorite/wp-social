@@ -34,8 +34,8 @@ final class Social_Controller_Auth extends Social_Controller {
 			);
 
 			if (is_admin()) {
-			//	$args['is_admin'] = 'true';
-			//	$args['user_id'] = get_current_user_id();
+				$args['is_admin'] = 'true';
+				$args['user_id'] = get_current_user_id();
 				if (defined('IS_PROFILE_PAGE')) {
 					$args['personal'] = 'true';
 					$url = add_query_arg('personal', 'true', $url);
@@ -51,12 +51,15 @@ final class Social_Controller_Auth extends Social_Controller {
 				setcookie('social_auth_nonce', $id, 0, '/');
 			}
 
+//Social::log('SETTING ID GET: :get', array(
+//	'get' => print_r($_GET, true)
+//));
 
 			$proxy = add_query_arg(array(
 				'v' => '2',
 				'id' => $id,
-'is_admin' => 'true',
-'user_id' => get_current_user_id(),
+//'is_admin' => 'true',
+//'user_id' => get_current_user_id(),
 				'response_url' => urlencode(add_query_arg($args, $url))
 			), $proxy);
 

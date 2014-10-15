@@ -179,8 +179,16 @@
 
 		$('.broadcast-interstitial .broadcast-edit textarea').on('keyup change click focus', function() {
 			$counter = $(this).closest('.broadcast-edit').find('.counter');
-			var diff = parseInt($(this).data('maxlength')) - parseInt($(this).val().replace(/\n|\r/ig,' ').length),
-				diffClass = '';
+			var diff = parseInt($(this).attr('maxlength')) - parseInt($(this).val().length),
+				diffClass = '',
+				newLines = $(this).val().match(/(\r\n|\n|\r)/g),
+				addition = 0;
+
+			if (newLines != null) {
+				addition = newLines.length;
+			}
+			diff -= addition;
+
 			if (diff < 10) {
 				diffClass = 'maxlength-remaining-short';
 			}
