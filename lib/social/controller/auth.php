@@ -58,8 +58,8 @@ final class Social_Controller_Auth extends Social_Controller {
 			$proxy = add_query_arg(array(
 				'v' => '2',
 				'id' => $id,
-//'is_admin' => 'true',
-//'user_id' => get_current_user_id(),
+'is_admin' => 'true',
+'user_id' => get_current_user_id(),
 				'response_url' => urlencode(add_query_arg($args, $url))
 			), $proxy);
 
