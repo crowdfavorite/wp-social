@@ -312,7 +312,7 @@ Much to the consternation of developers everywhere, Twitter provides direct CDN 
 * (fix) Pull up to 500 comments from Facebook (thanks Andrew Ferguson)
 * (fix) Correct wp-cron call to wp-admin/options-general.php
 * (fix) Increase Facebook max_broadcast_length to 50,000 (from 420)
-* (fix) Modify character counter to count linefeeds as one character in all cases.
+* (fix) Modify character counter to count linefeeds as two characters as required by HTML specification: http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4
 
 = 2.11 =
 * (new) FAQ with link to plugin to update Twitter avatars for comments
