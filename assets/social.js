@@ -22,6 +22,7 @@
 
 					if (!$window.hasClass('comments')) {
 						window.location.reload();
+						$auth_window.close();
 					}
 					else {
 						var $parent = $('.social-post');
