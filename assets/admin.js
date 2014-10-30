@@ -24,7 +24,7 @@
 				$('#import_from_url_loader').show();
 				$('#social-import-error').hide();
 
-				$.post($this.attr('href'), {
+				$.get($this.attr('href'), {
 					url: $('input[name=source_url]').val()
 				}, function(response) {
 					running_import = false;
