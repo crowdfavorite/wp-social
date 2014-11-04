@@ -2,8 +2,8 @@
 Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter, social, broadcast, import, integrate, integration
 Requires at least: 3.8
-Tested up to: 3.8
-Stable tag: 2.11
+Tested up to: 4.0
+Stable tag: 3.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -286,11 +286,9 @@ Much to the consternation of developers everywhere, Twitter provides direct CDN 
 
 == Upgrade Notice ==
 
-= Dev =
+= 3.0 =
+* (fix) Change specific nonce behavior for WordPress 4.0 compatibility.
 * Sync up `child_account_avatar()` declarations
-
-= 2.12 =
-* (fix) Change specific nonces behavior for WordPress 4.0 compatibility.
 
 = 2.11 =
 * (new) FAQ with link to plugin to update Twitter avatars for comments
@@ -308,9 +306,13 @@ Much to the consternation of developers everywhere, Twitter provides direct CDN 
 
 == Changelog ==
 
-= Dev =
-
+= 3.0 =
+* (fix) Change specific nonce behavior for WordPress 4.0 compatibility.
+* Sync up `child_account_avatar()` declarations
 * (fix) Pull up to 500 comments from Facebook (thanks Andrew Ferguson)
+* (fix) Correct wp-cron call to wp-admin/options-general.php
+* (fix) Increase Facebook max_broadcast_length to 50,000 (from 420)
+* (fix) Modify character counter to count linefeeds as two characters as required by HTML specification: http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4
 
 = 2.11 =
 * (new) FAQ with link to plugin to update Twitter avatars for comments
