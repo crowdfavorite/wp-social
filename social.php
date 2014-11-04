@@ -2212,16 +2212,21 @@ var socialAdminBarMsgs = {
 			$uid = apply_filters('nonce_user_logged_out', $uid, $action);
 		}
 
+Social::log('NONCE UID: ' . $uid);
+Social::log('NONCE nonce: ' . $nonce);
+
 		$i = wp_nonce_tick();
 
 		// Nonce generated 0-12 hours ago
 		$expected = substr(wp_hash( $i.'|'.$action.'|'.$uid, 'nonce'), -12, 10);
+Social::log('NONCE expected1: ' . $expected);
 		if (hash_equals($expected, $nonce)) {
 			return 1;
 		}
 
 		// Nonce generated 12-24 hours ago
 		$expected = substr(wp_hash(($i - 1).'|'.$action.'|'.$uid, 'nonce' ), -12, 10);
+Social::log('NONCE expected2: ' . $expected);
 		if (hash_equals($expected, $nonce)) {
 			return 2;
 		}
