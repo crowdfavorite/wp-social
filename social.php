@@ -2198,6 +2198,8 @@ var socialAdminBarMsgs = {
 	 * @return bool Whether the nonce check passed or failed.
 	 */
 	public static function wp39_verify_nonce($nonce, $action = -1) {
+Social::log('more testing');
+
 		$user = wp_get_current_user();
 		$uid = (int) $user->ID;
 		if (!$uid) {
