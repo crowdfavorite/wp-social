@@ -2197,7 +2197,7 @@ var socialAdminBarMsgs = {
 	 * @param string|int $action Should give context to what is taking place and be the same when nonce was created.
 	 * @return bool Whether the nonce check passed or failed.
 	 */
-	public static function wpx39_verify_nonce($nonce, $action = -1) {
+	public static function wp39_verify_nonce($nonce, $action = -1) {
 Social::log('more testing');
 
 		$user = wp_get_current_user();
