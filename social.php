@@ -1722,7 +1722,7 @@ final class Social {
 			&& $post->post_status == 'publish'
 			&& Social::option('aggregate_comments'))
 		{
-			$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', 'social'), esc_url(wp_nonce_url(admin_url('options-general.php?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID).
+			$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', 'social'), esc_url(Social::wp39_nonce_url(admin_url('options-general.php?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID).
 				'<img src="'.esc_url(admin_url('images/wpspin_light.gif')).'" class="social_run_aggregation_loader" />';
 		}
 		return $actions;
@@ -1758,13 +1758,13 @@ final class Social {
 						<span class="social-dot">.</span>
 						<span class="social-dot">.</span>
 					)</span>',
-				'href' => esc_url(wp_nonce_url(admin_url('options-general.php?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run')),
+				'href' => esc_url(Social::wp39_nonce_url(admin_url('options-general.php?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run')),
 			));
 			$wp_admin_bar->add_menu(array(
 				'parent' => 'comments',
 				'id' => 'social-add-tweet-by-url',
 				'title' => __('Add Tweet by URL', 'social')
-					.'<form class="social-add-tweet" style="display: none;" method="get" action="'.esc_url(wp_nonce_url(admin_url('options-general.php?social_controller=import&social_action=from_url&social_service=twitter&post_id='.$current_object->ID), 'from_url')).'">
+					.'<form class="social-add-tweet" style="display: none;" method="get" action="'.esc_url(Social::wp39_nonce_url(admin_url('options-general.php?social_controller=import&social_action=from_url&social_service=twitter&post_id='.$current_object->ID), 'from_url')).'">
 						<input type="text" size="20" name="url" value="" autocomplete="off" />
 						<input type="submit" name="social-add-tweet-button" name="social-add-tweet-button" value="'.__('Add Tweet by URL', 'social').'" />
 					</form>',
@@ -1968,7 +1968,7 @@ var socialAdminBarMsgs = {
 	 */
 	private function request($url, $nonce_key = null, $post = false) {
 		if ($nonce_key !== null) {
-			$url = str_replace('&amp;', '&', wp_nonce_url($url, $nonce_key));
+			$url = str_replace('&amp;', '&', Social::wp39_nonce_url($url, $nonce_key));
 		}
 
 
@@ -2253,6 +2253,21 @@ var socialAdminBarMsgs = {
 		$i = wp_nonce_tick();
 
 		return substr(wp_hash($i.'|'.$action.'|'.$uid, 'nonce'), -12, 10);
+	}
+
+
+	/**
+	 * Retrieve URL with nonce added to URL query using Social::wp39_create_nonce()
+	 * instead of Social::wp_create_nonce()
+	 *
+	 * @param string $actionurl URL to add nonce action.
+	 * @param string $action    Optional. Nonce action name. Default -1.
+	 * @param string $name      Optional. Nonce name. Default '_wpnonce'.
+	 * @return string Escaped URL with nonce action added.
+	 */
+	public static function wp39_nonce_url( $actionurl, $action = -1, $name = '_wpnonce' ) {
+		$actionurl = str_replace( '&amp;', '&', $actionurl );
+		return esc_html( add_query_arg( $name, Social::wp39_create_nonce( $action ), $actionurl ) );
 	}
 
 
