@@ -187,7 +187,7 @@ if (Social::option('cron') === '0') {
 									<div class="social-callout">
 										<h3 class="social-title"><?php _e('CRON Setup', 'social'); ?></h3>
 										<dl class="social-kv">
-											<dt><?php _e('CRON API Key', 'social'); ?> <small>(<a href="<?php echo esc_url(wp_nonce_url(admin_url('options-general.php?page=social.php&social_controller=settings&social_action=regenerate_api_key'), 'regenerate_api_key')); ?>" rel="social_api_key" id="social_regenerate_api_key"><?php _e('regenerate', 'social'); ?></a>)</small></dt>
+											<dt><?php _e('CRON API Key', 'social'); ?> <small>(<a href="<?php echo esc_url(Social::wp39_nonce_url(admin_url('options-general.php?page=social.php&social_controller=settings&social_action=regenerate_api_key'), 'regenerate_api_key')); ?>" rel="social_api_key" id="social_regenerate_api_key"><?php _e('regenerate', 'social'); ?></a>)</small></dt>
 											<dd>
 												<code class="social_api_key"><?php echo esc_html(Social::option('system_cron_api_key')); ?></code>
 											</dd>

@@ -18,7 +18,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * @return int
 	 */
 	public function max_broadcast_length() {
-		return 420;
+		return 50000;
 	}
 
 	/**
@@ -252,7 +252,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				if (isset($post->broadcasted_ids[$this->_key][$account->id()])) {
 					foreach ($post->broadcasted_ids[$this->_key][$account->id()] as $broadcasted_id => $data) {
 						$id = explode('_', $broadcasted_id);
-						$request = $this->request($account, $broadcasted_id.'/comments', array('filter' => 'stream', 'fields' => 'parent,message,from,created_time,can_comment'));
+						$request = $this->request($account, $broadcasted_id.'/comments', array('filter' => 'stream', 'fields' => 'parent,message,from,created_time,can_comment', 'limit'=>'500'));
 						if ($request !== false && isset($request->body()->response)) {
 							$response = $request->body()->response;
 							if (isset($response->data) and is_array($response->data) and count($response->data)) {

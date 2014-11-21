@@ -3,7 +3,7 @@
 Plugin Name: Social
 Plugin URI: http://mailchimp.com/social-plugin-for-wordpress/
 Description: Broadcast newly published posts and pull in discussions using integrations with Twitter and Facebook. Brought to you by <a href="http://mailchimp.com">MailChimp</a>.
-Version: 2.11
+Version: 3.0
 Author: Crowd Favorite
 Author URI: http://crowdfavorite.com/
 */
@@ -25,7 +25,7 @@ final class Social {
 	/**
 	 * @var  string  version number
 	 */
-	public static $version = '2.11';
+	public static $version = '3.0';
 
 	/**
 	 * @var  string  CRON lock directory.
@@ -1722,7 +1722,7 @@ final class Social {
 			&& $post->post_status == 'publish'
 			&& Social::option('aggregate_comments'))
 		{
-			$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', 'social'), esc_url(wp_nonce_url(admin_url('options-general.php?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID).
+			$actions['social_aggregation'] = sprintf(__('<a href="%s" rel="%s">Social Comments</a>', 'social'), esc_url(Social::wp39_nonce_url(admin_url('options-general.php?social_controller=aggregation&social_action=run&post_id='.$post->ID), 'run')), $post->ID).
 				'<img src="'.esc_url(admin_url('images/wpspin_light.gif')).'" class="social_run_aggregation_loader" />';
 		}
 		return $actions;
@@ -1758,13 +1758,13 @@ final class Social {
 						<span class="social-dot">.</span>
 						<span class="social-dot">.</span>
 					)</span>',
-				'href' => esc_url(wp_nonce_url(admin_url('options-general.php?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run')),
+				'href' => esc_url(Social::wp39_nonce_url(admin_url('options-general.php?social_controller=aggregation&social_action=run&post_id='.$current_object->ID), 'run')),
 			));
 			$wp_admin_bar->add_menu(array(
 				'parent' => 'comments',
 				'id' => 'social-add-tweet-by-url',
 				'title' => __('Add Tweet by URL', 'social')
-					.'<form class="social-add-tweet" style="display: none;" method="get" action="'.esc_url(wp_nonce_url(admin_url('options-general.php?social_controller=import&social_action=from_url&social_service=twitter&post_id='.$current_object->ID), 'from_url')).'">
+					.'<form class="social-add-tweet" style="display: none;" method="get" action="'.esc_url(Social::wp39_nonce_url(admin_url('options-general.php?social_controller=import&social_action=from_url&social_service=twitter&post_id='.$current_object->ID), 'from_url')).'">
 						<input type="text" size="20" name="url" value="" autocomplete="off" />
 						<input type="submit" name="social-add-tweet-button" name="social-add-tweet-button" value="'.__('Add Tweet by URL', 'social').'" />
 					</form>',
@@ -1968,7 +1968,7 @@ var socialAdminBarMsgs = {
 	 */
 	private function request($url, $nonce_key = null, $post = false) {
 		if ($nonce_key !== null) {
-			$url = str_replace('&amp;', '&', wp_nonce_url($url, $nonce_key));
+			$url = str_replace('&amp;', '&', Social::wp39_nonce_url($url, $nonce_key));
 		}
 
 
@@ -2183,6 +2183,93 @@ var socialAdminBarMsgs = {
 		}
 		return $image_format;
 	}
+
+	/**
+	 * Verify a nonce created by self::wp39_create_nonce().
+	 *
+	 * This re-implements the functionality of wp_verify_nonce() circa WP3.9,
+	 * to verify nonces that are compatble with the Social authentication
+	 * workflow.
+	 *
+	 * @see https://github.com/WordPress/WordPress/blob/3.9-branch/wp-includes/pluggable.php
+	 *
+	 * @param string $nonce Nonce that was used in the form to verify
+	 * @param string|int $action Should give context to what is taking place and be the same when nonce was created.
+	 * @return bool Whether the nonce check passed or failed.
+	 */
+	public static function wp39_verify_nonce($nonce, $action = -1) {
+		$user = wp_get_current_user();
+		$uid = (int) $user->ID;
+		if (!$uid) {
+			/**
+			 * Filter whether the user who generated the nonce is logged out.
+			 *
+			 * @since 3.5.0
+			 *
+			 * @param int    $uid    ID of the nonce-owning user.
+			 * @param string $action The nonce action.
+			 */
+			$uid = apply_filters('nonce_user_logged_out', $uid, $action);
+		}
+
+		$i = wp_nonce_tick();
+
+		// Nonce generated 0-12 hours ago
+		$expected = substr(wp_hash( $i.'|'.$action.'|'.$uid, 'nonce'), -12, 10);
+		if (hash_equals($expected, $nonce)) {
+			return 1;
+		}
+
+		// Nonce generated 12-24 hours ago
+		$expected = substr(wp_hash(($i - 1).'|'.$action.'|'.$uid, 'nonce' ), -12, 10);
+		if (hash_equals($expected, $nonce)) {
+			return 2;
+		}
+
+		// Invalid nonce
+		return false;
+	}
+
+	/**
+	 * Create a nonce compatible with self::wp39_verify_nonce().
+	 *
+	 * This re-implements the functionality of wp_create_nonce() circa WP3.9,
+	 * to provide nonces that are compatble with the Social authentication
+	 * workflow.
+	 *
+	 * @see https://github.com/WordPress/WordPress/blob/3.9-branch/wp-includes/pluggable.php
+	 *
+	 * @param string|int $action Scalar value to add context to the nonce.
+	 * @return string The one use form token
+	 */
+	public static function wp39_create_nonce($action = -1) {
+		$user = wp_get_current_user();
+		$uid = (int) $user->ID;
+		if (!$uid) {
+			/** This filter is documented in wp-includes/pluggable.php */
+			$uid = apply_filters('nonce_user_logged_out', $uid, $action);
+		}
+
+		$i = wp_nonce_tick();
+
+		return substr(wp_hash($i.'|'.$action.'|'.$uid, 'nonce'), -12, 10);
+	}
+
+
+	/**
+	 * Retrieve URL with nonce added to URL query using Social::wp39_create_nonce()
+	 * instead of Social::wp_create_nonce()
+	 *
+	 * @param string $actionurl URL to add nonce action.
+	 * @param string $action    Optional. Nonce action name. Default -1.
+	 * @param string $name      Optional. Nonce name. Default '_wpnonce'.
+	 * @return string Escaped URL with nonce action added.
+	 */
+	public static function wp39_nonce_url( $actionurl, $action = -1, $name = '_wpnonce' ) {
+		$actionurl = str_replace( '&amp;', '&', $actionurl );
+		return esc_html( add_query_arg( $name, Social::wp39_create_nonce( $action ), $actionurl ) );
+	}
+
 
 } // End Social
 

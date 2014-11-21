@@ -149,7 +149,7 @@ abstract class Social_Service_Account {
 	public function _username() {
 		return __('Removed Account', 'social');
 	}
-	
+
 	/**
 	 * Return child accounts (Facebook pages, for example)
 	 *
@@ -184,7 +184,7 @@ abstract class Social_Service_Account {
 	 *
 	 * @return string
 	 */
-	public function child_account_avatar() {
+	public function child_account_avatar($child_account = null) {
 		return $this->_avatar();
 	}
 
