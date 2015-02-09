@@ -1766,7 +1766,7 @@ final class Social {
 				'title' => __('Add Tweet by URL', 'social')
 					.'<form class="social-add-tweet" style="display: none;" method="get" action="'.esc_url(Social::wp39_nonce_url(admin_url('options-general.php?social_controller=import&social_action=from_url&social_service=twitter&post_id='.$current_object->ID), 'from_url')).'">
 						<input type="text" size="20" name="url" value="" autocomplete="off" />
-						<input type="submit" name="social-add-tweet-button" name="social-add-tweet-button" value="'.__('Add Tweet by URL', 'social').'" />
+						<input type="submit" name="social-add-tweet-button" value="'.__('Add Tweet by URL', 'social').'" />
 					</form>',
 				'href' => esc_url(get_edit_post_link($current_object->ID)),
 			));
