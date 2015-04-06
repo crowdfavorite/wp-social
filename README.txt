@@ -308,6 +308,7 @@ Much to the consternation of developers everywhere, Twitter provides direct CDN 
 == Changelog ==
 
 = 3.0 =
+* (fix) Remove duplicate name attribute from Add Tweet By URL button
 * (fix) Change specific nonce behavior for WordPress 4.0 compatibility.
 * (fix) Add additional nonce behavior to account for nonces added to URLs.
 * Sync up `child_account_avatar()` declarations
