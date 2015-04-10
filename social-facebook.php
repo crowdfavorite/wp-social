@@ -35,9 +35,9 @@ final class Social_Facebook {
 	 */
 	public static function social_authorize_url($url, $key) {
 		if ($key == 'facebook') {
-			$perms = 'publish_stream';
+			$perms = 'publish_action';
 			if (is_admin()) {
-				$perms .= ',read_stream,offline_access';
+				$perms .= ',user_posts,offline_access';
 			}
 
 			$url = $url.'?req_perms='.$perms;
@@ -436,7 +436,7 @@ final class Social_Facebook {
 
 		return $title;
 	}
-	
+
 	/**
 	 * Output the link to be sent to Facebook.
 	 *
@@ -457,7 +457,7 @@ final class Social_Facebook {
 		)->render();
 		add_filter('social_view_set_file', array('Social_Facebook', 'social_view_set_file'), 10, 2);
 	}
-	
+
 	/**
 	 * Don't output URL in format since we're sending a link as well.
 	 *
@@ -473,7 +473,7 @@ final class Social_Facebook {
 		}
 		return $format;
 	}
-	
+
 
 } // End Social_Facebook
 
