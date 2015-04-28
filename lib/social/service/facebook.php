@@ -194,45 +194,9 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * @return void
 	 */
 	public function aggregate_by_url(&$post, array $urls) {
-		foreach ($urls as $url) {
-			if (!empty($url)) {
-				$url = 'https://graph.facebook.com/search?type=post&q='.$url;
-				Social::log('Searching by URL(s) for post #:post_id. (Query: :url)', array(
-					'post_id' => $post->ID,
-					'url' => $url,
-				));
-				$response = wp_remote_get($url);
-				if (!is_wp_error($response)) {
-					$response = json_decode($response['body']);
-					if (isset($response->data) and is_array($response->data) and count($response->data)) {
-						foreach ($response->data as $result) {
-							if (in_array($result->id, $post->aggregated_ids[$this->_key])) {
-								Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url', true);
-								continue;
-							}
-							else {
-								if ($this->is_original_broadcast($post, $result->id)) {
-									continue;
-								}
-								else if ($this->is_duplicate_comment($post, $result->id)) {
-									$post->aggregated_ids[$this->_key][] = $result->id;
-									continue;
-								}
-							}
-
-							Social_Aggregation_Log::instance($post->ID)->add($this->_key, $result->id, 'url');
-							$post->aggregated_ids[$this->_key][] = $result->id;
-							$post->results[$this->_key][$result->id] = $result;
-						}
-					}
-				}
-				else {
-					Social::log('URL search failed for post #:post_id.', array(
-						'post_id' => $post->ID,
-					));
-				}
-			}
-		}
+		// Facebook has deprecated searching Public posts as of v2.0 of the api (April 30th 2015 switchover)
+		// See: https://developers.facebook.com/docs/graph-api/using-graph-api/v2.3#search
+		// and https://developers.facebook.com/docs/graph-api/using-graph-api/v1.0#search
 	}
 
 	/**
@@ -382,6 +346,7 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 		if (isset($post->results[$this->_key])) {
 			global $wpdb;
 
+
 			foreach ($post->results[$this->_key] as $result) {
 				$commentdata = array(
 					'comment_post_ID' => $post->ID,
@@ -397,30 +362,19 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 				}
 
 				if (!isset($result->like)) {
-					$url = 'https://graph.facebook.com/'.$result->from->id;
-					$request = wp_remote_get($url);
-					if (!is_wp_error($request)) {
-						$response = json_decode($request['body']);
-
-						$account = (object) array(
-							'user' => $response
-						);
-						$class = 'Social_Service_'.$this->_key.'_Account';
-						$account = new $class($account);
-
-						$commentdata = array_merge($commentdata, array(
-							'comment_type' => 'social-facebook',
-							'comment_author' => $wpdb->escape($result->from->name),
-							'comment_author_url' => $account->url(),
-							'comment_content' => $wpdb->escape($result->message),
-							'comment_date' => date('Y-m-d H:i:s', strtotime($result->created_time) + (get_option('gmt_offset') * 3600)),
-							'comment_date_gmt' => gmdate('Y-m-d H:i:s', strtotime($result->created_time)),
-						));
-
-					}
+					$commentdata = array_merge($commentdata, array(
+						'comment_type' => 'social-facebook',
+						'comment_author' => $wpdb->escape($result->from->name),
+						'comment_author_url' => $result->from->link,
+						'comment_content' => $wpdb->escape($result->message),
+						'comment_date' => date('Y-m-d H:i:s', strtotime($result->created_time) + (get_option('gmt_offset') * 3600)),
+						'comment_date_gmt' => gmdate('Y-m-d H:i:s', strtotime($result->created_time)),
+					));
 				}
 				else {
-					$url = 'https://facebook.com/profile.php?id='.$result->id;
+					// v2.0+ returns app scoped ids, both app scoped ids and real ids redirect to the profile with
+					// https://www.facebook.com/{user-id}|{app-scoped-id}
+					$url = 'https://www.facebook.com/' . $result->id . '/';
 					$commentdata = array_merge($commentdata, array(
 						'comment_type' => 'social-facebook-like',
 						'comment_author' => $wpdb->escape($result->name),
@@ -636,7 +590,8 @@ final class Social_Service_Facebook extends Social_Service implements Social_Int
 	 * @return string
 	 */
 	public function page_image_url($account) {
-		return apply_filters('social_facebook_page_image_url', 'https://graph.facebook.com/'.$account->id.'/picture', $account);
+		// 2.0+ does not required a token for pictures, unlike almost every other call
+		return apply_filters('social_facebook_page_image_url', 'https://graph.facebook.com/v2.3/'.$account->id.'/picture', $account);
 	}
 
 	/**
