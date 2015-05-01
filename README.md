@@ -1,12 +1,12 @@
 # Social #
-**Contributors:** crowdfavorite, alexkingorg  
-**Tags:** comments, facebook, twitter, social, broadcast, import, integrate, integration  
-**Requires at least:** 3.8  
-**Tested up to:** 4.0  
-**Stable tag:** 3.0  
-**License:** GPLv2  
-**License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
- 
+**Contributors:** crowdfavorite, alexkingorg
+**Tags:** comments, facebook, twitter, social, broadcast, import, integrate, integration
+**Requires at least:** 3.8
+**Tested up to:** 4.0
+**Stable tag:** 3.1
+**License:** GPLv2
+**License URI:** http://www.gnu.org/licenses/gpl-2.0.html
+
 Broadcast posts to Twitter and/or Facebook, pull in reactions from each (replies, retweets, comments, "likes") as comments, and allow commenters to log in with their Twitter/Facebook identities.
 
 ## Description ##
@@ -320,6 +320,9 @@ Much to the consternation of developers everywhere, Twitter provides direct CDN 
 * (fix) use esc_url_raw() (thanks kanedo)
 
 ## Changelog ##
+
+### 3.1 ###
+* Update functionality to use the latest facebook API, the old API is deprecated. This removes the aggregation by URL method, which means shares/likes not coming from the broadcasted post cannot be aggregated.
 
 ### 3.0 ###
 * (fix) Change specific nonce behavior for WordPress 4.0 compatibility.
