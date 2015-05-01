@@ -35,9 +35,9 @@ final class Social_Facebook {
 	 */
 	public static function social_authorize_url($url, $key) {
 		if ($key == 'facebook') {
-			$perms = 'publish_action';
+			$perms = 'publish_actions';
 			if (is_admin()) {
-				$perms .= ',user_posts,offline_access';
+				$perms .= ',user_posts';
 			}
 
 			$url = $url.'?req_perms='.$perms;
