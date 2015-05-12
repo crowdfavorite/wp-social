@@ -37,7 +37,7 @@ final class Social_Facebook {
 		if ($key == 'facebook') {
 			$perms = 'publish_actions';
 			if (is_admin()) {
-				$perms .= ',user_posts';
+				$perms .= ',user_posts,manage_pages,publish_pages';
 			}
 
 			$url = $url.'?req_perms='.$perms;

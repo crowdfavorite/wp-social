@@ -2,8 +2,8 @@
 Contributors: crowdfavorite, alexkingorg
 Tags: comments, facebook, twitter, social, broadcast, import, integrate, integration
 Requires at least: 3.8
-Tested up to: 4.0
-Stable tag: 3.1
+Tested up to: 4.2
+Stable tag: 3.1.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -306,6 +306,9 @@ Much to the consternation of developers everywhere, Twitter provides direct CDN 
 * (fix) use esc_url_raw() (thanks kanedo)
 
 == Changelog ==
+
+= 3.1.1 =
+* (fix) Add FB page permissions when requesting the app
 
 = 3.1 =
 * Update functionality to use the latest facebook API, the old API is deprecated. This removes the aggregation by URL method, which means shares/likes not coming from the broadcasted post cannot be aggregated.
