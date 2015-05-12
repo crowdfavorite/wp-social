@@ -1,0 +1,1262 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Social v2.9.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2013-10-31 11:43:45+0000\n"
+"Last-Translator: admin <now@nowton.nl>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: CSL v1.x\n"
+"X-Poedit-Language: Dutch\n"
+"X-Poedit-Country: NETHERLANDS\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;\n"
+"X-Poedit-Basepath: ../\n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes"
+
+#: lib/social/aggregation/log.php:60
+#, php-format
+#@ social
+msgid "Social failed to initialize the Aggregation_Log for post #%s."
+msgstr "Het is Social niet gelukt om het aggregratielog voor post  #%s aan te maken."
+
+#: lib/social/aggregation/queue.php:250
+#, php-format
+#@ social
+msgid "approximately %s"
+msgstr "ongeveer %s"
+
+#: lib/social/comment/form.php:261
+#@ social
+msgid "Name"
+msgstr "Naam"
+
+#: lib/social/comment/form.php:262
+#@ social
+msgid "Email"
+msgstr "Emailadres"
+
+#: lib/social/comment/form.php:262
+#@ social
+msgid "Not published"
+msgstr "Niet gepubliceerd"
+
+#: lib/social/comment/form.php:263
+#@ social
+msgid "Website"
+msgstr "Website"
+
+#: lib/social/comment/form.php:267
+#@ social
+msgid "Post It"
+msgstr "Plaats dit"
+
+#: lib/social/comment/form.php:268
+#@ social
+msgid "Profile"
+msgstr "Profiel"
+
+#: lib/social/comment/form.php:269
+#, php-format
+#@ social
+msgid "Post a Reply to %s"
+msgstr "Plaats een reactie op %s"
+
+#: lib/social/comment/form.php:270
+#@ social
+msgid "cancel"
+msgstr "annuleer"
+
+#: lib/social/comment/form.php:274
+#@ social
+msgid "Comment"
+msgstr "Reactie"
+
+#: lib/social/comment/form.php:279
+#@ social
+msgid "Post a Comment"
+msgstr "Plaats een reactie"
+
+#: lib/social/comment/form.php:309
+#: lib/social/comment/form.php:319
+#, php-format
+#@ social
+msgid "Also post to %s"
+msgstr "Plaats ook op %s"
+
+#: lib/social/controller/aggregation.php:144
+#, php-format
+#@ social
+msgid "(%s New)"
+msgstr "(%s Nieuw)"
+
+#: lib/social/controller/broadcast.php:33
+#, php-format
+#@ social
+msgid "View on %s"
+msgstr "Bekijk op %s"
+
+#: lib/social/controller/broadcast.php:74
+#: lib/social/controller/broadcast.php:106
+#@ social
+msgid "Please enter content to be broadcasted."
+msgstr "Plaats de inhoud die uitgezonden dient te worden."
+
+#: lib/social/controller/broadcast.php:79
+#: lib/social/controller/broadcast.php:111
+#, php-format
+#@ social
+msgid "Content must not be longer than %s characters."
+msgstr "Inhoud moet langer zijn dan %s karakters."
+
+#: lib/social/controller/broadcast.php:131
+#@ social
+msgid "Please select at least one account to broadcast to."
+msgstr "Selecteer alstublieft minimaal een account waar naar uitgezonden dient te worden."
+
+#: lib/social/controller/broadcast.php:212
+#@ social
+msgid "Publish"
+msgstr "Publiceer"
+
+#: lib/social/controller/broadcast.php:218
+#@ social
+msgid "Update"
+msgstr "Werk bij"
+
+#: lib/social/controller/broadcast.php:222
+#@ social
+msgid "Broadcast"
+msgstr "Zend uit"
+
+#: lib/social/controller/broadcast.php:227
+#@ social
+msgid "Schedule"
+msgstr "Schema"
+
+#: lib/social/controller/broadcast.php:536
+#@ social
+msgid "Rate limit reached"
+msgstr "Beoordelingslimiiet bereikt"
+
+#: lib/social/controller/broadcast.php:553
+#@ social
+msgid "Duplicate status"
+msgstr "Dubbele status"
+
+#: lib/social/controller/broadcast.php:570
+#@ social
+msgid "Account deauthorized"
+msgstr "Account gedeautoriseerd"
+
+#: lib/social/controller/broadcast.php:697
+#, php-format
+#@ social
+msgid "%s: Failed to broadcast post with Social."
+msgstr "%s: niet gelukt om uit te zenden met Social."
+
+#: lib/social/date.php:121
+#@ social
+msgid "1 year"
+msgstr "1 jaar"
+
+#: lib/social/date.php:124
+#, php-format
+#@ social
+msgid "%s years"
+msgstr "%s jaren"
+
+#: lib/social/date.php:131
+#@ social
+msgid "1 month"
+msgstr "1 maand"
+
+#: lib/social/date.php:134
+#, php-format
+#@ social
+msgid "%s months"
+msgstr "%s maanden"
+
+#: lib/social/date.php:141
+#@ social
+msgid "1 week"
+msgstr "1 week"
+
+#: lib/social/date.php:144
+#, php-format
+#@ social
+msgid "%s weeks"
+msgstr "%s weken"
+
+#: lib/social/date.php:151
+#@ social
+msgid "1 day"
+msgstr "1 dag"
+
+#: lib/social/date.php:154
+#, php-format
+#@ social
+msgid "%s days"
+msgstr "%s dagen"
+
+#: lib/social/date.php:165
+#@ social
+msgid "1 hour"
+msgstr "1 uur"
+
+#: lib/social/date.php:168
+#: lib/social/date.php:265
+#, php-format
+#@ social
+msgid "%s hours"
+msgstr "%s uren"
+
+#: lib/social/date.php:174
+#@ social
+msgid "1 minute"
+msgstr "1 minuut"
+
+#: lib/social/date.php:177
+#, php-format
+#@ social
+msgid "%s minutes"
+msgstr "%s minuten"
+
+#: lib/social/date.php:196
+#@ social
+msgid "1 second"
+msgstr "1 seconde"
+
+#: lib/social/date.php:199
+#, php-format
+#@ social
+msgid "%s seconds"
+msgstr "%s seconden"
+
+#: lib/social/date.php:232
+#@ social
+msgid "1 month ago"
+msgstr "1 maand geleden"
+
+#: lib/social/date.php:235
+#, php-format
+#@ social
+msgid "%s months ago"
+msgstr "%s maanden geleden"
+
+#: lib/social/date.php:242
+#@ social
+msgid "1 week ago"
+msgstr "1 week geleden"
+
+#: lib/social/date.php:245
+#, php-format
+#@ social
+msgid "%s weeks ago"
+msgstr "%s weken geleden"
+
+#: lib/social/date.php:252
+#@ social
+msgid "1 day ago"
+msgstr "1 dag geleden"
+
+#: lib/social/date.php:255
+#, php-format
+#@ social
+msgid "%s days ago"
+msgstr "%s dagen geleden"
+
+#: lib/social/date.php:262
+#@ social
+msgid "1 hour ago"
+msgstr "1 uur geleden"
+
+#: lib/social/date.php:272
+#@ social
+msgid "1 minute ago"
+msgstr "1 minuut geleden"
+
+#: lib/social/date.php:275
+#, php-format
+#@ social
+msgid "%s minutes ago"
+msgstr "%s minuten geleden"
+
+#: lib/social/date.php:281
+#@ social
+msgid "just now"
+msgstr "zojuist"
+
+#: lib/social/date.php:309
+#@ social
+msgid "a few moments"
+msgstr "een paar momenten"
+
+#: lib/social/date.php:313
+#@ social
+msgid "a few minutes"
+msgstr "een paar minuten"
+
+#: lib/social/date.php:317
+#@ social
+msgid "less than an hour"
+msgstr "minder dan een uur"
+
+#: lib/social/date.php:321
+#@ social
+msgid "a couple of hours"
+msgstr "een paar uur"
+
+#: lib/social/date.php:325
+#@ social
+msgid "less than a day"
+msgstr "minder dan een dag"
+
+#: lib/social/date.php:329
+#@ social
+msgid "about a day"
+msgstr "ongeveer een dag"
+
+#: lib/social/date.php:333
+#@ social
+msgid "a couple of days"
+msgstr "een paar dagen"
+
+#: lib/social/date.php:337
+#@ social
+msgid "less than a week"
+msgstr "minder dan een week"
+
+#: lib/social/date.php:341
+#@ social
+msgid "about a week"
+msgstr "ongeveer een week"
+
+#: lib/social/date.php:345
+#@ social
+msgid "less than a month"
+msgstr "minder dan een maand"
+
+#: lib/social/date.php:349
+#@ social
+msgid "about a month"
+msgstr "ongeveer een maand"
+
+#: lib/social/date.php:353
+#@ social
+msgid "a couple of months"
+msgstr "een paar maanden"
+
+#: lib/social/date.php:357
+#@ social
+msgid "less than a year"
+msgstr "minder dan een jaar"
+
+#: lib/social/date.php:361
+#@ social
+msgid "about a year"
+msgstr "ongeveer een jaar"
+
+#: lib/social/date.php:365
+#@ social
+msgid "a couple of years"
+msgstr "een paar jaren"
+
+#: lib/social/date.php:369
+#@ social
+msgid "a few years"
+msgstr "een paar jaren"
+
+#: lib/social/date.php:373
+#@ social
+msgid "about a decade"
+msgstr "ongeveer 10 jaar"
+
+#: lib/social/date.php:377
+#@ social
+msgid "a couple of decades"
+msgstr "een paar decennia"
+
+#: lib/social/date.php:381
+#@ social
+msgid "several decades"
+msgstr "meerdere decennia"
+
+#: lib/social/date.php:385
+#@ social
+msgid "a long time"
+msgstr "een lange tijd"
+
+#: lib/social/date.php:390
+#, php-format
+#@ social
+msgid "%s ago"
+msgstr "%s geleden"
+
+#: lib/social/date.php:395
+#, php-format
+#@ social
+msgid "in %s"
+msgstr "in %s"
+
+#: lib/social/response.php:96
+#, php-format
+#@ social
+msgid "Unable to publish to %s with account %s. Please <a href=\"%\">re-authorize</a> this account."
+msgstr "Niet mogelijk om %s te publiceren met account %s. Gelieve <a href=\"%\">dit account te authoriseren</a>."
+
+#: lib/social/service/account.php:141
+#: lib/social/service/account.php:150
+#@ social
+msgid "Removed Account"
+msgstr "Account verwijderd"
+
+#: lib/social/service/facebook.php:509
+#, php-format
+#@ social
+msgid "Found %s additional likes."
+msgstr "%s extra likes gevonden."
+
+#: lib/social/service/twitter.php:366
+#@ social
+msgid "Retweet Search"
+msgstr "Zoekresultaat retweeten"
+
+#: lib/social/service/twitter.php:369
+#: views/wp-admin/post/meta/log/output.php:70
+#@ social
+msgid "Existing Comment"
+msgstr "Bestaande reactie"
+
+#: lib/social/service.php:123
+#: lib/social/service.php:126
+#@ social
+msgid "Disconnect"
+msgstr "Loskoppelen"
+
+#: lib/social/view.php:98
+#@ social
+msgid "You must set a file to be used before rendering."
+msgstr "Je moet een bestand aanwijzen om te gebruiken, alvorens te renderen."
+
+#: lib/social/view.php:135
+#, php-format
+#@ social
+msgid "View %s does not exist."
+msgstr "Weergave %s bestaat niet."
+
+#: social-facebook.php:209
+#@ social
+msgid "Connect with Pages support"
+msgstr "Verbinden met Pagina ondersteuning"
+
+#: social-facebook.php:434
+#, php-format
+#@ social
+msgid "%s liked this"
+msgstr "%s heeft dit geliked."
+
+#: social-twitter.php:346
+#@ social
+msgid " retweeted this"
+msgstr "heeft dit geretweet"
+
+#: social-twitter.php:367
+#@ social
+msgid "Send as a reply"
+msgstr "Verstuur als antwoord"
+
+#: social-twitter.php:369
+#@ social
+msgid "URL of Tweet (to reply to)"
+msgstr "URL of tweet (om te beantwoorden)"
+
+#: social.php:118
+#, php-format
+#@ social
+msgid "Failed to auto load class %s."
+msgstr "Laden van de automatische klasse %s is mislukt."
+
+#: social.php:149
+#: social.php:152
+#, php-format
+#@ social
+msgid "Example: %s"
+msgstr "Voorbeeld: %s"
+
+#: social.php:255
+#@ default
+msgid "Duplicate comment detected; it looks as though you&#8217;ve already said that!"
+msgstr ""
+
+#: social.php:340
+#@ social
+msgid "Sorry, Social requires PHP 5.2.4 or higher. Ask your host how to enable PHP 5 as the default on your servers."
+msgstr "Sorry, Social vereist PHP 5.2.4 of nieuwer. Vraag je host om PHP 5 als de standaard op je server aan te zetten."
+
+#: social.php:394
+#@ social
+msgid "Post a Reply"
+msgstr "Plaats een antwoord"
+
+#: social.php:431
+#: social.php:1828
+#@ social
+msgid "Protected Tweet"
+msgstr "Beschermde tweet"
+
+#: social.php:432
+#: social.php:1829
+#@ social
+msgid "Invalid URL"
+msgstr "Ongeldige URL"
+
+#: social.php:531
+#@ social
+msgid "Social Options"
+msgstr "Social opties"
+
+#: social.php:532
+#: views/wp-admin/options.php:11
+#@ social
+msgid "Social"
+msgstr "Social"
+
+#: social.php:557
+#@ social
+msgid "Settings"
+msgstr "Instellingen"
+
+#: social.php:573
+#, php-format
+#@ social
+msgid "Social is shiny and new! Please <a href=\"%s\">verify and save your settings</a> to complete the upgrade."
+msgstr "Social is splinternieuw! <a href=\"%s\">Controleer en sla je instellingen op</a> om de upgrade af te ronden."
+
+#: social.php:579
+#: social.php:607
+#, php-format
+#@ social
+msgid "<a href=\"%s\" class=\"social_dismiss\">[Dismiss]</a>"
+msgstr "<a href=\"%s\" class=\"social_dismiss\">[Negeer]</a>"
+
+#: social.php:580
+#, php-format
+#@ social
+msgid "To start using Social, please <a href=\"%s\">add an account</a>."
+msgstr "<a href=\"%s\">Voeg een account toe</a> om Social te gaan gebruiken."
+
+#: social.php:593
+#, php-format
+#@ social
+msgid "Social requires that either %s or %s be writable for CRON jobs."
+msgstr "Social vereist dat ofwel %s or %s beschrijfbaar is voor CRON jobs."
+
+#: social.php:596
+#, php-format
+#@ social
+msgid "Social requires that %s is writable for CRON jobs."
+msgstr "Social vereist dat %s beschrijfbaar is voor CRON jobs."
+
+#: social.php:606
+#@ social
+msgid "When you enable Social, users will be created when they log in with Facebook or Twitter to comment. These users are created without a role and will be prevented from accessing the admin side of WordPress until an administrator edits the user to give them a role."
+msgstr "Als je Social aanschakelt, zullen gebruikers aangemaakt worden als ze met Facebook of Twitter inloggen om een reactie te plaatsen. Deze gebruikers zullen geen rol hebben en zullen buiten de WordPress admin gehouden worden totdat een beheerder de gebruiker bewerkt en ze een rol geeft."
+
+#: social.php:616
+#, php-format
+#@ social
+msgid "%s needs to be writable for Social's logging. <a href=\"%\" class=\"social_dismiss\">[Dismiss]</a>"
+msgstr "%s dient beschrijfbaar te zijn voor het logbestand van Social. <a href=\"%\" class=\"social_dismiss\">[Negeer]</a>"
+
+#: social.php:626
+#: social.php:660
+#, php-format
+#@ social
+msgid "<a href=\"%s\" class=\"%s\">[Dismiss]</a>"
+msgstr "<a href=\"%s\" class=\"%s\">[Negeer]</a>"
+
+#: social.php:652
+#, php-format
+#@ social
+msgid "Social needs to re-authorize your Facebook account(s). Please re-connect your <a href=\"%s\">global</a> and <a href=\"%s\">personal</a> accounts."
+msgstr "Social moet je Facebook account(s) opnieuw authorizeren. Verbind alsjeblieft opnieuw je <a href=\"%s\">globale</a> en <a href=\"%s\">persoonlijke</a> account."
+
+#: social.php:656
+#, php-format
+#@ social
+msgid "Social needs to re-authorize your Facebook account(s).. Please re-connect your <a href=\"%s\">personal</a> accounts."
+msgstr "Social dient je persoonlijke Facebook account(s) te herauthoriseren. Herverbind alsjeblieft je <a href=\"%s\">persoonlijke</a> account."
+
+#: social.php:811
+#@ social
+msgid "Social Broadcasting"
+msgstr "Social uitzenden"
+
+#: social.php:823
+#@ social
+msgid "Social Comments"
+msgstr "Social reacties"
+
+#: social.php:935
+#@ social
+msgid "Not Scheduled"
+msgstr "Niet gepland"
+
+#: social.php:1301
+#: social.php:1302
+#@ default
+msgid "Log in"
+msgstr ""
+
+#: social.php:1440
+#: social.php:1526
+#, php-format
+#@ social
+msgid "Broadcasting comment #%s to %s using account #%s."
+msgstr "Reactie #%s uitgezonden naar %s via account #%s."
+
+#: social.php:1444
+#: social.php:1540
+#, php-format
+#@ social
+msgid "Error: Broadcast comment #%s to %s using account #%s, please go back and try again."
+msgstr "Fout bij het uitzenden van reactie #%s naar %s via account #%s. Ga terug en probeer het opnieuw."
+
+#: social.php:1445
+#, php-format
+#@ social
+msgid "Error: Your comment could not be sent to %s, please go back and try again."
+msgstr "Fout: je reactie kon niet naar %s verzonden worden. Ga terug en probeer het opnieuw."
+
+#: social.php:1464
+#: social.php:1559
+#, php-format
+#@ social
+msgid "Broadcasting comment #%s to %s using account #%s COMPLETE."
+msgstr "Uitzenden van reactie #%s naar %s via account #%s AFGEROND."
+
+#: social.php:1477
+#, php-format
+#@ social
+msgid "Comment #%s saved."
+msgstr "Reactie #%s opgeslagen."
+
+#: social.php:1725
+#, php-format
+#@ social
+msgid "<a href=\"%s\" rel=\"%s\">Social Comments</a>"
+msgstr "<a href=\"%s\" rel=\"%s\">Social reacties</a>"
+
+#: social.php:1755
+#: views/wp-admin/post/meta/log/shell.php:25
+#@ social
+msgid "Find Social Comments"
+msgstr "Vind Social reacties"
+
+#: social.php:1766
+#: social.php:1769
+#: views/wp-admin/post/meta/log/shell.php:2
+#@ social
+msgid "Add Tweet by URL"
+msgstr "Voeg tweet toe middels URL"
+
+#: social.php:1830
+#@ social
+msgid "Tweet Imported!"
+msgstr "Tweet geïmporteerd!"
+
+#: views/comment/comment.php:28
+#@ social
+msgid "Pingback"
+msgstr "Pingback"
+
+#: views/comment/comment.php:40
+#@ social
+msgid "replied:"
+msgstr "antwoordde:"
+
+#: views/comment/comment.php:50
+#@ social
+msgid "View"
+msgstr "Bekijk"
+
+#: views/comment/comment.php:60
+#@ social
+msgid "Your comment is awaiting moderation."
+msgstr "Je reactie wordt gemodereerd."
+
+#: views/comment/comment.php:73
+#: views/wp-admin/post/broadcast/options.php:72
+#@ social
+msgid "Edit"
+msgstr "Bewerk"
+
+#: views/comment/logged_in_as.php:9
+#@ social
+msgid "WordPress Account"
+msgstr "WordPress account"
+
+#: views/comment/logged_in_as.php:27
+#, php-format
+#@ social
+msgid "Logged in as <a href=\"%1$s\">%2$s</a>."
+msgstr "Ingelogged als <a href=\"%1$s\">%2$s</a>."
+
+#: views/comment/social_item.php:12
+#, php-format
+#@ social
+msgid "<a href=\"%s\" class=\"social-items-and-more\">... and %s more</a>"
+msgstr "<a href=\"%s\" class=\"social-items-and-more\">... en %s meer</a>"
+
+#: views/comment/top.php:3
+#, php-format
+#@ social
+msgid "Sign in with %s"
+msgstr "Teken in met %s"
+
+#: views/comment/top.php:7
+#@ social
+msgid "or"
+msgstr "of"
+
+#: views/comments.php:6
+#@ social
+msgid "This post is password protected. Enter the password to view any comments."
+msgstr "Dit bericht is beveiligd met een wachtwoord. Voer het wachtwoord in om reacties te lezen."
+
+#: views/comments.php:11
+#@ social
+msgid "Logging In..."
+msgstr "Aan het inloggen..."
+
+#: views/comments.php:17
+#, php-format
+#@ social
+msgid "You must be <a href=\"%s\">logged in</a> to post a comment."
+msgstr "Je moet <a href=\"%s\">ingelogged</a> zijn om een reactie te plaatsen."
+
+#: views/comments.php:27
+#@ social
+msgid "Comments are closed."
+msgstr "Je kan niet meer reageren."
+
+#: views/comments.php:90
+#@ social
+msgid "0 Replies"
+msgstr "0 antwoorden"
+
+#: views/comments.php:90
+#@ social
+msgid "1 Reply"
+msgstr "1 antwoord"
+
+#: views/comments.php:90
+#@ social
+msgid "% Replies"
+msgstr "% antwoorden"
+
+#: views/comments.php:91
+#, php-format
+#@ social
+msgid "1 Comment"
+msgid_plural "%1$s Comments"
+msgstr[0] "1 reactie"
+msgstr[1] "%1$s reacties"
+
+#: views/comments.php:92
+#, php-format
+#@ social
+msgid "1 Tweet"
+msgid_plural "%1$s Tweets"
+msgstr[0] "1 tweet"
+msgstr[1] "%1$s tweets"
+
+#: views/comments.php:93
+#, php-format
+#@ social
+msgid "1 Facebook"
+msgid_plural "%1$s Facebook"
+msgstr[0] "1 Facebook reactie"
+msgstr[1] "%1$s Facebook reacties"
+
+#: views/comments.php:94
+#, php-format
+#@ social
+msgid "1 Pingback"
+msgid_plural "%1$s Pingbacks"
+msgstr[0] "1 pingback"
+msgstr[1] "%1$s pingbacks"
+
+#: views/comments.php:102
+#, php-format
+#@ social
+msgid "Last reply was %s"
+msgstr "Laatste reactie was %s"
+
+#: views/comments.php:137
+#@ social
+msgid "Comment navigation"
+msgstr "Reactienavigatie"
+
+#: views/comments.php:138
+#@ social
+msgid "&larr; Older Comments"
+msgstr "&larr; Eerdere reacties"
+
+#: views/comments.php:139
+#@ social
+msgid "Newer Comments &rarr;"
+msgstr "Nieuwere reacties &rarr;"
+
+#: views/wp-admin/options.php:6
+#@ social
+msgid "Social settings have been updated."
+msgstr "Social instellingen zijn bijgewerkt."
+
+#: views/wp-admin/options.php:12
+#, php-format
+#@ social
+msgid "Compliments of <a class=\"social-mailchimp-link\" href=\"%s\">MailChimp</a>"
+msgstr "Met de complimenten van  <a class=\"social-mailchimp-link\" href=\"%s\">MailChimp</a>"
+
+#: views/wp-admin/options.php:18
+#: views/wp-admin/profile.php:5
+#@ social
+msgid "Accounts"
+msgstr "Accounts"
+
+#: views/wp-admin/options.php:19
+#, php-format
+#@ social
+msgid "Available to all blog authors. Add accounts that only you can use in <a href=\"%s\">your profile</a>."
+msgstr "Beschikbaar voor alle auteurs. Voeg accounts toe die alleen door jou gebruikt kunnen worden in <a href=\"%s\">je profiel</a>."
+
+#: views/wp-admin/options.php:31
+#@ social
+msgid "Broadcasting enabled for"
+msgstr "Uitzenden ingeschakeld voor"
+
+#: views/wp-admin/options.php:45
+#@ social
+msgid "Broadcasting is on by default"
+msgstr "Uitzenden staat standaard aan"
+
+#: views/wp-admin/options.php:48
+#: views/wp-admin/options.php:58
+#: views/wp-admin/post/meta/broadcast/default.php:5
+#@ social
+msgid "Yes"
+msgstr "Ja"
+
+#: views/wp-admin/options.php:51
+#: views/wp-admin/options.php:61
+#: views/wp-admin/post/meta/broadcast/default.php:8
+#@ social
+msgid "No"
+msgstr "Nee"
+
+#: views/wp-admin/options.php:55
+#@ social
+msgid "Pull in social comments from Facebook and Twitter"
+msgstr "Haal sociale reacties op van Facebook en Twitter"
+
+#: views/wp-admin/options.php:66
+#@ social
+msgid "Post broadcast format"
+msgstr "Berichtformaat voor uitzenden"
+
+#: views/wp-admin/options.php:70
+#@ social
+msgid "How you would like posts to be formatted when broadcasting to Twitter or Facebook?"
+msgstr "Hoe wil je dat je berichten worden opgemaakt als ze worden uitgezonden naar Twitter of Facebook?"
+
+#: views/wp-admin/options.php:73
+#: views/wp-admin/options.php:98
+#@ social
+msgid "Tokens:"
+msgstr "Sleutels:"
+
+#: views/wp-admin/options.php:91
+#@ social
+msgid "Comment broadcast format"
+msgstr "Reactie uitzendformaat"
+
+#: views/wp-admin/options.php:95
+#@ social
+msgid "How you would like comments to be formatted when broadcasting to Twitter or Facebook."
+msgstr "Hoe wil je dat reacties worden opgemaakt als ze worden uitgezonden naar Twitter of Facebook."
+
+#: views/wp-admin/options.php:115
+#@ social
+msgid "Twitter @anywhere"
+msgstr "Twitter @overal"
+
+#: views/wp-admin/options.php:117
+#, php-format
+#@ social
+msgid "Social Version 2.6 has removed @anywhere support to comply with <a href=\"%s\">Twitter's decision to sunset the service</a>."
+msgstr "Social versie 2.6 heeft @overal ondersteuning verwijderd om te voldoen aan <a href=\"%s\">Twitter's beslissing om de dienst te beëindigen</a>."
+
+#: views/wp-admin/options.php:118
+#, php-format
+#@ social
+msgid "If you would like to continue to use @anywhere, <a href=\"%s\" target=\"_blank\">there are many plugins available to accomodate</a>."
+msgstr "Mocht je @overal willen blijven gebruiken, <a href=\"%s\" target=\"_blank\">dan zijn er allerlei plugins om je daarin te voorzien</a>."
+
+#: views/wp-admin/options.php:132
+#@ social
+msgid "Advanced Options"
+msgstr "Geavanceerde opties"
+
+#: views/wp-admin/options.php:137
+#@ social
+msgid "Misc."
+msgstr "Diverse"
+
+#: views/wp-admin/options.php:144
+#@ social
+msgid "Disable Social's comment display (use standard theme output instead)."
+msgstr "Schakel Social's reactieweergave uit (gebruik ipv daarvan de standaard themafunctie)."
+
+#: views/wp-admin/options.php:150
+#@ social
+msgid "Disable Social's broadcasting feature."
+msgstr "Schakel Social's uitzendoptie uit."
+
+#: views/wp-admin/options.php:161
+#@ social
+msgid "Twitter Default API Account"
+msgstr "Twitter standaard API account"
+
+#: views/wp-admin/options.php:169
+#@ social
+msgid "Account for general (non account specific) Twitter API interaction."
+msgstr "Account om standaard (niet account-specifieke) Twitter API interactie."
+
+#: views/wp-admin/options.php:175
+#@ social
+msgid "Cron settings"
+msgstr "Cron instellingen"
+
+#: views/wp-admin/options.php:181
+#@ social
+msgid "Automatic (WP Cron)"
+msgstr "Automatisch (WP Cron)"
+
+#: views/wp-admin/options.php:182
+#@ social
+msgid "(easiest)"
+msgstr "(eenvoudigst)"
+
+#: views/wp-admin/options.php:188
+#@ social
+msgid "Manual <span class=\"description\">(advanced)</span>"
+msgstr "Handmatig <span class=\"description\">(geavanceerd)</span>"
+
+#: views/wp-admin/options.php:190
+#@ social
+msgid "If you select this option, new tweets and Facebook posts will not be fetched unless you set up a system CRON job or fetch new items manually from the post edit screen. More help is also available in&nbsp;<code>README.txt</code>."
+msgstr "Als je deze optie kiest, worden nieuwe tweets en Facebookberichten niet opgehaald tenzij je een systeem CRON job opzet, of handmatig nieuwe items ophaalt vanaf het bericht bewerkscherm. Meer hulp is ook beschikbaar in&nbsp;<code>README.txt</code>."
+
+#: views/wp-admin/options.php:195
+#@ social
+msgid "CRON Setup"
+msgstr "CRON instelling"
+
+#: views/wp-admin/options.php:197
+#@ social
+msgid "CRON API Key"
+msgstr "CRON API sleutel"
+
+#: views/wp-admin/options.php:197
+#@ social
+msgid "regenerate"
+msgstr "opnieuw aanmaken"
+
+#: views/wp-admin/options.php:202
+#@ social
+msgid "For your system CRON to run correctly, make sure it is pointing towards a URL that looks something like the following:"
+msgstr "Zorg ervoor dat CRON op de juiste manier werkt door het naar een URL te laten verwijzen die er ongeveer zo uitziet: "
+
+#: views/wp-admin/options.php:214
+#@ social
+msgid "Debug Mode"
+msgstr "Debug modus"
+
+#: views/wp-admin/options.php:215
+#@ social
+msgid "(nerds only)"
+msgstr "(alleen voor nerds)"
+
+#: views/wp-admin/options.php:218
+#@ social
+msgid "If you turn debug on, Social will save additional information in <code>debug_log.txt</code> file. Not recommended for production environments."
+msgstr "Als je debug aanzet, zal Social aanvullende informatie in <code>debug_log.txt</code>opslaan. Niet aanbevolen voor productie-omgevingen."
+
+#: views/wp-admin/options.php:223
+#@ social
+msgid "Off <span class=\"description\">(recommended)</span>"
+msgstr "Uit <span class=\"description\">(aanbevolen)</span>"
+
+#: views/wp-admin/options.php:229
+#@ social
+msgid "On <span class=\"description\">(for troubleshooting)</span>"
+msgstr "Aan <span class=\"description\">(om problemen op te lossen)</span>"
+
+#: views/wp-admin/options.php:234
+#@ social
+msgid "Debug log location:"
+msgstr "Debug logbestandlocatie:"
+
+#: views/wp-admin/parts/accounts.php:12
+#, php-format
+#@ social
+msgid "Sign in with %s."
+msgstr "Teken in met %s."
+
+#: views/wp-admin/parts/accounts.php:30
+#: views/wp-admin/parts/accounts.php:64
+#@ social
+msgid "Default"
+msgstr "Standaard"
+
+#: views/wp-admin/parts/accounts.php:68
+#@ social
+msgid "Enabled"
+msgstr "Ingeschakeld"
+
+#: views/wp-admin/parts/accounts.php:87
+#@ social
+msgid "No Accounts"
+msgstr "Geen accounts"
+
+#: views/wp-admin/parts/accounts.php:97
+#@ social
+msgid "Default accounts will auto-broadcast when you publish via XML-RPC or email."
+msgstr "Standaardaccounts zullen automatisch uitzenden als je publiceert via XML-RPC of email."
+
+#: views/wp-admin/post/broadcast/error/email.php:4
+#@ social
+msgid "Hello"
+msgstr "Hallo"
+
+#: views/wp-admin/post/broadcast/error/email.php:5
+#: views/wp-admin/post/broadcast/error/notice.php:4
+#, php-format
+#@ social
+msgid "Social failed to broadcast the blog post \"%s\" to one or more of your Social accounts."
+msgstr "Het is Social niet gelukt om het bericht \"%s\" uit te zenden naar een of meer van je Social Accounts."
+
+#: views/wp-admin/post/broadcast/error/email.php:24
+#: views/wp-admin/post/broadcast/error/notice.php:25
+#@ social
+msgid "Possible fixes:"
+msgstr "Mogelijke oplossingen:"
+
+#: views/wp-admin/post/broadcast/error/email.php:33
+#, php-format
+#@ social
+msgid "To reauthorize the deauthorized %s account above, please login and edit your accounts."
+msgstr "Log alsjeblieft in en bewerk je accounts om het gedauthoriseerde account %s hierboven opnieuw te authoriseren, "
+
+#: views/wp-admin/post/broadcast/error/email.php:36
+#@ social
+msgid "To reauthorize the deauthorized accounts above, please login and edit your accounts."
+msgstr "Log alsjeblieft in en bewerk je accounts om de gedauthoriseerde accounts hierboven opnieuw te authoriseren."
+
+#: views/wp-admin/post/broadcast/error/email.php:39
+#@ social
+msgid "Personal accounts:"
+msgstr "Persoonlijke accounts: "
+
+#: views/wp-admin/post/broadcast/error/email.php:41
+#@ social
+msgid "Global accounts:"
+msgstr "Globale accounts: "
+
+#: views/wp-admin/post/broadcast/error/email.php:51
+#: views/wp-admin/post/broadcast/error/notice.php:57
+#@ social
+msgid "It is possible you have reached your broadcast limit, please try to broadcast again in an hour."
+msgstr "Het kan zijn dat je je uitzendlimiet hebt bereikt, probeer het alsjeblieft opnieuw over een uur."
+
+#: views/wp-admin/post/broadcast/error/email.php:54
+#: views/wp-admin/post/broadcast/error/notice.php:60
+#@ social
+msgid "It is possible you have broadcasted a duplicate message, please tweak your content a little and try again."
+msgstr "Het kan zijn dat je een dubbel bericht hebt uitgezonden. Probeer je inhoud een klein beetje aan te passen en probeer het opnieuw."
+
+#: views/wp-admin/post/broadcast/error/email.php:57
+#@ social
+msgid "Social was not successful in broadcasting this post (perhaps the service is down?), please try broadcasting again. If you receive this message repeatedly, you can try the support forums."
+msgstr "Het is Social niet gelukt om dit bericht uit te zenden (misschien is de dienst onbereikbaar?). Probeer het alsjeblieft opnieuw. Als je dit bericht meermalen ziet, probeer dan de ondersteuningsfora."
+
+#: views/wp-admin/post/broadcast/error/email.php:58
+#@ social
+msgid "Support forums:"
+msgstr "Ondersteuningsfora: "
+
+#: views/wp-admin/post/broadcast/error/notice.php:36
+#, php-format
+#@ social
+msgid "To reauthorize the deauthorized %s account above, please edit your <a href=\"%s\">global accounts</a> or your <a href=\"%s\">personal accounts</a>."
+msgstr "Bewerk je <a href=\"%s\">globale</a> of <a href=\"%s\">persoonlijke</a> accounts om het gedeautoriseerde account %s hierboven opnieuw te authoriseren,"
+
+#: views/wp-admin/post/broadcast/error/notice.php:39
+#, php-format
+#@ social
+msgid "To reauthorize the deauthorized %s account above, please edit your <a href=\"%s\">personal accounts</a>."
+msgstr "Bewerk je <a href=\"%s\">persoonlijke account</a> om bovenstaande account te herauthoriseren."
+
+#: views/wp-admin/post/broadcast/error/notice.php:44
+#, php-format
+#@ social
+msgid "To reauthorize the deauthorized accounts above, please edit your <a href=\"%s\">global accounts</a> or your <a href=\"%s\">personal accounts</a>."
+msgstr "Bewerk je <a href=\"%s\">globale</a> of <a href=\"%s\">persoonlijke</a> account om bovenstaande account te herauthoriseren."
+
+#: views/wp-admin/post/broadcast/error/notice.php:47
+#, php-format
+#@ social
+msgid "To reauthorize the deauthorized account above, please edit your <a href=\"%s\">personal accounts</a>."
+msgstr "Bewerk je <a href=\"%s\">persoonlijke account</a> om bovenstaande account te herauthoriseren."
+
+#: views/wp-admin/post/broadcast/error/notice.php:63
+#, php-format
+#@ social
+msgid "Social was not successful in broadcasting this post (perhaps the service is down?), please try broadcasting again. If you receive this message repeatedly, you can try the <a href=\"%s\">support forums</a>."
+msgstr "Het is Social niet gelukt om dit bericht uit te zenden (misschien is de dienst onbereikbaar?). Probeer het alsjeblieft opnieuw. Als je dit bericht meermalen ziet, probeer dan de <a href=\"%s\">ondersteuningsfora</a>."
+
+#: views/wp-admin/post/broadcast/facebook-link-preview.php:14
+#@ social
+msgid "Thumbnail image"
+msgstr "Verkleinde afbeelding"
+
+#: views/wp-admin/post/broadcast/options.php:5
+#: views/wp-admin/post/broadcast/options.php:15
+#@ social
+msgid "Social Broadcasts"
+msgstr "Social uitzendingen"
+
+#: views/wp-admin/post/broadcast/options.php:51
+#@ social
+msgid "Previous Broadcasts"
+msgstr "Eerdere uitzendingen"
+
+#: views/wp-admin/post/broadcast/options.php:94
+#@ social
+msgid "Cancel"
+msgstr "Annuleer"
+
+#: views/wp-admin/post/meta/broadcast/default.php:2
+#@ social
+msgid "Broadcast Post"
+msgstr "Bericht uitzenden"
+
+#: views/wp-admin/post/meta/broadcast/parts/broadcasted.php:10
+#@ social
+msgid "Sent to:"
+msgstr "Verzenden naar: "
+
+#: views/wp-admin/post/meta/broadcast/parts/button.php:5
+#@ social
+msgid "My Accounts"
+msgstr "Mijn accounts"
+
+#: views/wp-admin/post/meta/broadcast/pending.php:4
+#@ social
+msgid "This post will not be broadcasted to any of your social accounts."
+msgstr "Dit bericht zal naar geen enkele account uitgezonden worden."
+
+#: views/wp-admin/post/meta/broadcast/pending.php:8
+#@ social
+msgid "This post will be broadcasted to the following accounts."
+msgstr "Dit bericht zal worden uitgezonden naar de volgende accounts."
+
+#: views/wp-admin/post/meta/broadcast/private.php:2
+#@ social
+msgid "Broadcasting is disabled for private posts."
+msgstr "Uitzenden is uitgeschakeld voor privéberichten."
+
+#: views/wp-admin/post/meta/broadcast/scheduled.php:5
+#@ social
+msgid "This post is scheduled to be published at a later date. However, it is not scheduled to be broadcasted to any of your social accounts."
+msgstr "Dit bericht staat ingepland om op een latere datum uitgezonden te worden. Het is echter niet ingepland om uitgezonden te worden naar je accounts."
+
+#: views/wp-admin/post/meta/broadcast/scheduled.php:9
+#@ social
+msgid "Scheduled for:"
+msgstr "Ingepland voor:"
+
+#: views/wp-admin/post/meta/log/output.php:3
+#@ social
+msgid "Aggregation has not been run for this post yet."
+msgstr "Aggregratie heeft voor dit bericht nog niet plaatsgevonden."
+
+#: views/wp-admin/post/meta/log/output.php:14
+#@ social
+msgid "Manual Aggregation"
+msgstr "Handmatige aggregratie"
+
+#: views/wp-admin/post/meta/log/output.php:17
+#@ social
+msgid "Automatic Aggregation"
+msgstr "Automatische aggregratie"
+
+#: views/wp-admin/post/meta/log/output.php:59
+#@ social
+msgid "Reply Search"
+msgstr "Antwoord zoeken"
+
+#: views/wp-admin/post/meta/log/output.php:62
+#@ social
+msgid "URL Search"
+msgstr "URL zoeken"
+
+#: views/wp-admin/post/meta/log/output.php:87
+#@ social
+msgid "No results found."
+msgstr "Geen resultaten gevonden."
+
+#: views/wp-admin/post/meta/log/shell.php:3
+#@ social
+msgid "Enter the URL of the tweet to add it as a comment."
+msgstr "Voer de URL van de tweet in om het als een reactie in te voegen."
+
+#: views/wp-admin/post/meta/log/shell.php:8
+#@ social
+msgid "Import Tweet"
+msgstr "Tweet importeren"
+
+#: views/wp-admin/post/meta/log/shell.php:20
+#@ social
+msgid "Manual Refresh"
+msgstr "Handmatig verversen"
+
+#: views/wp-admin/post/meta/log/shell.php:21
+#, php-format
+#@ social
+msgid "Next automatic run <span>%s</span>"
+msgstr "Volgende automatische actie <span>%s</span>"
+
+#: views/wp-admin/post/meta/log/shell.php:34
+#@ social
+msgid "Log"
+msgstr "Logbestand"
+
+#: views/wp-admin/profile.php:1
+#@ social
+msgid "Social Accounts"
+msgstr "Sociale accounts"
+
+#: views/wp-admin/profile.php:6
+#@ social
+msgid "Only I can broadcast to these accounts."
+msgstr "Alleen ik kan uitzenden naar deze accounts."
+
