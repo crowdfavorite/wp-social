@@ -511,14 +511,15 @@ final class Social_Controller_Broadcast extends Social_Controller {
 					if ($account !== false) {
 						// Load the message
 						$message = '';
-						if (isset($account_content[$key][$_account->id])) {
+						// Issue #185 -- performs final check to ensure post is published see line 617.
+						if (isset($account_content[$key][$_account->id]) && $post->post_status === 'publish') {
 							$message = $account_content[$key][$_account->id];
 						}
 						$args = array();
 						if (isset($account_meta[$key][$_account->id])) {
 							$args = $account_meta[$key][$_account->id];
 						}
-
+						
 						if (!empty($message)) {
 							Social::log('Broadcasting to :username, account #:id. (:service)', array(
 								'id' => $account->id(),
@@ -613,6 +614,14 @@ final class Social_Controller_Broadcast extends Social_Controller {
 								}
 							}
 						}
+						// Forces broadcast post into queue instead of sending to the selected services.
+						elseif (in_array($post->post_status, array('future','pending'))) {
+							Social::log('Found that post :post_id isn\'t published yet. Cancelling and pushing to queue.', array(
+								'post_id' => $post->ID,
+								));
+							Social_Aggregation_Queue::factory()->add($post->ID);
+						}
+
 					}
 				}
 			}
