@@ -273,27 +273,27 @@ Much to the consternation of developers everywhere, Twitter provides direct CDN 
 
 ## Screenshots ##
 
-###1. Allow your visitors to leave a comment as their Facebook or Twitter identities###
+### 1. Allow your visitors to leave a comment as their Facebook or Twitter identities ###
 ![Allow your visitors to leave a comment as their Facebook or Twitter identities
 ](https://s.w.org/plugins/social/screenshot-1.png)
 
 
-###2. Social settings screen to connect accounts, set up default broadcast settings and more###
+### 2. Social settings screen to connect accounts, set up default broadcast settings and more ###
 ![Social settings screen to connect accounts, set up default broadcast settings and more
 ](https://s.w.org/plugins/social/screenshot-2.png)
 
 
-###3. Post edit screen settings: broadcast the post, manually import comments, view a log of imported items###
+### 3. Post edit screen settings: broadcast the post, manually import comments, view a log of imported items ###
 ![Post edit screen settings: broadcast the post, manually import comments, view a log of imported items
 ](https://s.w.org/plugins/social/screenshot-3.png)
 
 
-###4. Send customized broadcasts to each social account###
+### 4. Send customized broadcasts to each social account ###
 ![Send customized broadcasts to each social account
 ](https://s.w.org/plugins/social/screenshot-4.png)
 
 
-###5. View of replies imported from Twitter as comments###
+### 5. View of replies imported from Twitter as comments ###
 [missing image]
 
 
